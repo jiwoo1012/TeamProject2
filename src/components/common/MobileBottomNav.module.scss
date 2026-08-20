@@ -1,0 +1,130 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+
+/* ========================================
+   MOBILE BOTTOM NAV
+
+   PC / TABLET에서는 숨김
+======================================== */
+
+.bottomNav {
+  display: none;
+}
+
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@include mobile {
+
+  .bottomNav {
+    position: fixed;
+
+    left: 0;
+    bottom: 12px;
+
+    z-index: $z-dropdown;
+
+    display: flex;
+    justify-content: center;
+
+    width: 100%;
+
+    padding:
+      0
+      $side-margin-mobile;
+
+    pointer-events: none;
+  }
+
+
+  .bottomNavInner {
+    display: grid;
+
+    grid-template-columns:
+      repeat(4, 1fr);
+
+    align-items: center;
+
+    width: 100%;
+    max-width: 440px;
+    height: 68px;
+
+    background: $color-surface;
+
+    border-radius: $radius-pill;
+
+    box-shadow:
+      0
+      4px
+      18px
+      rgba($color-text-primary, 0.08);
+
+    overflow: hidden;
+
+    pointer-events: auto;
+  }
+
+
+  /* ========================================
+     NAV ITEM
+  ======================================== */
+
+  .navItem {
+    @include flex-center;
+
+    flex-direction: column;
+
+    gap: 5px;
+
+    height: 100%;
+
+    color: $color-text-primary;
+
+    text-decoration: none;
+
+    transition:
+      color $transition-fast ease,
+      transform $transition-fast ease;
+
+    img {
+      display: block;
+
+      width: 26px;
+      height: 26px;
+
+      object-fit: contain;
+
+      transition:
+        transform $transition-fast ease,
+        opacity $transition-fast ease;
+    }
+
+    span {
+      font-family: $font-family-base;
+      font-size: 9px;
+      font-weight: $font-weight-medium;
+
+      line-height: 1;
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+  }
+
+
+  /* ========================================
+     현재 페이지
+  ======================================== */
+
+  .active {
+    color: $color-primary;
+
+    img {
+      transform: translateY(-1px);
+    }
+  }
+}

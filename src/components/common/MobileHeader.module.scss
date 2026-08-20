@@ -1,0 +1,450 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+
+/* ========================================
+   MOBILE HEADER
+
+   PC / TABLET에서는 숨김
+======================================== */
+
+.mobileHeader {
+  display: none;
+}
+
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@include mobile {
+
+  .mobileHeader {
+    position: relative;
+    z-index: $z-header;
+
+    display: block;
+
+    width: 100%;
+
+    font-family: $font-family-base;
+
+    background: $color-bg;
+  }
+
+
+  /* ========================================
+     TOP HEADER
+  ======================================== */
+
+  .mobileTop {
+    position: relative;
+    z-index: $z-dropdown + 1;
+
+    @include flex-between;
+
+    width: 100%;
+    height: 58px;
+
+    padding:
+      0
+      $side-margin-mobile;
+
+    background: $color-bg;
+
+    border-bottom:
+      1px
+      solid
+      rgba($color-text-primary, 0.1);
+  }
+
+
+  /* ========================================
+     LOGO
+  ======================================== */
+
+  .logo {
+    display: flex;
+    align-items: center;
+
+    flex-shrink: 0;
+
+    text-decoration: none;
+
+    img {
+      display: block;
+
+      width: auto;
+      height: 30px;
+
+      object-fit: contain;
+    }
+  }
+
+
+  /* ========================================
+     RIGHT ACTIONS
+  ======================================== */
+
+  .actions {
+    display: flex;
+    align-items: center;
+
+    gap: $space-3;
+  }
+
+
+  .iconButton {
+    @include flex-center;
+
+    flex-shrink: 0;
+
+    width: 22px;
+    height: 22px;
+
+    padding: 0;
+
+    background: transparent;
+
+    border: 0;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    img {
+      display: block;
+
+      width: 17px;
+      height: 17px;
+
+      object-fit: contain;
+    }
+  }
+
+
+  /* ========================================
+     HAMBURGER / CLOSE
+  ======================================== */
+
+  .menuButton {
+    position: relative;
+
+    flex-shrink: 0;
+
+    width: 21px;
+    height: 21px;
+
+    padding: 0;
+
+    background: transparent;
+
+    border: 0;
+
+    cursor: pointer;
+
+    span {
+      position: absolute;
+
+      left: 50%;
+
+      width: 15px;
+      height: 1px;
+
+      background: $color-text-primary;
+
+      transform: translateX(-50%);
+
+      transition:
+        top $transition-fast ease,
+        transform $transition-fast ease;
+    }
+
+    span:first-child {
+      top: 7px;
+    }
+
+    span:last-child {
+      top: 13px;
+    }
+  }
+
+
+  /* 메뉴가 열렸을 때 X */
+
+  .menuButtonOpen {
+
+    span:first-child {
+      top: 10px;
+
+      transform:
+        translateX(-50%)
+        rotate(45deg);
+    }
+
+    span:last-child {
+      top: 10px;
+
+      transform:
+        translateX(-50%)
+        rotate(-45deg);
+    }
+  }
+
+
+  /* ========================================
+     FULL MENU PANEL
+  ======================================== */
+
+  .menuPanel {
+    position: fixed;
+
+    top: 58px;
+    left: 0;
+
+    z-index: $z-dropdown;
+
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    height: calc(100dvh - 58px);
+
+    padding:
+      $space-8
+      $side-margin-mobile
+      $space-6;
+
+    background: $color-bg;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transform: translateY(-6px);
+
+    pointer-events: none;
+
+    transition:
+      opacity $transition-base ease,
+      visibility $transition-base ease,
+      transform $transition-base ease;
+  }
+
+
+  .menuPanelOpen {
+    opacity: 1;
+    visibility: visible;
+
+    transform: translateY(0);
+
+    pointer-events: auto;
+  }
+
+
+  /* ========================================
+     GNB
+  ======================================== */
+
+  .gnb {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+  }
+
+
+  .menuGroup {
+    width: 100%;
+  }
+
+
+  /* ========================================
+     GNB TITLE
+  ======================================== */
+
+  .menuTitle,
+  .directLink {
+    width: 100%;
+    min-height: 50px;
+
+    color: $color-text-primary;
+
+    font-family: $font-family-base;
+    font-size: 13px;
+    font-weight: $font-weight-semibold;
+
+    text-decoration: none;
+  }
+
+
+  .menuTitle {
+    @include flex-between;
+
+    padding:
+      0
+      $space-3;
+
+    background: transparent;
+
+    border: 0;
+
+    text-align: left;
+
+    cursor: pointer;
+  }
+
+
+  .directLink {
+    display: flex;
+    align-items: center;
+
+    padding:
+      0
+      $space-3;
+  }
+
+
+  /* ========================================
+     ARROW
+  ======================================== */
+
+  .arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: $color-text-primary;
+
+    font-size: $font-size-md;
+    font-weight: $font-weight-bold;
+
+    transition:
+      transform $transition-fast ease;
+  }
+
+
+  .arrowOpen {
+    transform: rotate(180deg);
+  }
+
+
+  /* ========================================
+     SUB MENU
+  ======================================== */
+
+  .subMenu {
+    max-height: 0;
+
+    overflow: hidden;
+
+    opacity: 0;
+
+    background:
+      rgba(
+        $color-surface,
+        0.32
+      );
+
+    transition:
+      max-height $transition-base ease,
+      opacity $transition-fast ease;
+  }
+
+
+  .subMenuOpen {
+    max-height: 230px;
+
+    opacity: 1;
+  }
+
+
+  .subMenuInner {
+    display: flex;
+    flex-direction: column;
+
+    padding:
+      $space-2
+      0;
+  }
+
+
+  .subMenuInner a {
+    display: flex;
+    align-items: center;
+
+    min-height: 38px;
+
+    padding:
+      0
+      $space-5;
+
+    color: $color-text-primary;
+
+    font-size: 11px;
+    font-weight: $font-weight-regular;
+
+    text-decoration: none;
+
+    transition:
+      color $transition-fast ease,
+      background $transition-fast ease,
+      padding-left $transition-fast ease;
+
+    &:active {
+      color: $color-primary;
+
+      background:
+        rgba(
+          $color-primary,
+          0.05
+        );
+
+      padding-left: 24px;
+    }
+  }
+
+
+  /* ========================================
+     USER AREA
+  ======================================== */
+
+  .userArea {
+    display: flex;
+    align-items: center;
+
+    gap: $space-2;
+
+    margin-top: auto;
+
+    padding:
+      $space-4
+      $space-3;
+
+    color: $color-text-muted;
+
+    font-size: 10px;
+
+    a {
+      color: $color-text-primary;
+
+      font-weight: $font-weight-regular;
+
+      text-decoration: none;
+
+      transition:
+        color $transition-fast ease;
+
+      &:active {
+        color: $color-primary;
+      }
+    }
+
+    span {
+      color:
+        rgba(
+          $color-text-primary,
+          0.35
+        );
+    }
+  }
+}

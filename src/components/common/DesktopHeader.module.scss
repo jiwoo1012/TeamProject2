@@ -1,0 +1,724 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+
+/* ========================================
+   DESKTOP HEADER
+======================================== */
+
+.desktopHeader {
+  position: relative;
+
+  width: 100%;
+
+  font-family: $font-family-base;
+
+  background: $color-white;
+}
+
+
+/* ========================================
+   HEADER INNER
+======================================== */
+
+.headerInner {
+  position: relative;
+  z-index: $z-dropdown + 1;
+
+  width: 100%;
+  height: 80px;
+
+  background: $color-white;
+
+  border-bottom:
+    1px
+    solid
+    rgba($color-text-primary, 0.08);
+}
+
+
+.headerContainer {
+  @include container;
+  @include flex-between;
+
+  height: 100%;
+}
+
+
+/* ========================================
+   LOGO
+======================================== */
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 54px;
+
+  text-decoration: none;
+
+  img {
+    display: block;
+
+    width: auto;
+    height: 44px;
+
+    object-fit: contain;
+  }
+}
+
+
+/* ========================================
+   GNB
+======================================== */
+
+.gnb {
+  display: flex;
+  align-items: center;
+
+  gap: $space-12;
+
+  margin-left: $space-16;
+  margin-right: auto;
+}
+
+
+.gnbItem {
+  display: flex;
+  align-items: center;
+
+  height: 80px;
+}
+
+
+.gnbLink {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  height: 100%;
+
+  color: $color-text-primary;
+
+  font-size: $font-size-lg;
+  font-weight: $font-weight-medium;
+
+  text-decoration: none;
+
+  transition:
+    color $transition-fast ease,
+    font-weight $transition-fast ease;
+
+  /* GNB 아래 초록 막대 */
+  &::after {
+    content: '';
+
+    position: absolute;
+
+    left: 50%;
+    bottom: 17px;
+
+    width: 100%;
+    height: 2px;
+
+    background: $color-primary;
+
+    border-radius: $radius-pill;
+
+    transform:
+      translateX(-50%)
+      scaleX(0);
+
+    transform-origin: center;
+
+    transition:
+      transform $transition-base ease;
+  }
+
+  &:hover {
+    color: $color-primary;
+
+    font-weight: $font-weight-semibold;
+
+    &::after {
+      transform:
+        translateX(-50%)
+        scaleX(1);
+    }
+  }
+}
+
+
+/* ========================================
+   HEADER ACTIONS
+======================================== */
+
+.headerActions {
+  display: flex;
+  align-items: center;
+
+  gap: $space-4;
+
+  margin-left: auto;
+}
+
+
+/* ========================================
+   SEARCH
+======================================== */
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 310px;
+  height: 40px;
+
+  margin-right: $space-2;
+
+  padding:
+    0
+    $space-3
+    0
+    $space-4;
+
+  color: $color-text-primary;
+
+  background: $color-white;
+
+  border:
+    1px
+    solid
+    rgba($color-text-primary, 0.45);
+
+  border-radius: $radius-pill;
+
+  cursor: pointer;
+
+  transition:
+    border-color $transition-fast ease,
+    box-shadow $transition-fast ease;
+
+  span {
+    color: $color-text-primary;
+
+    font-family: $font-family-base;
+    font-size: $font-size-sm;
+  }
+
+  &:hover {
+    border-color: $color-primary;
+
+    box-shadow:
+      0
+      0
+      0
+      2px
+      rgba($color-primary, 0.06);
+
+    .searchIcon {
+      transform: scale(1.08);
+    }
+  }
+}
+
+
+.searchIcon {
+  display: block;
+
+  width: 24px;
+  height: 24px;
+
+  object-fit: contain;
+
+  transition:
+    transform $transition-fast ease;
+}
+
+
+/* ========================================
+   RIGHT ICONS
+======================================== */
+
+.iconButton {
+  @include flex-center;
+
+  flex-shrink: 0;
+
+  width: 30px;
+  height: 30px;
+
+  text-decoration: none;
+
+  transition:
+    transform $transition-fast ease;
+
+  img {
+    display: block;
+
+    width: 25px;
+    height: 25px;
+
+    object-fit: contain;
+
+    transition:
+      transform $transition-fast ease;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+
+    img {
+      transform: scale(1.06);
+    }
+  }
+}
+
+
+/* ========================================
+   MEGA MENU COMMON
+======================================== */
+
+.megaMenu {
+  position: absolute;
+
+  top: 80px;
+  left: 0;
+
+  z-index: $z-dropdown;
+
+  width: 100%;
+
+  max-height: 0;
+
+  overflow: hidden;
+
+  opacity: 0;
+  visibility: hidden;
+
+  /*
+    너무 투명하지 않도록
+    taupe 94%
+  */
+  background: rgba($color-taupe, 0.94);
+
+  transform: translateY(-8px);
+
+  pointer-events: none;
+
+  transition:
+    max-height 0.4s ease,
+    opacity $transition-base ease,
+    transform $transition-base ease,
+    visibility $transition-base ease;
+}
+
+
+.megaMenuOpen {
+  max-height: 400px;
+
+  opacity: 1;
+  visibility: visible;
+
+  transform: translateY(0);
+
+  pointer-events: auto;
+}
+
+
+.megaContainer {
+  @include container;
+
+  display: flex;
+
+  min-height: 215px;
+
+  padding:
+    $space-6
+    0;
+}
+
+
+/* ========================================
+   BRAND MEGA MENU
+======================================== */
+
+.brandSnb {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  gap: $space-8;
+
+  width: 280px;
+
+  padding:
+    0
+    $space-12
+    0
+    $space-8;
+
+  border-right:
+    1px
+    solid
+    rgba($color-white, 0.28);
+}
+
+
+/* ========================================
+   SNB LINK
+======================================== */
+
+.snbLink {
+  position: relative;
+
+  display: block;
+
+  width: fit-content;
+
+  color: rgba($color-white, 0.88);
+
+  font-size: $font-size-sm;
+  font-weight: $font-weight-regular;
+
+  text-decoration: none;
+
+  transition:
+    color $transition-fast ease,
+    transform $transition-fast ease,
+    font-weight $transition-fast ease;
+
+  /*
+    기본 상태에서는 안 보이고
+    hover할 때만 나오는 초록 막대
+  */
+  &::before {
+    content: '';
+
+    position: absolute;
+
+    top: 50%;
+    left: -25px;
+
+    width: 2px;
+    height: 18px;
+
+    background: $color-primary-light;
+
+    border-radius: $radius-pill;
+
+    opacity: 0;
+
+    transform:
+      translateY(-50%)
+      scaleY(0);
+
+    transform-origin: center;
+
+    transition:
+      opacity $transition-fast ease,
+      transform $transition-fast ease;
+  }
+
+  &:hover {
+    color: $color-white;
+
+    font-weight: $font-weight-semibold;
+
+    transform: translateX(3px);
+
+    &::before {
+      opacity: 1;
+
+      transform:
+        translateY(-50%)
+        scaleY(1);
+    }
+  }
+}
+
+
+/* ========================================
+   BRAND RIGHT
+======================================== */
+
+.brandVisual {
+  display: flex;
+  align-items: center;
+
+  flex: 1;
+
+  gap: $space-8;
+
+  padding-left: $space-12;
+}
+
+
+.brandImage {
+  flex-shrink: 0;
+
+  width: 165px;
+  height: 115px;
+
+  background: rgba($color-white, 0.58);
+
+  border-radius: $radius-sm;
+}
+
+
+.brandText {
+  color: $color-white;
+
+  h2 {
+    margin:
+      0
+      0
+      $space-4;
+
+    font-family: $font-family-display;
+
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-medium;
+
+    line-height: $line-height-tight;
+  }
+
+  p {
+    margin: 0;
+
+    color: rgba($color-white, 0.65);
+
+    font-size: $font-size-xs;
+
+    line-height: $line-height-base;
+  }
+}
+
+
+/* ========================================
+   SHOP MEGA MENU
+======================================== */
+
+.shopContainer {
+  display: grid;
+
+  grid-template-columns:
+    220px
+    220px
+    minmax(0, 1fr);
+
+  min-height: 240px;
+}
+
+
+.shopColumn {
+  display: flex;
+  flex-direction: column;
+
+  gap: $space-4;
+
+  padding:
+    $space-2
+    $space-10
+    $space-2
+    $space-8;
+
+  border-right:
+    1px
+    solid
+    rgba($color-white, 0.28);
+}
+
+
+.columnTitle {
+  margin-bottom: $space-2;
+
+  color: rgba($color-white, 0.55);
+
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+
+/* ========================================
+   POPULAR PRODUCTS
+======================================== */
+
+.popularProducts {
+  min-width: 0;
+
+  padding:
+    $space-2
+    0
+    0
+    $space-10;
+}
+
+
+.popularTitle {
+  @include flex-between;
+
+  margin-bottom: $space-4;
+
+  h2 {
+    margin: 0;
+
+    color: $color-white;
+
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+
+    gap: $space-1;
+
+    color: rgba($color-white, 0.65);
+
+    font-size: $font-size-xs;
+
+    text-decoration: none;
+
+    transition:
+      color $transition-fast ease;
+
+    &:hover {
+      color: $color-primary-light;
+    }
+  }
+}
+
+
+.productList {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: $space-3;
+}
+
+
+.productCard {
+  display: block;
+
+  min-width: 0;
+
+  color: $color-white;
+
+  text-decoration: none;
+
+  transition:
+    transform $transition-fast ease;
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+}
+
+
+.productImage {
+  width: 100%;
+  height: 95px;
+
+  margin-bottom: $space-2;
+
+  background: rgba($color-white, 0.58);
+
+  border-radius: $radius-md;
+}
+
+
+.productName {
+  @include ellipsis;
+
+  display: block;
+
+  margin-bottom: $space-1;
+
+  color: rgba($color-white, 0.75);
+
+  font-size: 11px;
+}
+
+
+.productCard strong {
+  color: $color-white;
+
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+
+/* ========================================
+   TABLET
+======================================== */
+
+@include tablet {
+
+  .headerInner {
+    height: 72px;
+  }
+
+  .gnb {
+    gap: $space-6;
+
+    margin-left: $space-8;
+  }
+
+  .gnbItem {
+    height: 72px;
+  }
+
+  .gnbLink {
+    font-size: $font-size-md;
+  }
+
+  .logo {
+    img {
+      height: 38px;
+    }
+  }
+
+  .searchBox {
+    width: 220px;
+  }
+
+  .megaMenu {
+    top: 72px;
+  }
+
+  .brandSnb {
+    width: 220px;
+  }
+
+  .shopContainer {
+    grid-template-columns:
+      180px
+      180px
+      minmax(0, 1fr);
+  }
+}
+
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@include mobile {
+
+  /*
+    모바일에서는 MobileHeader.jsx가 나오므로
+    PC 헤더 전체 숨김
+  */
+  .desktopHeader {
+    display: none;
+  }
+}

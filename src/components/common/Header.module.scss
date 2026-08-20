@@ -1,0 +1,9 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.header {
+  position: relative;
+  z-index: $z-header;
+
+  width: 100%;
+}
