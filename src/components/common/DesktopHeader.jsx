@@ -124,7 +124,7 @@ const DesktopHeader = () => {
             {/* AI 추천 */}
             <div
               className={styles.gnbItem}
-              onMouseEnter={closeMegaMenu}
+              onMouseEnter={() => openMegaMenu('ai')}
             >
               <Link
                 to="/ai"
@@ -354,6 +354,41 @@ const DesktopHeader = () => {
         </div>
       </div>
 
+    {/* ========================================
+        AI 추천 MEGA MENU
+    ======================================== */}
+
+      <div
+        className={`${styles.megaMenu} ${
+          openMenu === 'ai'
+            ? styles.megaMenuOpen
+            : ''
+        }`}
+      >
+        <div className={styles.megaContainer}>
+
+          <div className={styles.aiSnb}>
+
+            <Link
+              to="/ai"
+              className={styles.snbLink}
+              onClick={closeMegaMenu}
+            >
+              추천 받기
+            </Link>
+
+            <Link
+              to="/mypage/ai-history"
+              className={styles.snbLink}
+              onClick={closeMegaMenu}
+            >
+              이전 추천 결과 보기
+            </Link>
+
+          </div>
+
+        </div>
+      </div>
 
       {/* ========================================
           상품 MEGA MENU

@@ -516,6 +516,10 @@
   padding-right: $space-8;
 }
 
+.aiSnb {
+  display: flex;
+  flex-direction: column;
+}
 
 .snbLink {
   position: relative;
