@@ -140,6 +140,7 @@ const MobileHeader = () => {
               }`}
             >
               <div className={styles.subMenuInner}>
+
                 <Link
                   to="/brand"
                   onClick={closeMenu}
@@ -148,18 +149,12 @@ const MobileHeader = () => {
                 </Link>
 
                 <Link
-                  to="/brand/story"
+                  to="/brand/makdong"
                   onClick={closeMenu}
                 >
-                  전통주 이야기
+                  막둥이 소개
                 </Link>
 
-                <Link
-                  to="/ai"
-                  onClick={closeMenu}
-                >
-                  자작의 혼술상 추천
-                </Link>
               </div>
             </div>
 
@@ -196,6 +191,7 @@ const MobileHeader = () => {
               }`}
             >
               <div className={styles.subMenuInner}>
+
                 <Link
                   to="/shop"
                   onClick={closeMenu}
@@ -223,6 +219,7 @@ const MobileHeader = () => {
                 >
                   선물 세트
                 </Link>
+
               </div>
             </div>
 
@@ -259,6 +256,7 @@ const MobileHeader = () => {
               }`}
             >
               <div className={styles.subMenuInner}>
+
                 <Link
                   to="/ai"
                   onClick={closeMenu}
@@ -272,6 +270,7 @@ const MobileHeader = () => {
                 >
                   이전 추천 결과 보기
                 </Link>
+
               </div>
             </div>
 
@@ -281,6 +280,7 @@ const MobileHeader = () => {
               이벤트
           ========================= */}
           <div className={styles.menuGroup}>
+
             <Link
               to="/events"
               className={styles.directLink}
@@ -288,6 +288,7 @@ const MobileHeader = () => {
             >
               이벤트
             </Link>
+
           </div>
 
         </nav>
@@ -298,6 +299,7 @@ const MobileHeader = () => {
             로그인 기능 연결 전 임시 상태
         ============================== */}
         <div className={styles.userArea}>
+
           <Link
             to="/login"
             onClick={closeMenu}
@@ -313,6 +315,7 @@ const MobileHeader = () => {
           >
             회원가입
           </Link>
+
         </div>
 
       </div>
