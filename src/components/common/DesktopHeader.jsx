@@ -1,5 +1,8 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { onAuthStateChanged } from 'firebase/auth'
+
+import { auth } from '../../firebase/firebase'
 
 import jajakLogo from '../../assets/logos/jajakLogo.png'
 import cartIcon from '../../assets/icons/cartIcon.png'
@@ -9,10 +12,35 @@ import searchIcon from '../../assets/icons/searchIcon.png'
 
 import styles from './DesktopHeader.module.scss'
 
+
 const DesktopHeader = () => {
+  const navigate = useNavigate()
+
   const [openMenu, setOpenMenu] = useState(null)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [searchKeyword, setSearchKeyword] = useState('')
+  const [user, setUser] = useState(null)
+
+
+  /* ========================================
+     로그인 상태 확인
+  ======================================== */
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser)
+    })
+
+    return () => unsubscribe()
+  }, [])
+
+
+  /* ========================================
+     MEGA MENU
+  ======================================== */
 
   const openMegaMenu = (menu) => {
+    setIsSearchOpen(false)
     setOpenMenu(menu)
   }
 
@@ -20,33 +48,54 @@ const DesktopHeader = () => {
     setOpenMenu(null)
   }
 
+
+  /* ========================================
+     SEARCH
+  ======================================== */
+
+  const toggleSearch = () => {
+    closeMegaMenu()
+    setIsSearchOpen((prev) => !prev)
+  }
+
+  const closeSearch = () => {
+    setIsSearchOpen(false)
+    setSearchKeyword('')
+  }
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault()
+
+    const keyword = searchKeyword.trim()
+
+    if (!keyword) {
+      return
+    }
+
+    navigate(`/shop?search=${encodeURIComponent(keyword)}`)
+
+    setIsSearchOpen(false)
+    setSearchKeyword('')
+  }
+
+
   return (
     <div
       className={styles.desktopHeader}
       onMouseLeave={closeMegaMenu}
     >
-      {/* ==============================
+
+      {/* ========================================
           HEADER
-      ============================== */}
+      ======================================== */}
+
       <div className={styles.headerInner}>
         <div className={styles.headerContainer}>
-
-          {/* 로고 */}
-          <Link
-            to="/"
-            className={styles.logo}
-            onMouseEnter={closeMegaMenu}
-          >
-            <img
-              src={jajakLogo}
-              alt="JAJAK"
-            />
-          </Link>
 
           {/* GNB */}
           <nav className={styles.gnb}>
 
-            {/* 브랜드 */}
+            {/* BRAND */}
             <div
               className={styles.gnbItem}
               onMouseEnter={() => openMegaMenu('brand')}
@@ -55,11 +104,11 @@ const DesktopHeader = () => {
                 to="/brand"
                 className={styles.gnbLink}
               >
-                브랜드
+                BRAND
               </Link>
             </div>
 
-            {/* 상품 */}
+            {/* SHOP */}
             <div
               className={styles.gnbItem}
               onMouseEnter={() => openMegaMenu('shop')}
@@ -68,7 +117,7 @@ const DesktopHeader = () => {
                 to="/shop"
                 className={styles.gnbLink}
               >
-                상품
+                SHOP
               </Link>
             </div>
 
@@ -100,32 +149,56 @@ const DesktopHeader = () => {
 
           </nav>
 
-          {/* 오른쪽 영역 */}
+
+          {/* ========================================
+              중앙 로고
+          ======================================== */}
+
+          <Link
+            to="/"
+            className={styles.logo}
+            onMouseEnter={closeMegaMenu}
+            onClick={closeSearch}
+          >
+            <img
+              src={jajakLogo}
+              alt="JAJAK"
+            />
+          </Link>
+
+
+          {/* ========================================
+              오른쪽 아이콘
+          ======================================== */}
+
           <div
             className={styles.headerActions}
             onMouseEnter={closeMegaMenu}
           >
 
-            {/* 검색창 */}
+            {/* 검색 */}
             <button
               type="button"
-              className={styles.searchBox}
-              aria-label="검색"
+              className={`${styles.iconButton} ${
+                isSearchOpen ? styles.searchActive : ''
+              }`}
+              aria-label={isSearchOpen ? '검색 닫기' : '검색'}
+              aria-expanded={isSearchOpen}
+              onClick={toggleSearch}
             >
-              <span>Search</span>
-
               <img
                 src={searchIcon}
                 alt=""
-                className={styles.searchIcon}
               />
             </button>
 
-            {/* 마이페이지 */}
+
+            {/* 로그인 / 마이페이지 */}
             <Link
-              to="/mypage"
+              to={user ? '/mypage' : '/login'}
               className={styles.iconButton}
-              aria-label="마이페이지"
+              aria-label={user ? '마이페이지' : '로그인'}
+              onClick={closeSearch}
             >
               <img
                 src={loginIcon}
@@ -133,11 +206,13 @@ const DesktopHeader = () => {
               />
             </Link>
 
+
             {/* 찜 */}
             <Link
               to="/mypage/wishlist"
               className={styles.iconButton}
               aria-label="찜 목록"
+              onClick={closeSearch}
             >
               <img
                 src={wishlistIcon}
@@ -145,11 +220,13 @@ const DesktopHeader = () => {
               />
             </Link>
 
+
             {/* 장바구니 */}
             <Link
               to="/cart"
               className={styles.iconButton}
               aria-label="장바구니"
+              onClick={closeSearch}
             >
               <img
                 src={cartIcon}
@@ -162,9 +239,60 @@ const DesktopHeader = () => {
         </div>
       </div>
 
-      {/* ==============================
+
+      {/* ========================================
+          SEARCH PANEL
+      ======================================== */}
+
+      <div
+        className={`${styles.searchPanel} ${
+          isSearchOpen ? styles.searchPanelOpen : ''
+        }`}
+        onMouseEnter={closeMegaMenu}
+      >
+        <form
+          className={styles.searchForm}
+          onSubmit={handleSearchSubmit}
+        >
+          <img
+            src={searchIcon}
+            alt=""
+            className={styles.searchFormIcon}
+          />
+
+          <input
+            type="search"
+            value={searchKeyword}
+            placeholder="찾고 싶은 상품을 검색해보세요."
+            aria-label="상품 검색"
+            onChange={(e) => setSearchKeyword(e.target.value)}
+          />
+
+          {searchKeyword && (
+            <button
+              type="button"
+              className={styles.clearButton}
+              aria-label="검색어 지우기"
+              onClick={() => setSearchKeyword('')}
+            >
+              ×
+            </button>
+          )}
+
+          <button
+            type="submit"
+            className={styles.searchSubmit}
+          >
+            검색
+          </button>
+        </form>
+      </div>
+
+
+      {/* ========================================
           브랜드 MEGA MENU
-      ============================== */}
+      ======================================== */}
+
       <div
         className={`${styles.megaMenu} ${
           openMenu === 'brand'
@@ -186,8 +314,8 @@ const DesktopHeader = () => {
             </Link>
 
             <Link
-              to="/brand/story"
-              className={styles.snbLink}
+              to="/brand/makdong"
+              className={`${styles.snbLink} ${styles.makdongLink}`}
               onClick={closeMegaMenu}
             >
               전통주 이야기
@@ -195,13 +323,14 @@ const DesktopHeader = () => {
 
             <Link
               to="/ai"
-              className={styles.snbLink}
+              className={`${styles.snbLink} ${styles.hiddenBrandLink}`}
               onClick={closeMegaMenu}
             >
               자작의 혼술상 추천
             </Link>
 
           </div>
+
 
           {/* 브랜드 오른쪽 영역 */}
           <div className={styles.brandVisual}>
@@ -225,9 +354,11 @@ const DesktopHeader = () => {
         </div>
       </div>
 
-      {/* ==============================
+
+      {/* ========================================
           상품 MEGA MENU
-      ============================== */}
+      ======================================== */}
+
       <div
         className={`${styles.megaMenu} ${
           openMenu === 'shop'
@@ -280,6 +411,7 @@ const DesktopHeader = () => {
 
           </div>
 
+
           {/* 전통주 종류 */}
           <div className={styles.shopColumn}>
 
@@ -329,6 +461,7 @@ const DesktopHeader = () => {
 
           </div>
 
+
           {/* 인기 상품 */}
           <div className={styles.popularProducts}>
 
@@ -373,6 +506,7 @@ const DesktopHeader = () => {
 
         </div>
       </div>
+
     </div>
   )
 }

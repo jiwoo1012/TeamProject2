@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 
 import SiteLayout from './components/common/SiteLayout'
 
@@ -7,7 +7,8 @@ import MainPage from './pages/Main/MainPage'
 import SplashIntro from './pages/Main/SplashIntro'
 
 // Brand
-import BrandStory from './pages/Brand/BrandStory'
+import BrandIntro from './pages/Brand/BrandIntro'
+import MakdongIntro from './pages/Brand/MakdongIntro'
 
 // Shop
 import ProductList from './pages/Shop/ProductList'
@@ -58,51 +59,80 @@ import EventManage from './pages/Admin/EventManage'
 // NotFound
 import NotFound from './pages/NotFound/NotFound'
 
+
 const App = () => {
   return (
     <Routes>
 
-      {/* 일반 사용자 페이지 */}
+      {/* ========================================
+          Splash
+          Header / Footer 없이 독립적으로 사용
+      ======================================== */}
+
+      <Route path="/intro" element={<SplashIntro />} />
+
+
+      {/* ========================================
+          일반 사용자 페이지
+          Header / Footer / MobileBottomNav 적용
+      ======================================== */}
+
       <Route element={<SiteLayout />}>
 
+        {/* Main */}
         <Route path="/" element={<MainPage />} />
-        <Route path="/intro" element={<SplashIntro />} />
 
-        <Route path="/brand" element={<BrandStory />} />
 
+        {/* Brand */}
+        <Route path="/brand" element={<BrandIntro />} />
+        <Route path="/brand/makdong" element={<MakdongIntro />} />
+
+        {/* 기존 Header 링크 대응 */}
+        <Route path="/brand/story" element={
+          <Navigate to="/brand/makdong" replace />
+        } />
+
+
+        {/* Shop */}
         <Route path="/shop" element={<ProductList />} />
         <Route path="/shop/:productId" element={<ProductDetail />} />
 
+
+        {/* Auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/preference" element={<PreferenceSurvey />} />
 
+
+        {/* AI */}
         <Route path="/ai" element={<AiIntro />} />
         <Route path="/ai/survey" element={<AiSurvey />} />
         <Route path="/ai/result" element={<AiResult />} />
 
+
+        {/* Cart / Order */}
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
-        <Route
-          path="/order-complete"
-          element={<OrderComplete />}
-        />
+        <Route path="/order-complete" element={<OrderComplete />} />
 
+
+        {/* Event */}
         <Route path="/events" element={<EventList />} />
-        <Route
-          path="/events/roulette"
-          element={<RouletteEvent />}
-        />
+        <Route path="/events/roulette" element={<RouletteEvent />} />
 
+
+        {/* Support */}
         <Route path="/notices" element={<NoticeList />} />
-        <Route
-          path="/notices/:noticeId"
-          element={<NoticeDetail />}
-        />
+        <Route path="/notices/:noticeId" element={<NoticeDetail />} />
         <Route path="/inquiry" element={<InquiryQnA />} />
 
-        {/* 마이페이지 */}
+
+        {/* ========================================
+            MyPage
+        ======================================== */}
+
         <Route path="/mypage" element={<MyPageLayout />}>
+
           <Route index element={<MyHome />} />
           <Route path="profile" element={<ProfileEdit />} />
           <Route path="orders" element={<OrderHistory />} />
@@ -110,20 +140,33 @@ const App = () => {
           <Route path="wishlist" element={<WishList />} />
           <Route path="ai-history" element={<AiHistory />} />
           <Route path="events" element={<EventHistory />} />
+
         </Route>
+
+
+        {/* ========================================
+            404
+        ======================================== */}
+
+        <Route path="*" element={<NotFound />} />
 
       </Route>
 
-      {/* 관리자 페이지 */}
+
+      {/* ========================================
+          관리자 페이지
+          일반 Header / Footer 사용하지 않음
+      ======================================== */}
+
       <Route path="/admin" element={<AdminLayout />}>
+
         <Route index element={<Dashboard />} />
         <Route path="users" element={<UserManage />} />
         <Route path="products" element={<ProductManage />} />
         <Route path="ai-logs" element={<AiLogManage />} />
         <Route path="events" element={<EventManage />} />
-      </Route>
 
-      <Route path="*" element={<NotFound />} />
+      </Route>
 
     </Routes>
   )

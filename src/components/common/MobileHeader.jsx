@@ -148,7 +148,8 @@ const MobileHeader = () => {
                 </Link>
 
                 <Link
-                  to="/brand/story"
+                  to="/brand/makdong"
+                  className={styles.makdongLink}
                   onClick={closeMenu}
                 >
                   전통주 이야기
@@ -156,6 +157,7 @@ const MobileHeader = () => {
 
                 <Link
                   to="/ai"
+                  className={styles.hiddenBrandLink}
                   onClick={closeMenu}
                 >
                   자작의 혼술상 추천

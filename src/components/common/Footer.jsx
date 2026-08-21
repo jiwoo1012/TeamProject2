@@ -110,14 +110,6 @@ const Footer = () => {
                   공지사항
                 </Link>
 
-                <Link to="/support/faq">
-                  자주 묻는 질문
-                </Link>
-
-                <Link to="/support/delivery">
-                  배송 · 교환 · 환불
-                </Link>
-
                 <Link to="/inquiry">
                   문의하기
                 </Link>
@@ -210,14 +202,6 @@ const Footer = () => {
                       공지사항
                     </Link>
 
-                    <Link to="/support/faq">
-                      자주 묻는 질문
-                    </Link>
-
-                    <Link to="/support/delivery">
-                      배송 · 교환 · 환불
-                    </Link>
-
                     <Link to="/inquiry">
                       문의하기
                     </Link>
@@ -283,13 +267,8 @@ const Footer = () => {
             <div className={styles.bottomRight}>
 
               <div className={styles.policyLinks}>
-                <Link to="/terms">
-                  이용약관
-                </Link>
-
-                <Link to="/privacy">
-                  개인정보처리방침
-                </Link>
+                <span>이용약관</span>
+                <span>개인정보처리방침</span>
               </div>
 
               <p className={styles.copyright}>
