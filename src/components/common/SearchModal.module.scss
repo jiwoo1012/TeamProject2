@@ -1,1 +1,1069 @@
-/* Module styles. */
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+
+/* ========================================
+   SEARCH MODAL
+
+   Desktop Header 72px은 그대로 노출
+======================================== */
+
+.searchModal {
+  position: fixed;
+
+  top: 72px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  z-index: $z-modal;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  padding:
+    16px
+    28px
+    16px
+    0;
+}
+
+
+/* ========================================
+   DIMMED BACKGROUND
+======================================== */
+
+.overlay {
+  position: absolute;
+  inset: 0;
+
+  background: rgba($color-text-primary, 0.62);
+
+  backdrop-filter: blur(2px);
+
+  cursor: pointer;
+
+  animation:
+    overlayOpen
+    $transition-base
+    ease
+    both;
+}
+
+
+@keyframes overlayOpen {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+
+/* ========================================
+   SEARCH PANEL
+
+   세로 공간을 넉넉하게 확보
+   위/아래 중앙 정렬
+   내부 스크롤 없음
+======================================== */
+
+.searchPanel {
+  position: relative;
+  z-index: 1;
+
+  width: calc(50vw - 42px);
+
+  height: calc(100% - 32px);
+  max-height: 820px;
+
+  overflow: hidden;
+
+  background: $color-bg;
+
+  border: 1px solid rgba($color-white, 0.72);
+  border-radius: $radius-xl;
+
+  box-shadow:
+    0
+    22px
+    65px
+    rgba($color-text-primary, 0.28),
+    -12px
+    6px
+    32px
+    rgba($color-text-primary, 0.16);
+
+  animation:
+    panelOpen
+    $transition-base
+    ease
+    both;
+}
+
+
+@keyframes panelOpen {
+  from {
+    opacity: 0;
+
+    transform:
+      translateX(32px)
+      scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateX(0)
+      scale(1);
+  }
+}
+
+
+/* ========================================
+   CLOSE BUTTON
+======================================== */
+
+.closeButton {
+  position: absolute;
+
+  top: 28px;
+  right: 28px;
+
+  z-index: 5;
+
+  width: 38px;
+  height: 38px;
+
+  padding: 0;
+
+  background: transparent;
+
+  border: 0;
+  border-radius: 50%;
+
+  cursor: pointer;
+
+  transition:
+    background $transition-fast ease,
+    transform $transition-fast ease;
+
+  &:hover {
+    background: rgba($color-surface, 0.7);
+  }
+
+  &:active {
+    transform: scale(0.94);
+  }
+
+  span {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    width: 18px;
+    height: 1px;
+
+    background: $color-text-primary;
+  }
+
+  span:first-child {
+    transform:
+      translate(-50%, -50%)
+      rotate(45deg);
+  }
+
+  span:last-child {
+    transform:
+      translate(-50%, -50%)
+      rotate(-45deg);
+  }
+}
+
+
+/* ========================================
+   CONTENT
+
+   전체 높이를 채워서
+   세로 공간이 어색하지 않도록 구성
+======================================== */
+
+.searchContent {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100%;
+
+  padding:
+    48px
+    52px
+    38px;
+}
+
+
+/* ========================================
+   INTRO
+======================================== */
+
+.intro {
+  flex-shrink: 0;
+
+  margin-bottom: $space-5;
+
+  padding-right: 48px;
+
+  h2 {
+    margin: 0;
+
+    color: $color-text-primary;
+
+    font-size: 25px;
+    font-weight: $font-weight-bold;
+    line-height: 1.34;
+
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: $space-2 0 0;
+
+    color: $color-text-muted;
+
+    font-size: 12px;
+    line-height: $line-height-base;
+  }
+}
+
+
+/* ========================================
+   SEARCH FORM
+======================================== */
+
+.searchForm {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+
+  width: 100%;
+  height: 50px;
+
+  padding:
+    0
+    $space-4
+    0
+    $space-5;
+
+  background: $color-white;
+
+  border: 1px solid $color-border;
+  border-radius: $radius-pill;
+
+  box-shadow:
+    0
+    4px
+    14px
+    rgba($color-text-primary, 0.035);
+
+  transition:
+    border-color $transition-fast ease,
+    box-shadow $transition-fast ease;
+
+  &:focus-within {
+    border-color: $color-primary;
+
+    box-shadow:
+      0
+      0
+      0
+      3px
+      rgba($color-primary, 0.12),
+      0
+      6px
+      18px
+      rgba($color-text-primary, 0.06);
+  }
+
+  input {
+    flex: 1;
+
+    min-width: 0;
+    height: 100%;
+
+    padding: 0;
+
+    color: $color-text-primary;
+
+    font-family: $font-family-base;
+    font-size: 14px;
+
+    caret-color: $color-primary;
+
+    background: transparent;
+
+    border: 0;
+    outline: none;
+
+    &::placeholder {
+      color: rgba($color-text-muted, 0.62);
+    }
+
+    &::-webkit-search-cancel-button {
+      display: none;
+    }
+  }
+
+  button {
+    @include flex-center;
+
+    flex-shrink: 0;
+
+    width: 32px;
+    height: 32px;
+
+    padding: 0;
+
+    background: transparent;
+
+    border: 0;
+
+    cursor: pointer;
+
+    img {
+      display: block;
+
+      width: 18px;
+      height: 18px;
+
+      object-fit: contain;
+    }
+  }
+}
+
+
+/* ========================================
+   SECTION COMMON
+======================================== */
+
+.section,
+.recentSection {
+  flex-shrink: 0;
+
+  margin-top: $space-6;
+
+  h3 {
+    margin: 0;
+
+    color: $color-text-primary;
+
+    font-size: 14px;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+
+/* ========================================
+   POPULAR KEYWORDS
+======================================== */
+
+.keywordList {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: $space-2;
+
+  margin-top: $space-3;
+}
+
+
+.keywordChip {
+  min-height: 31px;
+
+  padding:
+    5px
+    15px;
+
+  color: $color-white;
+
+  font-family: $font-family-base;
+  font-size: 11px;
+  font-weight: $font-weight-medium;
+
+  background: $color-primary;
+
+  border: 0;
+  border-radius: $radius-pill;
+
+  cursor: pointer;
+
+  box-shadow:
+    0
+    4px
+    10px
+    rgba($color-primary, 0.12);
+
+  transition:
+    opacity $transition-fast ease,
+    transform $transition-fast ease,
+    box-shadow $transition-fast ease;
+
+  &:hover {
+    opacity: 0.92;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+      0
+      6px
+      14px
+      rgba($color-primary, 0.2);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+
+/* ========================================
+   RECENT SEARCH
+======================================== */
+
+.sectionHeader {
+  @include flex-between;
+
+  width: 100%;
+}
+
+
+.clearAllButton {
+  padding: 0;
+
+  color: $color-text-muted;
+
+  font-family: $font-family-base;
+  font-size: 10px;
+
+  background: transparent;
+
+  border: 0;
+
+  cursor: pointer;
+
+  transition: color $transition-fast ease;
+
+  &:hover {
+    color: $color-primary;
+  }
+}
+
+
+.recentList {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: $space-2;
+
+  margin-top: $space-3;
+}
+
+
+.recentChip {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 30px;
+
+  padding:
+    0
+    7px
+    0
+    13px;
+
+  background: rgba($color-surface, 0.55);
+
+  border-radius: $radius-pill;
+}
+
+
+.recentKeyword {
+  padding: 0;
+
+  color: $color-text-secondary;
+
+  font-family: $font-family-base;
+  font-size: 11px;
+
+  background: transparent;
+
+  border: 0;
+
+  cursor: pointer;
+}
+
+
+.deleteRecent {
+  @include flex-center;
+
+  width: 19px;
+  height: 19px;
+
+  margin-left: 3px;
+
+  padding: 0;
+
+  color: $color-text-muted;
+
+  font-size: 13px;
+
+  background: transparent;
+
+  border: 0;
+
+  cursor: pointer;
+}
+
+
+.emptyRecent {
+  margin: $space-3 0 0;
+
+  color: rgba($color-text-muted, 0.72);
+
+  font-size: 11px;
+}
+
+
+/* ========================================
+   DIVIDER
+======================================== */
+
+.divider {
+  flex-shrink: 0;
+
+  width: 100%;
+  height: 1px;
+
+  margin: $space-6 0;
+
+  background: rgba($color-border, 0.85);
+}
+
+
+/* ========================================
+   RECOMMEND
+======================================== */
+
+.recommendSection {
+  flex-shrink: 0;
+}
+
+
+.recommendHeading {
+  h3 {
+    margin: 0;
+
+    color: $color-text-primary;
+
+    font-size: 14px;
+    font-weight: $font-weight-semibold;
+  }
+
+  p {
+    margin: 4px 0 0;
+
+    color: $color-text-muted;
+
+    font-size: 10px;
+  }
+}
+
+
+/* ========================================
+   PRODUCT GRID
+======================================== */
+
+.productGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: $space-3;
+
+  margin-top: $space-3;
+}
+
+
+/* ========================================
+   PRODUCT CARD
+======================================== */
+
+.productCard {
+  display: flex;
+  align-items: center;
+
+  min-width: 0;
+  height: 108px;
+
+  padding: $space-3;
+
+  background: $color-white;
+
+  border: 1px solid rgba($color-border, 0.9);
+  border-radius: $radius-lg;
+
+  box-shadow:
+    0
+    6px
+    18px
+    rgba($color-text-primary, 0.06);
+
+  text-decoration: none;
+
+  transition:
+    border-color $transition-fast ease,
+    box-shadow $transition-fast ease,
+    transform $transition-fast ease;
+
+  &:hover {
+    border-color: rgba($color-primary, 0.38);
+
+    box-shadow:
+      0
+      10px
+      24px
+      rgba($color-text-primary, 0.1);
+
+    transform: translateY(-2px);
+  }
+}
+
+
+.productImage {
+  @include flex-center;
+
+  flex-shrink: 0;
+
+  width: 72px;
+  height: 80px;
+
+  overflow: hidden;
+
+  background: rgba($color-surface, 0.48);
+
+  border-radius: $radius-md;
+
+  img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+  }
+}
+
+
+.productInfo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  min-width: 0;
+
+  margin-left: $space-3;
+
+  .recommendLabel {
+    color: $color-primary;
+
+    font-size: 9px;
+    font-weight: $font-weight-medium;
+  }
+
+  strong {
+    margin-top: 2px;
+
+    color: $color-text-primary;
+
+    font-size: 12px;
+    font-weight: $font-weight-semibold;
+    line-height: 1.35;
+  }
+
+  p {
+    margin: 2px 0 0;
+
+    overflow: hidden;
+
+    color: $color-text-muted;
+
+    font-size: 9px;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+
+.price {
+  margin-top: $space-2;
+
+  color: $color-text-primary;
+
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+}
+
+
+/* ========================================
+   SKELETON CARD
+======================================== */
+
+.skeletonCard {
+  display: flex;
+  align-items: center;
+
+  min-width: 0;
+  height: 108px;
+
+  padding: $space-3;
+
+  overflow: hidden;
+
+  background: $color-white;
+
+  border: 1px solid rgba($color-border, 0.8);
+  border-radius: $radius-lg;
+
+  box-shadow:
+    0
+    6px
+    18px
+    rgba($color-text-primary, 0.055);
+}
+
+
+.skeletonImage,
+.skeletonLine {
+  position: relative;
+
+  overflow: hidden;
+
+  background: rgba($color-surface, 0.52);
+
+  &::after {
+    content: '';
+
+    position: absolute;
+
+    top: 0;
+    left: -100%;
+
+    width: 100%;
+    height: 100%;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba($color-white, 0.75),
+        transparent
+      );
+
+    animation:
+      skeletonMove
+      1.4s
+      ease-in-out
+      infinite;
+  }
+}
+
+
+.skeletonImage {
+  flex-shrink: 0;
+
+  width: 72px;
+  height: 80px;
+
+  border-radius: $radius-md;
+}
+
+
+.skeletonInfo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  gap: 7px;
+
+  min-width: 0;
+
+  margin-left: $space-3;
+}
+
+
+.skeletonLine {
+  height: 7px;
+
+  border-radius: $radius-pill;
+}
+
+
+.skeletonLabel {
+  width: 32%;
+}
+
+
+.skeletonTitle {
+  width: 78%;
+  height: 10px;
+}
+
+
+.skeletonDescription {
+  width: 62%;
+}
+
+
+.skeletonPrice {
+  width: 42%;
+  height: 9px;
+
+  margin-top: 3px;
+}
+
+
+@keyframes skeletonMove {
+  to {
+    left: 100%;
+  }
+}
+
+
+/* ========================================
+   AI GUIDE
+
+   남는 세로 공간을 자연스럽게 사용해서
+   하단에 고정된 듯한 느낌
+======================================== */
+
+.aiGuide {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: $space-3;
+
+  margin-top: auto;
+
+  padding-top: $space-5;
+
+  border-top: 1px solid rgba($color-border, 0.85);
+
+  color: $color-text-muted;
+
+  font-size: 10px;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 4px;
+
+    color: $color-primary;
+
+    font-size: 10px;
+    font-weight: $font-weight-semibold;
+
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    span {
+      font-size: 14px;
+    }
+  }
+}
+
+
+/* ========================================
+   낮은 화면 대응
+
+   검색 모달 자체에는 스크롤이 생기지 않도록
+   콘텐츠 크기만 자연스럽게 축소
+======================================== */
+
+@media (max-height: 760px) and (min-width: 768px) {
+  .searchModal {
+    padding:
+      12px
+      24px
+      12px
+      0;
+  }
+
+  .searchPanel {
+    height: calc(100% - 24px);
+  }
+
+  .searchContent {
+    padding:
+      34px
+      46px
+      24px;
+  }
+
+  .closeButton {
+    top: 18px;
+    right: 22px;
+  }
+
+  .intro {
+    margin-bottom: $space-4;
+
+    h2 {
+      font-size: 21px;
+    }
+
+    p {
+      margin-top: 4px;
+    }
+  }
+
+  .searchForm {
+    height: 44px;
+  }
+
+  .section,
+  .recentSection {
+    margin-top: $space-4;
+  }
+
+  .keywordList,
+  .recentList {
+    margin-top: $space-2;
+  }
+
+  .divider {
+    margin: $space-4 0;
+  }
+
+  .productCard,
+  .skeletonCard {
+    height: 88px;
+  }
+
+  .productImage,
+  .skeletonImage {
+    width: 60px;
+    height: 64px;
+  }
+
+  .aiGuide {
+    padding-top: $space-3;
+  }
+}
+
+
+/* ========================================
+   TABLET
+======================================== */
+
+@include tablet {
+  .searchModal {
+    padding:
+      16px
+      20px
+      16px
+      0;
+  }
+
+  .searchPanel {
+    width: 60vw;
+
+    height: calc(100% - 32px);
+    max-height: 800px;
+  }
+
+  .searchContent {
+    padding:
+      42px
+      36px
+      30px;
+  }
+}
+
+
+/* ========================================
+   MOBILE
+
+   MobileHeader는 유지
+   모바일에서는 전체 화면 검색
+======================================== */
+
+@include mobile {
+  .searchModal {
+    top: 58px;
+
+    display: block;
+
+    padding: 0;
+  }
+
+  .searchPanel {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+
+    border: 0;
+    border-radius: 0;
+
+    box-shadow: none;
+  }
+
+  .searchContent {
+    padding:
+      54px
+      $side-margin-mobile
+      28px;
+  }
+
+  .closeButton {
+    top: 10px;
+    right: $side-margin-mobile;
+  }
+
+  .intro {
+    padding-right: 0;
+
+    h2 {
+      font-size: 21px;
+    }
+  }
+
+  .productGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .productCard,
+  .skeletonCard {
+    height: 88px;
+  }
+
+  .productImage,
+  .skeletonImage {
+    width: 58px;
+    height: 62px;
+  }
+
+  .aiGuide {
+    margin-top: auto;
+  }
+}
