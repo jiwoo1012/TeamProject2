@@ -4,7 +4,6 @@
 
 /* ========================================
    MOBILE HEADER
-
    PC / TABLET에서는 숨김
 ======================================== */
 
@@ -22,13 +21,9 @@
   .mobileHeader {
     position: relative;
     z-index: $z-header;
-
     display: block;
-
     width: 100%;
-
     font-family: $font-family-base;
-
     background: $color-bg;
   }
 
@@ -45,17 +40,11 @@
 
     width: 100%;
     height: 58px;
-
-    padding:
-      0
-      $side-margin-mobile;
+    padding: 0 $side-margin-mobile;
 
     background: $color-bg;
 
-    border-bottom:
-      1px
-      solid
-      rgba($color-text-primary, 0.1);
+    border-bottom: 1px solid rgba($color-text-primary, 0.1);
   }
 
 
@@ -66,17 +55,14 @@
   .logo {
     display: flex;
     align-items: center;
-
     flex-shrink: 0;
 
     text-decoration: none;
 
     img {
       display: block;
-
       width: auto;
-      height: 30px;
-
+      height: 45px;
       object-fit: contain;
     }
   }
@@ -89,7 +75,6 @@
   .actions {
     display: flex;
     align-items: center;
-
     gap: $space-3;
   }
 
@@ -101,23 +86,18 @@
 
     width: 22px;
     height: 22px;
-
     padding: 0;
 
     background: transparent;
-
     border: 0;
 
     text-decoration: none;
-
     cursor: pointer;
 
     img {
       display: block;
-
-      width: 17px;
-      height: 17px;
-
+      width: 25px;
+      height: 25px;
       object-fit: contain;
     }
   }
@@ -134,18 +114,15 @@
 
     width: 21px;
     height: 21px;
-
     padding: 0;
 
     background: transparent;
-
     border: 0;
 
     cursor: pointer;
 
     span {
       position: absolute;
-
       left: 50%;
 
       width: 15px;
@@ -198,10 +175,8 @@
 
   .menuPanel {
     position: fixed;
-
     top: 58px;
     left: 0;
-
     z-index: $z-dropdown;
 
     display: flex;
@@ -269,7 +244,7 @@
 
     color: $color-text-primary;
 
-    font-family: $font-family-base;
+    font-family: $font-family-display;
     font-size: 13px;
     font-weight: $font-weight-semibold;
 
@@ -280,12 +255,9 @@
   .menuTitle {
     @include flex-between;
 
-    padding:
-      0
-      $space-3;
+    padding: 0 $space-3;
 
     background: transparent;
-
     border: 0;
 
     text-align: left;
@@ -298,9 +270,7 @@
     display: flex;
     align-items: center;
 
-    padding:
-      0
-      $space-3;
+    padding: 0 $space-3;
   }
 
 
@@ -315,11 +285,11 @@
 
     color: $color-text-primary;
 
+    font-family: $font-family-base;
     font-size: $font-size-md;
     font-weight: $font-weight-bold;
 
-    transition:
-      transform $transition-fast ease;
+    transition: transform $transition-fast ease;
   }
 
 
@@ -339,11 +309,7 @@
 
     opacity: 0;
 
-    background:
-      rgba(
-        $color-surface,
-        0.32
-      );
+    background: rgba($color-surface, 0.32);
 
     transition:
       max-height $transition-base ease,
@@ -353,7 +319,6 @@
 
   .subMenuOpen {
     max-height: 230px;
-
     opacity: 1;
   }
 
@@ -362,9 +327,7 @@
     display: flex;
     flex-direction: column;
 
-    padding:
-      $space-2
-      0;
+    padding: $space-2 0;
   }
 
 
@@ -374,12 +337,11 @@
 
     min-height: 38px;
 
-    padding:
-      0
-      $space-5;
+    padding: 0 $space-5;
 
     color: $color-text-primary;
 
+    font-family: $font-family-base;
     font-size: 11px;
     font-weight: $font-weight-regular;
 
@@ -393,11 +355,7 @@
     &:active {
       color: $color-primary;
 
-      background:
-        rgba(
-          $color-primary,
-          0.05
-        );
+      background: rgba($color-primary, 0.05);
 
       padding-left: 24px;
     }
@@ -411,7 +369,6 @@
   .userArea {
     display: flex;
     align-items: center;
-
     gap: $space-2;
 
     margin-top: auto;
@@ -431,8 +388,7 @@
 
       text-decoration: none;
 
-      transition:
-        color $transition-fast ease;
+      transition: color $transition-fast ease;
 
       &:active {
         color: $color-primary;
@@ -440,14 +396,7 @@
     }
 
     span {
-      color:
-        rgba(
-          $color-text-primary,
-          0.35
-        );
+      color: rgba($color-text-primary, 0.35);
     }
   }
 }
-.makdongLink { font-size: 0; }
-.makdongLink::after { content: '막둥이 소개'; font-size: 16px; }
-.hiddenBrandLink { display: none; }
