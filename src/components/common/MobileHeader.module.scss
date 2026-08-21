@@ -448,3 +448,6 @@
     }
   }
 }
+.makdongLink { font-size: 0; }
+.makdongLink::after { content: '막둥이 소개'; font-size: 16px; }
+.hiddenBrandLink { display: none; }

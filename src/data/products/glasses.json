@@ -1,1 +1,77 @@
-[]
+[
+  {
+    "productId": "gls_001",
+    "productName": "투박한 황토 옹기잔",
+    "brandManufacturer": "토우공방",
+    "price": 8000,
+    "discountRate": "0%",
+    "volume": "50ml",
+    "productDescription": "거친 질감의 황토로 빚어 손에 쥐었을 때 포근한 온기가 느껴지는 전통 사발 형태의 술잔입니다.",
+    "allergyCautionInfo": "해당 없음",
+    "productType": "주류용품",
+    "glassType": "술잔",
+    "stock": 100,
+    "status": "selling",
+    "imageUrl": ""
+  },
+  {
+    "productId": "gls_002",
+    "productName": "맑은 백자 잔",
+    "brandManufacturer": "백자요",
+    "price": 10000,
+    "discountRate": "10%",
+    "volume": "45ml",
+    "productDescription": "유백색의 고운 자토로 만들어 술의 색을 온전히 감상하기 좋은 얇고 매끄러운 술잔입니다.",
+    "allergyCautionInfo": "해당 없음",
+    "productType": "주류용품",
+    "glassType": "술잔",
+    "stock": 100,
+    "status": "selling",
+    "imageUrl": ""
+  },
+  {
+    "productId": "gls_005",
+    "productName": "국화가지 문양 황토잔",
+    "brandManufacturer": "토우공방",
+    "price": 9000,
+    "discountRate": "0%",
+    "volume": "60ml",
+    "productDescription": "은은한 황토빛 유약 위에 가는 나뭇가지와 열매 문양을 손으로 그려 넣은 소성 도자기 잔입니다.",
+    "allergyCautionInfo": "해당 없음",
+    "productType": "주류용품",
+    "glassType": "술잔",
+    "stock": 100,
+    "status": "selling",
+    "imageUrl": ""
+  },
+  {
+    "productId": "gls_006",
+    "productName": "세로줄무늬 백자잔",
+    "brandManufacturer": "백자요",
+    "price": 11000,
+    "discountRate": "5%",
+    "volume": "55ml",
+    "productDescription": "세로로 섬세한 줄무늬를 새겨 넣은 백자 잔으로, 손끝에 닿는 결이 매력적인 담백한 술잔입니다.",
+    "allergyCautionInfo": "해당 없음",
+    "productType": "주류용품",
+    "glassType": "술잔",
+    "stock": 100,
+    "status": "selling",
+    "imageUrl": ""
+  },
+  {
+    "productId": "gls_007",
+    "productName": "블랙&화이트 투톤 도자기잔",
+    "brandManufacturer": "도예공간",
+    "price": 7000,
+    "discountRate": "0%",
+    "volume": "80ml",
+    "productDescription": "무광 블랙과 아이보리 화이트 두 가지 톤으로 제작한 심플한 도자기 잔으로, 따로 또 같이 즐기기 좋은 캐주얼한 디자인입니다.",
+    "allergyCautionInfo": "해당 없음",
+    "productType": "주류용품",
+    "glassType": "술잔",
+    "stock": 100,
+    "status": "selling",
+    "imageUrl": ""
+  }
+]

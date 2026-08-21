@@ -396,26 +396,11 @@
 .policyLinks {
   display: flex;
   align-items: center;
-
   gap: $space-4;
 
-  a {
-    color:
-      rgba(
-        $color-text-primary,
-        0.48
-      );
-
+  span {
+    color: rgba($color-text-primary, 0.48);
     font-size: 9px;
-
-    text-decoration: none;
-
-    transition:
-      color $transition-fast ease;
-
-    &:hover {
-      color: $color-primary;
-    }
   }
 }
 
@@ -538,6 +523,7 @@
   width: 120px;
   height: 42px;
 
+  text-align: center;
   color: $color-white;
 
   font-family: $font-family-base;
@@ -1020,12 +1006,10 @@
 
 
   .policyLinks {
-    gap: $space-4;
-
-    a {
+    span {
       font-size: 8px;
     }
-  }
+}
 
 
   .copyright {

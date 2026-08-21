@@ -8,40 +8,45 @@
 
 .desktopHeader {
   position: relative;
+  z-index: $z-header;
 
   width: 100%;
 
   font-family: $font-family-base;
 
-  background: $color-white;
+  background: $color-bg;
 }
 
 
 /* ========================================
-   HEADER INNER
+   HEADER
 ======================================== */
 
 .headerInner {
   position: relative;
-  z-index: $z-dropdown + 1;
+  z-index: $z-dropdown + 2;
 
   width: 100%;
-  height: 80px;
 
-  background: $color-white;
+  background: $color-bg;
 
   border-bottom:
     1px
     solid
-    rgba($color-text-primary, 0.08);
+    rgba($color-text-primary, 0.1);
 }
 
 
 .headerContainer {
   @include container;
-  @include flex-between;
 
-  height: 100%;
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  height: 72px;
 }
 
 
@@ -50,13 +55,17 @@
 ======================================== */
 
 .logo {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
   display: flex;
   align-items: center;
   justify-content: center;
 
-  flex-shrink: 0;
-
-  width: 54px;
+  transform:
+    translate(-50%, -50%);
 
   text-decoration: none;
 
@@ -64,7 +73,7 @@
     display: block;
 
     width: auto;
-    height: 44px;
+    height: 55px;
 
     object-fit: contain;
   }
@@ -79,10 +88,7 @@
   display: flex;
   align-items: center;
 
-  gap: $space-12;
-
-  margin-left: $space-16;
-  margin-right: auto;
+  gap: 32px;
 }
 
 
@@ -90,7 +96,7 @@
   display: flex;
   align-items: center;
 
-  height: 80px;
+  height: 72px;
 }
 
 
@@ -104,50 +110,41 @@
 
   color: $color-text-primary;
 
-  font-size: $font-size-lg;
+  font-family: $font-family-base;
+  font-size: 13px;
   font-weight: $font-weight-medium;
 
   text-decoration: none;
 
   transition:
-    color $transition-fast ease,
-    font-weight $transition-fast ease;
+    color $transition-fast ease;
 
-  /* GNB 아래 초록 막대 */
+
   &::after {
     content: '';
 
     position: absolute;
 
-    left: 50%;
     bottom: 17px;
+    left: 50%;
 
-    width: 100%;
-    height: 2px;
+    width: 0;
+    height: 1px;
 
     background: $color-primary;
 
-    border-radius: $radius-pill;
-
-    transform:
-      translateX(-50%)
-      scaleX(0);
-
-    transform-origin: center;
+    transform: translateX(-50%);
 
     transition:
-      transform $transition-base ease;
+      width $transition-fast ease;
   }
+
 
   &:hover {
     color: $color-primary;
 
-    font-weight: $font-weight-semibold;
-
     &::after {
-      transform:
-        translateX(-50%)
-        scaleX(1);
+      width: 100%;
     }
   }
 }
@@ -161,91 +158,13 @@
   display: flex;
   align-items: center;
 
-  gap: $space-4;
-
-  margin-left: auto;
+  gap: 16px;
 }
 
-
-/* ========================================
-   SEARCH
-======================================== */
-
-.searchBox {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  width: 310px;
-  height: 40px;
-
-  margin-right: $space-2;
-
-  padding:
-    0
-    $space-3
-    0
-    $space-4;
-
-  color: $color-text-primary;
-
-  background: $color-white;
-
-  border:
-    1px
-    solid
-    rgba($color-text-primary, 0.45);
-
-  border-radius: $radius-pill;
-
-  cursor: pointer;
-
-  transition:
-    border-color $transition-fast ease,
-    box-shadow $transition-fast ease;
-
-  span {
-    color: $color-text-primary;
-
-    font-family: $font-family-base;
-    font-size: $font-size-sm;
-  }
-
-  &:hover {
-    border-color: $color-primary;
-
-    box-shadow:
-      0
-      0
-      0
-      2px
-      rgba($color-primary, 0.06);
-
-    .searchIcon {
-      transform: scale(1.08);
-    }
-  }
-}
-
-
-.searchIcon {
-  display: block;
-
-  width: 24px;
-  height: 24px;
-
-  object-fit: contain;
-
-  transition:
-    transform $transition-fast ease;
-}
-
-
-/* ========================================
-   RIGHT ICONS
-======================================== */
 
 .iconButton {
+  position: relative;
+
   @include flex-center;
 
   flex-shrink: 0;
@@ -253,79 +172,315 @@
   width: 30px;
   height: 30px;
 
+  padding: 0;
+
+  color: inherit;
+
+  background: transparent;
+
+  border: 0;
+
   text-decoration: none;
 
-  transition:
-    transform $transition-fast ease;
+  cursor: pointer;
+
 
   img {
     display: block;
 
-    width: 25px;
-    height: 25px;
+    width: 50px;
+    height: 50px;
 
     object-fit: contain;
 
     transition:
+      opacity $transition-fast ease,
       transform $transition-fast ease;
   }
 
+
   &:hover {
-    transform: translateY(-2px);
 
     img {
-      transform: scale(1.06);
+      opacity: 0.65;
+
+      transform:
+        translateY(-1px);
     }
   }
 }
 
 
+/* 검색이 열렸을 때 작은 표시 */
+
+.searchActive {
+
+  &::after {
+    content: '';
+
+    position: absolute;
+
+    left: 50%;
+    bottom: -11px;
+
+    width: 4px;
+    height: 4px;
+
+    background: $color-primary;
+
+    border-radius: 50%;
+
+    transform: translateX(-50%);
+  }
+}
+
+
 /* ========================================
-   MEGA MENU COMMON
+   SEARCH PANEL
+======================================== */
+
+.searchPanel {
+  position: absolute;
+
+  top: 72px;
+  left: 0;
+
+  z-index: $z-dropdown + 1;
+
+  width: 100%;
+  height: 0;
+
+  overflow: hidden;
+
+  background: $color-bg;
+
+  border-bottom:
+    1px
+    solid
+    transparent;
+
+  opacity: 0;
+
+  visibility: hidden;
+
+  transform:
+    translateY(-6px);
+
+  transition:
+    height $transition-base ease,
+    opacity $transition-fast ease,
+    visibility $transition-fast ease,
+    transform $transition-base ease,
+    border-color $transition-fast ease;
+}
+
+
+.searchPanelOpen {
+  height: 94px;
+
+  opacity: 1;
+
+  visibility: visible;
+
+  transform:
+    translateY(0);
+
+  border-bottom-color:
+    rgba($color-text-primary, 0.1);
+}
+
+
+.searchForm {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  width: calc(100% - 160px);
+  max-width: 760px;
+  height: 46px;
+
+  margin:
+    24px
+    auto
+    0;
+
+  padding:
+    0
+    14px
+    0
+    18px;
+
+  background: $color-white;
+
+  border:
+    1px
+    solid
+    rgba($color-text-primary, 0.28);
+
+  border-radius: $radius-pill;
+
+  transition:
+    border-color $transition-fast ease,
+    box-shadow $transition-fast ease;
+
+
+  &:focus-within {
+    border-color: $color-primary;
+
+    box-shadow:
+      0
+      0
+      0
+      2px
+      rgba($color-primary, 0.07);
+  }
+
+
+  input {
+    flex: 1;
+
+    min-width: 0;
+
+    height: 100%;
+
+    padding:
+      0
+      $space-3;
+
+    color: $color-text-primary;
+
+    font-family: $font-family-base;
+    font-size: $font-size-sm;
+
+    background: transparent;
+
+    border: 0;
+    outline: 0;
+
+
+    &::placeholder {
+      color:
+        rgba($color-text-muted, 0.6);
+    }
+
+
+    &::-webkit-search-cancel-button {
+      display: none;
+    }
+  }
+}
+
+
+.searchFormIcon {
+  flex-shrink: 0;
+
+  width: 18px;
+  height: 18px;
+
+  object-fit: contain;
+}
+
+
+.clearButton {
+  @include flex-center;
+
+  flex-shrink: 0;
+
+  width: 28px;
+  height: 28px;
+
+  padding: 0;
+
+  color: $color-text-muted;
+
+  font-size: $font-size-xl;
+  font-weight: $font-weight-regular;
+
+  line-height: 1;
+
+  background: transparent;
+
+  border: 0;
+
+  cursor: pointer;
+}
+
+
+.searchSubmit {
+  flex-shrink: 0;
+
+  height: 30px;
+
+  padding:
+    0
+    $space-5;
+
+  color: $color-white;
+
+  font-family: $font-family-base;
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+
+  background: $color-primary;
+
+  border: 0;
+  border-radius: $radius-pill;
+
+  cursor: pointer;
+
+  transition:
+    background $transition-fast ease;
+
+
+  &:hover {
+    background: $color-primary-light;
+  }
+}
+
+
+/* ========================================
+   MEGA MENU
 ======================================== */
 
 .megaMenu {
   position: absolute;
 
-  top: 80px;
+  top: 72px;
   left: 0;
 
   z-index: $z-dropdown;
 
   width: 100%;
 
-  max-height: 0;
+  padding: 0;
 
-  overflow: hidden;
+  background:
+    rgba($color-taupe, 0.96);
 
   opacity: 0;
+
   visibility: hidden;
 
-  /*
-    너무 투명하지 않도록
-    taupe 94%
-  */
-  background: rgba($color-taupe, 0.94);
-
-  transform: translateY(-8px);
+  transform:
+    translateY(-6px);
 
   pointer-events: none;
 
   transition:
-    max-height 0.4s ease,
-    opacity $transition-base ease,
-    transform $transition-base ease,
-    visibility $transition-base ease;
+    opacity $transition-fast ease,
+    visibility $transition-fast ease,
+    transform $transition-base ease;
 }
 
 
 .megaMenuOpen {
-  max-height: 400px;
-
   opacity: 1;
+
   visibility: visible;
 
-  transform: translateY(0);
+  transform:
+    translateY(0);
 
   pointer-events: auto;
 }
@@ -336,11 +491,13 @@
 
   display: flex;
 
-  min-height: 215px;
+  min-height: 265px;
 
   padding:
-    $space-6
+    $space-8
     0;
+
+  color: $color-white;
 }
 
 
@@ -351,101 +508,70 @@
 .brandSnb {
   display: flex;
   flex-direction: column;
-  justify-content: center;
 
-  gap: $space-8;
+  width: 230px;
 
-  width: 280px;
+  gap: $space-2;
 
-  padding:
-    0
-    $space-12
-    0
-    $space-8;
-
-  border-right:
-    1px
-    solid
-    rgba($color-white, 0.28);
+  padding-right: $space-8;
 }
 
-
-/* ========================================
-   SNB LINK
-======================================== */
 
 .snbLink {
   position: relative;
 
-  display: block;
+  display: flex;
+  align-items: center;
 
-  width: fit-content;
+  min-height: 36px;
 
-  color: rgba($color-white, 0.88);
+  padding-left: $space-4;
+
+  color:
+    rgba($color-white, 0.84);
 
   font-size: $font-size-sm;
-  font-weight: $font-weight-regular;
 
   text-decoration: none;
 
   transition:
     color $transition-fast ease,
-    transform $transition-fast ease,
-    font-weight $transition-fast ease;
+    padding-left $transition-fast ease;
 
-  /*
-    기본 상태에서는 안 보이고
-    hover할 때만 나오는 초록 막대
-  */
+
   &::before {
     content: '';
 
     position: absolute;
 
     top: 50%;
-    left: -25px;
+    left: 0;
 
     width: 2px;
-    height: 18px;
+    height: 0;
 
     background: $color-primary-light;
 
-    border-radius: $radius-pill;
-
-    opacity: 0;
-
     transform:
-      translateY(-50%)
-      scaleY(0);
-
-    transform-origin: center;
+      translateY(-50%);
 
     transition:
-      opacity $transition-fast ease,
-      transform $transition-fast ease;
+      height $transition-fast ease;
   }
+
 
   &:hover {
     color: $color-white;
 
-    font-weight: $font-weight-semibold;
+    padding-left: $space-5;
 
-    transform: translateX(3px);
 
     &::before {
-      opacity: 1;
-
-      transform:
-        translateY(-50%)
-        scaleY(1);
+      height: 20px;
     }
   }
 }
 
-
-/* ========================================
-   BRAND RIGHT
-======================================== */
 
 .brandVisual {
   display: flex;
@@ -455,24 +581,27 @@
 
   gap: $space-8;
 
-  padding-left: $space-12;
+  padding-left: $space-10;
+
+  border-left:
+    1px
+    solid
+    rgba($color-white, 0.2);
 }
 
 
 .brandImage {
-  flex-shrink: 0;
+  width: 260px;
+  height: 165px;
 
-  width: 165px;
-  height: 115px;
+  background:
+    rgba($color-white, 0.14);
 
-  background: rgba($color-white, 0.58);
-
-  border-radius: $radius-sm;
+  border-radius: $radius-lg;
 }
 
 
 .brandText {
-  color: $color-white;
 
   h2 {
     margin:
@@ -481,21 +610,20 @@
       $space-4;
 
     font-family: $font-family-display;
-
-    font-size: $font-size-3xl;
-    font-weight: $font-weight-medium;
-
-    line-height: $line-height-tight;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
   }
+
 
   p {
     margin: 0;
 
-    color: rgba($color-white, 0.65);
+    color:
+      rgba($color-white, 0.76);
 
-    font-size: $font-size-xs;
+    font-size: $font-size-sm;
 
-    line-height: $line-height-base;
+    line-height: $line-height-relaxed;
   }
 }
 
@@ -505,14 +633,7 @@
 ======================================== */
 
 .shopContainer {
-  display: grid;
-
-  grid-template-columns:
-    220px
-    220px
-    minmax(0, 1fr);
-
-  min-height: 240px;
+  gap: $space-10;
 }
 
 
@@ -520,43 +641,38 @@
   display: flex;
   flex-direction: column;
 
-  gap: $space-4;
+  width: 155px;
 
-  padding:
-    $space-2
-    $space-10
-    $space-2
-    $space-8;
-
-  border-right:
-    1px
-    solid
-    rgba($color-white, 0.28);
+  gap: $space-1;
 }
 
 
 .columnTitle {
-  margin-bottom: $space-2;
+  margin:
+    0
+    0
+    $space-3
+    $space-4;
 
-  color: rgba($color-white, 0.55);
+  color:
+    rgba($color-white, 0.55);
 
   font-size: $font-size-xs;
-  font-weight: $font-weight-medium;
+  font-weight: $font-weight-semibold;
 }
 
 
-/* ========================================
-   POPULAR PRODUCTS
-======================================== */
-
 .popularProducts {
+  flex: 1;
+
   min-width: 0;
 
-  padding:
-    $space-2
-    0
-    0
-    $space-10;
+  padding-left: $space-8;
+
+  border-left:
+    1px
+    solid
+    rgba($color-white, 0.2);
 }
 
 
@@ -565,32 +681,35 @@
 
   margin-bottom: $space-4;
 
+
   h2 {
     margin: 0;
 
-    color: $color-white;
-
-    font-size: $font-size-lg;
+    font-family: $font-family-display;
+    font-size: $font-size-xl;
     font-weight: $font-weight-semibold;
   }
+
 
   a {
     display: flex;
     align-items: center;
 
-    gap: $space-1;
+    gap: $space-2;
 
-    color: rgba($color-white, 0.65);
+    color:
+      rgba($color-white, 0.72);
 
-    font-size: $font-size-xs;
+    font-size: 11px;
 
     text-decoration: none;
 
     transition:
       color $transition-fast ease;
 
+
     &:hover {
-      color: $color-primary-light;
+      color: $color-white;
     }
   }
 }
@@ -600,60 +719,60 @@
   display: grid;
 
   grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+    repeat(4, 1fr);
 
   gap: $space-3;
 }
 
 
 .productCard {
-  display: block;
-
-  min-width: 0;
+  display: flex;
+  flex-direction: column;
 
   color: $color-white;
 
   text-decoration: none;
 
-  transition:
-    transform $transition-fast ease;
 
   &:hover {
-    transform: translateY(-3px);
+
+    .productImage {
+      transform:
+        translateY(-2px);
+    }
   }
 }
 
 
 .productImage {
   width: 100%;
-  height: 95px;
+  aspect-ratio: 1 / 0.8;
 
   margin-bottom: $space-2;
 
-  background: rgba($color-white, 0.58);
+  background:
+    rgba($color-white, 0.14);
 
   border-radius: $radius-md;
+
+  transition:
+    transform $transition-fast ease;
 }
 
 
 .productName {
-  @include ellipsis;
+  margin-bottom: 3px;
 
-  display: block;
+  color:
+    rgba($color-white, 0.76);
 
-  margin-bottom: $space-1;
-
-  color: rgba($color-white, 0.75);
-
-  font-size: 11px;
+  font-size: 10px;
 }
 
 
 .productCard strong {
-  color: $color-white;
-
-  font-size: $font-size-xs;
-  font-weight: $font-weight-medium;
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
 }
 
 
@@ -663,47 +782,46 @@
 
 @include tablet {
 
-  .headerInner {
-    height: 72px;
-  }
-
   .gnb {
-    gap: $space-6;
-
-    margin-left: $space-8;
+    gap: $space-5;
   }
 
-  .gnbItem {
-    height: 72px;
-  }
 
   .gnbLink {
-    font-size: $font-size-md;
+    font-size: $font-size-xs;
   }
 
+
+  .headerActions {
+    gap: $space-3;
+  }
+
+
+  .headerContainer {
+    height: 68px;
+  }
+
+
   .logo {
+
     img {
       height: 38px;
     }
   }
 
-  .searchBox {
-    width: 220px;
+
+  .megaMenu,
+  .searchPanel {
+    top: 68px;
   }
 
-  .megaMenu {
-    top: 72px;
-  }
 
-  .brandSnb {
-    width: 220px;
-  }
-
-  .shopContainer {
-    grid-template-columns:
-      180px
-      180px
-      minmax(0, 1fr);
+  .searchForm {
+    width:
+      calc(
+        100% -
+        (#{$side-margin-tablet} * 2)
+      );
   }
 }
 
@@ -714,11 +832,10 @@
 
 @include mobile {
 
-  /*
-    모바일에서는 MobileHeader.jsx가 나오므로
-    PC 헤더 전체 숨김
-  */
   .desktopHeader {
     display: none;
   }
 }
+.makdongLink { font-size: 0; }
+.makdongLink::after { content: '막둥이 소개'; font-size: 16px; }
+.hiddenBrandLink { display: none; }
