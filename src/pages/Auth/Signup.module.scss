@@ -1,5 +1,187 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as *;
+
+.signup {
+  display: flex;
+  min-height: calc(100vh - 97px);
+  background: $color-bg;
+
+  @media (max-width: $breakpoint-mobile-max) {
+    flex-direction: column;
+  }
+}
+
+.visual {
+  flex: 1;
+  background: $color-surface;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: $breakpoint-mobile-max) {
+    min-height: 240px;
+  }
+}
+
+.formArea {
+  flex: 1;
+  max-width: 480px;
+  padding: $space-16 $space-8;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  h1 {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+    margin-bottom: $space-8;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+  }
+
+  label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
+    margin-top: $space-4;
+  }
+
+  input[type='email'],
+  input[type='password'],
+  input[type='text'] {
+    height: 48px;
+    padding: 0 $space-4;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    font-size: $font-size-md;
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+    }
+  }
+}
+
+.hint {
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+}
+
+.hintError {
+  font-size: $font-size-xs;
+  color: $color-error;
+}
+
+.agreeLabel {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  font-size: $font-size-sm;
+  margin-top: $space-4;
+}
+
+.error {
+  color: $color-error;
+  font-size: $font-size-sm;
+}
+
+.submitButton {
+  height: 52px;
+  margin-top: $space-4;
+  border: none;
+  border-radius: $radius-md;
+  background: $color-primary;
+  color: $color-white;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:not(:disabled):hover {
+    opacity: 0.9;
+  }
+}
+
+.switchLink {
+  margin-top: $space-6;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  text-align: center;
+
+  a {
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+// Signup 페이지 전용 성공 안내 오버레이 (공통 Modal 대체용, 담당 구역 밖이라 별도 구현)
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 35, 27, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-modal;
+  padding: $space-4;
+}
+
+.successModal {
+  position: relative;
+  background: $color-white;
+  border-radius: $radius-lg;
+  padding: $space-8;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-4;
+
+  h2 {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+  }
+
+  p {
+    color: $color-text-secondary;
+  }
+}
+
+.closeButton {
+  position: absolute;
+  top: $space-4;
+  right: $space-4;
+  background: none;
+  border: none;
+  font-size: $font-size-2xl;
+  line-height: 1;
+  color: $color-text-muted;
+  cursor: pointer;
+}
+
+.previewBox {
+  background: $color-bg;
+  border-radius: $radius-md;
+  padding: $space-4;
+  width: 100%;
+}
+
+.laterHint {
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+}
