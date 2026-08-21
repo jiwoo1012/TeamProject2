@@ -1,0 +1,146 @@
+﻿:global(html.main-journey-active) {
+  scrollbar-width: none;
+}
+
+:global(html.main-journey-active::-webkit-scrollbar) {
+  display: none;
+}
+
+.journey {
+  position: relative;
+  height: 600svh;
+  background: #1d130d;
+}
+.stage {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100svh;
+  overflow: hidden;
+  background: #1d130d;
+}
+.scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  will-change: opacity, transform;
+}
+.lightOn {
+  z-index: 2;
+  pointer-events: none;
+}
+.windowScene {
+  z-index: 3;
+  pointer-events: none;
+}
+.makdong {
+  position: absolute;
+  bottom: 5.5%;
+  left: 24%;
+  z-index: 4;
+  width: clamp(180px, 21vw, 360px);
+  max-width: none;
+  height: auto;
+  transform-origin: left bottom;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.shade {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(12, 8, 5, 0.08), rgba(12, 8, 5, 0.3));
+}
+
+.skipButton {
+  position: absolute; top: 32px; right: 40px; z-index: 7;
+  display: inline-flex; gap: 10px; align-items: center; padding: 10px 0;
+  border: 0; color: #fffaf2; background: transparent; font: inherit;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.12em;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.65); cursor: pointer;
+}
+.skipArrow {
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 7px solid currentColor;
+  transition: transform 0.2s ease;
+}
+.skipButton:hover .skipArrow, .skipButton:focus-visible .skipArrow {
+  transform: translateX(4px);
+}
+.skipButton:focus-visible {
+  outline: 2px solid #fffaf2;
+  outline-offset: 4px;
+}
+
+.scrollGuide {
+  position: absolute; bottom: 42px; left: 50%; z-index: 6;
+  display: flex; flex-direction: column; align-items: center;
+  color: #fffaf2; text-align: center; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+  transform: translateX(-50%);
+}
+.scrollGuide span:first-child {
+  margin-bottom: 15px;
+  font-family: Georgia, 'Noto Serif KR', serif;
+  font-size: clamp(15px, 1.4vw, 19px);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.scrollGuide small {
+  margin-top: 9px;
+  font-size: 9px;
+  letter-spacing: 0.24em;
+}
+.scrollLine {
+  width: 1px;
+  height: 36px;
+  background: linear-gradient(#fffaf2, transparent);
+  animation: scrollPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scaleY(0.65);
+    transform-origin: top;
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+}
+
+@media (max-width: 767px) {
+  .journey {
+    height: 520svh;
+  }
+  .skipButton {
+    top: 20px;
+    right: 20px;
+  }
+  .scrollGuide {
+    bottom: 28px;
+  }
+  .makdong {
+    bottom: 7%;
+    left: 1%;
+    width: min(52vw, 280px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrollLine {
+    animation: none;
+  }
+  .skipArrow {
+    transition: none;
+  }
+}
