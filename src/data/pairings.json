@@ -2,149 +2,181 @@
   {
     "liquorId": "liq_001",
     "pairedFoodIds": [
-      "snk_005"
+      "snk_005",
+      "snk_006",
+      "snk_001"
     ],
     "recommendedGlassIds": [
-      "gls_001",
-      "gls_006"
+      "gls_002",
+      "gft_001"
     ]
   },
   {
     "liquorId": "liq_002",
     "pairedFoodIds": [
       "snk_002",
-      "snk_007"
+      "snk_007",
+      "snk_010"
     ],
     "recommendedGlassIds": [
-      "gls_001",
-      "gls_012"
+      "gls_002",
+      "gft_003"
     ]
   },
   {
     "liquorId": "liq_003",
     "pairedFoodIds": [
       "snk_001",
-      "snk_010"
+      "snk_010",
+      "snk_011"
     ],
     "recommendedGlassIds": [
-      "gls_002",
-      "gls_007"
+      "gls_001",
+      "gft_003"
     ]
   },
   {
     "liquorId": "liq_004",
     "pairedFoodIds": [
-      "snk_005"
+      "snk_005",
+      "snk_006",
+      "snk_011"
     ],
     "recommendedGlassIds": [
-      "gls_002",
-      "gls_005",
-      "gls_013"
+      "gls_001",
+      "gft_004"
     ]
   },
   {
     "liquorId": "liq_005",
     "pairedFoodIds": [
       "snk_003",
-      "snk_008"
+      "snk_008",
+      "snk_004"
     ],
     "recommendedGlassIds": [
       "gls_004",
-      "gls_009"
+      "gft_005"
     ]
   },
   {
     "liquorId": "liq_006",
     "pairedFoodIds": [
       "snk_006",
-      "snk_011"
+      "snk_011",
+      "snk_005"
     ],
     "recommendedGlassIds": [
       "gls_003",
-      "gls_008"
+      "gft_002"
     ]
   },
   {
     "liquorId": "liq_007",
     "pairedFoodIds": [
-      "snk_004"
+      "snk_004",
+      "snk_005",
+      "snk_006"
     ],
     "recommendedGlassIds": [
-      "gls_002"
+      "gls_001",
+      "gft_002"
     ]
   },
   {
     "liquorId": "liq_008",
     "pairedFoodIds": [
-      "snk_003"
+      "snk_003",
+      "snk_008",
+      "snk_004"
     ],
     "recommendedGlassIds": [
-      "gls_004"
+      "gls_004",
+      "gft_003"
     ]
   },
   {
     "liquorId": "liq_009",
     "pairedFoodIds": [
-      "snk_002"
+      "snk_002",
+      "snk_009",
+      "snk_011"
     ],
     "recommendedGlassIds": [
-      "gls_002"
+      "gls_001",
+      "gft_004"
     ]
   },
   {
     "liquorId": "liq_010",
     "pairedFoodIds": [
       "snk_004",
-      "snk_009"
+      "snk_009",
+      "snk_007"
     ],
     "recommendedGlassIds": [
       "gls_003",
-      "gls_010"
+      "gft_002"
     ]
   },
   {
     "liquorId": "liq_011",
     "pairedFoodIds": [
-      "snk_003"
+      "snk_003",
+      "snk_004",
+      "snk_008"
     ],
     "recommendedGlassIds": [
-      "gls_001"
+      "gls_002",
+      "gft_001"
     ]
   },
   {
     "liquorId": "liq_012",
     "pairedFoodIds": [
-      "snk_001"
+      "snk_001",
+      "snk_008",
+      "snk_010"
     ],
     "recommendedGlassIds": [
-      "gls_001"
+      "gls_002",
+      "gft_002"
     ]
   },
   {
     "liquorId": "liq_013",
     "pairedFoodIds": [
-      "snk_006"
+      "snk_006",
+      "snk_005",
+      "snk_011"
     ],
     "recommendedGlassIds": [
-      "gls_003"
+      "gls_003",
+      "gft_002"
     ]
   },
   {
     "liquorId": "liq_014",
     "pairedFoodIds": [
-      "snk_004"
+      "snk_004",
+      "snk_007",
+      "snk_009"
     ],
     "recommendedGlassIds": [
-      "gls_004"
+      "gls_004",
+      "gft_001"
     ]
   },
   {
     "liquorId": "liq_015",
     "pairedFoodIds": [
-      "snk_005"
+      "snk_005",
+      "snk_006",
+      "snk_003"
     ],
     "recommendedGlassIds": [
-      "gls_001"
+      "gls_002",
+      "gft_005"
     ]
   }
 ]

@@ -12,12 +12,12 @@
     "snackType": "간편식",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product17.png"
   },
   {
     "productId": "snk_002",
     "productName": "바삭 감자 채전 밀키트",
-    "brandManufacturer": "우리맛푸드",
+    "brandManufacturer": "우리맛곳간",
     "price": 9000,
     "discountRate": "5%",
     "volume": "300g",
@@ -27,12 +27,12 @@
     "snackType": "간편식",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product18.png"
   },
   {
     "productId": "snk_003",
     "productName": "참숯 향 메추리알 장조림",
-    "brandManufacturer": "정성찬푸드",
+    "brandManufacturer": "정성찬가",
     "price": 6000,
     "discountRate": "0%",
     "volume": "200g",
@@ -42,12 +42,12 @@
     "snackType": "상온안주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product19.png"
   },
   {
     "productId": "snk_004",
     "productName": "고소한 바삭 먹태구이",
-    "brandManufacturer": "바다푸드",
+    "brandManufacturer": "바다마을",
     "price": 11000,
     "discountRate": "15%",
     "volume": "150g",
@@ -57,7 +57,7 @@
     "snackType": "상온안주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product20.png"
   },
   {
     "productId": "snk_005",
@@ -72,27 +72,27 @@
     "snackType": "디저트",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product21.png"
   },
   {
     "productId": "snk_006",
-    "productName": "흑임자 쌀다과 세트",
+    "productName": "흑임자 다식 세트",
     "brandManufacturer": "미소병가",
     "price": 15000,
     "discountRate": "0%",
     "volume": "300g",
-    "productDescription": "국내산 쌀가루와 고소한 흑임자를 반죽해 쪄낸 떡으로, 담백하고 진한 풍미를 느낄 수 있습니다.",
-    "allergyCautionInfo": "쌀 함유",
+    "productDescription": "고소한 흑임자 가루를 꿀에 반죽해 전통 문양 틀로 눌러 찍어낸 다식으로, 은은한 단맛과 진한 고소함이 어우러진 상온 디저트입니다.",
+    "allergyCautionInfo": "참깨(흑임자) 함유",
     "productType": "안주",
     "snackType": "디저트",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product22.png"
   },
   {
     "productId": "snk_007",
     "productName": "버터 통오징어 구이",
-    "brandManufacturer": "바다푸드",
+    "brandManufacturer": "바다마을",
     "price": 16000,
     "discountRate": "10%",
     "volume": "300g(오징어 1마리)",
@@ -102,22 +102,22 @@
     "snackType": "간편식",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product29.png"
   },
   {
     "productId": "snk_008",
-    "productName": "새콤 매콤 도토리묵 채소무침",
-    "brandManufacturer": "우리맛푸드",
-    "price": 9000,
+    "productName": "수제 편육 모둠 접시",
+    "brandManufacturer": "자연담은곳간",
+    "price": 17000,
     "discountRate": "5%",
-    "volume": "350g",
-    "productDescription": "쫄깃한 도토리묵을 도톰하게 썰어 아삭한 채소와 새콤달콤한 양념으로 무쳐낸 정갈한 안주입니다.",
-    "allergyCautionInfo": "참깨 함유",
+    "volume": "300g",
+    "productDescription": "오랜 시간 삶아낸 편육을 얇게 썰어 상추, 마늘, 청양고추와 함께 곁들인 정갈한 모둠 안주입니다.",
+    "allergyCautionInfo": "돼지고기, 대두(장류) 함유",
     "productType": "안주",
     "snackType": "상온안주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product30.png"
   },
   {
     "productId": "snk_009",
@@ -132,12 +132,12 @@
     "snackType": "상온안주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product31.png"
   },
   {
     "productId": "snk_010",
     "productName": "부추김치 전병말이",
-    "brandManufacturer": "정성찬푸드",
+    "brandManufacturer": "정성찬가",
     "price": 11000,
     "discountRate": "0%",
     "volume": "250g(6쪽)",
@@ -147,21 +147,21 @@
     "snackType": "간편식",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product35.png"
   },
   {
     "productId": "snk_011",
-    "productName": "수제 편육 모둠 접시",
-    "brandManufacturer": "자연담은곳간",
-    "price": 17000,
-    "discountRate": "5%",
-    "volume": "300g",
-    "productDescription": "오랜 시간 삶아낸 편육을 얇게 썰어 상추, 마늘, 청양고추와 함께 곁들인 정갈한 모둠 안주입니다.",
-    "allergyCautionInfo": "돼지고기, 대두(장류) 함유",
+    "productName": "새콤 매콤 도토리묵 채소무침",
+    "brandManufacturer": "우리맛곳간",
+    "price": 9000,
+    "discountRate": "50%",
+    "volume": "350g",
+    "productDescription": "쫄깃한 도토리묵을 도톰하게 썰어 아삭한 채소와 새콤달콤한 양념으로 무쳐낸 정갈한 안주입니다.",
+    "allergyCautionInfo": "참깨 함유",
     "productType": "안주",
     "snackType": "상온안주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product36.png"
   }
 ]

@@ -27,7 +27,7 @@
     "liquorType": "탁주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product1.png"
   },
   {
     "productId": "liq_002",
@@ -57,7 +57,7 @@
     "liquorType": "탁주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product2.png"
   },
   {
     "productId": "liq_003",
@@ -87,7 +87,7 @@
     "liquorType": "탁주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product3.png"
   },
   {
     "productId": "liq_004",
@@ -117,7 +117,7 @@
     "liquorType": "약주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product4.png"
   },
   {
     "productId": "liq_005",
@@ -147,7 +147,7 @@
     "liquorType": "약주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product5.png"
   },
   {
     "productId": "liq_006",
@@ -177,7 +177,7 @@
     "liquorType": "약주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product6.png"
   },
   {
     "productId": "liq_007",
@@ -207,7 +207,7 @@
     "liquorType": "과실주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product7.png"
   },
   {
     "productId": "liq_008",
@@ -237,7 +237,7 @@
     "liquorType": "과실주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product8.png"
   },
   {
     "productId": "liq_009",
@@ -267,7 +267,7 @@
     "liquorType": "과실주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product9.png"
   },
   {
     "productId": "liq_010",
@@ -297,7 +297,7 @@
     "liquorType": "증류주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product10.png"
   },
   {
     "productId": "liq_011",
@@ -327,7 +327,7 @@
     "liquorType": "증류주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product11.png"
   },
   {
     "productId": "liq_012",
@@ -357,7 +357,7 @@
     "liquorType": "증류주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product12.png"
   },
   {
     "productId": "liq_013",
@@ -387,7 +387,7 @@
     "liquorType": "리큐르",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product13.png"
   },
   {
     "productId": "liq_014",
@@ -417,7 +417,7 @@
     "liquorType": "리큐르",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product14.png"
   },
   {
     "productId": "liq_015",
@@ -447,6 +447,6 @@
     "liquorType": "리큐르",
     "stock": 100,
     "status": "selling",
-    "imageUrl": ""
+    "imageUrl": "product15.png"
   }
 ]

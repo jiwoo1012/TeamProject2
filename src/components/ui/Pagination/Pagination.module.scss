@@ -1,1 +1,9 @@
-/* Module styles. */
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as mixins;
+
+.pagination { @include mixins.flex-center; gap: $space-6; padding: $space-20 0 $space-24; font-family: $font-family-base; }
+.pagination button { @include mixins.flex-center; min-width: 44px; height: 44px; color: $color-white; font-size: $font-size-md; border-radius: 50%; }
+.pagination button:disabled { opacity: .35; }
+.pagination .active { color: $color-primary; background: $color-white; }
+
+@include mixins.mobile { .pagination { gap: $space-2; padding: $space-12 0 $space-16; } }
