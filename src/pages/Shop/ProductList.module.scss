@@ -1,5 +1,85 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as mixins;
+
+.page { overflow: clip; color: $color-text-primary; background: $color-bg; font-family: $font-family-base; }
+.revealStage { position: relative; height: 190vh; min-height: 1100px; background: $color-primary-light; }
+.stickyFrame { position: sticky; top: 0; height: 100vh; min-height: 600px; overflow: hidden; }
+.bannerSlider, .banner { position: absolute; inset: 0; width: 100%; height: 100%; }
+.banner { object-fit: cover; opacity: 0; transition: opacity 0.5s ease, transform 0.5s ease; }
+.activeBanner { opacity: 1; transform: scale(1); }
+.tastePanel { position: absolute; left: 50%; bottom: 0; width: max(106vw, 1320px); height: min(78vh, 760px); color: $color-text-primary; background: $color-bg; border-radius: 50% 50% 0 0 / 68% 68% 0 0; transform: translate(-50%, calc((1 - var(--reveal-progress)) * 105%)); will-change: transform; }
+.tasteContent { position: absolute; top: 24%; left: 50%; width: min(90vw, 760px); text-align: center; transform: translateX(-50%); }
+.tasteContent h1 { font-family: $font-family-display; font-size: clamp($font-size-4xl, 5vw, 72px); line-height: $line-height-tight; }
+.tasteContent p { margin-top: $space-6; color: $color-text-muted; font-size: $font-size-lg; line-height: $line-height-base; }
+.tasteContent a { display: inline-block; margin-top: $space-8; padding: $space-3 $space-6; color: $color-white; background: $color-primary; border-radius: $radius-md; transition: background $transition-fast ease, transform $transition-fast ease; }
+.tasteContent a:hover { background: $color-primary-light; transform: translateY(-2px); }
+
+.catalog { padding-top: $space-20; background-color: $color-primary-light; background-image: linear-gradient(180deg, $color-bg 0, rgba($color-primary-light, .24) 35vh, rgba($color-primary-light, .82) 72vh, $color-primary-light 100vh); background-repeat: no-repeat; background-size: 100% 100vh; }
+.mainCategories { @include mixins.container; @include mixins.flex-center; gap: clamp($space-3, 2vw, $space-8); padding-bottom: $space-30; }
+.categoryGroup { @include mixins.flex-center; gap: clamp($space-3, 2vw, $space-8); }
+.categoryGroup button { @include mixins.flex-center; width: clamp(116px, 10vw, 144px); aspect-ratio: 1; color: $color-text-secondary; font-size: $font-size-2xl; text-align: center; background: $color-surface; border-radius: 50%; transition: color $transition-base, background $transition-base, transform $transition-base; }
+.categoryGroup button:hover { transform: translateY(-5px); }
+.categoryGroup .activeCategory { color: $color-white; background: $color-text-muted; }
+.categoryGroup span { color: $color-primary; font-size: $font-size-5xl; font-weight: $font-weight-regular; }
+.productSection { width: calc(100% - #{$side-margin-desktop}); max-width: 1600px; margin-inline: auto; scroll-margin-top: $space-8; }
+.sectionHeader { padding-bottom: $space-20; text-align: center; }
+.sectionHeader h2 { font-family: $font-family-display; font-size: clamp($font-size-5xl, 6vw, 72px); }
+.sectionHeader p { margin-top: $space-3; font-size: $font-size-lg; }
+.filterBar { @include mixins.flex-between; gap: $space-6; padding-bottom: $space-12; }
+.detailFilters { display: flex; flex-wrap: wrap; gap: $space-3; }
+.detailFilters button { min-width: 84px; padding: $space-3 $space-5; color: $color-text-secondary; text-align: center; background: $color-bg; border: 1px solid $color-border; border-radius: $radius-pill; }
+.detailFilters .activeFilter { color: $color-white; background: $color-primary; border-color: $color-primary; }
+.selects { display: flex; flex-shrink: 0; gap: $space-3; }
+.selects label { position: relative; min-width: 132px; }
+.selects label::after { position: absolute; top: 50%; right: $space-4; content: '⌄'; pointer-events: none; transform: translateY(-58%); }
+.selects span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.selects select { padding: $space-3 $space-8 $space-3 $space-4; background: $color-bg; border: 1px solid $color-taupe; border-radius: $radius-md; }
+.productGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: $space-16 $grid-gutter; }
+.empty { padding: $space-30 0; text-align: center; }
+
+.stylingMarquee { overflow: hidden; padding: $space-8 0 $space-20; background: $color-primary-light; }
+.marqueeTrack { display: flex; width: max-content; gap: $grid-gutter; animation: marquee 90s linear infinite; }
+.marqueeTrack img { width: clamp(260px, 24vw, 420px); aspect-ratio: 1.15; object-fit: cover; border-radius: $radius-lg; }
+@keyframes marquee { to { transform: translateX(calc(-50% - (#{$grid-gutter} / 2))); } }
+
+@include mixins.tablet {
+  .tastePanel { width: 125vw; }
+  .mainCategories { gap: $space-2; }
+  .categoryGroup { gap: $space-2; }
+  .categoryGroup button { width: 112px; font-size: $font-size-xl; }
+  .categoryGroup span { font-size: $font-size-3xl; }
+  .filterBar { align-items: flex-start; flex-direction: column; }
+  .selects { align-self: flex-end; }
+  .productGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .productSection { width: calc(100% - #{$side-margin-tablet}); }
+}
+
+@include mixins.mobile {
+  .revealStage { height: 165vh; min-height: 900px; }
+  .stickyFrame { min-height: 520px; }
+  .tastePanel { width: 155vw; height: 70vh; min-height: 500px; }
+  .tasteContent { top: 25%; width: 52%; }
+  .tasteContent h1 { font-size: $font-size-4xl; }
+  .tasteContent p { font-size: $font-size-sm; }
+  .tasteContent p br { display: none; }
+  .catalog { padding-top: $space-12; }
+  .mainCategories { justify-content: flex-start; gap: $space-2; padding-bottom: $space-20; overflow-x: auto; scroll-snap-type: x proximity; }
+  .categoryGroup { flex: 0 0 auto; gap: $space-2; }
+  .categoryGroup button { width: 92px; font-size: $font-size-md; scroll-snap-align: start; }
+  .categoryGroup span { font-size: $font-size-2xl; }
+  .sectionHeader { padding-bottom: $space-12; }
+  .sectionHeader h2 { font-size: $font-size-5xl; }
+  .filterBar { align-items: stretch; flex-direction: column; padding-bottom: $space-8; }
+  .detailFilters { flex-wrap: nowrap; padding-bottom: $space-2; overflow-x: auto; }
+  .detailFilters button { min-width: max-content; }
+  .selects { width: 100%; }
+  .selects label { flex: 1; min-width: 0; }
+  .productGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-10 $space-3; }
+  .productSection { width: calc(100% - (#{$side-margin-mobile} * 2)); }
+  .marqueeTrack img { width: 240px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tastePanel { transform: translate(-50%, 0); }
+  .marqueeTrack { animation-duration: .01ms; animation-iteration-count: 1; }
+}
