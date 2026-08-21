@@ -1,4 +1,261 @@
-/* Page styles. */
-.page { min-height: 100vh; padding: 2rem 5%; }
-.nav { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; }
-.nav a { color: inherit; }
+@use '../../styles/variables' as v;
+
+.page {
+  min-height: 100vh;
+  padding: v.$space-10 0 v.$space-16;
+  background: v.$color-bg;
+  color: v.$color-text-primary;
+}
+
+/* =========================
+   관리자 페이지 제목
+========================= */
+
+.pageHeader {
+  margin: 0 0 v.$space-10;
+  padding: 0 v.$side-margin-desktop;
+}
+
+.title {
+  margin: 0;
+  font-size: v.$font-size-4xl;
+  font-weight: v.$font-weight-bold;
+  line-height: v.$line-height-tight;
+}
+
+.description {
+  margin: v.$space-2 0 0;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-lg;
+  line-height: v.$line-height-base;
+}
+
+/* =========================
+   전체 Layout
+========================= */
+
+.layout {
+  display: grid;
+  grid-template-columns:
+    calc(v.$grid-gutter * 12)
+    minmax(0, 1fr);
+
+  gap: v.$space-10;
+  align-items: stretch;
+}
+
+/* =========================
+   Sidebar
+========================= */
+
+.sidebar {
+  display: flex;
+  min-height: 70vh;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.navigation {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-4;
+}
+
+/* 기본 = 비활성 메뉴 */
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: v.$space-4;
+
+  width: 86%;
+  min-height: calc(v.$space-6 + v.$space-8);
+  padding: 0 v.$space-5;
+
+  border: 1px solid v.$color-border;
+  border-left: 0;
+  border-radius:
+    0
+    v.$radius-xl
+    v.$radius-xl
+    0;
+
+  background: v.$color-white;
+  color: v.$color-text-muted;
+
+  font-size: v.$font-size-sm;
+  text-decoration: none;
+
+  box-shadow: v.$shadow-sm;
+
+  transition:
+    width v.$transition-fast,
+    background-color v.$transition-fast,
+    color v.$transition-fast,
+    border-color v.$transition-fast,
+    box-shadow v.$transition-fast;
+}
+
+.menuDot {
+  width: v.$space-5;
+  height: v.$space-5;
+  flex: 0 0 auto;
+
+  border-radius: v.$radius-pill;
+  background: v.$color-surface;
+}
+
+.menuItem:hover {
+  color: v.$color-text-primary;
+}
+
+.menuItem:focus-visible,
+.logoutButton:focus-visible {
+  outline: 2px solid v.$color-primary-light;
+  outline-offset: 2px;
+}
+
+/* 활성 메뉴 */
+.active {
+  width: 100%;
+
+  border-color: v.$color-primary;
+  background: v.$color-primary;
+  color: v.$color-white;
+  font-weight: v.$font-weight-semibold;
+}
+
+.active .menuDot {
+  background: v.$color-white;
+}
+
+/* =========================
+   Logout
+========================= */
+
+.logoutButton {
+  display: inline-flex;
+  align-items: center;
+  gap: v.$space-3;
+
+  align-self: flex-start;
+  margin-left: v.$grid-gutter;
+  padding: v.$space-2 0;
+
+  border: 0;
+  background: transparent;
+
+  color: v.$color-text-muted;
+  font: inherit;
+
+  cursor: pointer;
+}
+
+.logoutIcon {
+  width: v.$space-6;
+  height: v.$space-6;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* =========================
+   Outlet Content
+========================= */
+
+.content {
+  width: calc(100% - v.$side-margin-desktop);
+  max-width: calc(v.$container-max - v.$space-24);
+  min-width: 0;
+}
+
+/* =========================
+   Tablet
+========================= */
+
+@media (max-width: v.$breakpoint-tablet-max) {
+  .pageHeader {
+    padding: 0 v.$side-margin-tablet;
+  }
+
+  .layout {
+    grid-template-columns:
+      calc(v.$grid-gutter * 10)
+      minmax(0, 1fr);
+
+    gap: v.$space-8;
+  }
+
+  .content {
+    width: calc(100% - v.$side-margin-tablet);
+  }
+}
+
+/* =========================
+   Mobile
+========================= */
+
+@media (max-width: v.$breakpoint-mobile-max) {
+  .page {
+    padding: v.$space-8 0 v.$space-12;
+  }
+
+  .pageHeader {
+    margin-bottom: v.$space-6;
+    padding: 0 v.$side-margin-mobile;
+  }
+
+  .title {
+    font-size: v.$font-size-3xl;
+  }
+
+  .layout {
+    display: block;
+  }
+
+  .sidebar {
+    min-height: auto;
+    margin-bottom: v.$space-8;
+    padding: 0 v.$side-margin-mobile;
+  }
+
+  .navigation {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: v.$space-2;
+  }
+
+  .menuItem {
+    width: 100%;
+    min-height: v.$space-12;
+    padding: 0 v.$space-3;
+
+    border-left: 1px solid v.$color-border;
+    border-radius: v.$radius-md;
+
+    font-size: v.$font-size-xs;
+  }
+
+  .menuDot {
+    width: v.$space-3;
+    height: v.$space-3;
+  }
+
+  .active {
+    width: 100%;
+    border-color: v.$color-primary;
+  }
+
+  .logoutButton {
+    margin-top: v.$space-4;
+    margin-left: 0;
+  }
+
+  .content {
+    width: auto;
+    max-width: none;
+    margin: 0 v.$side-margin-mobile;
+  }
+}
