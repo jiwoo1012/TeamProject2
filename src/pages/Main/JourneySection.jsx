@@ -148,7 +148,7 @@ const JourneySection = ({ onSkip }) => {
         <div className={styles.shade} aria-hidden="true" />
 
         <button className={styles.skipButton} type="button" onClick={onSkip}>
-          <span>SKIP INTRO</span><span className={styles.skipArrow} aria-hidden="true" />
+          <span>인트로 건너뛰기</span><span className={styles.skipArrow} aria-hidden="true" />
         </button>
 
         <div ref={guideRef} className={styles.scrollGuide}>
