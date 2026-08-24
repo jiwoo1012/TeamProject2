@@ -1,7 +1,6 @@
 import styles from './Pagination.module.scss'
 
 const Pagination = ({ currentPage, totalPages, onChange }) => {
-  if (totalPages <= 1) return null
   return (
     <nav className={styles.pagination} aria-label="상품 목록 페이지">
       <button type="button" aria-label="이전 페이지" disabled={currentPage === 1} onClick={() => onChange(currentPage - 1)}>‹</button>

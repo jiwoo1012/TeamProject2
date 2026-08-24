@@ -1,9 +1,9 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as mixins;
 
-.page { overflow: clip; color: $color-text-primary; background: $color-bg; font-family: $font-family-base; }
+.page { --shop-header-height: 72px; overflow: clip; color: $color-text-primary; background: $color-bg; font-family: $font-family-base; }
 .revealStage { position: relative; height: 190vh; min-height: 1100px; background: $color-primary-light; }
-.stickyFrame { position: sticky; top: 0; height: 100vh; min-height: 600px; overflow: hidden; }
+.stickyFrame { position: sticky; top: var(--shop-header-height); height: calc(100dvh - var(--shop-header-height)); min-height: 520px; overflow: hidden; }
 .bannerSlider, .banner { position: absolute; inset: 0; width: 100%; height: 100%; }
 .banner { object-fit: cover; opacity: 0; transition: opacity 0.5s ease, transform 0.5s ease; }
 .activeBanner { opacity: 1; transform: scale(1); }
@@ -11,35 +11,52 @@
 .tasteContent { position: absolute; top: 24%; left: 50%; width: min(90vw, 760px); text-align: center; transform: translateX(-50%); }
 .tasteContent h1 { font-family: $font-family-display; font-size: clamp($font-size-4xl, 5vw, 72px); line-height: $line-height-tight; }
 .tasteContent p { margin-top: $space-6; color: $color-text-muted; font-size: $font-size-lg; line-height: $line-height-base; }
-.tasteContent a { display: inline-block; margin-top: $space-8; padding: $space-3 $space-6; color: $color-white; background: $color-primary; border-radius: $radius-md; transition: background $transition-fast ease, transform $transition-fast ease; }
+.tasteContent a { display: inline-block; margin-top: $space-8; padding: $space-3 $space-6; color: $color-bg; background: $color-primary; border-radius: $radius-md; transition: background $transition-fast ease, transform $transition-fast ease; }
 .tasteContent a:hover { background: $color-primary-light; transform: translateY(-2px); }
 
-.catalog { padding-top: $space-20; background-color: $color-primary-light; background-image: linear-gradient(180deg, $color-bg 0, rgba($color-primary-light, .24) 35vh, rgba($color-primary-light, .82) 72vh, $color-primary-light 100vh); background-repeat: no-repeat; background-size: 100% 100vh; }
+.shopBody { background-color: $color-primary-light; background-image: linear-gradient(180deg, $color-bg 0%, rgba($color-primary-light, .18) 34%, rgba($color-primary-light, .62) 70%, $color-primary-light 100%); background-repeat: no-repeat; background-size: 100% 165vh; }
+.catalog { padding-top: $space-20; background: transparent; }
 .mainCategories { @include mixins.container; @include mixins.flex-center; gap: clamp($space-3, 2vw, $space-8); padding-bottom: $space-30; }
 .categoryGroup { @include mixins.flex-center; gap: clamp($space-3, 2vw, $space-8); }
-.categoryGroup button { @include mixins.flex-center; width: clamp(116px, 10vw, 144px); aspect-ratio: 1; color: $color-text-secondary; font-size: $font-size-2xl; text-align: center; background: $color-surface; border-radius: 50%; transition: color $transition-base, background $transition-base, transform $transition-base; }
-.categoryGroup button:hover { transform: translateY(-5px); }
-.categoryGroup .activeCategory { color: $color-white; background: $color-text-muted; }
-.categoryGroup span { color: $color-primary; font-size: $font-size-5xl; font-weight: $font-weight-regular; }
-.productSection { width: calc(100% - #{$side-margin-desktop}); max-width: 1600px; margin-inline: auto; scroll-margin-top: $space-8; }
+.categoryGroup button { @include mixins.flex-center; position: relative; isolation: isolate; width: clamp(116px, 10vw, 144px); aspect-ratio: 1; overflow: hidden; color: $color-bg; font-size: $font-size-2xl; text-align: center; background: $color-taupe; border: 2px solid transparent; border-radius: 50%; transition: border-color $transition-base, box-shadow $transition-base, transform $transition-base; }
+.categoryGroup button::after { position: absolute; z-index: -1; inset: 0; content: ''; background: rgba($color-taupe, .72); transition: background $transition-base; }
+.categoryGroup button img { position: absolute; z-index: -2; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform $transition-base, filter $transition-base; }
+.categoryGroup button:hover {  box-shadow: 0 $space-4 $space-8 rgba($color-text-primary, .22); transform: translateY(-$space-2); }
+// .categoryGroup button:hover::after { background: rgba($color-taupe, .52); }
+.categoryGroup button:hover img { filter: saturate(1.08); transform: scale(1.1); }
+.categoryGroup .activeCategory { color: $color-bg; transform: scale(1.08); }
+.categoryGroup .activeCategory:hover { transform: scale(1.08) translateY(-$space-1); }
+.categoryGroup .activeCategory::after { background: rgba($color-primary-light,0);}
+.categoryGroup .allCategory { color: $color-bg; background: $color-taupe; border: 2px solid $color-taupe;  }
+.categoryGroup .allCategory::after { background: transparent; }
+.categoryGroup .allCategory.activeCategory { color: $color-taupe; background: $color-bg; }
+.categoryGroup > span { color: $color-primary; font-size: $font-size-5xl; font-weight: $font-weight-regular; }
+.categoryLabel { position: relative; z-index: 1; color: inherit; font-size: inherit; font-weight: $font-weight-semibold; transition: opacity $transition-fast ease; }
+.activeCategory .categoryLabel { opacity: 0; }
+.activeCategory.allCategory .categoryLabel { opacity: 1; }
+.productSection { width: calc(100% - #{$side-margin-desktop}); max-width: 1600px; margin-inline: auto; scroll-margin-top: calc(var(--shop-header-height) + #{$space-8}); }
 .sectionHeader { padding-bottom: $space-20; text-align: center; }
 .sectionHeader h2 { font-family: $font-family-display; font-size: clamp($font-size-5xl, 6vw, 72px); }
 .sectionHeader p { margin-top: $space-3; font-size: $font-size-lg; }
 .filterBar { @include mixins.flex-between; gap: $space-6; padding-bottom: $space-12; }
 .detailFilters { display: flex; flex-wrap: wrap; gap: $space-3; }
-.detailFilters button { min-width: 84px; padding: $space-3 $space-5; color: $color-text-secondary; text-align: center; background: $color-bg; border: 1px solid $color-border; border-radius: $radius-pill; }
-.detailFilters .activeFilter { color: $color-white; background: $color-primary; border-color: $color-primary; }
+.detailFilters button { min-width: 84px; padding: $space-2 $space-5; color: $color-text-secondary; text-align: center; background: $color-bg; border: 1px solid $color-border; border-radius: $radius-pill; transition: color $transition-fast ease, background $transition-fast ease, border-color $transition-fast ease, transform $transition-fast ease; }
+.detailFilters button:hover { color: $color-bg; background: $color-primary; border-color: $color-primary-light; transform: translateY(-3px); }
+.detailFilters .activeFilter { color: $color-bg; background: $color-primary; border-color: $color-primary; }
+.detailFilters .activeFilter:hover { background: $color-primary; border-color: $color-primary; }
 .selects { display: flex; flex-shrink: 0; gap: $space-3; }
-.selects label { position: relative; min-width: 132px; }
-.selects label::after { position: absolute; top: 50%; right: $space-4; content: '⌄'; pointer-events: none; transform: translateY(-58%); }
+.selects label { position: relative; min-width: 132px; border: 1px solid $color-border; color: $color-text-secondary; }
+.selects label::after { position: absolute; top: 50%; right: $space-4; content: '▼'; pointer-events: none; transform: translateY(-58%); color: $color-text-secondary;}
 .selects span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-.selects select { padding: $space-3 $space-8 $space-3 $space-4; background: $color-bg; border: 1px solid $color-taupe; border-radius: $radius-md; }
-.productGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: $space-16 $grid-gutter; }
+.selects select { padding: $space-2 $space-8 $space-2 $space-4; background: $color-bg; border: 1px solid $color-border ; border-radius: $radius-md; }
+.productGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: $space-10; }
+.sectionHeader, .filterBar, .productGrid, .empty { animation: categoryTransition .55s cubic-bezier(.22, 1, .36, 1) both; }
 .empty { padding: $space-30 0; text-align: center; }
+@keyframes categoryTransition { from { opacity: 0; transform: translateY($space-5); } to { opacity: 1; transform: translateY(0); } }
 
-.stylingMarquee { overflow: hidden; padding: $space-8 0 $space-20; background: $color-primary-light; }
-.marqueeTrack { display: flex; width: max-content; gap: $grid-gutter; animation: marquee 90s linear infinite; }
-.marqueeTrack img { width: clamp(260px, 24vw, 420px); aspect-ratio: 1.15; object-fit: cover; border-radius: $radius-lg; }
+.stylingMarquee { overflow: hidden; background: transparent; }
+.marqueeTrack { display: flex; align-items: stretch; width: max-content; gap: $grid-gutter; line-height: 0; animation: marquee 90s linear infinite; padding: 100px 0 ;}
+.marqueeTrack img { display: block; width: clamp(260px, 24vw, 420px); aspect-ratio: 1.15; object-fit: cover; border-radius: $radius-lg; }
 @keyframes marquee { to { transform: translateX(calc(-50% - (#{$grid-gutter} / 2))); } }
 
 @include mixins.tablet {
@@ -55,6 +72,7 @@
 }
 
 @include mixins.mobile {
+  .page { --shop-header-height: 58px; }
   .revealStage { height: 165vh; min-height: 900px; }
   .stickyFrame { min-height: 520px; }
   .tastePanel { width: 155vw; height: 70vh; min-height: 500px; }
