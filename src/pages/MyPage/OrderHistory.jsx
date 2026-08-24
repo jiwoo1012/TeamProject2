@@ -321,7 +321,18 @@ const OrderHistory = () => {
           ))}
         </div>
       ) : (
-        <div className={styles.emptyState}>해당 상태의 주문 내역이 없습니다.</div>
+        <section className={styles.emptyState} aria-label="빈 주문 내역">
+          <div className={styles.emptyIcon} aria-hidden="true">
+            <svg viewBox="0 0 64 64">
+              <path d="M16 22h32v29H16z" />
+              <path d="M23 22v-7h18v7" />
+              <path d="M24 34h16M24 41h11" />
+            </svg>
+          </div>
+          <h3>주문 내역이 없습니다.</h3>
+          <p>자작의 다양한 상품을 만나보세요.</p>
+          <Link className={styles.emptyButton} to="/shop">상품 보러가기</Link>
+        </section>
       )}
 
       {totalPages > 1 && (
