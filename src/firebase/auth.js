@@ -43,15 +43,34 @@ export const signup = async ({ nickname, email, password }) => {
   return userCredential.user
 }
 
+// 로그인 관련 에러 코드 (정지 계정 처리를 error.code로 통일해서 페이지에서 다루기 쉽게 함)
+export class AccountSuspendedError extends Error {
+  constructor() {
+    super('This account has been suspended.')
+    this.code = 'auth/account-suspended'
+  }
+}
+
 // 로그인
 // rememberMe가 true면 브라우저를 닫아도 로그인 유지, false면 탭/세션 종료 시 로그아웃
+// 로그인 완료 후 Firestore users/{uid} 데이터를 조회해서 함께 반환한다 (AGENTS.md 확정 사항).
+// 정지된(status: 'suspended') 계정이면 즉시 로그아웃 처리하고 에러를 던진다.
 export const login = async (email, password, rememberMe = true) => {
   await setPersistence(
     auth,
     rememberMe ? browserLocalPersistence : browserSessionPersistence
   )
   const userCredential = await signInWithEmailAndPassword(auth, email, password)
-  return userCredential.user
+  const { uid } = userCredential.user
+
+  const userData = await getDocument('users', uid)
+
+  if (userData?.status === 'suspended') {
+    await signOut(auth)
+    throw new AccountSuspendedError()
+  }
+
+  return { user: userCredential.user, userData }
 }
 
 // 로그아웃
