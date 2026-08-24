@@ -5,7 +5,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Link } from 'react-router-dom'
 
 import JourneySection from './JourneySection'
-import heroImage from '../../assets/images/main/05-livingroom-table.webp'
+import heroImage from '../../assets/images/main/main-hero-table.webp'
+import tornPaperFrame from '../../assets/images/main/main-torn-paper.png'
+import peekFaceDefault from '../../assets/images/main/peek-face-default.webp'
+import peekFaceSmile from '../../assets/images/main/peek-face-smile.webp'
+import peekFaceUp from '../../assets/images/main/peek-face-up.webp'
 import styles from './MainPage.module.scss'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -21,12 +25,11 @@ const MainPage = () => {
   const heroPhotoRef = useRef(null)
   const leftHeroTitleRef = useRef(null)
   const rightHeroTitleRef = useRef(null)
-  const promoIntroRef = useRef(null)
   const aiIntroRef = useRef(null)
   const featureSectionRef = useRef(null)
   const bestSellerRef = useRef(null)
   const eventsGridRef = useRef(null)
-  const canMoveToPromoRef = useRef(false)
+  const canMovePastHeroRef = useRef(false)
 
   useLayoutEffect(() => {
     const root = document.documentElement
@@ -58,13 +61,28 @@ const MainPage = () => {
       onEnterBack: () => root.classList.add(headerVisibleClass),
     })
     let promoScrollTween
+    let bestCardTween
+    let bestCardStep = 0
+    let isBestWheelLocked = false
+    let bestWheelReleaseTimer
     let previousScrollBehavior = ''
+    const isDesktop = window.innerWidth >= 1200
+    const bestCards = [...bestSellerRef.current.querySelectorAll(`.${styles.productMock}`)]
+    const bestProductsButton = bestSellerRef.current.querySelector(`.${styles.allProductsButton}`)
+
+    if (isDesktop) {
+      gsap.set(bestCards, {
+        y: window.innerHeight * 0.58,
+        autoAlpha: 0,
+      })
+      gsap.set(bestProductsButton, { autoAlpha: 0, y: 20 })
+    }
     const heroReveal = gsap.timeline({
       onComplete: () => {
-        canMoveToPromoRef.current = true
+        canMovePastHeroRef.current = true
       },
       onReverseComplete: () => {
-        canMoveToPromoRef.current = false
+        canMovePastHeroRef.current = false
       },
       scrollTrigger: {
         trigger: mainContentRef.current,
@@ -73,7 +91,7 @@ const MainPage = () => {
       },
     })
       .to(heroImageRef.current, {
-        yPercent: () => (window.innerWidth >= 1200 ? -66 : -48),
+        yPercent: () => (window.innerWidth >= 1200 ? -52 : -48),
         duration: 0.72,
         ease: 'power2.inOut',
       })
@@ -97,9 +115,7 @@ const MainPage = () => {
 
     const handleSectionWheel = (event) => {
       const mainContent = mainContentRef.current
-      const promoIntro = promoIntroRef.current
       const sections = [
-        promoIntroRef.current,
         aiIntroRef.current,
         featureSectionRef.current,
         bestSellerRef.current,
@@ -117,20 +133,20 @@ const MainPage = () => {
 
       const currentScroll = window.scrollY
       const mainTop = mainContent.offsetTop
-      const promoTop = promoIntro.offsetTop
+      const firstSectionTop = aiIntroRef.current.offsetTop
       const sectionTops = sections.map((section) => section.offsetTop)
       let targetTop
 
-      if (currentScroll < promoTop - 2) {
+      if (currentScroll < firstSectionTop - 2) {
         if (currentScroll < mainTop) return
 
         if (direction < 0) {
           if (currentScroll <= mainTop + 2) return
           targetTop = mainTop
-        } else if (canMoveToPromoRef.current) {
-          targetTop = promoTop
+        } else if (canMovePastHeroRef.current) {
+          targetTop = firstSectionTop
         } else {
-          targetTop = Math.min(mainTop + window.innerHeight, promoTop - 2)
+          targetTop = Math.min(mainTop + window.innerHeight, firstSectionTop - 2)
         }
       } else {
         const currentIndex = sectionTops.reduce((closestIndex, top, index) => (
@@ -138,6 +154,75 @@ const MainPage = () => {
             ? index
             : closestIndex
         ), 0)
+        const bestSellerRect = bestSellerRef.current.getBoundingClientRect()
+        const isBestSectionActive = bestSellerRect.top <= window.innerHeight * 0.12
+          && bestSellerRect.bottom >= window.innerHeight * 0.88
+
+        if (isDesktop && isBestSectionActive) {
+          const releaseBestWheelAfterPause = () => {
+            window.clearTimeout(bestWheelReleaseTimer)
+            bestWheelReleaseTimer = window.setTimeout(() => {
+              isBestWheelLocked = false
+            }, 280)
+          }
+
+          if (isBestWheelLocked) {
+            event.preventDefault()
+            releaseBestWheelAfterPause()
+            return
+          }
+
+          if (bestCardTween) {
+            event.preventDefault()
+            return
+          }
+
+          if (direction > 0 && bestCardStep < bestCards.length) {
+            event.preventDefault()
+            isBestWheelLocked = true
+            releaseBestWheelAfterPause()
+            const card = bestCards[bestCardStep]
+            bestCardStep += 1
+            bestCardTween = gsap.to(card, {
+              y: 0,
+              autoAlpha: 1,
+              duration: 0.58,
+              ease: 'power3.out',
+              onComplete: () => {
+                if (bestCardStep === bestCards.length) {
+                  gsap.to(bestProductsButton, { autoAlpha: 1, y: 0, duration: 0.35 })
+                }
+                gsap.delayedCall(0.32, () => {
+                  bestCardTween = null
+                })
+              },
+            })
+            return
+          }
+
+          if (direction < 0 && bestCardStep > 0) {
+            event.preventDefault()
+            isBestWheelLocked = true
+            releaseBestWheelAfterPause()
+            bestCardStep -= 1
+            if (bestCardStep < bestCards.length) {
+              gsap.to(bestProductsButton, { autoAlpha: 0, y: 20, duration: 0.2 })
+            }
+            bestCardTween = gsap.to(bestCards[bestCardStep], {
+              y: window.innerHeight * 0.58,
+              autoAlpha: 0,
+              duration: 0.45,
+              ease: 'power2.in',
+              onComplete: () => {
+                gsap.delayedCall(0.32, () => {
+                  bestCardTween = null
+                })
+              },
+            })
+            return
+          }
+        }
+
         const targetIndex = currentIndex + direction
 
         if (targetIndex < 0) {
@@ -192,7 +277,7 @@ const MainPage = () => {
           window.scrollTo(0, targetTop)
           ScrollTrigger.update()
           heroReveal.pause(0)
-          canMoveToPromoRef.current = false
+          canMovePastHeroRef.current = false
           root.style.scrollBehavior = previousBehavior
         })
         .to({}, { duration: 0.45 })
@@ -212,11 +297,10 @@ const MainPage = () => {
         toggleActions: 'play none none reverse',
       },
     })
-      .from(`.${styles.moodIcons}`, { y: 24, duration: 0.45 })
-      .from(`.${styles.moodHeading}`, { y: 36, duration: 0.6, ease: 'power2.out' }, '-=0.15')
+      .from(`.${styles.moodHeading}`, { y: 36, duration: 0.6, ease: 'power2.out' })
       .from(`.${styles.aiIntro} h2`, { y: 24, duration: 0.45 }, '-=0.25')
       .from(`.${styles.recommendCards} > div`, { y: 42, duration: 0.5, stagger: 0.12 }, '-=0.2')
-      .from(`.${styles.aiButton}`, { y: 20, scale: 0.97, duration: 0.4 }, '-=0.2')
+      .from(`.${styles.aiButton}`, { y: 20, opacity: 0, duration: 0.4 }, '-=0.2')
 
     const featureReveal = gsap.timeline({
       scrollTrigger: {
@@ -225,19 +309,39 @@ const MainPage = () => {
         toggleActions: 'play none none reverse',
       },
     })
-      .from(`.${styles.featureCopy}`, { x: -48, duration: 0.7, ease: 'power2.out' })
-      .from(`.${styles.featureImage}`, { x: 48, duration: 0.7, ease: 'power2.out' }, '-=0.48')
+      .from(`.${styles.featureCopy}`, {
+        x: () => (window.innerWidth >= 1200 ? -48 : 0),
+        duration: 0.7,
+        ease: 'power2.out',
+      })
+      .from(`.${styles.featureImage}`, {
+        x: () => (window.innerWidth >= 1200 ? 48 : 0),
+        duration: 0.7,
+        ease: 'power2.out',
+      }, '-=0.48')
 
     const bestSellerReveal = gsap.timeline({
       scrollTrigger: {
         trigger: bestSellerRef.current,
-        start: 'top 72%',
+        start: 'top 86%',
         toggleActions: 'play none none reverse',
       },
     })
       .from(`.${styles.bestSellerTitle}`, { y: 24, duration: 0.45 })
-      .from(`.${styles.productMock}`, { y: 80, rotate: 0, scale: 0.92, duration: 0.7, stagger: 0.12, ease: 'back.out(1.25)' }, '-=0.18')
-      .from(`.${styles.allProductsButton}`, { y: 20, duration: 0.4 }, '-=0.2')
+
+    if (!isDesktop) {
+      bestSellerReveal
+        .from(`.${styles.productMock}`, {
+          y: 80,
+          autoAlpha: 0,
+          rotate: 0,
+          scale: 0.96,
+          duration: 0.56,
+          stagger: 0.16,
+          ease: 'power3.out',
+        }, '-=0.12')
+        .from(`.${styles.allProductsButton}`, { y: 20, duration: 0.4 }, '-=0.2')
+    }
 
     const eventsGridReveal = gsap.timeline({
       scrollTrigger: {
@@ -246,13 +350,19 @@ const MainPage = () => {
         toggleActions: 'play none none reverse',
       },
     })
-      .from(`.${styles.eventsCopy}`, { x: -44, duration: 0.65, ease: 'power2.out' })
+      .from(`.${styles.eventsCopy}`, {
+        x: () => (window.innerWidth >= 1200 ? -44 : 0),
+        duration: 0.65,
+        ease: 'power2.out',
+      })
       .from(`.${styles.eventMock}`, { y: 54, scale: 0.96, duration: 0.55, stagger: 0.1, ease: 'power2.out' }, '-=0.35')
 
     return () => {
       window.removeEventListener('wheel', handleSectionWheel)
       document.removeEventListener('click', handleLogoClick)
       promoScrollTween?.kill()
+      bestCardTween?.kill()
+      window.clearTimeout(bestWheelReleaseTimer)
       root.style.scrollBehavior = previousScrollBehavior
       trigger.kill()
       heroReveal.scrollTrigger?.kill()
@@ -317,59 +427,57 @@ const MainPage = () => {
           <div className={styles.heroVisual}>
             <h1 ref={leftHeroTitleRef} id="main-content-title" className={`${styles.heroTitle} ${styles.heroTitleLeft}`}>
               오늘의
-              <br />
-              자작
             </h1>
 
             <div ref={heroImageRef} className={styles.imageGroup}>
               <figure className={styles.imageFrame}>
                 <img ref={heroPhotoRef} src={heroImage} alt="전통주와 안주가 차려진 자작의 공간" />
-                <figcaption ref={heroCaptionRef}>
-                  자작이 준비한 전통주와 안주로
-                  <br />
-                  나만의 시간을 완성하세요
-                </figcaption>
               </figure>
+              <p ref={heroCaptionRef} className={styles.heroCaption}>
+                오늘 하루도 수고한 나에게,
+                <br />
+                다정하게 한 잔을 따라보세요.
+              </p>
               <Link ref={shopButtonRef} className={styles.shopButton} to="/shop">
-                SHOP NOW
+                상품 보러가기
               </Link>
             </div>
+
+            <p ref={rightHeroTitleRef} className={`${styles.heroTitle} ${styles.heroTitleRight}`} aria-hidden="true">
+              자작
+            </p>
           </div>
 
-          <p ref={rightHeroTitleRef} className={`${styles.heroTitle} ${styles.heroTitleRight}`} aria-hidden="true">
-            오늘의
-            <br />
-            자작
-          </p>
-
         </div>
-      </section>
-
-      <section ref={promoIntroRef} className={styles.promoIntro} aria-labelledby="promo-intro-title">
-        <h2 id="promo-intro-title">Events &amp; Promos</h2>
-        <p>
-          자작이 준비한 특별한 이벤트와 혜택으로
-          <br />
-          오늘의 한 잔을 더 즐겁게 만나보세요.
-        </p>
       </section>
 
       <section ref={aiIntroRef} className={styles.aiIntro} aria-labelledby="ai-intro-title">
-        <div className={styles.moodIcons} aria-hidden="true">
-          <span>☁</span>
-          <strong>●</strong>
-          <span>☂</span>
-        </div>
-
         <div className={styles.moodHeading}>
-          <p>HAPPY</p>
-          <div className={styles.eyePlaceholder} aria-label="추천 분위기 이미지 영역">
-            IMAGE
+          <p className={styles.moodLabel} aria-label="HAPPY, RAINY, SWEET">
+            <span className={styles.moodHappy} aria-hidden="true">HAPPY</span>
+            <span className={styles.moodRainy} aria-hidden="true">RAINY</span>
+            <span className={styles.moodSweet} aria-hidden="true">SWEET</span>
+          </p>
+          <div className={styles.eyePlaceholder}>
+            <div className={styles.faceViewport}>
+              <img className={styles.peekFaceDefault} src={peekFaceDefault} alt="살짝 얼굴을 내민 막동이" />
+              <img className={styles.peekFaceUp} src={peekFaceUp} alt="위를 바라보는 막동이" />
+              <img className={styles.peekFaceSmile} src={peekFaceSmile} alt="미소 짓는 막동이" />
+            </div>
+            <img className={styles.tornPaperFrame} src={tornPaperFrame} alt="" aria-hidden="true" />
           </div>
-          <p className={styles.mirroredMood} aria-hidden="true">HAPPY</p>
+          <p className={`${styles.moodLabel} ${styles.mirroredMood}`} aria-hidden="true">
+            <span className={styles.moodHappy}>HAPPY</span>
+            <span className={styles.moodRainy}>RAINY</span>
+            <span className={styles.moodSweet}>SWEET</span>
+          </p>
         </div>
 
-        <h2 id="ai-intro-title">기분이 우울할 때는 이런 조합 어때요?</h2>
+        <h2 id="ai-intro-title" className={styles.moodCopy} aria-label="오늘의 기분에 어울리는 조합 추천">
+          <span className={styles.moodHappy}>기분 좋은 오늘에는 이런 조합 어때요?</span>
+          <span className={styles.moodRainy}>기분이 우울할 때는 이런 조합 어때요?</span>
+          <span className={styles.moodSweet}>달달한 게 당기는 날에는 이런 조합 어때요?</span>
+        </h2>
 
         <div className={styles.recommendCards} aria-label="막동이 추천 미리보기">
           <div className={styles.sideCard}>IMAGE</div>
@@ -378,20 +486,21 @@ const MainPage = () => {
         </div>
 
         <Link className={styles.aiButton} to="/ai">
-          AI NOW
+          추천 받으러 가기
         </Link>
+
       </section>
 
       <section ref={featureSectionRef} className={styles.featureSection} aria-labelledby="feature-title">
         <div className={styles.featureCopy}>
-          <h2 id="feature-title">Events &amp; Promos</h2>
+          <h2 id="feature-title">한 잔의 시간에 다정함을 담습니다</h2>
           <p>
-            자작이 제안하는 특별한 큐레이션으로
+            자작은 우리 술과 안주가 건네는
             <br />
-            취향에 맞는 전통주와 안주를 만나보세요.
+            소박하고 따뜻한 순간을 이야기합니다.
           </p>
-          <Link className={styles.featureButton} to="/ai">
-            AI NOW
+          <Link className={styles.featureButton} to="/brand">
+            자작 이야기 보기
           </Link>
         </div>
 
@@ -401,38 +510,53 @@ const MainPage = () => {
       </section>
 
       <section ref={bestSellerRef} className={styles.bestSeller} aria-labelledby="best-seller-title">
-        <h2 id="best-seller-title" className={styles.bestSellerTitle}>BEST SELLER</h2>
+        <h2 id="best-seller-title" className={styles.bestSellerTitle}>베스트 상품</h2>
 
         <div className={styles.productDeck} aria-label="베스트셀러 상품 미리보기">
           <article className={`${styles.productMock} ${styles.productOne}`}>
-            <span>JAJAK PICK</span><div>IMAGE</div>
+            <header className={styles.productMockHeader}>
+              <span><strong>JAJAK</strong><small>Traditional Selection</small></span>
+              <i aria-hidden="true">♥</i>
+            </header>
+            <div>IMAGE</div>
           </article>
           <article className={`${styles.productMock} ${styles.productTwo}`}>
-            <span>TRADITIONAL</span><div>IMAGE</div>
+            <header className={styles.productMockHeader}>
+              <span><strong>JAJAK</strong><small>Traditional Selection</small></span>
+              <i aria-hidden="true">♥</i>
+            </header>
+            <div>IMAGE</div>
           </article>
           <article className={`${styles.productMock} ${styles.productThree}`}>
-            <span>NEW TASTE</span><div>IMAGE</div>
+            <header className={styles.productMockHeader}>
+              <span><strong>JAJAK</strong><small>Traditional Selection</small></span>
+              <i aria-hidden="true">♥</i>
+            </header>
+            <div>IMAGE</div>
           </article>
           <article className={`${styles.productMock} ${styles.productFour}`}>
-            <span>BEST PAIRING</span><div>IMAGE</div>
+            <header className={styles.productMockHeader}>
+              <span><strong>JAJAK</strong><small>Traditional Selection</small></span>
+              <i aria-hidden="true">♥</i>
+            </header>
+            <div>IMAGE</div>
           </article>
         </div>
 
         <Link className={styles.allProductsButton} to="/shop">
-          See All Products
+          전체 상품 보기
         </Link>
       </section>
 
       <section ref={eventsGridRef} className={styles.eventsGrid} aria-labelledby="events-grid-title">
         <div className={styles.eventsCopy}>
-          <p>Events</p>
           <h2 id="events-grid-title">
-            다양한 혜택과
+            자작에서 만나는
             <br />
-            이벤트 지금 확인하세요
+            작은 즐거움
           </h2>
           <Link className={styles.eventsButton} to="/events">
-            See All Events
+            전체 이벤트 보기
           </Link>
         </div>
 
