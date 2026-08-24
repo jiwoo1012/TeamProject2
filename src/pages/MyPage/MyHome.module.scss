@@ -1,5 +1,563 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as v;
+
+.page {
+  position: relative;
+  width: 1161px;
+  max-width: none;
+  padding: v.$space-8 0 v.$space-20;
+  color: v.$color-text-primary;
+  font-family: v.$font-family-base;
+}
+
+.page::before {
+  position: absolute;
+  top: calc(v.$space-12 * -1);
+  right: 0;
+  left: 0;
+  border-top: 2px solid v.$color-primary;
+  content: '';
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+/* =========================
+   상단 요약 3단
+========================= */
+
+.summaryGrid {
+  display: grid;
+  width: 1161px;
+  grid-template-columns: 463.63px 327.04px 327.04px;
+  column-gap: 21.645px;
+  min-height: 210px;
+}
+
+.memberCard,
+.accountCard,
+.orderCountCard {
+  min-width: 0;
+  border-radius: v.$radius-xl;
+}
+
+.memberCard {
+  padding: v.$space-8;
+  background: color-mix(in srgb, v.$color-primary 40%, v.$color-bg);
+}
+
+.memberHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.$space-4;
+}
+
+.memberHeading h3 {
+  margin: 0;
+  font-size: v.$font-size-xl;
+  font-weight: v.$font-weight-semibold;
+  line-height: v.$line-height-tight;
+  white-space: nowrap;
+}
+
+.memberHeading h3 strong {
+  font-size: v.$font-size-2xl;
+  font-weight: v.$font-weight-bold;
+}
+
+/* 주문내역/회원정보에서 사용한 '일반 회원' 배지와 같은 잎 아이콘 */
+.membershipBadge {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: v.$space-1;
+  padding: 2px v.$space-2;
+  border-radius: v.$radius-pill;
+  background: v.$color-white;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-medium;
+  white-space: nowrap;
+}
+
+.membershipBadge::before {
+  width: v.$space-3;
+  height: v.$space-3;
+  flex: 0 0 auto;
+  border-radius: v.$radius-pill;
+  background: v.$color-primary;
+  content: '';
+}
+
+.membershipBadge::after {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  width: 4px;
+  height: 7px;
+  border-radius: 100% 0 100% 0;
+  background: v.$color-white;
+  content: '';
+  transform: translate(-50%, -50%) rotate(35deg);
+}
+
+.memberInfo {
+  display: grid;
+  gap: v.$space-4;
+  margin: v.$space-8 0 0;
+}
+
+.memberInfo div {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  align-items: center;
+}
+
+.memberInfo dt,
+.memberInfo dd {
+  margin: 0;
+  font-size: v.$font-size-md;
+  line-height: v.$line-height-base;
+}
+
+.memberInfo dt {
+  font-weight: v.$font-weight-bold;
+}
+
+.memberInfo dd {
+  color: v.$color-text-secondary;
+  font-weight: v.$font-weight-medium;
+}
+
+.accountCard {
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  padding: v.$space-5 v.$space-4;
+  background: #082f30;
+  color: v.$color-white;
+}
+
+.accountRow {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: v.$space-2 v.$space-1 v.$space-4;
+}
+
+.accountRow + .accountRow {
+  padding-top: v.$space-4;
+  border-top: 1px solid rgb(255 255 255 / 32%);
+}
+
+.accountRow > span {
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+}
+
+.accountRow p {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: v.$space-2;
+  margin: 0;
+}
+
+.accountRow strong {
+  font-size: v.$font-size-3xl;
+  font-weight: v.$font-weight-bold;
+  line-height: 1;
+}
+
+.accountRow em {
+  font-size: v.$font-size-xs;
+  font-style: normal;
+}
+
+.orderCountCard {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  overflow: hidden;
+  background: v.$color-surface;
+}
+
+/* Figma처럼 한 번에 이어지는 십자 구분선. 셀마다 선을 그리면 중앙이 끊겨 보임 */
+.orderCountCard::before,
+.orderCountCard::after {
+  position: absolute;
+  z-index: 1;
+  background: color-mix(in srgb, v.$color-text-muted 38%, transparent);
+  content: '';
+  pointer-events: none;
+}
+
+.orderCountCard::before {
+  top: v.$space-4;
+  bottom: v.$space-4;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-0.5px);
+}
+
+.orderCountCard::after {
+  top: 50%;
+  right: v.$space-4;
+  left: v.$space-4;
+  height: 1px;
+  transform: translateY(-0.5px);
+}
+
+.orderCountItem {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: v.$space-6 v.$space-4;
+}
+
+.orderCountItem span {
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+  white-space: nowrap;
+}
+
+.orderCountItem strong {
+  align-self: flex-end;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-3xl;
+  font-weight: v.$font-weight-bold;
+  line-height: 1;
+}
+
+/* =========================
+   WELCOME 배너
+========================= */
+
+.welcomeBanner {
+  display: flex;
+  width: 1156px;
+  min-height: 124px;
+  align-items: center;
+  justify-content: center;
+  margin-top: v.$space-8;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+  background: color-mix(in srgb, v.$color-white 82%, v.$color-bg);
+}
+
+.welcomeDecor {
+  display: block;
+  width: 804px;
+  height: 101px;
+  max-width: calc(100% - #{v.$space-8});
+}
+
+/* =========================
+   최근 주문 / AI 추천
+========================= */
+
+.activityGrid {
+  display: grid;
+  width: 1156px;
+  grid-template-columns: 657.85px 436.68px;
+  gap: 61.47px;
+  margin-top: v.$space-8;
+}
+
+.activitySection {
+  min-width: 0;
+}
+
+.sectionHeader {
+  margin-bottom: v.$space-4;
+}
+
+.sectionHeader h3 {
+  margin: 0;
+  font-size: v.$font-size-xl;
+  font-weight: v.$font-weight-bold;
+  line-height: v.$line-height-tight;
+}
+
+.sectionHeader p {
+  margin: v.$space-1 0 0;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+  line-height: v.$line-height-base;
+}
+
+.recentOrderList,
+.aiList {
+  overflow: hidden;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
+}
+
+.recentOrderList {
+  height: 298px;
+}
+
+.recentOrderItem {
+  display: grid;
+  min-height: 99px;
+  grid-template-columns: 66px minmax(0, 1fr) 82px;
+  align-items: center;
+  gap: v.$space-4;
+  padding: v.$space-3 v.$space-5;
+}
+
+.recentOrderItem + .recentOrderItem {
+  border-top: 1px solid v.$color-border;
+}
+
+.productThumb {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: v.$radius-lg;
+  background: color-mix(in srgb, v.$color-surface 68%, v.$color-white);
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
+
+.productThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.orderCopy,
+.aiCopy {
+  min-width: 0;
+}
+
+.orderCopy strong,
+.aiCopy strong {
+  display: block;
+  overflow: hidden;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-md;
+  font-weight: v.$font-weight-semibold;
+  line-height: v.$line-height-base;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.orderCopy span,
+.aiCopy span {
+  display: block;
+  margin-top: v.$space-1;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+  line-height: v.$line-height-base;
+}
+
+.orderActions {
+  display: flex;
+  align-items: stretch;
+  flex-direction: column;
+  gap: v.$space-2;
+}
+
+.statusBadge,
+.smallLinkButton,
+.recommendButton,
+.fullLinkButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+}
+
+.statusBadge {
+  min-height: 28px;
+  padding: 0 v.$space-3;
+  border-radius: v.$radius-pill;
+  background: v.$color-surface;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-semibold;
+  white-space: nowrap;
+}
+
+.statusBadge.shipping {
+  background: color-mix(in srgb, v.$color-primary 20%, v.$color-white);
+  color: v.$color-primary;
+}
+
+.statusBadge.completed {
+  background: v.$color-surface;
+  color: v.$color-text-muted;
+}
+
+.smallLinkButton,
+.recommendButton {
+  min-height: 30px;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-pill;
+  background: v.$color-white;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-semibold;
+}
+
+.aiList {
+  display: grid;
+  height: 298px;
+  align-content: center;
+  gap: v.$space-4;
+  padding: v.$space-5;
+}
+
+.aiItem {
+  display: grid;
+  min-height: 66px;
+  grid-template-columns: minmax(0, 1fr) 80px;
+  align-items: center;
+  gap: v.$space-4;
+}
+
+.aiCopy {
+  padding: v.$space-3 v.$space-4;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
+}
+
+.recommendButton {
+  min-height: 38px;
+  border-color: v.$color-taupe;
+  border-radius: v.$radius-xl;
+}
+
+.fullLinkButton {
+  width: 100%;
+  height: 54px;
+  margin-top: v.$space-5;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+  background: v.$color-white;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-md;
+  font-weight: v.$font-weight-semibold;
+}
+
+.smallLinkButton:hover,
+.recommendButton:hover,
+.fullLinkButton:hover {
+  border-color: v.$color-primary;
+  color: v.$color-primary;
+}
+
+.smallLinkButton:focus-visible,
+.recommendButton:focus-visible,
+.fullLinkButton:focus-visible {
+  outline: 2px solid v.$color-primary-light;
+  outline-offset: 2px;
+}
+
+/* =========================
+   Tablet / Mobile
+========================= */
+
+@media (max-width: v.$breakpoint-tablet-max) {
+  .page {
+    width: 100%;
+  }
+
+  .summaryGrid,
+  .activityGrid {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+
+  .welcomeBanner {
+    width: 100%;
+  }
+
+  .activityGrid {
+    gap: v.$space-8;
+  }
+
+  .welcomeBanner {
+    padding: v.$space-5;
+  }
+
+  .welcomeLine,
+  .welcomeFlower,
+  .welcomeDots {
+    display: none;
+  }
+
+  .recentOrderList,
+  .aiList {
+    height: auto;
+  }
+}
+
+@media (max-width: v.$breakpoint-mobile-max) {
+  .page {
+    padding-top: v.$space-6;
+  }
+
+  .memberCard {
+    padding: v.$space-6;
+  }
+
+  .memberHeading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .memberHeading h3 {
+    font-size: v.$font-size-xl;
+  }
+
+  .memberInfo div {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .welcomeCopy strong {
+    font-size: v.$font-size-3xl;
+  }
+
+  .welcomeBanner svg {
+    width: 72px;
+  }
+
+  .recentOrderItem {
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+
+  .productThumb {
+    width: 56px;
+    height: 56px;
+  }
+
+  .orderActions {
+    grid-column: 2;
+    flex-direction: row;
+  }
+
+  .aiItem {
+    grid-template-columns: 1fr;
+  }
+
+  .recommendButton {
+    width: 100%;
+  }
+}

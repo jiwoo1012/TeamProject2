@@ -2,7 +2,7 @@
 
 .page {
   min-height: 55vh;
-  padding: v.$space-10 0 v.$space-16;
+  padding: v.$space-16 0 v.$space-16;
   background: v.$color-bg;
   color: v.$color-text-primary;
 }
@@ -12,8 +12,8 @@
 ========================= */
 
 .pageHeader {
-  margin: 0 0 v.$space-10;
-  padding: 0 v.$side-margin-desktop;
+  margin: 0 0 v.$space-12;
+  padding: 0 v.$space-12;
 }
 
 .title {
@@ -37,9 +37,9 @@
 .layout {
   display: grid;
   grid-template-columns:
-    calc(v.$grid-gutter * 12) minmax(0, 1fr);
+    calc(v.$grid-gutter * 14) minmax(0, 1fr);
 
-  gap: v.$space-10;
+  gap: calc(v.$space-12 + v.$space-2);
   align-items: stretch;
 }
 
@@ -68,7 +68,7 @@
 
   width: 86%;
 
-  min-height: calc(v.$space-6 + v.$space-8);
+  min-height: 60px;
   padding: 0 v.$space-5;
 
   border: 1px solid v.$color-border;
@@ -95,6 +95,7 @@
 /* 활성 메뉴만 길게 */
 .active {
   width: 100%;
+  min-height: 72px;
 
   border-color: v.$color-primary;
   background: v.$color-primary;
@@ -175,8 +176,8 @@
 ========================= */
 
 .content {
-  width: calc(100% - v.$side-margin-desktop);
-  max-width: calc(v.$container-max - v.$space-24);
+  width: 100%;
+  max-width: calc(v.$container-max - v.$grid-gutter * 12);
   min-width: 0;
 }
 

@@ -1,5 +1,893 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as v;
+
+/*
+ * ProfileEdit
+ * - PC Figma 기준 외곽 치수 유지
+ * - typography/color/radius는 팀 variables 토큰 우선 사용
+ * - 공통 MyPageLayout / sidebar는 건드리지 않음
+ */
+.page {
+  position: relative;
+  width: 100%;
+  padding-bottom: v.$space-10;
+  color: v.$color-text-primary;
+  font-family: v.$font-family-base;
+}
+
+.page button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+
+
+.profileBanner {
+  position: relative;
+  display: flex;
+  /* 주문내역 요약 패널과 동일한 민트 배경 폭 */
+  width: 1128px;
+  height: 201px;
+  align-items: center;
+  overflow: visible;
+  padding: 0 38px;
+  border: 1px solid v.$color-border;
+  border-radius: 27px;
+  background: rgb(77 126 123 / 40%);
+}
+
+.avatar {
+  display: grid;
+  width: 118px;
+  height: 118px;
+  flex: 0 0 118px;
+  place-items: center;
+  border-radius: v.$radius-pill;
+  background: v.$color-white;
+}
+
+.avatar svg {
+  width: 74px;
+  height: 74px;
+  fill: #c5c5c5;
+}
+
+.bannerCopy {
+  position: relative;
+  z-index: 2;
+  margin-left: 34px;
+}
+
+.bannerCopy h2 {
+  margin: 0;
+  color: v.$color-text-primary;
+  font-size: 29.2px;
+  font-weight: v.$font-weight-bold;
+  line-height: v.$line-height-tight;
+}
+
+.memberName {
+  font-size: 36.5px;
+}
+
+.bannerCopy p {
+  margin: v.$space-2 0 v.$space-3;
+  color: v.$color-text-primary;
+  font-size: 20px;
+  font-weight: v.$font-weight-regular;
+  line-height: v.$line-height-base;
+}
+
+.memberMeta {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  gap: v.$space-2;
+  margin-top: v.$space-2;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-xs;
+  line-height: v.$line-height-base;
+}
+
+.memberMeta strong {
+  color: v.$color-text-primary;
+  font-weight: v.$font-weight-bold;
+}
+
+.memberBadge {
+  position: relative;
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  justify-content: center;
+  gap: v.$space-1;
+  padding: 0 v.$space-2;
+  border-radius: v.$radius-pill;
+  background: rgb(255 255 255 / 78%);
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-medium;
+  line-height: 1;
+}
+
+.memberBadge::before {
+  width: v.$space-3;
+  height: v.$space-3;
+  flex: 0 0 auto;
+  border-radius: v.$radius-pill;
+  background: v.$color-primary;
+  content: '';
+}
+
+.memberBadge::after {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  width: 4px;
+  height: 7px;
+  border-radius: 100% 0 100% 0;
+  background: v.$color-white;
+  content: '';
+  transform: translate(-50%, -50%) rotate(35deg);
+}
+
+.bannerActions {
+  position: absolute;
+  right: 126px;
+  bottom: 34px;
+  z-index: 3;
+  display: flex;
+  gap: 19px;
+}
+
+/* reset.scss의 button { text-align: inherit; } 때문에 반드시 컴포넌트에서 중앙 정렬 */
+.outlineButton,
+.primaryButton,
+.editProfileButton,
+.addAddressButton,
+.smallPrimaryButton,
+.smallOutlineButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  font-family: v.$font-family-base;
+  font-weight: v.$font-weight-semibold;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.outlineButton,
+.primaryButton {
+  width: 113px;
+  height: 37px;
+  padding: 0;
+  border-radius: v.$radius-lg;
+  font-size: v.$font-size-sm;
+}
+
+.outlineButton {
+  border-color: v.$color-white;
+  background: v.$color-white;
+  color: v.$color-text-primary;
+}
+
+.primaryButton {
+  background: v.$color-primary;
+  color: v.$color-white;
+}
+
+/* 막동이 최종 이미지가 나오기 전 임시 캐릭터 */
+.mascot {
+  position: absolute;
+  right: -45px;
+  bottom: -8px;
+  z-index: 2;
+  width: 168px;
+  height: 152px;
+  pointer-events: none;
+}
+
+.mascotPlaceholder {
+  position: absolute;
+  right: -73px;
+  bottom: -10px;
+  display: grid;
+  width: 174px;
+  height: 157px;
+  place-items: center;
+  font-size: 116px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.mascotFace,
+.earLeft,
+.earRight {
+  position: absolute;
+  display: block;
+  background: v.$color-surface;
+}
+
+.mascotFace {
+  right: v.$space-2;
+  bottom: 5px;
+  width: 112px;
+  height: 102px;
+  border: 3px solid v.$color-taupe;
+  border-radius: 48% 48% 42% 42%;
+}
+
+.earLeft,
+.earRight {
+  top: 19px;
+  width: 48px;
+  height: 48px;
+  border: 3px solid v.$color-taupe;
+  border-radius: 70% 70% 16% 70%;
+}
+
+.earLeft {
+  left: 27px;
+  transform: rotate(-24deg);
+}
+
+.earRight {
+  right: 6px;
+  transform: rotate(24deg) scaleX(-1);
+}
+
+.eyeLeft,
+.eyeRight,
+.nose {
+  position: absolute;
+  display: block;
+  border-radius: v.$radius-pill;
+  background: v.$color-text-primary;
+}
+
+.eyeLeft,
+.eyeRight {
+  top: 39px;
+  width: v.$space-2;
+  height: v.$space-3;
+}
+
+.eyeLeft {
+  left: 30px;
+}
+
+.eyeRight {
+  right: 30px;
+}
+
+.nose {
+  bottom: v.$space-6;
+  left: calc(50% - v.$space-1);
+  width: v.$space-2;
+  height: 7px;
+}
+
+.infoGrid {
+  display: grid;
+  width: 1220px;
+  grid-template-columns: 444px 738px;
+  gap: 38px;
+  margin-top: 43px;
+}
+
+.infoCard {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 28px 29px v.$space-10;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+  background: v.$color-white;
+}
+
+.infoCard:first-child {
+  height: 642px;
+}
+
+.infoCard:first-child h2 {
+  font-weight: v.$font-weight-semibold;
+}
+
+/* Figma: 카드 제목 아래 구분선 */
+.infoCard h2 {
+  margin: 0;
+  padding-bottom: v.$space-4;
+  border-bottom: 1px solid v.$color-border;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-xl;
+  font-weight: v.$font-weight-bold;
+  line-height: v.$line-height-tight;
+}
+
+/* Figma: 이름/이메일/휴대폰/생년월일 사이 구분선 */
+.detailList {
+  display: grid;
+  margin: 0;
+}
+
+.detailRow {
+  display: grid;
+  min-height: 68px;
+  grid-template-columns: 104px minmax(0, 1fr);
+  align-items: center;
+  border-bottom: 1px solid v.$color-border;
+  font-size: 20px;
+  line-height: v.$line-height-base;
+}
+
+.detailRow:last-child {
+  border-bottom: 0;
+}
+
+.detailRow dt {
+  color: v.$color-text-muted;
+  font-weight: v.$font-weight-medium;
+}
+
+.detailRow dd {
+  margin: 0;
+  color: v.$color-text-primary;
+  font-weight: v.$font-weight-medium;
+}
+
+.editProfileButton {
+  width: 263px;
+  height: 56px;
+  align-self: center;
+  margin-top: auto;
+  border-radius: v.$radius-lg;
+  background: v.$color-primary;
+  color: v.$color-white;
+  font-size: v.$font-size-lg;
+}
+
+.deliveryCard {
+  position: relative;
+  height: 717px;
+  padding: 28px 57px 46px 38px;
+}
+
+/* 피그마의 우측 스크롤 표시 장식 */
+.deliveryCard::before,
+.deliveryCard::after {
+  position: absolute;
+  right: 28px;
+  width: 6px;
+  border-radius: v.$radius-pill;
+  content: '';
+}
+
+.deliveryCard::before {
+  top: 94px;
+  z-index: 2;
+  height: 91px;
+  background: v.$color-primary;
+}
+
+.deliveryCard::after {
+  top: 94px;
+  height: 205px;
+  background: #d8d8d8;
+}
+
+.addressList {
+  display: grid;
+  margin-top: v.$space-5;
+}
+
+.addressItem {
+  display: flex;
+  min-width: 0;
+  min-height: 116px;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.$space-4;
+  padding: v.$space-4 0;
+  border-bottom: 1px solid v.$color-border;
+}
+
+.addressItem:last-child {
+  border-bottom: 0;
+}
+
+.addressCopy {
+  min-width: 0;
+}
+
+.addressHeading {
+  display: flex;
+  min-height: 24px;
+  align-items: center;
+  gap: v.$space-2;
+}
+
+.addressHeading strong {
+  color: v.$color-text-primary;
+  font-size: 20px;
+  font-weight: v.$font-weight-semibold;
+  line-height: v.$line-height-tight;
+}
+
+.defaultBadge {
+  display: inline-flex;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 v.$space-2;
+  border-radius: v.$radius-sm;
+  background: v.$color-primary;
+  color: v.$color-white;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-semibold;
+  line-height: 1;
+}
+
+.addressCopy p {
+  max-width: 385px;
+  margin: v.$space-1 0 0;
+  overflow: hidden;
+  color: v.$color-text-muted;
+  font-size: 17px;
+  font-weight: v.$font-weight-regular;
+  line-height: v.$line-height-base;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.addressActions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: v.$space-2;
+}
+
+.smallPrimaryButton,
+.smallOutlineButton {
+  width: 58px;
+  height: 24px;
+  padding: 0;
+  border-radius: v.$radius-sm;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-medium;
+}
+
+.smallPrimaryButton {
+  background: v.$color-primary;
+  color: v.$color-white;
+}
+
+.smallOutlineButton {
+  border-color: v.$color-primary;
+  background: v.$color-white;
+  color: v.$color-text-primary;
+}
+
+.addAddressButton {
+  width: 236px;
+  height: 50px;
+  align-self: center;
+  margin-top: auto;
+  margin-right: 22px;
+  border-radius: v.$radius-lg;
+  background: v.$color-primary;
+  color: v.$color-white;
+  font-size: v.$font-size-md;
+}
+
+.addAddressButton span {
+  margin-right: v.$space-1;
+}
+
+.outlineButton:hover,
+.smallOutlineButton:hover {
+  border-color: v.$color-primary;
+  color: v.$color-primary;
+}
+
+.primaryButton:hover,
+.editProfileButton:hover,
+.addAddressButton:hover,
+.smallPrimaryButton:hover {
+  background: v.$color-primary-light;
+}
+
+.outlineButton:focus-visible,
+.primaryButton:focus-visible,
+.editProfileButton:focus-visible,
+.addAddressButton:focus-visible,
+.smallPrimaryButton:focus-visible,
+.smallOutlineButton:focus-visible {
+  outline: 2px solid v.$color-primary-light;
+  outline-offset: 2px;
+}
+
+@media (max-width: v.$breakpoint-tablet-max) {
+  .topOrnament,
+  .profileBanner,
+  .infoGrid {
+    width: 100%;
+  }
+
+  .profileBanner {
+    min-height: 190px;
+    height: auto;
+  }
+
+  .bannerActions {
+    right: 100px;
+  }
+
+  .mascot {
+    right: -20px;
+    transform: scale(0.88);
+    transform-origin: right bottom;
+  }
+
+  .infoGrid {
+    grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.28fr);
+    gap: v.$space-6;
+  }
+
+  .infoCard:first-child,
+  .deliveryCard {
+    height: auto;
+    min-height: 530px;
+  }
+}
+
+@media (max-width: v.$breakpoint-mobile-max) {
+  .page {
+    padding-bottom: v.$space-6;
+  }
+
+  .topOrnament {
+    display: none;
+  }
+
+  .profileBanner {
+    display: grid;
+    min-height: 0;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: v.$space-4;
+    padding: v.$space-5;
+    border-radius: v.$radius-xl;
+  }
+
+  .avatar {
+    width: 64px;
+    height: 64px;
+    flex-basis: 64px;
+  }
+
+  .avatar svg {
+    width: 44px;
+    height: 44px;
+  }
+
+  .bannerCopy {
+    margin-left: 0;
+  }
+
+  .bannerCopy h2 {
+    font-size: v.$font-size-xl;
+  }
+
+  .memberName {
+    font-size: v.$font-size-3xl;
+  }
+
+  .bannerCopy p {
+    font-size: v.$font-size-sm;
+  }
+
+  .memberMeta {
+    flex-wrap: wrap;
+    gap: v.$space-2;
+  }
+
+  .bannerActions {
+    position: static;
+    display: flex;
+    grid-column: 1 / -1;
+    width: 100%;
+    gap: v.$space-2;
+    margin-top: v.$space-1;
+    padding-right: 58px;
+  }
+
+  .outlineButton,
+  .primaryButton {
+    width: auto;
+    min-width: 0;
+    height: 42px;
+    flex: 1;
+  }
+
+  .mascot {
+    right: 6px;
+    bottom: 5px;
+    transform: scale(0.47);
+    transform-origin: right bottom;
+  }
+
+  .mascotPlaceholder {
+    right: -36px;
+    bottom: -26px;
+    transform: scale(0.5);
+    transform-origin: right bottom;
+  }
+
+  .infoGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: v.$space-5;
+    margin-top: v.$space-5;
+  }
+
+  .infoCard,
+  .infoCard:first-child,
+  .deliveryCard {
+    height: auto;
+    min-height: 0;
+    padding: v.$space-6 v.$space-5;
+  }
+
+  .infoCard h2 {
+    font-size: v.$font-size-lg;
+  }
+
+  .detailRow {
+    min-height: 58px;
+    grid-template-columns: 92px minmax(0, 1fr);
+    font-size: v.$font-size-sm;
+  }
+
+  .editProfileButton {
+    width: 100%;
+    height: 50px;
+    margin-top: v.$space-8;
+    font-size: v.$font-size-md;
+  }
+
+  .deliveryCard::before,
+  .deliveryCard::after {
+    display: none;
+  }
+
+  .addressList {
+    margin-top: v.$space-3;
+  }
+
+  .addressItem {
+    min-height: 0;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: v.$space-5 0;
+  }
+
+  .addressCopy p {
+    max-width: none;
+    overflow: visible;
+    white-space: normal;
+  }
+
+  .addressActions {
+    align-self: flex-end;
+  }
+
+  .addAddressButton {
+    width: 100%;
+    height: 48px;
+    margin-top: v.$space-8;
+    margin-right: 0;
+  }
+}
+
+/* Profile editing states */
+.formCard {
+  min-height: 552px;
+}
+
+.fieldList {
+  display: grid;
+  margin: 0;
+}
+
+.formRow {
+  display: grid;
+  min-height: 68px;
+  grid-template-columns: 104px minmax(0, 1fr);
+  align-items: center;
+  gap: v.$space-4;
+  border-bottom: 1px solid v.$color-border;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-md;
+  font-weight: v.$font-weight-medium;
+}
+
+.formRow input {
+  width: 100%;
+  height: 30px;
+  padding: 0 v.$space-3;
+  border: 0;
+  border-radius: v.$radius-md;
+  outline: 0;
+  background: color-mix(in srgb, v.$color-border 40%, v.$color-white);
+  color: v.$color-text-primary;
+  font: inherit;
+  font-weight: v.$font-weight-medium;
+}
+
+.formRow input::placeholder {
+  color: v.$color-text-muted;
+}
+
+.formRow strong {
+  color: v.$color-text-primary;
+  font-weight: v.$font-weight-semibold;
+}
+
+.formRow input:focus-visible {
+  outline: 2px solid v.$color-primary-light;
+  outline-offset: 2px;
+}
+
+.completeButton {
+  width: 263px;
+  height: 56px;
+  align-self: center;
+  margin-top: auto;
+  border: 0;
+  border-radius: v.$radius-lg;
+  background: v.$color-taupe;
+  color: v.$color-white;
+  font: inherit;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-semibold;
+  cursor: pointer;
+}
+
+.passwordCard {
+  min-height: 497px;
+}
+
+.passwordCard .formRow input {
+  padding: 0 v.$space-2;
+  font-size: v.$font-size-xs;
+  letter-spacing: -0.02em;
+}
+
+.deliveryFormCard {
+  min-height: 632px;
+  padding-right: v.$space-10;
+}
+
+.deliveryFormCard .formRow input {
+  width: min(100%, 240px);
+}
+
+.defaultCheck {
+  display: inline-flex;
+  align-items: center;
+  gap: v.$space-2;
+  margin-top: v.$space-4;
+  color: v.$color-primary;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-medium;
+  cursor: pointer;
+}
+
+.defaultCheck input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+.checkMark {
+  display: grid;
+  width: v.$space-4;
+  height: v.$space-4;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid v.$color-primary;
+  border-radius: v.$radius-pill;
+  background: v.$color-white;
+  color: transparent;
+  font-size: 10px;
+  font-weight: v.$font-weight-bold;
+  line-height: 1;
+}
+
+.defaultCheck input:checked + .checkMark {
+  background: v.$color-primary;
+  color: v.$color-white;
+}
+
+.defaultCheck input:focus-visible + .checkMark {
+  outline: 2px solid v.$color-primary-light;
+  outline-offset: 2px;
+}
+
+.emptyCard {
+  min-height: 707px;
+  align-items: center;
+  justify-content: center;
+  padding: v.$space-10;
+  text-align: center;
+}
+
+.emptyIcon {
+  width: 134px;
+  height: 134px;
+  margin-bottom: v.$space-10;
+  border-radius: v.$radius-pill;
+  background: color-mix(in srgb, v.$color-primary 45%, v.$color-white);
+}
+
+.emptyCard h2 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-2xl;
+}
+
+.emptyCard p {
+  margin: v.$space-6 0 v.$space-10;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-md;
+  line-height: v.$line-height-relaxed;
+}
+
+.emptyCard .editProfileButton,
+.emptyCard .addAddressButton {
+  margin-top: 0;
+  margin-right: 0;
+}
+
+@media (max-width: v.$breakpoint-mobile-max) {
+  .formCard,
+  .passwordCard,
+  .deliveryFormCard,
+  .emptyCard {
+    min-height: 0;
+  }
+
+  .formRow {
+    min-height: 58px;
+    grid-template-columns: 92px minmax(0, 1fr);
+    font-size: v.$font-size-sm;
+  }
+
+  .deliveryFormCard .formRow input {
+    width: 100%;
+  }
+
+  .completeButton {
+    width: 100%;
+    height: 50px;
+    margin-top: v.$space-8;
+    font-size: v.$font-size-md;
+  }
+
+  .emptyCard {
+    padding: v.$space-12 v.$space-5;
+  }
+
+  .emptyIcon {
+    width: 96px;
+    height: 96px;
+    margin-bottom: v.$space-6;
+  }
+}

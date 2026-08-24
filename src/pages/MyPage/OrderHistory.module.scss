@@ -1,5 +1,748 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as v;
+
+.page {
+  position: relative;
+  /* 주문 카드 목록까지 포함한 주문내역 작업 폭 (시안: 약 1195px) */
+  width: 1195px;
+  padding: v.$space-8 0 v.$space-20;
+  color: v.$color-text-primary;
+  font-family: v.$font-family-base;
+}
+
+.page::before {
+  position: absolute;
+  top: calc(v.$space-12 * -1);
+  right: 0;
+  left: 0;
+  border-top: 2px solid v.$color-primary;
+  content: '';
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+/* =========================
+   상단 회원 요약 배너
+========================= */
+
+.summaryBanner {
+  position: relative;
+  display: grid;
+  /* 전체 주문내역 시안의 민트 패널: 1128 × 311 */
+  width: 1128px;
+  min-height: 311px;
+  grid-template-columns: 400px minmax(0, 1fr);
+  align-items: stretch;
+  overflow: visible;
+  border-radius: v.$radius-lg;
+  background: color-mix(in srgb, v.$color-primary 40%, v.$color-bg);
+}
+
+.memberSummary {
+  position: relative;
+  padding: 64px v.$space-8 v.$space-8 45px;
+}
+
+.avatar {
+  position: absolute;
+  top: 52px;
+  left: 45px;
+  display: grid;
+  width: 113px;
+  height: 113px;
+  place-items: center;
+  border-radius: v.$radius-pill;
+  background: v.$color-white;
+}
+
+.avatar svg {
+  width: 70px;
+  height: 70px;
+  fill: color-mix(in srgb, v.$color-text-muted 45%, v.$color-white);
+}
+
+.memberCopy {
+  margin-left: 146px;
+}
+
+.greeting {
+  margin: 0;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-md;
+  font-weight: v.$font-weight-medium;
+  line-height: v.$line-height-base;
+}
+
+.memberName {
+  display: block;
+  margin-top: v.$space-1;
+  color: v.$color-text-primary;
+  font-size: 36px;
+  font-weight: v.$font-weight-bold;
+  line-height: v.$line-height-tight;
+}
+
+.memberName span {
+  font-size: v.$font-size-xl;
+}
+
+.memberMeta {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  gap: v.$space-2;
+  margin-top: v.$space-2;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-xs;
+  line-height: v.$line-height-base;
+  white-space: nowrap;
+}
+
+.memberMeta strong {
+  color: v.$color-text-primary;
+  font-weight: v.$font-weight-semibold;
+}
+
+.memberBadge {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: v.$space-1;
+  padding: 2px v.$space-2;
+  border-radius: v.$radius-pill;
+  background: v.$color-white;
+  color: v.$color-text-muted;
+  font-weight: v.$font-weight-medium;
+  white-space: nowrap;
+}
+
+.memberBadge::before {
+  width: v.$space-3;
+  height: v.$space-3;
+  flex: 0 0 auto;
+  border-radius: v.$radius-pill;
+  background: v.$color-primary;
+  content: '';
+}
+
+.memberBadge::after {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  width: 4px;
+  height: 7px;
+  border-radius: 100% 0 100% 0;
+  background: v.$color-white;
+  content: '';
+  transform: translate(-50%, -50%) rotate(35deg);
+}
+
+.progressArea {
+  display: flex;
+  width: 342px;
+  height: 31px;
+  align-items: center;
+  gap: v.$space-2;
+  margin-top: v.$space-6;
+  padding: 0 v.$space-2;
+  border-radius: v.$radius-pill;
+  background: v.$color-white;
+}
+
+.progressTrack {
+  width: 190px;
+  height: v.$space-2;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-radius: v.$radius-pill;
+  background: color-mix(in srgb, v.$color-text-muted 35%, v.$color-white);
+}
+
+.progressValue {
+  display: block;
+  width: 40%;
+  height: 100%;
+  border-radius: inherit;
+  background: v.$color-primary;
+}
+
+.progressText {
+  margin-left: auto;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-medium;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.summaryMessage {
+  margin-top: v.$space-6;
+  margin-left: v.$space-3;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-medium;
+  line-height: v.$line-height-relaxed;
+}
+
+.stats {
+  display: grid;
+  width: 646px;
+  grid-template-columns: 154px 152px 171px 169px;
+  align-self: center;
+  padding: 0;
+}
+
+.statItem {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.statItem + .statItem::before {
+  position: absolute;
+  top: v.$space-4;
+  bottom: v.$space-4;
+  left: 0;
+  width: 1px;
+  background: color-mix(in srgb, v.$color-primary 55%, transparent);
+  content: '';
+}
+
+.statIcon {
+  display: grid;
+  width: 100px;
+  height: 100px;
+  place-items: center;
+  border-radius: v.$radius-pill;
+  background: v.$color-bg;
+}
+
+.statIcon svg {
+  width: 52px;
+  height: 52px;
+  fill: none;
+  stroke: v.$color-primary;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.statLabel {
+  margin-top: v.$space-4;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-semibold;
+}
+
+.statValue {
+  display: flex;
+  align-items: baseline;
+  gap: v.$space-2;
+  margin-top: v.$space-1;
+}
+
+.statValue strong {
+  color: v.$color-text-primary;
+  font-size: 36px;
+  font-weight: v.$font-weight-bold;
+  line-height: 1;
+}
+
+.statValue span {
+  color: v.$color-text-primary;
+  font-size: v.$font-size-md;
+  font-weight: v.$font-weight-semibold;
+}
+
+.statCaption {
+  margin-top: v.$space-2;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-medium;
+}
+
+.mascotPlaceholder {
+  position: absolute;
+  right: -73px;
+  bottom: -10px;
+  display: grid;
+  width: 174px;
+  height: 157px;
+  place-items: center;
+  font-size: 116px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+
+/* =========================
+   필터 / 정렬
+========================= */
+
+.controls {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: v.$space-12;
+  gap: v.$space-6;
+}
+
+.filters {
+  display: grid;
+  width: 65%;
+  flex: 0 0 65%;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid v.$color-border;
+}
+
+.filterButton {
+  position: relative;
+  min-height: 56px;
+  padding: 0 v.$space-3;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-semibold;
+  line-height: 1;
+  text-align: center;
+}
+
+.filterButton::after {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 75%;
+  height: 3px;
+  border-radius: v.$radius-pill;
+  background: transparent;
+  content: '';
+}
+
+.activeFilter {
+  color: v.$color-primary;
+  font-weight: v.$font-weight-bold;
+}
+
+.activeFilter::after {
+  background: v.$color-primary;
+}
+
+.sortBox {
+  position: relative;
+  width: 144px;
+  height: 44px;
+  flex: 0 0 auto;
+}
+
+.sortBox select {
+  width: 100%;
+  height: 100%;
+  padding: 0 v.$space-10 0 v.$space-5;
+  border: 1px solid v.$color-taupe;
+  border-radius: v.$radius-lg;
+  background: v.$color-white;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-semibold;
+  text-align: center;
+  cursor: pointer;
+}
+
+.sortArrow {
+  position: absolute;
+  top: 50%;
+  right: v.$space-5;
+  width: v.$space-3;
+  height: v.$space-3;
+  border-right: 2px solid v.$color-taupe;
+  border-bottom: 2px solid v.$color-taupe;
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+
+/* =========================
+   주문 목록
+========================= */
+
+.orderList {
+  overflow: hidden;
+  margin-top: v.$space-6;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+  background: v.$color-white;
+}
+
+.orderItem {
+  min-height: 148px;
+  padding: v.$space-4 v.$space-5;
+}
+
+.orderItem + .orderItem {
+  border-top: 1px solid v.$color-border;
+}
+
+.orderMeta {
+  display: flex;
+  min-height: v.$space-6;
+  align-items: center;
+  gap: v.$space-1;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-medium;
+  line-height: v.$line-height-base;
+}
+
+.metaDivider {
+  color: v.$color-text-muted;
+}
+
+.statusBadge {
+  display: inline-flex;
+  min-width: 78px;
+  min-height: 24px;
+  align-items: center;
+  justify-content: center;
+  margin-left: v.$space-3;
+  padding: 0 v.$space-3;
+  border-radius: v.$radius-pill;
+  color: v.$color-white;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-semibold;
+  line-height: 1;
+}
+
+.preparing,
+.shipping {
+  background: v.$color-primary;
+}
+
+.completed {
+  background: color-mix(in srgb, v.$color-text-muted 65%, v.$color-white);
+}
+
+.cancelled,
+.returned,
+.exchanged {
+  background: v.$color-error;
+}
+
+.orderBody {
+  display: flex;
+  align-items: center;
+  margin-top: v.$space-2;
+}
+
+.productImage {
+  display: grid;
+  width: v.$space-20;
+  height: 76px;
+  flex: 0 0 auto;
+  overflow: hidden;
+  place-items: center;
+  border-radius: v.$radius-md;
+  background: color-mix(in srgb, v.$color-surface 70%, v.$color-white);
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-medium;
+}
+
+.productImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.productInfo {
+  min-width: 0;
+  margin-left: v.$space-5;
+}
+
+.productName {
+  display: block;
+  overflow: hidden;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-semibold;
+  line-height: v.$line-height-base;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.productPrice {
+  margin-top: v.$space-2;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-md;
+  font-weight: v.$font-weight-medium;
+}
+
+.detailButton {
+  display: inline-flex;
+  width: 118px;
+  height: 49px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  border: 1px solid v.$color-taupe;
+  border-radius: v.$radius-lg;
+  background: v.$color-white;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-semibold;
+  text-align: center;
+}
+
+.detailButton:hover {
+  border-color: v.$color-primary;
+  color: v.$color-primary;
+}
+
+.emptyState {
+  display: flex;
+  min-height: 300px;
+  align-items: center;
+  justify-content: center;
+  margin-top: v.$space-6;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+  background: v.$color-white;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-md;
+}
+
+/* =========================
+   임시 페이지네이션
+========================= */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: v.$space-6;
+  margin-top: v.$space-10;
+}
+
+.pageButton,
+.pageArrow {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: v.$radius-pill;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-medium;
+  line-height: 1;
+  text-align: center;
+}
+
+.pageArrow {
+  font-size: v.$font-size-2xl;
+}
+
+.activePage {
+  background: v.$color-primary;
+  color: v.$color-white;
+}
+
+.pageArrow:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.filterButton:focus-visible,
+.sortBox select:focus-visible,
+.detailButton:focus-visible,
+.pageButton:focus-visible,
+.pageArrow:focus-visible {
+  outline: 2px solid v.$color-primary-light;
+  outline-offset: 2px;
+}
+
+/* =========================
+   반응형 - 껍데기 단계 기본 대응
+========================= */
+
+@media (max-width: v.$breakpoint-tablet-max) {
+  .page {
+    width: 100%;
+  }
+
+  .summaryBanner {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+
+  .memberSummary {
+    min-height: 220px;
+  }
+
+  .stats {
+    border-top: 1px solid color-mix(in srgb, v.$color-primary 35%, transparent);
+  }
+
+  .mascotPlaceholder {
+    right: v.$space-4;
+    bottom: auto;
+    top: v.$space-6;
+  }
+
+  .controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .sortBox {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: v.$breakpoint-mobile-max) {
+  .page {
+    padding: v.$space-5 0 v.$space-12;
+  }
+
+  .page::before {
+    display: none;
+  }
+
+  .summaryBanner {
+    min-height: 0;
+  }
+
+  .memberSummary {
+    min-height: 250px;
+    padding: v.$space-5;
+  }
+
+  .avatar {
+    top: v.$space-5;
+    left: v.$space-5;
+    width: v.$space-16;
+    height: v.$space-16;
+  }
+
+  .avatar svg {
+    width: v.$space-10;
+    height: v.$space-10;
+  }
+
+  .memberCopy {
+    margin-left: calc(v.$space-16 + v.$space-4);
+  }
+
+  .memberName {
+    font-size: v.$font-size-2xl;
+  }
+
+  .progressArea {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .progressTrack {
+    width: min(100%, 220px);
+  }
+
+  .mascotPlaceholder {
+    width: 96px;
+    height: 96px;
+    font-size: 68px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: v.$space-5 0;
+    padding: v.$space-6 0;
+  }
+
+  .statItem:nth-child(3)::before {
+    display: none;
+  }
+
+  .statIcon {
+    width: v.$space-16;
+    height: v.$space-16;
+  }
+
+  .statIcon svg {
+    width: v.$space-10;
+    height: v.$space-10;
+  }
+
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filterButton {
+    min-height: 48px;
+    font-size: v.$font-size-sm;
+  }
+
+  .sortBox {
+    width: 132px;
+  }
+
+  .sortBox select {
+    font-size: v.$font-size-md;
+  }
+
+  .orderItem {
+    padding: v.$space-4;
+  }
+
+  .orderMeta {
+    flex-wrap: wrap;
+    font-size: v.$font-size-xs;
+  }
+
+  .orderBody {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .productImage {
+    width: v.$space-16;
+    height: v.$space-16;
+  }
+
+  .productInfo {
+    width: calc(100% - v.$space-20);
+    margin-left: v.$space-4;
+  }
+
+  .productName {
+    font-size: v.$font-size-md;
+  }
+
+  .detailButton {
+    width: 100%;
+    height: 44px;
+    margin-top: v.$space-4;
+    margin-left: 0;
+    font-size: v.$font-size-md;
+  }
+
+  .pagination {
+    gap: v.$space-3;
+    margin-top: v.$space-8;
+  }
+
+  .pageButton,
+  .pageArrow {
+    width: v.$space-10;
+    height: v.$space-10;
+  }
+}
