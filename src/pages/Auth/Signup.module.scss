@@ -62,13 +62,43 @@
     padding: 0 $space-4;
     border: 1px solid $color-border;
     border-radius: $radius-md;
-    font-size: $font-size-md;
+    font-size: $font-size-sm;
 
     &:focus {
       outline: none;
       border-color: $color-primary;
     }
   }
+}
+
+.fieldLabel {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  margin-top: $space-4;
+}
+
+.passwordField {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input {
+    width: 100%;
+    padding-right: $space-10;
+  }
+}
+
+.togglePasswordButton {
+  position: absolute;
+  right: $space-3;
+  background: none;
+  border: none;
+  font-size: $font-size-md;
+  cursor: pointer;
+  line-height: 1;
+  padding: $space-1;
 }
 
 .hint {
@@ -85,8 +115,43 @@
   display: flex;
   align-items: center;
   gap: $space-2;
-  font-size: $font-size-sm;
-  margin-top: $space-4;
+  font-size: $font-size-xs;
+  margin-top: $space-1;
+  cursor: pointer;
+
+  input[type='checkbox'] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+}
+
+.checkboxBox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  background: $color-white;
+
+  input:checked + & {
+    background: $color-primary;
+    border-color: $color-primary;
+  }
+
+  input:checked + &::after {
+    content: '';
+    width: 5px;
+    height: 9px;
+    border: solid $color-white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translate(-1px, -1px);
+  }
 }
 
 .error {
@@ -95,13 +160,17 @@
 }
 
 .submitButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 52px;
+  padding: 0 $space-8;
   margin-top: $space-4;
   border: none;
   border-radius: $radius-md;
   background: $color-primary;
   color: $color-white;
-  font-size: $font-size-md;
+  font-size: $font-size-lg;
   font-weight: $font-weight-semibold;
   cursor: pointer;
 
@@ -116,18 +185,19 @@
 }
 
 .switchLink {
-  margin-top: $space-6;
+  margin-top: $space-8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-size: $font-size-sm;
   color: $color-text-muted;
-  text-align: center;
-
-  a {
-    color: $color-primary;
-    font-weight: $font-weight-semibold;
-  }
 }
 
-// Signup 페이지 전용 성공 안내 오버레이 (공통 Modal 대체용, 담당 구역 밖이라 별도 구현)
+.switchLinkAction {
+  color: $color-text-primary;
+  font-weight: $font-weight-semibold;
+}
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -150,7 +220,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $space-4;
+  gap: $space-3;
 
   h2 {
     font-size: $font-size-xl;
@@ -174,14 +244,54 @@
   cursor: pointer;
 }
 
-.previewBox {
-  background: $color-bg;
-  border-radius: $radius-md;
-  padding: $space-4;
+// 와이어프레임 확정(Figma 실측): 크기 67.29px 정사각형 자리 — 실제 아이콘 이미지 넣을 자리
+.checkIcon {
+  width: 48px;
+  height: 48px;
+}
+
+.divider {
   width: 100%;
+  border: none;
+  border-top: 1px solid $color-border;
+  margin: $space-2 0;
+}
+
+// 와이어프레임 확정(Figma 실측): 박스 배경은 거의 안 보일 정도로 은은하게,
+// 텍스트는 왼쪽 정렬 + Bold, 아이콘은 박스 좌측 상단 모서리에 살짝 겹치듯 떠 있는 배지 형태
+.previewBox {
+  position: relative;
+  background: rgba($color-bg, 0.4);
+  border-radius: $radius-md;
+  padding: $space-6 $space-4 $space-4 $space-8;
+  width: 100%;
+  text-align: left;
+
+  p {
+    margin: 0;
+    font-weight: $font-weight-bold;
+  }
+}
+
+// 와이어프레임 확정: 박스 좌측 상단 모서리에 살짝 겹치는 배지 형태 — 실제 아이콘 이미지 넣을 자리
+.clipboardIcon {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  width: 24px;
+  height: 24px;
+}
+
+.highlight {
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
 }
 
 .laterHint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-1;
   font-size: $font-size-xs;
   color: $color-text-muted;
 }
