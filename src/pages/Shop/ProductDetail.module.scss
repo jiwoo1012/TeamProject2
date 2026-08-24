@@ -1,5 +1,87 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as mixins;
+
+.page { --detail-header-height: 72px; min-height: 100vh; padding: $space-8 0 $space-24; color: $color-text-primary; background-color: $color-primary-light; background-image: linear-gradient(180deg, $color-bg 0, $color-bg 28%, rgba($color-primary-light, .22) 58%, rgba($color-primary-light, .72) 82%, $color-primary-light 100%); background-repeat: no-repeat; background-position: top left; background-size: 100% 145vh; background-attachment: scroll; font-family: $font-family-base; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: $space-8; align-items: start; width: calc(100% - (#{$side-margin-desktop} * 2)); max-width: 1440px; margin-inline: auto; }
+.mainColumn { min-width: 0; }
+.gallery { display: grid; grid-template-columns: minmax(0, 1fr) 180px; gap: $space-6; height: min(58vw, 560px); }
+.mainImage, .thumbnails img { overflow: hidden; background: $color-surface; border-radius: $radius-lg; }
+.mainImage img, .thumbnails img { width: 100%; height: 100%; object-fit: cover; }
+.thumbnails { display: grid; grid-template-rows: repeat(3, 1fr); gap: $space-3; min-height: 0; }
+.tabs { display: flex; gap: $space-16; margin-top: $space-16; border-bottom: 1px solid rgba($color-primary, .55); }
+.tabs button { position: relative; padding: 0 $space-8 $space-4; color: $color-text-muted; font-size: $font-size-lg; font-weight: $font-weight-medium; }
+.tabs button::after { position: absolute; right: 0; bottom: -1px; left: 0; height: 3px; content: ''; background: $color-primary; transform: scaleX(0); transition: transform $transition-base ease; }
+.tabs .activeTab { color: $color-primary; }
+.tabs .activeTab::after { transform: scaleX(1); }
+.detailContent { min-height: 900px; margin-top: $space-16; overflow: hidden; background: $color-text-muted; border-radius: $radius-lg; }
+.detailContent img { width: 100%; }
+.reviewEmpty { @include mixins.flex-center; min-height: 480px; margin-top: $space-16; color: $color-text-muted; background: rgba($color-bg, .7); border-radius: $radius-lg; }
+.recommendedFoods { padding-top: $space-20; }
+.recommendedFoods h2 { margin-bottom: $space-8; font-size: $font-size-3xl; font-weight: $font-weight-semibold; }
+.foodGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: $grid-gutter; }
+
+.purchasePanel { position: sticky; top: calc(var(--detail-header-height) + #{$space-3}); padding: $space-4; background: $color-white; border: 1px solid $color-border; border-radius: $radius-lg; box-shadow: 0 $space-2 $space-6 rgba($color-text-primary, .08); }
+.brand { margin-bottom: $space-2; color: $color-text-muted; font-size: $font-size-xs; }
+.purchasePanel > h1 { font-size: $font-size-xl; font-weight: $font-weight-semibold; line-height: $line-height-tight; }
+.price { display: flex; gap: $space-2; align-items: center; margin-top: $space-3; }
+.price span { color: $color-error; font-weight: $font-weight-semibold; }
+.price strong { color: $color-primary; font-size: $font-size-xl; font-weight: $font-weight-bold; }
+.description { margin-top: $space-3; color: $color-text-muted; font-size: $font-size-xs; line-height: $line-height-base; }
+.rating { display: flex; gap: $space-2; align-items: center; margin: $space-3 0; color: $color-primary; }
+.rating span { letter-spacing: 2px; }
+.rating small { color: $color-text-muted; font-size: $font-size-xs; }
+.wishButton, .cartButton { width: 100%; padding: $space-2 $space-3; font-size: $font-size-sm; text-align: center; border-radius: $radius-md; transition: transform $transition-fast ease, background $transition-fast ease; }
+.wishButton { color: $color-text-secondary; background: $color-surface; }
+.wishButton:hover, .cartButton:hover { transform: translateY(-2px); }
+.wished { background: $color-error; color: $color-bg;}
+.cartButton { margin-top: $space-2; color: $color-white; background: $color-primary; }
+.cartButton:hover { background: $color-primary-light; }
+.notice { margin-top: $space-2; color: $color-primary; font-size: $font-size-xs; text-align: center; }
+.accordions { margin-top: $space-3; border-top: 1px solid $color-border; }
+.accordion { border-bottom: 1px solid $color-border; }
+.accordion > button { @include mixins.flex-between; width: 100%; padding: $space-3 0; font-size: $font-size-xs; }
+.accordionContent { display: grid; grid-template-rows: 0fr; transition: grid-template-rows $transition-base ease; }
+.accordionContent > p { min-height: 0; overflow: hidden; color: $color-text-muted; font-size: $font-size-xs; line-height: $line-height-relaxed; }
+.accordionContent.open { grid-template-rows: 1fr; }
+.accordionContent.open > p { padding-bottom: $space-4; }
+.pairings { margin-top: $space-5; }
+.pairings h2 { margin-bottom: $space-3; font-size: $font-size-lg; font-weight: $font-weight-semibold; }
+.miniGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-3; animation: pairingPage .45s cubic-bezier(.22, 1, .36, 1) both; }
+.miniCard { min-width: 0; }
+.miniCard > a:first-child { display: block; overflow: hidden; aspect-ratio: 1.15; background: $color-surface; border-radius: $radius-md; }
+.miniCard img { width: 100%; height: 100%; object-fit: cover; transition: transform $transition-base ease; }
+.miniCard > a:hover img { transform: scale(1.04); }
+.miniCard > div { display: flex; justify-content: space-between; gap: $space-1; margin: $space-2 0; font-size: $font-size-xs; }
+.miniCard span { @include mixins.ellipsis; }
+.miniCard strong { flex-shrink: 0; font-weight: $font-weight-semibold; }
+.miniCart { display: block; padding: $space-2; color: $color-white; font-size: $font-size-xs; text-align: center; background: rgba($color-primary, .65); border-radius: $radius-sm; }
+.dots { @include mixins.flex-center; gap: $space-2; margin-top: $space-3; }
+.dots button { width: 8px; height: 8px; background: $color-border; border-radius: 50%; transition: width $transition-fast ease, background $transition-fast ease; }
+.dots .activeDot { background: $color-primary; }
+@keyframes pairingPage { from { opacity: 0; transform: translateX($space-4); } to { opacity: 1; transform: translateX(0); } }
+.notFound { @include mixins.flex-center; flex-direction: column; gap: $space-4; min-height: 70vh; font-family: $font-family-base; }
+.notFound h1 { font-size: $font-size-3xl; }
+.notFound a { color: $color-primary; text-decoration: underline; }
+
+@include mixins.tablet {
+  .page { --detail-header-height: 68px; }
+  .layout { grid-template-columns: minmax(0, 1fr) 290px; gap: $space-6; width: calc(100% - (#{$side-margin-tablet} * 2)); }
+  .gallery { grid-template-columns: minmax(0, 1fr) 140px; }
+  .purchasePanel { padding: $space-5; }
+}
+
+@include mixins.mobile {
+  .page { --detail-header-height: 58px; padding-top: $space-5; padding-bottom: $space-20; }
+  .layout { display: flex; flex-direction: column; width: calc(100% - (#{$side-margin-mobile} * 2)); }
+  .mainColumn { display: contents; }
+  .gallery { order: 1; width: 100%; height: auto; grid-template-columns: 1fr; }
+  .mainImage { aspect-ratio: 1; }
+  .thumbnails { grid-template-columns: repeat(3, 1fr); grid-template-rows: none; }
+  .thumbnails img { aspect-ratio: 1; }
+  .purchasePanel { position: relative; top: auto; order: 2; width: 100%; }
+  .tabs { order: 3; width: 100%; justify-content: space-around; gap: 0; margin-top: $space-4; }
+  .tabs button { padding-inline: $space-3; }
+  .detailContent, .reviewEmpty { order: 4; width: 100%; min-height: 420px; margin-top: $space-8; }
+  .recommendedFoods { order: 5; width: 100%; padding-top: $space-16; }
+  .foodGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-8 $space-3; }
+}

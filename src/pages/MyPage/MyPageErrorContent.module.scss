@@ -1,0 +1,122 @@
+@use '../../styles/variables' as v;
+
+.page {
+  width: 1239px;
+}
+
+.errorCard {
+  display: flex;
+  width: 100%;
+  min-height: 922px;
+  align-items: center;
+  flex-direction: column;
+  padding-top: 286px;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+  background: v.$color-white;
+  text-align: center;
+}
+
+.errorIcon {
+  display: grid;
+  width: 151px;
+  height: 151px;
+  place-items: center;
+  border-radius: v.$radius-pill;
+  background: rgb(77 126 123 / 51%);
+}
+
+.errorIcon svg {
+  width: 78px;
+  height: 78px;
+  fill: none;
+  stroke: v.$color-white;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+}
+
+.errorCard h2 {
+  margin: v.$space-8 0 0;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-2xl;
+  font-weight: v.$font-weight-semibold;
+  line-height: v.$line-height-tight;
+}
+
+.errorCard p {
+  margin: v.$space-3 0 0;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-md;
+  line-height: v.$line-height-base;
+}
+
+.errorCard button {
+  display: flex;
+  width: 318px;
+  height: 67px;
+  align-items: center;
+  justify-content: center;
+  margin-top: v.$space-10;
+  border: 0;
+  border-radius: 15px;
+  background: v.$color-primary;
+  color: v.$color-white;
+  font: inherit;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-semibold;
+  line-height: 1;
+  text-align: center;
+  cursor: pointer;
+}
+
+.errorCard button:hover {
+  background: v.$color-primary-light;
+}
+
+.errorCard button:focus-visible {
+  outline: 2px solid v.$color-primary-light;
+  outline-offset: 3px;
+}
+
+@media (max-width: v.$breakpoint-tablet-max) {
+  .page {
+    width: 100%;
+  }
+
+  .errorCard {
+    min-height: 720px;
+  }
+}
+
+@media (max-width: v.$breakpoint-mobile-max) {
+  .errorCard {
+    min-height: 520px;
+    padding: v.$space-16 v.$space-5;
+  }
+
+  .errorIcon {
+    width: 112px;
+    height: 112px;
+  }
+
+  .errorIcon svg {
+    width: 56px;
+    height: 56px;
+  }
+
+  .errorCard h2 {
+    font-size: v.$font-size-xl;
+  }
+
+  .errorCard p {
+    font-size: v.$font-size-sm;
+  }
+
+  .errorCard button {
+    width: min(100%, 318px);
+    height: 56px;
+    margin-top: v.$space-8;
+    font-size: v.$font-size-md;
+  }
+}

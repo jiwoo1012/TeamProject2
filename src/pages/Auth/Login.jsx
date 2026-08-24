@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 
 import { login, subscribeToAuthState } from '../../firebase/auth'
 import { PATHS } from '../../routes/paths'
+
 import styles from './Login.module.scss'
 
 const getLoginErrorMessage = (error) => {
@@ -15,6 +16,8 @@ const getLoginErrorMessage = (error) => {
       return '올바른 이메일 형식이 아닙니다.'
     case 'auth/too-many-requests':
       return '잠시 후 다시 시도해주세요.'
+    case 'auth/account-suspended':
+      return '이용이 제한된 계정입니다. 고객센터로 문의해주세요.'
     default:
       return '로그인 중 오류가 발생했습니다.'
   }
@@ -30,6 +33,8 @@ const Login = () => {
   })
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  // 비밀번호 보기/숨기기 토글 (와이어프레임 확정: 입력창 오른쪽 눈 아이콘)
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 
   // 이미 로그인된 사용자가 /login에 접근하면 메인으로 이동 (AGENTS.md Routes 규칙)
   // 단, 익명(비회원) 로그인 상태는 여기 해당하지 않으므로 제외한다.
@@ -88,15 +93,25 @@ const Login = () => {
           />
 
           <label htmlFor="password">비밀번호</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="비밀번호를 입력해주세요"
-            value={form.password}
-            onChange={handleChange}
-            required
-          />
+          <div className={styles.passwordField}>
+            <input
+              id="password"
+              name="password"
+              type={isPasswordVisible ? 'text' : 'password'}
+              placeholder="비밀번호를 입력해주세요"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+            <button
+              type="button"
+              className={styles.togglePasswordButton}
+              onClick={() => setIsPasswordVisible((prev) => !prev)}
+              aria-label={isPasswordVisible ? '비밀번호 숨기기' : '비밀번호 보기'}
+            >
+              {isPasswordVisible ? '🙈' : '👁'}
+            </button>
+          </div>
           <p className={styles.hint}>
             비밀번호는 8자 이상, 영문/숫자/특수문자 조합이어야 합니다.
           </p>

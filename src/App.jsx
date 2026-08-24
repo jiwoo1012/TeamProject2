@@ -38,6 +38,7 @@ import OrderDetail from './pages/MyPage/OrderDetail'
 import WishList from './pages/MyPage/WishList'
 import AiHistory from './pages/MyPage/AiHistory'
 import EventHistory from './pages/MyPage/EventHistory'
+import MyPageErrorContent from './pages/MyPage/MyPageErrorContent'
 
 // Event
 import EventList from './pages/Event/EventList'
@@ -55,6 +56,7 @@ import UserManage from './pages/Admin/UserManage'
 import ProductManage from './pages/Admin/ProductManage'
 import AiLogManage from './pages/Admin/AiLogManage'
 import EventManage from './pages/Admin/EventManage'
+import AdminErrorContent from './pages/Admin/AdminErrorContent'
 
 // NotFound
 import NotFound from './pages/NotFound/NotFound'
@@ -140,6 +142,7 @@ const App = () => {
           <Route path="wishlist" element={<WishList />} />
           <Route path="ai-history" element={<AiHistory />} />
           <Route path="events" element={<EventHistory />} />
+          <Route path="error" element={<MyPageErrorContent />} />
 
         </Route>
 
@@ -165,6 +168,7 @@ const App = () => {
         <Route path="products" element={<ProductManage />} />
         <Route path="ai-logs" element={<AiLogManage />} />
         <Route path="events" element={<EventManage />} />
+        <Route path="error" element={<AdminErrorContent />} />
 
       </Route>
 

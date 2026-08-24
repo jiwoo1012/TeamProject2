@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 
+// 상단 import 부분
 import { signup, subscribeToAuthState } from '../../firebase/auth'
 import { PATHS } from '../../routes/paths'
+
 import styles from './Signup.module.scss'
 
 // 비밀번호 규칙: 8자 이상 + 영문/숫자/특수문자 조합 (와이어프레임 확정)
@@ -34,6 +36,7 @@ const Signup = () => {
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 
   const justSignedUpRef = useRef(false)
   const submittingRef = useRef(false)
@@ -97,11 +100,6 @@ const Signup = () => {
 
       setShowSuccessModal(true)
     } catch (err) {
-      // 임시 디버깅용: 정확히 어떤 에러인지 콘솔에서 직접 확인하기 위해 추가함.
-      // 원인 파악 후에는 이 줄은 지워도 된다.
-      // eslint-disable-next-line no-console
-      console.error('[Signup] 실제 에러 내용:', err.code, err.message, err)
-
       setError(getSignupErrorMessage(err))
     } finally {
       setIsSubmitting(false)
@@ -121,7 +119,8 @@ const Signup = () => {
   return (
     <div className={styles.signup}>
       <div className={styles.visual}>
-        {/* <img src={makdongImage} alt="막동이" /> */}
+        {/* 막동이 캐릭터 이미지 - 자산 준비되는 대로 교체 */}
+         {/* <img src={makdongImage} alt="막동이" /> */}
       </div>
 
       <div className={styles.formArea}>
@@ -151,15 +150,25 @@ const Signup = () => {
           />
 
           <label htmlFor="password">비밀번호</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="비밀번호를 입력해주세요"
-            value={form.password}
-            onChange={handleChange}
-            required
-          />
+          <div className={styles.passwordField}>
+            <input
+              id="password"
+              name="password"
+              type={isPasswordVisible ? 'text' : 'password'}
+              placeholder="비밀번호를 입력해주세요"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+            <button
+              type="button"
+              className={styles.togglePasswordButton}
+              onClick={() => setIsPasswordVisible((prev) => !prev)}
+              aria-label={isPasswordVisible ? '비밀번호 숨기기' : '비밀번호 보기'}
+            >
+              {isPasswordVisible ? '🙈' : '👁'}
+            </button>
+          </div>
           <p className={isPasswordValid ? styles.hint : styles.hintError}>
             8자 이상, 영문/숫자/특수문자 조합으로 입력해주세요.
           </p>
@@ -180,6 +189,7 @@ const Signup = () => {
             </p>
           )}
 
+          <span className={styles.fieldLabel}>약관 동의</span>
           <label htmlFor="agree" className={styles.agreeLabel}>
             <input
               id="agree"
@@ -188,6 +198,7 @@ const Signup = () => {
               checked={form.agree}
               onChange={handleChange}
             />
+            <span className={styles.checkboxBox} aria-hidden="true" />
             [필수] 서비스 이용약관 및 개인정보 처리방침에 동의합니다.
           </label>
 
@@ -199,7 +210,8 @@ const Signup = () => {
         </form>
 
         <p className={styles.switchLink}>
-          이미 계정이 있으신가요? <Link to={PATHS.login}>로그인</Link>
+          이미 계정이 있으신가요?
+          <Link to={PATHS.login} className={styles.switchLinkAction}>로그인</Link>
         </p>
       </div>
 
@@ -215,16 +227,24 @@ const Signup = () => {
               ×
             </button>
 
+            {/* 체크 아이콘 이미지 - 자산 준비되는 대로 교체 */}
+            {/* <img src={checkIconImage} alt="" className={styles.checkIcon} /> */}
+
             <h2>회원가입이 완료되었습니다!</h2>
-            <p>자작에서 나에게 꼭 맞는 한 잔을 만나보세요.</p>
+            <p>자작에서 나에게 꼭 맞는 한잔을 만나보세요.</p>
+
+            <hr className={styles.divider} />
 
             <div className={styles.previewBox}>
+              {/* 와이어프레임 확정: 클립보드 아이콘이 박스 좌측 상단에 살짝 겹치듯 떠 있는 배지 형태 */}
+              {/* 클립보드 아이콘 이미지 - 자산 준비되는 대로 교체 */}
+              {/* <img src={clipboardIconImage} alt="" className={styles.clipboardIcon} /> */}
               <p>
                 간단한 5가지 질문에 답하면
                 <br />
-                막동이가 취향에 맞는 전통주와 안주를
+                막동이가 취향에 맞는
                 <br />
-                추천해드려요.
+                <span className={styles.highlight}>전통주와 안주</span>를 추천해드려요.
               </p>
             </div>
 
@@ -235,7 +255,9 @@ const Signup = () => {
             >
               취향 프로필 만들기
             </button>
-            <p className={styles.laterHint}>※ 나중에 언제든 변경할 수 있어요.</p>
+            <p className={styles.laterHint}>
+              <span aria-hidden="true">⏱</span> 약 1분이면 완료할 수 있어요.
+            </p>
           </div>
         </div>
       )}

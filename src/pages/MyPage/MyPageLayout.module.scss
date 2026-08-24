@@ -2,7 +2,7 @@
 
 .page {
   min-height: 55vh;
-  padding: v.$space-10 0 v.$space-16;
+  padding: v.$space-16 0 v.$space-16;
   background: v.$color-bg;
   color: v.$color-text-primary;
 }
@@ -12,8 +12,11 @@
 ========================= */
 
 .pageHeader {
-  margin: 0 0 v.$space-10;
-  padding: 0 v.$side-margin-desktop;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin: 0 0 v.$space-12;
+  padding: 0 v.$space-12;
 }
 
 .title {
@@ -37,9 +40,9 @@
 .layout {
   display: grid;
   grid-template-columns:
-    calc(v.$grid-gutter * 12) minmax(0, 1fr);
+    calc(v.$grid-gutter * 14) minmax(0, 1fr);
 
-  gap: v.$space-10;
+  gap: calc(v.$space-12 + v.$space-2);
   align-items: stretch;
 }
 
@@ -51,7 +54,6 @@
   display: flex;
   min-height: 62vh;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .navigation {
@@ -68,7 +70,7 @@
 
   width: 86%;
 
-  min-height: calc(v.$space-6 + v.$space-8);
+  min-height: 60px;
   padding: 0 v.$space-5;
 
   border: 1px solid v.$color-border;
@@ -95,6 +97,7 @@
 /* 활성 메뉴만 길게 */
 .active {
   width: 100%;
+  min-height: 72px;
 
   border-color: v.$color-primary;
   background: v.$color-primary;
@@ -139,15 +142,14 @@
 ========================= */
 
 .logoutButton {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: v.$space-3;
-
-  align-self: flex-start;
-
-  /* 기존 80px 제거 */
-  margin-left: v.$grid-gutter;
-
+  justify-content: center;
+  /* MyPage 하위 콘텐츠의 데스크톱 우측 끝선에 맞춤 */
+  // MyHome 카드 영역(1161px)을 기준으로 우측 끝을 맞춘다.
+  // ProfileEdit 카드 그리드(1220px)와의 차이 59px을 더해 보정한다.
+  margin-right: calc(v.$space-20 + 59px);
   padding: v.$space-2 0;
 
   border: 0;
@@ -175,8 +177,8 @@
 ========================= */
 
 .content {
-  width: calc(100% - v.$side-margin-desktop);
-  max-width: calc(v.$container-max - v.$space-24);
+  width: 100%;
+  max-width: calc(v.$container-max - v.$grid-gutter * 12);
   min-width: 0;
 }
 
@@ -198,6 +200,10 @@
 
   .content {
     width: calc(100% - v.$side-margin-tablet);
+  }
+
+  .logoutButton {
+    margin-right: 0;
   }
 }
 

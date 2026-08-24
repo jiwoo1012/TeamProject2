@@ -56,7 +56,8 @@
   }
 
   input[type='email'],
-  input[type='password'] {
+  input[type='password'],
+  input[type='text'] {
     height: 48px;
     padding: 0 $space-4;
     border: 1px solid $color-border;
@@ -68,6 +69,29 @@
       border-color: $color-primary;
     }
   }
+}
+
+// 비밀번호 입력창 + 보기/숨기기 버튼 감싸는 wrapper (와이어프레임 확정: 눈 아이콘)
+.passwordField {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input {
+    width: 100%;
+    padding-right: $space-10;
+  }
+}
+
+.togglePasswordButton {
+  position: absolute;
+  right: $space-3;
+  background: none;
+  border: none;
+  font-size: $font-size-md;
+  cursor: pointer;
+  line-height: 1;
+  padding: $space-1;
 }
 
 .hint {
