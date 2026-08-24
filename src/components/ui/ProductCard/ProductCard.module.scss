@@ -6,12 +6,12 @@
 .actions { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; padding: $space-4; background: linear-gradient(180deg, rgba($color-text-primary, .18), transparent 50%, rgba($color-text-primary, .5)); opacity: 0; transition: opacity $transition-base ease; }
 .imageLink:hover .actions, .imageLink:focus-within .actions { opacity: 1; }
 .imageLink:hover .image { transform: scale(1.035); }
-.iconButton { width: 44px; height: 44px; color: $color-white; font-size: $font-size-3xl; line-height: 1; text-align: center; background: rgba($color-text-primary, .38); border-radius: 50%; }
+.iconButton { width: 44px; height: 44px; color: $color-white; font-size: $font-size-3xl;text-align: center; border-radius: 50%;  }
 .isWished { color: $color-error; }
-.cartButton { width: 100%; padding: $space-3 $space-4; color: $color-white; font-size: $font-size-sm; text-align: center; background: $color-primary; border-radius: $radius-md; }
-.info { padding-top: $space-3; }
-.name { min-height: 2.8em; color: $color-text-primary; font-size: $font-size-md; line-height: 1.4; }
-.priceRow { display: flex; justify-content: flex-end; gap: $space-2; align-items: center; margin-top: $space-1; }
+.cartButton { width: 100%; padding: $space-1 $space-3; color: $color-white; font-size: $font-size-lg; text-align: center; border-bottom: 1px solid $color-white; }
+.info { padding-top: $space-5; display: flex; align-items: center; justify-content: space-between;}
+.name {color: $color-text-primary; font-size: $font-size-md;}
+.priceRow { display: flex; justify-content: flex-end; gap: $space-2; align-items: center; }
 .priceRow strong { font-size: $font-size-lg; font-weight: $font-weight-semibold; }
 .discount { color: $color-error; font-weight: $font-weight-semibold; }
 
