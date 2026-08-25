@@ -1,0 +1,778 @@
+.preferenceQuestions {
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+
+  background: #fbfaf7;
+  color: #382b22;
+
+  box-sizing: border-box;
+}
+
+
+.inner {
+  position: relative;
+
+  width: min(1080px, 90%);
+
+  margin: 0 auto;
+  padding: 55px 0 65px;
+
+  box-sizing: border-box;
+}
+
+
+/* ========================================
+   나중에 하기
+======================================== */
+
+.skipArea {
+  position: absolute;
+
+  top: 65px;
+  right: 0;
+
+  z-index: 5;
+}
+
+
+.skipButton {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 7px 3px;
+
+  border: none;
+
+  background: transparent;
+  color: #66594f;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+
+  span {
+    font-size: 19px;
+  }
+
+  &:hover {
+    color: #568b86;
+    transform: translateX(2px);
+  }
+}
+
+
+/* ========================================
+   진행 영역
+======================================== */
+
+.progressSection {
+  width: 100%;
+  max-width: 360px;
+
+  margin: 0 auto 27px;
+
+  text-align: center;
+}
+
+
+.categoryBadge {
+  width: fit-content;
+
+  margin: 0 auto 20px;
+  padding: 9px 23px;
+
+  border: 1px solid #dbc6aa;
+  border-radius: 999px;
+
+  background: #fffdf9;
+  color: #42362d;
+
+  font-size: 15px;
+  font-weight: 600;
+}
+
+
+.progress {
+  position: relative;
+
+  width: 280px;
+  height: 16px;
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+.progressLine {
+  position: absolute;
+
+  top: 50%;
+  left: 0;
+
+  width: 100%;
+  height: 2px;
+
+  transform: translateY(-50%);
+
+  background: #dfd4c6;
+
+  z-index: 0;
+}
+
+
+.progressDot {
+  position: relative;
+
+  width: 11px;
+  height: 11px;
+
+  border-radius: 50%;
+
+  background: #ddd2c5;
+
+  z-index: 1;
+}
+
+
+.activeDot {
+  background: #d5a052;
+}
+
+
+.progressText {
+  margin: 9px 0 0;
+
+  color: #5a4e45;
+
+  font-size: 13px;
+}
+
+
+/* ========================================
+   질문 제목
+======================================== */
+
+.questionHeader {
+  position: relative;
+
+  width: 100%;
+
+  margin-bottom: 35px;
+
+  text-align: center;
+}
+
+
+.questionTitle {
+  margin: 0;
+
+  color: #392b22;
+
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -1px;
+}
+
+
+.questionDescription {
+  margin: 12px 0 0;
+
+  color: #75685f;
+
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+
+/* ========================================
+   막둥이
+======================================== */
+
+.makdongArea {
+  position: absolute;
+
+  left: -5px;
+  top: -5px;
+
+  transform: translateX(-100%);
+
+  width: 150px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.speechBubble {
+  position: relative;
+
+  margin-bottom: 3px;
+  padding: 9px 13px;
+
+  border-radius: 18px;
+
+  background: #e8e6e2;
+  color: #625a54;
+
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: center;
+
+  white-space: nowrap;
+
+  &::after {
+    content: '';
+
+    position: absolute;
+
+    right: 20px;
+    bottom: -6px;
+
+    border-top: 8px solid #e8e6e2;
+    border-left: 7px solid transparent;
+  }
+}
+
+
+.makdong {
+  display: block;
+
+  width: 118px;
+  height: 125px;
+
+  object-fit: contain;
+
+  user-select: none;
+  pointer-events: none;
+}
+
+
+/* ========================================
+   전체 선택 영역
+======================================== */
+
+.optionsArea {
+  width: 100%;
+  max-width: 920px;
+
+  margin: 0 auto;
+}
+
+
+/* ========================================
+   선택 카드
+======================================== */
+
+.optionGrid {
+  width: 100%;
+
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 22px;
+}
+
+
+.optionCard {
+  position: relative;
+
+  height: 220px;
+
+  padding: 24px 16px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #e8e0d6;
+  border-radius: 13px;
+
+  background: #ffffff;
+
+  box-shadow: 0 5px 15px rgba(70, 52, 38, 0.07);
+
+  color: #3d3129;
+  font-family: inherit;
+
+  box-sizing: border-box;
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+
+    border-color: #dcb578;
+
+    box-shadow: 0 8px 20px rgba(70, 52, 38, 0.1);
+  }
+}
+
+
+.selected {
+  border: 1.5px solid #d59d43;
+
+  background: #fffcf7;
+
+  box-shadow:
+    0 6px 16px rgba(70, 52, 38, 0.07),
+    inset 0 0 0 1px rgba(213, 157, 67, 0.08);
+}
+
+
+.check {
+  position: absolute;
+
+  top: 12px;
+  right: 12px;
+
+  width: 23px;
+  height: 23px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #d59d43;
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+/* ========================================
+   아이콘
+======================================== */
+
+.optionVisual {
+  width: 70px;
+  height: 70px;
+
+  margin-bottom: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+}
+
+.optionImage {
+  display: block;
+
+  width: 64px;
+  height: 64px;
+
+  object-fit: contain;
+
+  user-select: none;
+  pointer-events: none;
+}
+
+.optionIcon {
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #cbdedb;
+  border-radius: 50%;
+
+  background: #eaf2f0;
+  color: #568b86;
+
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+
+/* 물음표 */
+
+.optionIcon {
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #cbdedb;
+  border-radius: 50%;
+
+  background: #eaf2f0;
+  color: #568b86;
+
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+
+/* ========================================
+   선택지 텍스트
+======================================== */
+
+.optionText {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+}
+
+.optionLabel {
+  width: 100%;
+  min-height: 44px;
+
+  margin-bottom: 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #3d3129;
+
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.45;
+
+  text-align: center;
+  word-break: keep-all;
+}
+
+.optionDescription {
+  width: 100%;
+  min-height: 34px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  color: #766b62;
+
+  font-size: 11px;
+  line-height: 1.5;
+
+  text-align: center;
+  word-break: keep-all;
+}
+
+.placeholder {
+  grid-column: 1 / -1;
+
+  padding: 75px 20px;
+
+  border: 1px dashed #d7ccbd;
+  border-radius: 12px;
+
+  color: #998c80;
+
+  text-align: center;
+}
+
+
+/* ========================================
+   안내 문구
+======================================== */
+
+.notice {
+  width: fit-content;
+
+  margin: 17px 0 0 auto;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  color: #9a8f85;
+
+  font-size: 10px;
+}
+
+
+.noticeIcon {
+  width: 15px;
+  height: 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #76a6a1;
+  border-radius: 50%;
+
+  color: #568b86;
+
+  font-family: serif;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+
+/* ========================================
+   이전 / 다음
+======================================== */
+
+.buttonArea {
+  width: 100%;
+
+  margin-top: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+.prevButton,
+.nextButton {
+  width: 135px;
+  height: 46px;
+
+  padding: 0 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-radius: 7px;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  box-sizing: border-box;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+
+  span {
+    font-size: 20px;
+  }
+}
+
+
+.prevButton {
+  border: 1px solid #6da29e;
+
+  background: transparent;
+  color: #4f7f7b;
+
+  &:hover {
+    background: rgba(86, 139, 134, 0.05);
+  }
+}
+
+
+.nextButton {
+  border: 1px solid #568d88;
+
+  background: #568d88;
+  color: #ffffff;
+
+  &:hover:not(:disabled) {
+    background: #477d78;
+    border-color: #477d78;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
+
+/* ========================================
+   태블릿
+======================================== */
+
+@media (max-width: 1100px) {
+  .inner {
+    width: 88%;
+  }
+
+  .makdongArea {
+    display: none;
+  }
+
+  .optionGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .optionCard {
+    height: 190px;
+  }
+}
+
+
+/* ========================================
+   모바일
+======================================== */
+
+@media (max-width: 650px) {
+  .preferenceQuestions {
+    align-items: flex-start;
+  }
+
+
+  .inner {
+    width: 88%;
+
+    padding: 75px 0 50px;
+  }
+
+
+  .skipArea {
+    top: 20px;
+  }
+
+
+  .skipButton {
+    font-size: 12px;
+  }
+
+
+  .progressSection {
+    margin-bottom: 24px;
+  }
+
+
+  .categoryBadge {
+    padding: 7px 18px;
+
+    font-size: 13px;
+  }
+
+
+  .progress {
+    width: 220px;
+  }
+
+
+  .questionHeader {
+    margin-bottom: 27px;
+  }
+
+
+  .questionTitle {
+    font-size: 25px;
+  }
+
+
+  .questionDescription {
+    font-size: 13px;
+  }
+
+
+  .optionGrid {
+    grid-template-columns: 1fr;
+
+    gap: 14px;
+  }
+
+
+  .optionCard {
+    height: 145px;
+
+    padding: 18px 22px;
+
+    flex-direction: row;
+    justify-content: flex-start;
+
+    text-align: left;
+  }
+
+
+  .optionVisual {
+    width: 55px;
+    height: 55px;
+
+    margin: 0 20px 0 0;
+  }
+
+
+  .optionImage {
+    width: 52px;
+    height: 52px;
+  }
+
+
+  .optionIcon {
+    width: 50px;
+    height: 50px;
+
+    font-size: 30px;
+  }
+
+
+  .optionText {
+    min-height: auto;
+
+    align-items: flex-start;
+  }
+
+
+  .optionLabel {
+    margin-bottom: 5px;
+
+    font-size: 14px;
+  }
+
+
+  .optionDescription {
+    max-width: none;
+
+    font-size: 11px;
+    text-align: left;
+  }
+
+
+  .notice {
+    margin-top: 14px;
+  }
+
+
+  .buttonArea {
+    margin-top: 18px;
+  }
+
+
+  .prevButton,
+  .nextButton {
+    width: 120px;
+    height: 44px;
+  }
+}

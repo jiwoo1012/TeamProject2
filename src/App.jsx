@@ -18,6 +18,7 @@ import ProductDetail from './pages/Shop/ProductDetail'
 import Login from './pages/Auth/Login'
 import Signup from './pages/Auth/Signup'
 import PreferenceSurvey from './pages/Auth/PreferenceSurvey'
+import PreferenceQuestions from './pages/Auth/PreferenceQuestions'
 
 // AI
 import AiIntro from './pages/AiCurator/AiIntro'
@@ -67,11 +68,19 @@ const App = () => {
     <Routes>
 
       {/* ========================================
-          Splash
-          Header / Footer 없이 독립적으로 사용
+          독립 페이지
+          Header / Footer 없이 사용
       ======================================== */}
 
+      {/* Splash */}
       <Route path="/intro" element={<SplashIntro />} />
+
+      {/* 회원가입 후 취향 등록 */}
+      <Route path="/preference" element={<PreferenceSurvey />} />
+      <Route
+        path="/preference/questions"
+        element={<PreferenceQuestions />}
+      />
 
 
       {/* ========================================
@@ -90,9 +99,10 @@ const App = () => {
         <Route path="/brand/makdong" element={<MakdongIntro />} />
 
         {/* 기존 Header 링크 대응 */}
-        <Route path="/brand/story" element={
-          <Navigate to="/brand/makdong" replace />
-        } />
+        <Route
+          path="/brand/story"
+          element={<Navigate to="/brand/makdong" replace />}
+        />
 
 
         {/* Shop */}
@@ -103,7 +113,6 @@ const App = () => {
         {/* Auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/preference" element={<PreferenceSurvey />} />
 
 
         {/* AI */}

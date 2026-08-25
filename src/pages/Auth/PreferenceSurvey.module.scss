@@ -1,16 +1,24 @@
 .preferenceSurvey {
   width: 100%;
-  min-height: calc(100vh - 70px);
+  min-height: 100vh;
+
   padding: 20px;
+
   background: #faf8f4;
+
   box-sizing: border-box;
 }
+
+
+/* ========================================
+   전체 설문 박스
+======================================== */
 
 .surveyBox {
   position: relative;
 
   width: 100%;
-  min-height: calc(100vh - 110px);
+  min-height: calc(100vh - 40px);
 
   border: 1px solid #d9c2a0;
 
@@ -26,9 +34,14 @@
   overflow: hidden;
 }
 
+
+/* ========================================
+   콘텐츠 영역
+======================================== */
+
 .content {
   width: min(1080px, 84%);
-  min-height: calc(100vh - 110px);
+  min-height: calc(100vh - 40px);
 
   margin: 0 auto;
 
@@ -39,14 +52,16 @@
   gap: 80px;
 }
 
-/* =========================
+
+/* ========================================
    왼쪽 텍스트
-========================= */
+======================================== */
 
 .textArea {
   flex: 1;
   max-width: 540px;
 }
+
 
 .infoBadge {
   width: fit-content;
@@ -67,10 +82,12 @@
   font-weight: 500;
 }
 
+
 .clockIcon {
   font-size: 13px;
   line-height: 1;
 }
+
 
 .title {
   margin: 0;
@@ -83,6 +100,7 @@
   letter-spacing: -1.6px;
 }
 
+
 .description {
   margin: 30px 0 0;
 
@@ -93,6 +111,11 @@
   line-height: 1.7;
   letter-spacing: -0.4px;
 }
+
+
+/* ========================================
+   시작 버튼
+======================================== */
 
 .startButton {
   min-width: 220px;
@@ -131,11 +154,17 @@
   }
 }
 
+
 .arrow {
   font-size: 25px;
   font-weight: 300;
   line-height: 1;
 }
+
+
+/* ========================================
+   하단 안내 문구
+======================================== */
 
 .notice {
   display: flex;
@@ -150,14 +179,16 @@
   font-weight: 400;
 }
 
+
 .noticeIcon {
   color: #d2b99a;
   font-size: 12px;
 }
 
-/* =========================
+
+/* ========================================
    막둥이 이미지
-========================= */
+======================================== */
 
 .characterArea {
   flex: 1;
@@ -168,6 +199,7 @@
 
   padding-top: 15px;
 }
+
 
 .character {
   display: block;
@@ -181,9 +213,10 @@
   pointer-events: none;
 }
 
-/* =========================
+
+/* ========================================
    모서리 장식
-========================= */
+======================================== */
 
 .corner {
   position: absolute;
@@ -203,7 +236,8 @@
   }
 }
 
-/* ───── 좌측 상단 ───── */
+
+/* 좌측 상단 */
 
 .topLeft {
   top: 9px;
@@ -229,7 +263,8 @@
   }
 }
 
-/* ───── 우측 상단 ───── */
+
+/* 우측 상단 */
 
 .topRight {
   top: 9px;
@@ -255,7 +290,8 @@
   }
 }
 
-/* ───── 좌측 하단 ───── */
+
+/* 좌측 하단 */
 
 .bottomLeft {
   bottom: 9px;
@@ -281,7 +317,8 @@
   }
 }
 
-/* ───── 우측 하단 ───── */
+
+/* 우측 하단 */
 
 .bottomRight {
   right: 9px;
@@ -307,9 +344,10 @@
   }
 }
 
-/* =========================
+
+/* ========================================
    태블릿
-========================= */
+======================================== */
 
 @media (max-width: 1024px) {
   .content {
@@ -326,34 +364,44 @@
   }
 }
 
-/* =========================
+
+/* ========================================
    모바일
-========================= */
+======================================== */
 
 @media (max-width: 768px) {
   .preferenceSurvey {
+    min-height: 100vh;
+
     padding: 12px;
   }
 
+
   .surveyBox {
-    min-height: calc(100vh - 94px);
+    min-height: calc(100vh - 24px);
   }
+
 
   .content {
     width: 82%;
-    min-height: calc(100vh - 94px);
+    min-height: calc(100vh - 24px);
 
     padding: 70px 0 60px;
 
     flex-direction: column;
     justify-content: center;
+
     gap: 35px;
+
+    box-sizing: border-box;
   }
+
 
   .textArea {
     width: 100%;
     max-width: none;
   }
+
 
   .infoBadge {
     margin-bottom: 22px;
@@ -361,10 +409,12 @@
     font-size: 12px;
   }
 
+
   .title {
     font-size: 32px;
     line-height: 1.35;
   }
+
 
   .description {
     margin-top: 20px;
@@ -372,24 +422,30 @@
     font-size: 15px;
   }
 
+
   .startButton {
     width: 100%;
 
     margin-top: 28px;
   }
 
+
   .notice {
     font-size: 12px;
   }
 
+
   .characterArea {
     width: 100%;
+
     padding: 0;
   }
+
 
   .character {
     width: 230px;
   }
+
 
   .corner {
     width: 26px;
