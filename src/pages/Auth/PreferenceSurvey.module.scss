@@ -1,5 +1,398 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+.preferenceSurvey {
+  width: 100%;
+  min-height: calc(100vh - 70px);
+  padding: 20px;
+  background: #faf8f4;
+  box-sizing: border-box;
+}
+
+.surveyBox {
+  position: relative;
+
+  width: 100%;
+  min-height: calc(100vh - 110px);
+
+  border: 1px solid #d9c2a0;
+
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(252, 249, 244, 0.92) 60%,
+      rgba(248, 244, 237, 0.95) 100%
+    );
+
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.content {
+  width: min(1080px, 84%);
+  min-height: calc(100vh - 110px);
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 80px;
+}
+
+/* =========================
+   왼쪽 텍스트
+========================= */
+
+.textArea {
+  flex: 1;
+  max-width: 540px;
+}
+
+.infoBadge {
+  width: fit-content;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  margin-bottom: 30px;
+  padding: 8px 16px;
+
+  border-radius: 999px;
+
+  background: #dce8e5;
+  color: #527d78;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.clockIcon {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.title {
+  margin: 0;
+
+  color: #34291f;
+
+  font-size: clamp(34px, 3.2vw, 50px);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -1.6px;
+}
+
+.description {
+  margin: 30px 0 0;
+
+  color: #544a42;
+
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.7;
+  letter-spacing: -0.4px;
+}
+
+.startButton {
+  min-width: 220px;
+  height: 52px;
+
+  margin-top: 34px;
+  padding: 0 24px;
+
+  border: none;
+  border-radius: 7px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+
+  background: #568b86;
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    background: #477a76;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.arrow {
+  font-size: 25px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  margin: 25px 0 0;
+
+  color: #ae9e8f;
+
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.noticeIcon {
+  color: #d2b99a;
+  font-size: 12px;
+}
+
+/* =========================
+   막둥이 이미지
+========================= */
+
+.characterArea {
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding-top: 15px;
+}
+
+.character {
+  display: block;
+
+  width: min(100%, 360px);
+  height: auto;
+
+  object-fit: contain;
+
+  user-select: none;
+  pointer-events: none;
+}
+
+/* =========================
+   모서리 장식
+========================= */
+
+.corner {
+  position: absolute;
+
+  width: 36px;
+  height: 36px;
+
+  z-index: 2;
+
+  &::before,
+  &::after {
+    content: '';
+
+    position: absolute;
+
+    background: #d4bc98;
+  }
+}
+
+/* ───── 좌측 상단 ───── */
+
+.topLeft {
+  top: 9px;
+  left: 9px;
+
+  border-top: 2px solid #d4bc98;
+  border-left: 2px solid #d4bc98;
+
+  &::before {
+    width: 20px;
+    height: 1px;
+
+    top: 7px;
+    left: -5px;
+  }
+
+  &::after {
+    width: 1px;
+    height: 20px;
+
+    top: -5px;
+    left: 7px;
+  }
+}
+
+/* ───── 우측 상단 ───── */
+
+.topRight {
+  top: 9px;
+  right: 9px;
+
+  border-top: 2px solid #d4bc98;
+  border-right: 2px solid #d4bc98;
+
+  &::before {
+    width: 20px;
+    height: 1px;
+
+    top: 7px;
+    right: -5px;
+  }
+
+  &::after {
+    width: 1px;
+    height: 20px;
+
+    top: -5px;
+    right: 7px;
+  }
+}
+
+/* ───── 좌측 하단 ───── */
+
+.bottomLeft {
+  bottom: 9px;
+  left: 9px;
+
+  border-bottom: 2px solid #d4bc98;
+  border-left: 2px solid #d4bc98;
+
+  &::before {
+    width: 20px;
+    height: 1px;
+
+    bottom: 7px;
+    left: -5px;
+  }
+
+  &::after {
+    width: 1px;
+    height: 20px;
+
+    bottom: -5px;
+    left: 7px;
+  }
+}
+
+/* ───── 우측 하단 ───── */
+
+.bottomRight {
+  right: 9px;
+  bottom: 9px;
+
+  border-right: 2px solid #d4bc98;
+  border-bottom: 2px solid #d4bc98;
+
+  &::before {
+    width: 20px;
+    height: 1px;
+
+    right: -5px;
+    bottom: 7px;
+  }
+
+  &::after {
+    width: 1px;
+    height: 20px;
+
+    right: 7px;
+    bottom: -5px;
+  }
+}
+
+/* =========================
+   태블릿
+========================= */
+
+@media (max-width: 1024px) {
+  .content {
+    width: 82%;
+    gap: 40px;
+  }
+
+  .textArea {
+    max-width: 480px;
+  }
+
+  .character {
+    width: min(100%, 300px);
+  }
+}
+
+/* =========================
+   모바일
+========================= */
+
+@media (max-width: 768px) {
+  .preferenceSurvey {
+    padding: 12px;
+  }
+
+  .surveyBox {
+    min-height: calc(100vh - 94px);
+  }
+
+  .content {
+    width: 82%;
+    min-height: calc(100vh - 94px);
+
+    padding: 70px 0 60px;
+
+    flex-direction: column;
+    justify-content: center;
+    gap: 35px;
+  }
+
+  .textArea {
+    width: 100%;
+    max-width: none;
+  }
+
+  .infoBadge {
+    margin-bottom: 22px;
+
+    font-size: 12px;
+  }
+
+  .title {
+    font-size: 32px;
+    line-height: 1.35;
+  }
+
+  .description {
+    margin-top: 20px;
+
+    font-size: 15px;
+  }
+
+  .startButton {
+    width: 100%;
+
+    margin-top: 28px;
+  }
+
+  .notice {
+    font-size: 12px;
+  }
+
+  .characterArea {
+    width: 100%;
+    padding: 0;
+  }
+
+  .character {
+    width: 230px;
+  }
+
+  .corner {
+    width: 26px;
+    height: 26px;
+  }
+}
