@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { PATHS } from '../../routes/paths'
+import mypageTopOrnament from '../../assets/images/mypage/mypageTopOrnament.svg'
 import styles from './MyPageLayout.module.scss'
 
 const menuItems = [
@@ -40,7 +41,10 @@ const MyPageLayout = () => {
             나의 자작 시간을 확인해보세요.
           </p>
         </div>
+      </header>
 
+      <div className={styles.ornamentArea}>
+        <img className={styles.topOrnament} src={mypageTopOrnament} alt="" />
         <button
           className={styles.logoutButton}
           type="button"
@@ -57,7 +61,7 @@ const MyPageLayout = () => {
 
           <span>로그아웃</span>
         </button>
-      </header>
+      </div>
 
       <div className={styles.layout}>
         <aside className={styles.sidebar}>
