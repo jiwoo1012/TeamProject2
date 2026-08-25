@@ -1,44 +1,101 @@
 @use '../../styles/variables' as *;
 
 .login {
-  display: flex;
-  min-height: calc(100vh - 97px);
-  background: $color-bg;
+  position: relative;
+  width: 100%;
+  background: $color-surface;
+  overflow: hidden;
+  padding-top: 147px;
+  padding-bottom: 300px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 300px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 50' preserveAspectRatio='none'%3E%3Cpath d='M0,0 L1440,0 L1440,20 C1200,30 960,10 720,18 C480,26 240,10 0,20 Z' fill='%23FDFBF9'/%3E%3C/svg%3E");
+    background-size: 100% 100%;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 140px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 80' preserveAspectRatio='none'%3E%3Cpath d='M0,40 C240,70 480,10 720,30 C960,50 1200,10 1440,35 L1440,80 L0,80 Z' fill='%23FDFBF9'/%3E%3C/svg%3E");
+    background-size: 100% 100%;
+    pointer-events: none;
+    z-index: 2;
+  }
 
   @media (max-width: $breakpoint-mobile-max) {
+    display: flex;
     flex-direction: column;
+    overflow: visible;
+    padding-top: 0;
+    padding-bottom: 0;
+
+    &::before,
+    &::after {
+      display: none;
+    }
   }
 }
 
 .visual {
-  flex: 1;
-  background: $color-surface;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: absolute;
+  left: 100px;
+  top: 100px;
+  width: 820px;
+  height: 800px;
+  border-radius: 500px 760px 1560px 0;
+  overflow: hidden;
+  z-index: 1;
 
   img {
-    max-width: 100%;
-    height: auto;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 20%;
   }
 
   @media (max-width: $breakpoint-mobile-max) {
-    min-height: 240px;
+    position: static;
+    width: 100%;
+    height: 240px;
+    border-radius: 0;
+    background: $color-surface;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+
+    img {
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      object-fit: contain;
+    }
   }
 }
 
 .formArea {
-  flex: 1;
-  max-width: 480px;
-  padding: $space-16 $space-8;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  margin-left: 934px;
+  width: 400px;
+  padding-top: 60px;
 
   h1 {
-    font-size: $font-size-3xl;
+    font-family: $font-family-display;
+    font-size: $font-size-5xl;
     font-weight: $font-weight-bold;
     color: $color-text-primary;
+    line-height: $line-height-tight;
     margin-bottom: $space-8;
   }
 
@@ -56,22 +113,31 @@
   }
 
   input[type='email'],
-  input[type='password'],
-  input[type='text'] {
+  input[type='password'] {
     height: 48px;
     padding: 0 $space-4;
+    background: $color-white;
     border: 1px solid $color-border;
     border-radius: $radius-md;
-    font-size: $font-size-md;
+    font-size: $font-size-sm;
 
     &:focus {
       outline: none;
       border-color: $color-primary;
     }
   }
+
+  @media (max-width: $breakpoint-mobile-max) {
+    margin-left: 0;
+    width: 100%;
+    padding: $space-8 $space-6;
+
+    h1 {
+      font-size: $font-size-2xl;
+    }
+  }
 }
 
-// 비밀번호 입력창 + 보기/숨기기 버튼 감싸는 wrapper (와이어프레임 확정: 눈 아이콘)
 .passwordField {
   position: relative;
   display: flex;
@@ -105,13 +171,17 @@
 }
 
 .submitButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 52px;
+  padding: 0 $space-8;
   margin-top: $space-4;
   border: none;
   border-radius: $radius-md;
   background: $color-primary;
   color: $color-white;
-  font-size: $font-size-md;
+  font-size: $font-size-lg;
   font-weight: $font-weight-semibold;
   cursor: pointer;
 
@@ -129,31 +199,94 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: $space-4;
-  font-size: $font-size-sm;
+  margin-top: 1px; // 더 위로 바짝 붙임
 }
 
 .rememberLabel {
   display: flex;
   align-items: center;
   gap: $space-2;
-  font-weight: $font-weight-regular;
-  margin-top: 0;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  cursor: pointer;
+
+  input[type='checkbox'] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
 }
 
 .forgotPassword {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
   color: $color-text-muted;
   cursor: pointer;
+  position: relative;
+  top: 4px; // 
 }
 
 .switchLink {
-  margin-top: $space-6;
+  margin-top: $space-8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-size: $font-size-sm;
   color: $color-text-muted;
-  text-align: center;
 
   a {
-    color: $color-primary;
+    color: $color-text-primary;
     font-weight: $font-weight-semibold;
+  }
+}
+.switchLinkAction {
+  color: $color-text-primary;
+  font-weight: $font-weight-semibold;
+  position: relative;
+  top: 4px; 
+}
+.checkboxBox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  background: $color-white;
+
+  input:checked + & {
+    background: $color-primary;
+    border-color: $color-primary;
+  }
+
+  input:checked + &::after {
+    content: '';
+    width: 5px;
+    height: 9px;
+    border: solid $color-white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translate(-1px, -1px);
+  }
+}
+
+.eyeIcon {
+  width: 30px;
+  height: auto;
+  opacity: 0.7;
+}
+
+.container {
+  position: relative;
+  max-width: 1440px;
+  margin: 0 auto;
+
+  @media (max-width: $breakpoint-mobile-max) {
+    max-width: none;
+    display: flex;
+    flex-direction: column;
   }
 }
