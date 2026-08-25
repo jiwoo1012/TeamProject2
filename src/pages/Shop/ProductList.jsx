@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import ProductCard from '../../components/ui/ProductCard/ProductCard'
 import Pagination from '../../components/ui/Pagination/Pagination'
 import { foods, gifts, glasses, liquors, products } from '../../data/products'
@@ -34,6 +34,7 @@ const seededStylingImages = [...stylingImages].sort(() => Math.random() - 0.5).s
 const ProductList = () => {
   const stageRef = useRef(null)
   const productsRef = useRef(null)
+  const location = useLocation()
   const [searchParams] = useSearchParams()
   const [bannerIndex, setBannerIndex] = useState(0)
   const [revealProgress, setRevealProgress] = useState(0)
@@ -43,6 +44,49 @@ const ProductList = () => {
   const [sortBy, setSortBy] = useState('latest')
   const [currentPage, setCurrentPage] = useState(1)
   const [wishes, setWishes] = useState(() => new Set())
+
+  useEffect(() => {
+    const page = stageRef.current?.closest(`.${styles.page}`)
+    const header = document.querySelector('body > #root header') ?? document.querySelector('header')
+    if (!page || !header) return undefined
+
+    const previousPosition = header.style.position
+    const previousTop = header.style.top
+    const previousWidth = header.style.width
+    const updateHeaderHeight = () => {
+      page.style.setProperty('--shop-header-height', `${header.getBoundingClientRect().height}px`)
+    }
+
+    header.style.position = 'sticky'
+    header.style.top = '0'
+    header.style.width = '100%'
+    updateHeaderHeight()
+
+    const resizeObserver = new ResizeObserver(updateHeaderHeight)
+    resizeObserver.observe(header)
+    window.addEventListener('resize', updateHeaderHeight)
+
+    return () => {
+      resizeObserver.disconnect()
+      window.removeEventListener('resize', updateHeaderHeight)
+      page.style.removeProperty('--shop-header-height')
+      header.style.position = previousPosition
+      header.style.top = previousTop
+      header.style.width = previousWidth
+    }
+  }, [])
+
+  useEffect(() => {
+    const handleShopLink = (event) => {
+      const link = event.target.closest('a')
+      if (!link) return
+      const targetUrl = new URL(link.href, window.location.origin)
+      if (targetUrl.pathname === '/shop' && !targetUrl.search) window.scrollTo({ top: 0, behavior: 'auto' })
+    }
+
+    document.addEventListener('click', handleShopLink)
+    return () => document.removeEventListener('click', handleShopLink)
+  }, [])
 
   useEffect(() => {
     const timer = window.setInterval(() => setBannerIndex((index) => (index + 1) % banners.length), 4000)
@@ -63,7 +107,13 @@ const ProductList = () => {
       setDetailFilter('전체')
     }
     setCurrentPage(1)
-  }, [searchParams])
+    const shouldShowProducts = Boolean(category || type || searchParams.get('search'))
+    const frameId = window.requestAnimationFrame(() => {
+      if (shouldShowProducts) productsRef.current?.scrollIntoView({ behavior: 'auto', block: 'start' })
+      else window.scrollTo({ top: 0, behavior: 'auto' })
+    })
+    return () => window.cancelAnimationFrame(frameId)
+  }, [location.key, searchParams])
 
   useEffect(() => {
     let frameId
@@ -151,22 +201,26 @@ const ProductList = () => {
         </div>
       </section>
 
+      <div className={styles.shopBody}>
       <div className={styles.catalog}>
         <nav className={styles.mainCategories} aria-label="상품 대분류">
           {mainCategories.map((category, index) => (
             <div className={styles.categoryGroup} key={category.id}>
-              <button className={categoryId === category.id ? styles.activeCategory : ''} type="button" onClick={() => handleCategory(category.id)}>{category.label}</button>
+              <button className={`${categoryId === category.id ? styles.activeCategory : ''} ${category.id === 'all' ? styles.allCategory : ''}`} type="button" onClick={() => handleCategory(category.id)}>
+                {category.id !== 'all' && <img src={resolveImage(category.data[0]?.imageUrl)} alt="" aria-hidden="true" />}
+                <span className={styles.categoryLabel}>{category.label}</span>
+              </button>
               {index < mainCategories.length - 1 && <span aria-hidden="true">⌘</span>}
             </div>
           ))}
         </nav>
 
         <section className={styles.productSection} ref={productsRef}>
-          <header className={styles.sectionHeader}>
+          <header className={styles.sectionHeader} key={`heading-${categoryId}-${detailFilter}`}>
             <h2>{activeCategory.label}</h2>
             <p>{filteredProducts.length}개의 상품이 있습니다.</p>
           </header>
-          <div className={styles.filterBar}>
+          <div className={styles.filterBar} key={`filters-${categoryId}`}>
             <div className={styles.detailFilters}>
               {detailOptions.map((option) => <button className={detailFilter === option ? styles.activeFilter : ''} type="button" onClick={() => { setDetailFilter(option); setCurrentPage(1) }} key={option}>{option}</button>)}
             </div>
@@ -176,8 +230,8 @@ const ProductList = () => {
             </div>
           </div>
           {visibleProducts.length > 0 ? (
-            <div className={styles.productGrid}>{visibleProducts.map((product) => <ProductCard product={product} isWished={wishes.has(product.productId)} onToggleWish={handleWish} key={product.productId} />)}</div>
-          ) : <p className={styles.empty}>조건에 맞는 상품이 없습니다.</p>}
+            <div className={styles.productGrid} key={`products-${categoryId}-${detailFilter}-${priceFilter}-${sortBy}`}>{visibleProducts.map((product) => <ProductCard product={product} isWished={wishes.has(product.productId)} onToggleWish={handleWish} key={product.productId} />)}</div>
+          ) : <p className={styles.empty} key={`empty-${categoryId}-${detailFilter}-${priceFilter}`}>조건에 맞는 상품이 없습니다.</p>}
           <Pagination currentPage={currentPage} totalPages={totalPages} onChange={handlePage} />
         </section>
       </div>
@@ -185,6 +239,7 @@ const ProductList = () => {
       <section className={styles.stylingMarquee} aria-label="상품 스타일링 이미지">
         <div className={styles.marqueeTrack}>{[...seededStylingImages, ...seededStylingImages].map((image, index) => <img src={image} alt="전통주와 안주 스타일링" loading="lazy" key={`${image}-${index}`} />)}</div>
       </section>
+      </div>
     </div>
   )
 }

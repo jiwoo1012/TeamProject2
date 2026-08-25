@@ -1,0 +1,111 @@
+@use '../../styles/variables' as v;
+
+.page {
+  width: 100%;
+}
+
+.errorCard {
+  display: flex;
+  min-height: 620px;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  padding: v.$space-12 v.$space-6;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+  background: v.$color-white;
+  text-align: center;
+}
+
+.errorIcon {
+  display: grid;
+  width: 128px;
+  height: 128px;
+  place-items: center;
+  border-radius: v.$radius-pill;
+  background: rgb(77 126 123 / 51%);
+}
+
+.errorIcon svg {
+  width: 66px;
+  height: 66px;
+  fill: none;
+  stroke: v.$color-white;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+}
+
+.errorCard h2 {
+  margin: v.$space-8 0 0;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-2xl;
+  font-weight: v.$font-weight-semibold;
+  line-height: v.$line-height-tight;
+}
+
+.errorCard p {
+  margin: v.$space-3 0 0;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-md;
+  line-height: v.$line-height-base;
+}
+
+.errorCard button {
+  display: flex;
+  width: 280px;
+  height: 56px;
+  align-items: center;
+  justify-content: center;
+  margin-top: v.$space-10;
+  border: 0;
+  border-radius: v.$radius-lg;
+  background: v.$color-primary;
+  color: v.$color-white;
+  font: inherit;
+  font-size: v.$font-size-md;
+  font-weight: v.$font-weight-semibold;
+  line-height: 1;
+  text-align: center;
+  cursor: pointer;
+}
+
+.errorCard button:hover {
+  background: v.$color-primary-light;
+}
+
+.errorCard button:focus-visible {
+  outline: 2px solid v.$color-primary-light;
+  outline-offset: 3px;
+}
+
+@media (max-width: v.$breakpoint-mobile-max) {
+  .errorCard {
+    min-height: 460px;
+    padding: v.$space-12 v.$space-5;
+  }
+
+  .errorIcon {
+    width: 104px;
+    height: 104px;
+  }
+
+  .errorIcon svg {
+    width: 54px;
+    height: 54px;
+  }
+
+  .errorCard h2 {
+    font-size: v.$font-size-xl;
+  }
+
+  .errorCard p {
+    font-size: v.$font-size-sm;
+  }
+
+  .errorCard button {
+    width: min(100%, 280px);
+    height: 52px;
+    font-size: v.$font-size-sm;
+  }
+}
