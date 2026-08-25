@@ -4,6 +4,9 @@ import { onAuthStateChanged } from 'firebase/auth'
 
 import { auth } from '../../firebase/firebase'
 
+// 상품 데이터
+import { products } from '../../data/products'
+
 import jajakLogo from '../../assets/logos/jajakLogo.png'
 import cartIcon from '../../assets/icons/cartIcon.png'
 import wishlistIcon from '../../assets/icons/wishIcon.png'
@@ -13,6 +16,40 @@ import searchIcon from '../../assets/icons/searchIcon.png'
 import SearchModal from './SearchModal'
 
 import styles from './DesktopHeader.module.scss'
+
+
+/* ========================================
+   상품 이미지 불러오기
+
+   ProductList와 동일한 방식으로
+   product1.png, product2.png ... 연결
+======================================== */
+
+const productImages = import.meta.glob(
+  '../../assets/images/products/product*.png',
+  {
+    eager: true,
+    import: 'default',
+  }
+)
+
+
+const resolveImage = (imageUrl) => {
+  return Object.entries(productImages).find(([path]) =>
+    path.endsWith(`/${imageUrl}`)
+  )?.[1]
+}
+
+
+/* ========================================
+   인기 상품
+
+   현재는 전체 상품 중 앞 4개를 사용
+   추후 isPopular 등의 필드가 생기면
+   filter 방식으로 변경 가능
+======================================== */
+
+const popularProducts = products.slice(0, 4)
 
 
 const DesktopHeader = () => {
@@ -68,6 +105,38 @@ const DesktopHeader = () => {
   }
 
 
+  /* ========================================
+     상품명 가져오기
+
+     현재 상품 데이터 필드명이 달라도
+     화면이 깨지지 않도록 처리
+  ======================================== */
+
+  const getProductName = (product) => {
+    return (
+      product.productName ??
+      product.name ??
+      product.title ??
+      '상품명'
+    )
+  }
+
+
+  /* ========================================
+     가격 표시
+  ======================================== */
+
+  const formatPrice = (price) => {
+    const numericPrice = Number(price)
+
+    if (Number.isNaN(numericPrice)) {
+      return price
+    }
+
+    return `${numericPrice.toLocaleString('ko-KR')}원`
+  }
+
+
   return (
     <div
       className={styles.desktopHeader}
@@ -107,7 +176,7 @@ const DesktopHeader = () => {
               onMouseEnter={() => openMegaMenu('shop')}
             >
               <Link
-                to="/shop"
+                to="/shop?category=liquor"
                 className={styles.gnbLink}
               >
                 SHOP
@@ -365,7 +434,10 @@ const DesktopHeader = () => {
           className={`${styles.megaContainer} ${styles.shopContainer}`}
         >
 
-          {/* 카테고리 */}
+          {/* ========================================
+              카테고리
+          ======================================== */}
+
           <div className={styles.shopColumn}>
 
             <span className={styles.columnTitle}>
@@ -373,7 +445,7 @@ const DesktopHeader = () => {
             </span>
 
             <Link
-              to="/shop"
+              to="/shop?category=liquor"
               className={styles.snbLink}
               onClick={closeMegaMenu}
             >
@@ -407,7 +479,10 @@ const DesktopHeader = () => {
           </div>
 
 
-          {/* 전통주 종류 */}
+          {/* ========================================
+              전통주 종류
+          ======================================== */}
+
           <div className={styles.shopColumn}>
 
             <span className={styles.columnTitle}>
@@ -457,44 +532,72 @@ const DesktopHeader = () => {
           </div>
 
 
-          {/* 인기 상품 */}
+          {/* ========================================
+              인기 상품
+          ======================================== */}
+
           <div className={styles.popularProducts}>
 
             <div className={styles.popularTitle}>
+
               <h2>인기 상품</h2>
 
               <Link
-                to="/shop"
+                to="/shop?category=liquor"
                 onClick={closeMegaMenu}
               >
                 전체보기
                 <span>→</span>
               </Link>
+
             </div>
 
 
             <div className={styles.productList}>
 
-              {[1, 2, 3, 4].map((product) => (
-                <Link
-                  key={product}
-                  to={`/shop/${product}`}
-                  className={styles.productCard}
-                  onClick={closeMegaMenu}
-                >
-                  <div className={styles.productImage}>
+              {popularProducts.map((product) => {
+                const imageSrc = resolveImage(product.imageUrl)
+                const productName = getProductName(product)
+
+                return (
+                  <Link
+                    key={product.productId}
+                    to={`/shop/${product.productId}`}
+                    className={styles.productCard}
+                    onClick={closeMegaMenu}
+                  >
+
                     {/* 상품 이미지 */}
-                  </div>
+                    <div className={styles.productImage}>
+                      {imageSrc && (
+                        <img
+                          src={imageSrc}
+                          alt={productName}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            display: 'block',
+                            objectFit: 'cover',
+                          }}
+                        />
+                      )}
+                    </div>
 
-                  <span className={styles.productName}>
-                    상품명
-                  </span>
 
-                  <strong>
-                    398,230원
-                  </strong>
-                </Link>
-              ))}
+                    {/* 상품명 */}
+                    <span className={styles.productName}>
+                      {productName}
+                    </span>
+
+
+                    {/* 가격 */}
+                    <strong>
+                      {formatPrice(product.price)}
+                    </strong>
+
+                  </Link>
+                )
+              })}
 
             </div>
 

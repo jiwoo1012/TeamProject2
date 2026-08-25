@@ -200,7 +200,6 @@
 
 
   &:hover {
-
     img {
       opacity: 0.65;
 
@@ -516,10 +515,12 @@
   padding-right: $space-8;
 }
 
+
 .aiSnb {
   display: flex;
   flex-direction: column;
 }
+
 
 .snbLink {
   position: relative;
@@ -750,17 +751,32 @@
 
 .productImage {
   width: 100%;
+
   aspect-ratio: 1 / 0.8;
 
   margin-bottom: $space-2;
 
+  overflow: hidden;
+
   background:
     rgba($color-white, 0.14);
 
-  border-radius: $radius-md;
+  border-radius: $radius-lg;
 
   transition:
     transform $transition-fast ease;
+
+
+  img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    border-radius: inherit;
+  }
 }
 
 
@@ -776,6 +792,7 @@
 
 .productCard strong {
   font-size: 11px;
+
   font-weight: $font-weight-semibold;
 }
 
@@ -840,6 +857,20 @@
     display: none;
   }
 }
-.makdongLink { font-size: 0; }
-.makdongLink::after { content: '막둥이 소개'; font-size: 16px; }
-.hiddenBrandLink { display: none; }
+
+
+.makdongLink {
+  font-size: 0;
+}
+
+
+.makdongLink::after {
+  content: '막둥이 소개';
+
+  font-size: 16px;
+}
+
+
+.hiddenBrandLink {
+  display: none;
+}
