@@ -116,6 +116,10 @@ const ProductList = () => {
   }, [location.key, searchParams])
 
   useEffect(() => {
+    if (window.matchMedia('(max-width: 767px)').matches) {
+      setRevealProgress(1)
+      return undefined
+    }
     let frameId
     const updateProgress = () => {
       const stage = stageRef.current

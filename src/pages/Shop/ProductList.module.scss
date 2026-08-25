@@ -73,23 +73,26 @@
 
 @include mixins.mobile {
   .page { --shop-header-height: 58px; }
-  .revealStage { height: 165vh; min-height: 900px; }
-  .stickyFrame { min-height: 520px; }
-  .tastePanel { width: 155vw; height: 70vh; min-height: 500px; }
-  .tasteContent { top: 25%; width: 52%; }
-  .tasteContent h1 { font-size: $font-size-4xl; }
+  .revealStage { height: auto; min-height: 0; background: $color-bg; }
+  .stickyFrame { position: relative; top: auto; height: auto; min-height: 0; overflow: visible; }
+  .bannerSlider { position: relative; inset: auto; width: 100%; height: auto; aspect-ratio: 16 / 9; overflow: hidden; }
+  .banner { width: 100%; height: 100%; object-fit: cover; }
+  .tastePanel { position: relative; bottom: auto; left: auto; width: 100%; height: auto; min-height: 0; padding: $space-16 $side-margin-mobile; border-radius: 0; transform: none; }
+  .tasteContent { position: relative; top: auto; left: auto; width: 100%; transform: none; }
+  .tasteContent h1 { font-size: $font-size-3xl; }
   .tasteContent p { font-size: $font-size-sm; }
   .tasteContent p br { display: none; }
+  .tasteContent a { margin-top: $space-6; }
   .catalog { padding-top: $space-12; }
-  .mainCategories { justify-content: flex-start; gap: $space-2; padding-bottom: $space-20; overflow-x: auto; scroll-snap-type: x proximity; }
-  .categoryGroup { flex: 0 0 auto; gap: $space-2; }
-  .categoryGroup button { width: 92px; font-size: $font-size-md; scroll-snap-align: start; }
-  .categoryGroup span { font-size: $font-size-2xl; }
+  .mainCategories { justify-content: center; flex-wrap: wrap; width: min(calc(100% - (#{$side-margin-mobile} * 2)), 340px); gap: $space-4; padding: $space-4 0 $space-16; overflow: visible; }
+  .categoryGroup { flex: 0 0 auto; gap: 0; }
+  .categoryGroup button { width: 88px; font-size: $font-size-md; }
+  .categoryGroup > span { display: none; }
   .sectionHeader { padding-bottom: $space-12; }
   .sectionHeader h2 { font-size: $font-size-5xl; }
   .filterBar { align-items: stretch; flex-direction: column; padding-bottom: $space-8; }
-  .detailFilters { flex-wrap: nowrap; padding-bottom: $space-2; overflow-x: auto; }
-  .detailFilters button { min-width: max-content; }
+  .detailFilters { justify-content: center; flex-wrap: wrap; padding-bottom: 0; overflow: visible; }
+  .detailFilters button { min-width: 0; padding: $space-2 $space-4; font-size: $font-size-sm; }
   .selects { width: 100%; }
   .selects label { flex: 1; min-width: 0; }
   .productGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-10 $space-3; }
