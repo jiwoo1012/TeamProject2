@@ -44,6 +44,7 @@ const MainPage = () => {
   const isTransitioningRef = useRef(false)
   const heroCaptionRef = useRef(null)
   const shopButtonRef = useRef(null)
+  const heroCoverRef = useRef(null)
   const heroImageRef = useRef(null)
   const heroPhotoRef = useRef(null)
   const leftHeroTitleRef = useRef(null)
@@ -70,6 +71,7 @@ const MainPage = () => {
 
   useHeroReveal({
     mainContentRef,
+    heroCoverRef,
     heroImageRef,
     heroPhotoRef,
     leftHeroTitleRef,
@@ -146,7 +148,6 @@ const MainPage = () => {
         root.style.scrollBehavior = 'auto'
         flushSync(() => setIsIntroSkipped(true))
         window.scrollTo(0, 0)
-        root.classList.add('main-header-visible')
         ScrollTrigger.refresh()
         root.style.scrollBehavior = previousScrollBehavior
       })
@@ -165,6 +166,9 @@ const MainPage = () => {
 
       <section ref={mainContentRef} className={styles.mainContent} aria-labelledby="main-content-title">
         <div className={styles.heroInner}>
+          <div ref={heroCoverRef} className={styles.heroCover} aria-hidden="true">
+            <img src={heroImage} alt="" />
+          </div>
           <div className={styles.heroVisual}>
             <h1 ref={leftHeroTitleRef} id="main-content-title" className={`${styles.heroTitle} ${styles.heroTitleLeft}`}>
               오늘의
@@ -193,6 +197,7 @@ const MainPage = () => {
       </section>
 
       <section ref={aiIntroRef} className={styles.aiIntro} aria-labelledby="ai-intro-title">
+        <div className={styles.aiIntroContent}>
         <div className={styles.moodHeading}>
           <p className={styles.moodLabel} aria-label="HAPPY, RAINY, SWEET">
             <span className={styles.moodHappy} aria-hidden="true">HAPPY</span>
@@ -259,6 +264,7 @@ const MainPage = () => {
         <Link className={styles.aiButton} to="/ai">
           추천 받으러 가기
         </Link>
+        </div>
 
       </section>
 
@@ -349,7 +355,14 @@ const MainPage = () => {
         </div>
 
         <div className={styles.makdongVisual}>
-          <img src={makdongImage} alt="술을 따르는 자작 캐릭터 막동이" />
+          <div className={styles.makdongCharacter}>
+            <img
+              className={styles.makdongBase}
+              src={makdongImage}
+              alt="술을 따르는 자작 캐릭터 막동이"
+              draggable="false"
+            />
+          </div>
         </div>
       </section>
 

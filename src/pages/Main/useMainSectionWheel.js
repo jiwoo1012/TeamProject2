@@ -46,6 +46,11 @@ const useMainSectionWheel = ({
       const currentScroll = window.scrollY
       const mainTop = mainContent.offsetTop
       const firstSectionTop = aiIntroRef.current.offsetTop
+      const heroStops = [
+        mainTop,
+        Math.min(mainTop + window.innerHeight, firstSectionTop - 2),
+        Math.min(mainTop + window.innerHeight * 2, firstSectionTop - 2),
+      ]
       const sectionTops = sections.map((section) => section.offsetTop)
       const bestSeller = bestSellerSectionRef.current
       const bestSellerEnd = bestSeller.offsetTop + bestSeller.offsetHeight - window.innerHeight
@@ -72,16 +77,25 @@ const useMainSectionWheel = ({
         if (currentScroll < firstSectionTop - 2) {
           if (currentScroll < mainTop) return
 
-          if (direction < 0) {
-            if (currentScroll <= mainTop + 2) return
-            targetTop = mainTop
-          } else if (canMovePastHeroRef.current) {
+          const currentHeroIndex = heroStops.reduce(
+            (closestIndex, top, index) => (
+              Math.abs(top - currentScroll) < Math.abs(heroStops[closestIndex] - currentScroll)
+                ? index
+                : closestIndex
+            ),
+            0,
+          )
+          const targetHeroIndex = currentHeroIndex + direction
+
+          if (targetHeroIndex < 0) return
+          if (targetHeroIndex >= heroStops.length) {
+            if (!canMovePastHeroRef.current) {
+              event.preventDefault()
+              return
+            }
             targetTop = firstSectionTop
           } else {
-            targetTop = Math.min(
-              mainTop + window.innerHeight,
-              firstSectionTop - 2,
-            )
+            targetTop = heroStops[targetHeroIndex]
           }
         } else {
           const currentIndex = sectionTops.reduce(
@@ -96,7 +110,7 @@ const useMainSectionWheel = ({
           const targetIndex = currentIndex + direction
 
           if (targetIndex < 0) {
-            targetTop = mainTop + window.innerHeight
+            targetTop = heroStops[heroStops.length - 1]
           } else if (targetIndex >= sectionTops.length) {
             return
           } else {

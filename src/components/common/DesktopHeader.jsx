@@ -165,7 +165,7 @@ const DesktopHeader = () => {
                 to="/brand"
                 className={styles.gnbLink}
               >
-                BRAND
+                브랜드 소개
               </Link>
             </div>
 
@@ -179,7 +179,7 @@ const DesktopHeader = () => {
                 to="/shop?category=liquor"
                 className={styles.gnbLink}
               >
-                SHOP
+                스토어
               </Link>
             </div>
 

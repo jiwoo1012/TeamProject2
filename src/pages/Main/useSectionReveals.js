@@ -19,6 +19,12 @@ const useSectionReveals = ({
   makdongSectionRef,
 }) => {
   useLayoutEffect(() => {
+    const aiSection = aiIntroRef.current
+    const startMoodCycle = () => aiSection.classList.add(styles.aiMoodReady)
+    const resetMoodCycle = () => aiSection.classList.remove(styles.aiMoodReady)
+
+    resetMoodCycle()
+
     gsap.set(
       [aiIntroRef.current, featureSectionRef.current]
         .flatMap((section) => [...section.querySelectorAll('*')]),
@@ -30,10 +36,23 @@ const useSectionReveals = ({
         trigger: aiIntroRef.current,
         start: SECTION_REVEAL_START,
         toggleActions: SECTION_TOGGLE_ACTIONS,
+        onLeaveBack: resetMoodCycle,
       },
     })
       .from(`.${styles.moodHeading}`, { y: 36, duration: 0.6, ease: 'power2.out' })
-      .from(`.${styles.aiIntro} h2`, { y: 24, duration: 0.45 }, '-=0.25')
+      .fromTo(
+        `.${styles.aiIntro} h2`,
+        { autoAlpha: 0, y: 30, filter: 'blur(6px)' },
+        {
+          autoAlpha: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          duration: 0.8,
+          ease: 'power2.out',
+        },
+        '-=0.18',
+      )
+      .call(startMoodCycle)
       .from(`.${styles.recommendCards} > div`, { y: 42, duration: 0.5, stagger: 0.12 }, '-=0.2')
       .fromTo(
         `.${styles.aiButton}`,
@@ -203,6 +222,7 @@ const useSectionReveals = ({
       document.documentElement.classList.remove(FEATURE_HEADER_CLASS)
       document.documentElement.classList.remove(EVENTS_HEADER_CLASS)
       document.documentElement.classList.remove(MAKDONG_HEADER_CLASS)
+      resetMoodCycle()
       timelines.forEach((timeline) => {
         timeline.scrollTrigger?.kill()
         timeline.kill()
