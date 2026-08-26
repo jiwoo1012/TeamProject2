@@ -29,6 +29,7 @@ const getSignupErrorMessage = (error) => {
 
 const Signup = () => {
   const navigate = useNavigate()
+  const pageRef = useRef(null)
 
   const [form, setForm] = useState({
     email: '',
@@ -44,6 +45,30 @@ const Signup = () => {
 
   const justSignedUpRef = useRef(false)
   const submittingRef = useRef(false)
+
+  // Header가 일반 문서 흐름에서 위쪽 공간을 차지하고 있어서, .signup에
+  // height: 100vh만 주면 (헤더 높이만큼) 뷰포트를 넘어 스크롤이 생긴다.
+  // 실제 렌더링된 헤더 높이를 측정해 CSS 변수로 빼주는 방식으로 처리한다.
+  useEffect(() => {
+    const page = pageRef.current
+    const header = document.querySelector('body > #root header') ?? document.querySelector('header')
+    if (!page || !header) return undefined
+
+    const updateHeaderHeight = () => {
+      page.style.setProperty('--auth-header-height', `${header.getBoundingClientRect().height}px`)
+    }
+
+    updateHeaderHeight()
+    const resizeObserver = new ResizeObserver(updateHeaderHeight)
+    resizeObserver.observe(header)
+    window.addEventListener('resize', updateHeaderHeight)
+
+    return () => {
+      resizeObserver.disconnect()
+      window.removeEventListener('resize', updateHeaderHeight)
+      page.style.removeProperty('--auth-header-height')
+    }
+  }, [])
 
   useEffect(() => {
     const unsubscribe = subscribeToAuthState((user) => {
@@ -121,7 +146,7 @@ const Signup = () => {
   }
 
   return (
-    <div className={styles.signup}>
+    <div className={styles.signup} ref={pageRef}>
       <div className={styles.visual}>
         <img src={makdongImage} alt="막동이" />
       </div>
