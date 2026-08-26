@@ -5,7 +5,8 @@ import { signup, subscribeToAuthState } from '../../firebase/auth'
 import { PATHS } from '../../routes/paths'
 
 import checkIconImage from '../../assets/icons/checkIcon.png'
-import eyeIconImage from '../../assets/icons/eyeIcon.png'
+import eyeIconImage from '../../assets/icons/eye.png'
+import eyeNoIconImage from '../../assets/icons/eyeNO.png'
 import clipboardIconImage from '../../assets/icons/clipboardIcon.png'
 import closeIconImage from '../../assets/icons/closeIcon.png'
 import makdongImage from '../../assets/characters/M007_Poses03.png'
@@ -51,14 +52,21 @@ const Signup = () => {
   // 실제 렌더링된 헤더 높이를 측정해 CSS 변수로 빼주는 방식으로 처리한다.
   useEffect(() => {
     const page = pageRef.current
-    const header = document.querySelector('body > #root header') ?? document.querySelector('header')
+    const header =
+      document.querySelector('body > #root header') ??
+      document.querySelector('header')
+
     if (!page || !header) return undefined
 
     const updateHeaderHeight = () => {
-      page.style.setProperty('--auth-header-height', `${header.getBoundingClientRect().height}px`)
+      page.style.setProperty(
+        '--auth-header-height',
+        `${header.getBoundingClientRect().height}px`
+      )
     }
 
     updateHeaderHeight()
+
     const resizeObserver = new ResizeObserver(updateHeaderHeight)
     resizeObserver.observe(header)
     window.addEventListener('resize', updateHeaderHeight)
@@ -76,20 +84,25 @@ const Signup = () => {
         navigate(PATHS.home, { replace: true })
       }
     })
+
     return unsubscribe
   }, [navigate])
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
+
     setForm((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }))
   }
 
-  const isPasswordValid = form.password.length === 0 || PASSWORD_RULE.test(form.password)
+  const isPasswordValid =
+    form.password.length === 0 || PASSWORD_RULE.test(form.password)
+
   const isPasswordMatched =
-    form.passwordConfirm.length === 0 || form.password === form.passwordConfirm
+    form.passwordConfirm.length === 0 ||
+    form.password === form.passwordConfirm
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -179,6 +192,7 @@ const Signup = () => {
             />
 
             <label htmlFor="password">비밀번호</label>
+
             <div className={styles.passwordField}>
               <input
                 id="password"
@@ -189,20 +203,35 @@ const Signup = () => {
                 onChange={handleChange}
                 required
               />
+
               <button
-              type="button"
-              className={styles.togglePasswordButton}
-              onClick={() => setIsPasswordVisible((prev) => !prev)}
-              aria-label={isPasswordVisible ? '비밀번호 숨기기' : '비밀번호 보기'}
-            >
-              <img src={eyeIconImage} alt="" className={styles.eyeIcon} />
-            </button>
+                type="button"
+                className={styles.togglePasswordButton}
+                onClick={() => setIsPasswordVisible((prev) => !prev)}
+                aria-label={
+                  isPasswordVisible
+                    ? '비밀번호 숨기기'
+                    : '비밀번호 보기'
+                }
+              >
+                <img
+                  src={
+                    isPasswordVisible
+                      ? eyeNoIconImage
+                      : eyeIconImage
+                  }
+                  alt=""
+                  className={styles.eyeIcon}
+                />
+              </button>
             </div>
+
             <p className={isPasswordValid ? styles.hint : styles.hintError}>
               8자 이상, 영문/숫자/특수문자 조합으로 입력해주세요.
             </p>
 
             <label htmlFor="passwordConfirm">비밀번호 확인</label>
+
             <input
               id="passwordConfirm"
               name="passwordConfirm"
@@ -212,15 +241,28 @@ const Signup = () => {
               onChange={handleChange}
               required
             />
+
             {form.passwordConfirm.length > 0 && (
-              <p className={isPasswordMatched ? styles.hint : styles.hintError}>
-                {isPasswordMatched ? '비밀번호가 일치합니다.' : '비밀번호가 일치하지 않습니다.'}
+              <p
+                className={
+                  isPasswordMatched
+                    ? styles.hint
+                    : styles.hintError
+                }
+              >
+                {isPasswordMatched
+                  ? '비밀번호가 일치합니다.'
+                  : '비밀번호가 일치하지 않습니다.'}
               </p>
             )}
 
             <div className={styles.agreeGroup}>
               <span className={styles.fieldLabel}>약관 동의</span>
-              <label htmlFor="agree" className={styles.agreeLabel}>
+
+              <label
+                htmlFor="agree"
+                className={styles.agreeLabel}
+              >
                 <input
                   id="agree"
                   name="agree"
@@ -228,52 +270,95 @@ const Signup = () => {
                   checked={form.agree}
                   onChange={handleChange}
                 />
-                <span className={styles.checkboxBox} aria-hidden="true" />
+
+                <span
+                  className={styles.checkboxBox}
+                  aria-hidden="true"
+                />
+
                 [필수] 서비스 이용약관 및 개인정보 처리방침에 동의합니다.
               </label>
             </div>
 
-            {error && <p className={styles.error}>{error}</p>}
+            {error && (
+              <p className={styles.error}>
+                {error}
+              </p>
+            )}
 
-            <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
+            <button
+              type="submit"
+              className={styles.submitButton}
+              disabled={isSubmitting}
+            >
               {isSubmitting ? '가입 중...' : '회원가입'}
             </button>
           </form>
 
           <p className={styles.switchLink}>
             이미 계정이 있으신가요?
-            <Link to={PATHS.login} className={styles.switchLinkAction}>로그인</Link>
+
+            <Link
+              to={PATHS.login}
+              className={styles.switchLinkAction}
+            >
+              로그인
+            </Link>
           </p>
         </div>
       </div>
 
       {showSuccessModal && (
-        <div className={styles.overlay} onClick={handleCloseModal}>
-          <div className={styles.successModal} onClick={(e) => e.stopPropagation()}>
-            <button
-            type="button"
-            className={styles.closeButton}
-            onClick={handleCloseModal}
-            aria-label="닫기"
+        <div
+          className={styles.overlay}
+          onClick={handleCloseModal}
+        >
+          <div
+            className={styles.successModal}
+            onClick={(e) => e.stopPropagation()}
           >
-            <img src={closeIconImage} alt="" />
-          </button>
+            <button
+              type="button"
+              className={styles.closeButton}
+              onClick={handleCloseModal}
+              aria-label="닫기"
+            >
+              <img
+                src={closeIconImage}
+                alt=""
+              />
+            </button>
 
-            <img src={checkIconImage} alt="" className={styles.checkIcon} />
+            <img
+              src={checkIconImage}
+              alt=""
+              className={styles.checkIcon}
+            />
 
             <h2>회원가입이 완료되었습니다!</h2>
-            <p>자작에서 나에게 꼭 맞는 한 잔을 만나보세요.</p>
+
+            <p>
+              자작에서 나에게 꼭 맞는 한 잔을 만나보세요.
+            </p>
 
             <hr className={styles.divider} />
 
             <div className={styles.previewBox}>
-              <img src={clipboardIconImage} alt="" className={styles.clipboardIcon} />
+              <img
+                src={clipboardIconImage}
+                alt=""
+                className={styles.clipboardIcon}
+              />
+
               <p>
                 간단한 5가지 질문에 답하면
                 <br />
                 막동이가 취향에 맞는
                 <br />
-                <span className={styles.highlight}>전통주와 안주</span>를 추천해드려요.
+                <span className={styles.highlight}>
+                  전통주와 안주
+                </span>
+                를 추천해드려요.
               </p>
             </div>
 
@@ -284,8 +369,11 @@ const Signup = () => {
             >
               취향 프로필 만들기
             </button>
+
             <p className={styles.laterHint}>
-              <span aria-hidden="true">⏱</span> 약 1분이면 완료할 수 있어요.
+              <span aria-hidden="true">⏱</span>
+              {' '}
+              약 1분이면 완료할 수 있어요.
             </p>
           </div>
         </div>
