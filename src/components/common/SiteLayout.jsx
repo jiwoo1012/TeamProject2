@@ -3,13 +3,20 @@ import Header from './Header'
 import Footer from './Footer'
 import MobileBottomNav from './MobileBottomNav'
 
-const SiteLayout = () => (
-  <div>
-    <Header />
-    <main><Outlet /></main>
-    <Footer />
-    <MobileBottomNav />
-  </div>
-)
+const SiteLayout = ({ hideFooter = false }) => {
+  return (
+    <div>
+      <Header />
+
+      <main>
+        <Outlet />
+      </main>
+
+      {!hideFooter && <Footer />}
+
+      <MobileBottomNav />
+    </div>
+  )
+}
 
 export default SiteLayout

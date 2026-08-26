@@ -277,7 +277,7 @@ const Checkout = () => {
           </section>
 
           <section className={styles.formSection} aria-labelledby="delivery-info-title">
-            <h2 id="delivery-info-title">배송정보</h2>
+            <h2 id="delivery-info-title">배송 정보</h2>
             <div className={`${styles.formCard} ${styles.deliveryCard}`}>
               <div className={styles.optionLine}>
                 <strong>배송지 확인</strong>
