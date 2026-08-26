@@ -18,10 +18,9 @@
 }
 
 :global(body:has([data-main-page]) header > div) {
-  background: rgba(248, 246, 242, 0.72) !important;
-  background-color: rgba(248, 246, 242, 0.72) !important;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: transparent !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 :global(body:has([data-main-page]) header > div > div:first-child) {
@@ -36,7 +35,7 @@
 }
 .mainContent {
   position: relative;
-  min-height: 200svh;
+  min-height: 300svh;
   background: $color-bg;
 }
 .heroInner {
@@ -79,6 +78,28 @@
   }
 }
 
+.heroCover {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 5;
+  width: 100vw;
+  height: 100svh;
+  overflow: hidden;
+  background: $color-bg;
+  translate: -50% 0;
+  transform-origin: center;
+  will-change: opacity, transform;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 65% bottom;
+  }
+}
+
 .heroVisual {
   position: relative;
   display: grid;
@@ -103,6 +124,10 @@
   margin: 0;
   will-change: transform;
 
+  &::before {
+    display: none;
+  }
+
   @media (max-width: 767px) {
     width: 90%;
     height: 72svh;
@@ -111,18 +136,39 @@
   }
 
   @media (min-width: 1200px) {
-    width: min(45vw, 680px);
-    height: min(95svh, 1400px);
+    width: min(41vw, 620px);
+    height: min(82svh, 760px);
+
+    &::before {
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      z-index: 0;
+      display: block;
+      width: calc(100% + 140px);
+      height: 330px;
+      border: 2px solid rgba(44, 35, 27, 0.2);
+      border-bottom: 0;
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+      content: '';
+      translate: -50% 0;
+      pointer-events: none;
+    }
   }
 }
 .imageFrame {
   position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
   margin: 0;
   overflow: hidden;
   border-radius: 50% 50% $radius-md $radius-md / var(--hero-arch-radius) var(--hero-arch-radius) $radius-md $radius-md;
   background: $color-surface;
+
+  @media (min-width: 1200px) {
+    translate: 0 96px;
+  }
 }
 .imageFrame::after {
   position: absolute;
@@ -143,6 +189,7 @@
 
   @media (min-width: 1200px) {
     height: 100%;
+    object-position: 65% bottom;
   }
 }
 .heroCaption {
@@ -169,7 +216,7 @@
   }
 
   @media (min-width: 1200px) {
-    top: calc(100% + 65px);
+    top: calc(100% + 153px);
     font-size: 25px;
     line-height: 1.65;
   }
@@ -256,7 +303,7 @@
   }
 
   @media (min-width: 1200px) {
-    top: calc(100% + 190px);
+    top: calc(100% + 264px);
     min-width: 164px;
     padding: 15px 28px;
     text-align: center;
@@ -288,6 +335,16 @@
     overflow: hidden;
     background: linear-gradient(180deg, $color-bg 0%, rgba(225, 217, 206, 0.46) 100%);
   }
+}
+
+.aiIntroContent {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  transform: scale(0.88);
+  transform-origin: top center;
+  translate: 0 28px;
 }
 
 .moodHeading {
@@ -519,12 +576,26 @@
 }
 .moodHappy {
   animation: moodHappy 11s ease-in-out infinite;
+  animation-play-state: paused;
 }
 .moodRainy {
   animation: moodRainy 11s ease-in-out infinite;
+  animation-play-state: paused;
 }
 .moodSweet {
   animation: moodSweet 11s ease-in-out infinite;
+  animation-play-state: paused;
+}
+
+.aiMoodReady {
+  .moodHappy,
+  .moodRainy,
+  .moodSweet,
+  .peekFaceDefault,
+  .peekFaceUp,
+  .peekFaceSmile {
+    animation-play-state: running;
+  }
 }
 
 @keyframes moodHappy {
@@ -626,14 +697,17 @@
 
 .peekFaceDefault {
   animation: peekFaceDefault 11s ease-in-out infinite;
+  animation-play-state: paused;
 }
 
 .peekFaceUp {
   animation: peekFaceUp 11s ease-in-out infinite;
+  animation-play-state: paused;
 }
 
 .peekFaceSmile {
   animation: peekFaceSmile 11s ease-in-out infinite;
+  animation-play-state: paused;
 }
 
 @keyframes peekFaceDefault {
@@ -727,7 +801,7 @@
 }
 .moodCopy {
   position: relative;
-  top: 18px;
+  top: 36px;
   display: grid;
   place-items: center;
 }
@@ -793,8 +867,8 @@
   }
 
   @media (min-width: 1200px) {
-    width: 180px;
-    height: 235px;
+    width: 194px;
+    height: 254px;
   }
 }
 .sideCard:first-child {
@@ -817,16 +891,16 @@
   }
 
   @media (min-width: 1200px) {
-    width: 276px;
-    height: 336px;
+    width: 298px;
+    height: 363px;
   }
 }
 .aiButton {
   position: relative;
-  top: 36px;
+  top: 52px;
   display: inline-grid;
-  width: min(190px, 56vw);
-  padding: 12px 18px;
+  width: auto;
+  padding: 16px 25px;
   place-items: center;
   box-sizing: border-box;
   border-radius: $radius-pill;
@@ -836,6 +910,16 @@
   font-weight: $font-weight-bold;
   text-align: center;
   text-decoration: none;
+  cursor: pointer;
+
+  @media (max-width: 767px) {
+    padding: 14px 20px;
+  }
+
+  @media (min-width: 1200px) {
+    min-width: 164px;
+    padding: 15px 28px;
+  }
 }
 .featureSection {
   position: relative;
@@ -1059,7 +1143,8 @@
   translate: 0 -65px;
 }
 .featurePhotoFrame .featureBackground {
-  translate: 0 -25px;
+  scale: 1.04;
+  translate: 0 5px;
 }
 .featureImage .featurePourOverlay {
   position: absolute;
@@ -1400,7 +1485,7 @@
   }
 
   @media (min-width: 1200px) {
-    --events-gallery-width: min(82vw, 1100px);
+    --events-gallery-width: min(78vw, 1050px);
     --events-side-space: max(64px, calc((100vw - #{$container-max}) / 2));
 
     position: relative;
@@ -1760,29 +1845,39 @@
     content: '';
     pointer-events: none;
   }
+}
 
-  img {
-    position: relative;
-    z-index: 1;
-    display: block;
-    width: auto;
-    max-width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center bottom;
+.makdongCharacter {
+  position: relative;
+  z-index: 1;
+  width: auto;
+  max-width: 100%;
+  height: 100%;
+  aspect-ratio: 1080 / 1382;
+
+  @media (min-width: 1200px) {
+    max-width: 118%;
+    height: 148%;
+    translate: -12% 35%;
   }
+}
 
+.makdongBase {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+}
+
+.makdongVisual {
   @media (min-width: 1200px) {
     height: min(82svh, 780px);
     grid-column: 1;
     grid-row: 1;
     justify-self: stretch;
-
-    img {
-      max-width: 118%;
-      height: 106%;
-      translate: -2% 0;
-    }
   }
 
   @media (max-width: 767px) {
