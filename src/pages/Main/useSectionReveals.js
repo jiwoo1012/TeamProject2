@@ -15,13 +15,19 @@ gsap.registerPlugin(ScrollTrigger)
 const useSectionReveals = ({
   aiIntroRef,
   featureSectionRef,
+  featureCupRef,
   eventsGridRef,
   makdongSectionRef,
 }) => {
   useLayoutEffect(() => {
     const aiSection = aiIntroRef.current
+    const featureSection = featureSectionRef.current
     const startMoodCycle = () => aiSection.classList.add(styles.aiMoodReady)
-    const resetMoodCycle = () => aiSection.classList.remove(styles.aiMoodReady)
+    const showAiActions = () => aiSection.classList.add(styles.aiActionsReady)
+    const resetMoodCycle = () => {
+      aiSection.classList.remove(styles.aiMoodReady)
+      aiSection.classList.remove(styles.aiActionsReady)
+    }
 
     resetMoodCycle()
 
@@ -53,7 +59,24 @@ const useSectionReveals = ({
         '-=0.18',
       )
       .call(startMoodCycle)
-      .from(`.${styles.recommendCards} > div`, { y: 42, duration: 0.5, stagger: 0.12 }, '-=0.2')
+      .fromTo(
+        `.${styles.recommendCard}`,
+        {
+          autoAlpha: 0,
+          y: 90,
+          scale: 0.92,
+        },
+        {
+          autoAlpha: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.82,
+          stagger: 0.16,
+          ease: 'back.out(1.35)',
+        },
+        '-=0.12',
+      )
+      .call(showAiActions)
       .fromTo(
         `.${styles.aiButton}`,
         { autoAlpha: 0, y: 18 },
@@ -63,12 +86,36 @@ const useSectionReveals = ({
           duration: 0.45,
           ease: 'power2.out',
         },
-        '-=0.2',
       )
 
     const featureHeading = featureSectionRef.current.querySelector(`.${styles.featureCopy} h2`)
     const featureDescription = featureSectionRef.current.querySelector(`.${styles.featureCopy} p`)
     const featureButton = featureSectionRef.current.querySelector(`.${styles.featureButton}`)
+    const featureCup = featureCupRef.current
+    const canFollowPointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    const moveCupX = gsap.quickTo(featureCup, 'x', { duration: 0.32, ease: 'power3.out' })
+    const moveCupY = gsap.quickTo(featureCup, 'y', { duration: 0.32, ease: 'power3.out' })
+    const handleFeaturePointerMove = (event) => {
+      if (!canFollowPointer) return
+      const rect = featureSection.getBoundingClientRect()
+      const cupRect = featureCup.getBoundingClientRect()
+      const currentX = Number(gsap.getProperty(featureCup, 'x')) || 0
+      const currentY = Number(gsap.getProperty(featureCup, 'y')) || 0
+      const baseCenterX = cupRect.left + cupRect.width / 2 - currentX
+      const baseCenterY = cupRect.top + cupRect.height / 2 - currentY
+      const maxX = rect.width * 0.42
+      const maxY = rect.height * 0.36
+
+      moveCupX(gsap.utils.clamp(-maxX, maxX, event.clientX - baseCenterX))
+      moveCupY(gsap.utils.clamp(-maxY, maxY, event.clientY - baseCenterY))
+    }
+    const resetFeatureCup = () => {
+      moveCupX(0)
+      moveCupY(0)
+    }
+
+    featureSection.addEventListener('pointermove', handleFeaturePointerMove)
+    featureSection.addEventListener('pointerleave', resetFeatureCup)
 
     gsap.set([featureHeading, featureDescription, featureButton], {
       autoAlpha: 0,
@@ -216,6 +263,9 @@ const useSectionReveals = ({
     return () => {
       const timelines = [aiReveal, featureReveal, makdongReveal, eventsReveal]
       window.removeEventListener('main:events-reveal', replayEventsReveal)
+      featureSection.removeEventListener('pointermove', handleFeaturePointerMove)
+      featureSection.removeEventListener('pointerleave', resetFeatureCup)
+      gsap.killTweensOf(featureCup)
       featureHeaderTrigger.kill()
       eventsHeaderTrigger.kill()
       makdongHeaderTrigger.kill()
@@ -228,7 +278,7 @@ const useSectionReveals = ({
         timeline.kill()
       })
     }
-  }, [aiIntroRef, eventsGridRef, featureSectionRef, makdongSectionRef])
+  }, [aiIntroRef, eventsGridRef, featureCupRef, featureSectionRef, makdongSectionRef])
 }
 
 export default useSectionReveals
