@@ -1,0 +1,513 @@
+.preferenceSafetyIntro {
+  width: 100%;
+  min-height: calc(100vh - 70px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #fbfaf7;
+  color: #382b22;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+}
+
+
+/* ========================================
+   공통 화면
+======================================== */
+
+.screen {
+  width: min(900px, 90%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  animation: fadeInUp 0.45s ease both;
+}
+
+
+.leaving {
+  animation: fadeOutUp 0.35s ease both;
+}
+
+
+/* ========================================
+   취향 질문 완료
+======================================== */
+
+.completeContent {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+/* 완료 진행바 */
+
+.progress {
+  position: relative;
+
+  width: 430px;
+  height: 32px;
+
+  margin-bottom: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+.progressLine {
+  position: absolute;
+
+  top: 50%;
+  left: 0;
+
+  width: 100%;
+  height: 2px;
+
+  transform: translateY(-50%);
+
+  background: #d5a052;
+
+  z-index: 0;
+}
+
+
+.progressDot {
+  position: relative;
+
+  width: 25px;
+  height: 25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #d5a052;
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  z-index: 1;
+}
+
+
+/* 완료 텍스트 */
+
+.completeTitle {
+  margin: 0 0 24px;
+
+  color: #392b22;
+
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -1px;
+}
+
+
+.completeDescription {
+  margin: 0 0 36px;
+
+  color: #62564d;
+
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.65;
+
+  word-break: keep-all;
+}
+
+
+.makdong {
+  display: block;
+
+  width: 180px;
+  height: 210px;
+
+  object-fit: contain;
+
+  user-select: none;
+  pointer-events: none;
+
+  animation: makdongPop 0.55s ease 0.1s both;
+}
+
+
+/* ========================================
+   안전 확인 안내
+======================================== */
+
+.safetyContent {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  animation: fadeInUp 0.45s ease both;
+}
+
+
+/* 방패 아이콘 */
+
+.shieldIcon {
+  position: relative;
+
+  width: 96px;
+  height: 106px;
+
+  margin-bottom: 34px;
+
+  color: #568b86;
+
+  svg {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+  }
+}
+
+
+.shieldSparkle {
+  position: absolute;
+
+  top: -10px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  color: #568b86;
+
+  font-size: 20px;
+
+  animation: sparkle 1.3s ease-in-out infinite;
+}
+
+
+/* 안전 확인 텍스트 */
+
+.safetyTitle {
+  margin: 0 0 17px;
+
+  color: #392b22;
+
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -1px;
+
+  word-break: keep-all;
+}
+
+
+.safetyDescription {
+  margin: 0 0 42px;
+
+  color: #75685f;
+
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+
+/* ========================================
+   이전 / 안전 확인 버튼
+======================================== */
+
+.buttonArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 18px;
+}
+
+
+.prevButton,
+.nextButton {
+  width: 170px;
+  height: 50px;
+
+  padding: 0 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-radius: 7px;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+
+  span {
+    font-size: 21px;
+    line-height: 1;
+  }
+}
+
+
+.prevButton {
+  border: 1px solid #6da29e;
+
+  background: transparent;
+  color: #4f7f7b;
+
+  &:hover {
+    background: rgba(86, 139, 134, 0.05);
+
+    transform: translateX(-2px);
+  }
+}
+
+
+.nextButton {
+  border: 1px solid #568b86;
+
+  background: #568b86;
+  color: #ffffff;
+
+  &:hover {
+    background: #477d78;
+    border-color: #477d78;
+
+    transform: translateX(2px);
+  }
+}
+
+
+/* ========================================
+   메인으로 돌아가기
+======================================== */
+
+.mainButton {
+  margin-top: 18px;
+  padding: 7px 5px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  border: none;
+
+  background: transparent;
+  color: #7a6e65;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    color: #568b86;
+
+    transform: translateX(2px);
+  }
+}
+
+
+.mainArrow {
+  font-size: 17px;
+  line-height: 1;
+}
+
+
+/* ========================================
+   애니메이션
+======================================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+@keyframes fadeOutUp {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+
+@keyframes makdongPop {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.94);
+  }
+
+  70% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translateX(-50%) scale(0.85);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.1);
+  }
+}
+
+
+/* ========================================
+   태블릿
+======================================== */
+
+@media (max-width: 900px) {
+  .progress {
+    width: 360px;
+  }
+
+  .completeTitle,
+  .safetyTitle {
+    font-size: 29px;
+  }
+
+  .makdong {
+    width: 160px;
+    height: 190px;
+  }
+}
+
+
+/* ========================================
+   모바일
+======================================== */
+
+@media (max-width: 650px) {
+  .preferenceSafetyIntro {
+    min-height: calc(100vh - 64px);
+
+    padding: 50px 0;
+  }
+
+
+  .screen {
+    width: 88%;
+  }
+
+
+  .progress {
+    width: 260px;
+
+    margin-bottom: 45px;
+  }
+
+
+  .progressDot {
+    width: 22px;
+    height: 22px;
+
+    font-size: 10px;
+  }
+
+
+  .completeTitle,
+  .safetyTitle {
+    font-size: 25px;
+  }
+
+
+  .completeDescription,
+  .safetyDescription {
+    font-size: 13px;
+  }
+
+
+  .makdong {
+    width: 145px;
+    height: 170px;
+  }
+
+
+  .shieldIcon {
+    width: 80px;
+    height: 90px;
+
+    margin-bottom: 27px;
+  }
+
+
+  .buttonArea {
+    width: 100%;
+
+    gap: 12px;
+  }
+
+
+  .prevButton,
+  .nextButton {
+    flex: 1;
+
+    width: auto;
+    height: 46px;
+
+    padding: 0 15px;
+
+    font-size: 12px;
+  }
+
+
+  .mainButton {
+    margin-top: 16px;
+
+    font-size: 11px;
+  }
+}

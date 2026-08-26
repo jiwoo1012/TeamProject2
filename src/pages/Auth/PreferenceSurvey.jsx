@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import makdongImg from '../../assets/characters/M007_Poses03.png'
+import makdongImg from '../../assets/characters/M007_Poses06.png'
 
 import styles from './PreferenceSurvey.module.scss'
 
@@ -12,14 +12,24 @@ const PreferenceSurvey = () => {
     navigate('/preference/questions')
   }
 
-  // 나중에 하기
-  const handleSkip = () => {
+  // 메인으로 돌아가기
+  const handleBackToMain = () => {
     navigate('/')
   }
 
   return (
     <main className={styles.preferenceSurvey}>
       <section className={styles.surveyBox}>
+
+        {/* 메인으로 돌아가기 */}
+        <button
+          type="button"
+          className={styles.backButton}
+          onClick={handleBackToMain}
+        >
+          <span className={styles.backArrow}>‹</span>
+          <span>메인으로 돌아가기</span>
+        </button>
 
         {/* 모서리 장식 */}
         <span className={`${styles.corner} ${styles.topLeft}`} />
