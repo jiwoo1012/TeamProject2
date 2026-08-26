@@ -20,6 +20,7 @@ const ProductCard = ({ product, onAddToCart, onToggleWish, isWished = false }) =
         <h3 className={styles.name}>{product.productName}</h3>
         <div className={styles.priceRow}>
           {discountRate > 0 && <span className={styles.discount}>{discountRate}%</span>}
+          {discountRate > 0 && <del className={styles.originalPrice}>{product.price.toLocaleString('ko-KR')}원</del>}
           <strong>{salePrice.toLocaleString('ko-KR')}원</strong>
         </div>
       </div>

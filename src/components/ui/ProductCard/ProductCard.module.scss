@@ -8,12 +8,14 @@
 .imageLink:hover .image { transform: scale(1.035); }
 .iconButton { width: 44px; height: 44px; color: $color-white; font-size: $font-size-3xl;text-align: center; border-radius: 50%;  }
 .isWished { color: $color-error; }
-.cartButton { width: 100%; padding: $space-1 $space-3; color: $color-white; font-size: $font-size-lg; text-align: center; border-bottom: 1px solid $color-white; }
+.cartButton { width: 100%; padding: $space-1 $space-3; color: $color-white; font-size: $font-size-lg; text-align: center; border-bottom: 1px solid $color-white; transition: color $transition-fast ease, border-color $transition-fast ease, transform $transition-fast ease; }
+.cartButton:hover { color: $color-primary-light; border-bottom-color: $color-primary-light; transform: scale(1.04); }
 .info { padding-top: $space-5; display: flex; align-items: center; justify-content: space-between;}
 .name {color: $color-text-primary; font-size: $font-size-md;}
 .priceRow { display: flex; justify-content: flex-end; gap: $space-2; align-items: center; }
 .priceRow strong { font-size: $font-size-lg; font-weight: $font-weight-semibold; }
 .discount { color: $color-error; font-weight: $font-weight-semibold; }
+.originalPrice { color: rgba($color-text-muted, .65); font-size: $font-size-md; text-decoration: line-through; text-decoration-thickness: 1px; }
 
 @media (hover: none) {
   .actions { opacity: 1; background: none; pointer-events: none; }

@@ -3,12 +3,17 @@ import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import ProductCard from '../../components/ui/ProductCard/ProductCard'
 import Pagination from '../../components/ui/Pagination/Pagination'
 import { foods, gifts, glasses, liquors, products } from '../../data/products'
+import { getCart, saveCart } from '../../utils/cartStorage'
+import { PATHS } from '../../routes/paths'
 import bannerOne from '../../assets/images/banner/eventBanner.png'
 import bannerTwo from '../../assets/images/banner/eventBanner-1.png'
 import bannerThree from '../../assets/images/banner/eventBanner-2.png'
+import productListOrnament from '../../assets/images/eventPage/pattern2.png'
+import categoryPattern from '../../assets/images/eventPage/pattern.png'
 import styles from './ProductList.module.scss'
 
 const productImages = import.meta.glob('../../assets/images/products/product*.png', { eager: true, import: 'default' })
+const alcoholExplainImages = import.meta.glob('../../assets/images/products/explain/*.{png,jpg,jpeg,webp}', { eager: true, import: 'default' })
 const stylingImages = Object.values(import.meta.glob('../../assets/images/products/stylingProduct/**/*.{png,jpg,jpeg,webp}', { eager: true, import: 'default' }))
 const banners = [bannerOne, bannerTwo, bannerThree]
 const PAGE_SIZE = 12
@@ -29,11 +34,13 @@ const mainCategories = [
 ]
 
 const resolveImage = (imageUrl) => Object.entries(productImages).find(([path]) => path.endsWith(`/${imageUrl}`))?.[1]
+const resolveAlcoholExplainImage = (imageUrl) => Object.entries(alcoholExplainImages).find(([path]) => path.endsWith(`/${imageUrl.split('/').pop()}`))?.[1]
 const seededStylingImages = [...stylingImages].sort(() => Math.random() - 0.5).slice(0, 18)
 
 const ProductList = () => {
   const stageRef = useRef(null)
   const productsRef = useRef(null)
+  const cartToastTimerRef = useRef(null)
   const location = useLocation()
   const [searchParams] = useSearchParams()
   const [bannerIndex, setBannerIndex] = useState(0)
@@ -44,6 +51,8 @@ const ProductList = () => {
   const [sortBy, setSortBy] = useState('latest')
   const [currentPage, setCurrentPage] = useState(1)
   const [wishes, setWishes] = useState(() => new Set())
+  const [selectedAlcohol, setSelectedAlcohol] = useState(null)
+  const [cartToast, setCartToast] = useState(null)
 
   useEffect(() => {
     const page = stageRef.current?.closest(`.${styles.page}`)
@@ -75,6 +84,22 @@ const ProductList = () => {
       header.style.width = previousWidth
     }
   }, [])
+
+  useEffect(() => {
+    if (!selectedAlcohol) return undefined
+    const previousOverflow = document.body.style.overflow
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setSelectedAlcohol(null)
+    }
+    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [selectedAlcohol])
+
+  useEffect(() => () => window.clearTimeout(cartToastTimerRef.current), [])
 
   useEffect(() => {
     const handleShopLink = (event) => {
@@ -187,7 +212,55 @@ const ProductList = () => {
     else next.add(productId)
     return next
   })
+  const handleAddToCart = (product) => {
+    const cart = getCart()
+    const existingItem = cart.find((item) => item.productId === product.productId)
+    const nextCart = existingItem
+      ? cart.map((item) => item.productId === product.productId ? { ...item, quantity: item.quantity + 1 } : item)
+      : [...cart, { productId: product.productId, quantity: 1 }]
+    saveCart(nextCart)
+    setCartToast(product.productName)
+    window.clearTimeout(cartToastTimerRef.current)
+    cartToastTimerRef.current = window.setTimeout(() => setCartToast(null), 3200)
+  }
 
+  const alcoholExplain = [
+    {
+      name:'탁주',
+      explain:'시중에 파는 하얗고 걸쭉한 막걸리를 아시지요? 탁주는 쌀이나 밀로 만들어 맑게 거르지 않고, 우리 술의 진한 맛과 영양이 고스란히 담기도록 뽀얗게 빚어낸 친근한 술이랍니다.',
+      flavor:'목넘김이 부드럽고 든든하며, 쌀 특유의 구수한 단맛과 감칠맛을 느낄 수 있습니다.',
+      recommend:'비 오는 날이나 출출할 때, 부침개 같은 기름진 음식과 함께 편안하게 즐기고 싶으실 때 가장 좋습니다.',
+      image:'/explain/Takju.png',
+    },
+    {
+      name:'약주',
+      explain:' 예로부터 [몸에 이로운 좋은 술]이라는 뜻으로 부르던 맑은 술입니다. 앞서 말씀드린 탁주에서 맑은 윗부분만 조심스럽게 떠내어 깨끗하게 걸러낸 것이지요.',
+      flavor:'색이 물처럼 아주 맑고 투명하며, 머리가 아프지 않고 깔끔하게 떨어지는 뒷맛이 일품이랍니다.',
+      recommend:'맑고 깨끗한 맛을 좋아하시거나, 소중한 분들과 정갈한 식사를 하실 때 잘 어울립니다.',
+      image:'/explain/Yakju.png',
+    },
+    {
+      name:'과실주',
+      explain:'술이 조금 낯설거나 쓴맛을 싫어하시는 나리께 가장 먼저 권해드리는 술이랍니다. 우리 땅에서 자란 싱그러운 과일들을 듬뿍 넣어, 과일 자체의 향긋함과 달콤함을 가득 담아낸 술이지요.',
+      flavor:'와인처럼 향이 매우 풍부하고, 입안에서 달콤새콤한 과일 맛이 퍼져 누구나 부담 없이 마실 수 있습니다.',
+      recommend:'분위기 있는 저녁 식사나, 가벼운 디저트와 함께 달콤한 기분을 내고 싶으실 때 제격입니다.',
+      image:'/explain/fruitwine.png',
+    },
+    {
+      name:'증류주',
+      explain:'흔히 알고 계시는 [소주]의 전통 버전이라고 생각하시면 됩니다! 쌀이나 과일 등으로 만든 술을 불에 한 번 끓이고, 그 증기를 차갑게 식혀 맑은 눈물처럼 받아낸 도수 높은 술이옵니다.',
+      flavor:'혀가 아플 정도로 쓴 인공적인 알코올 맛이 아니라, 원재료의 깊고 그윽한 풍미가 입안에 진하게 남는 것이 특징입니다.',
+      recommend:'고기 요리처럼 기름진 음식을 드실 때, 입안을 개운하게 싹 씻어내고 싶으실 때 찾아주세요.',
+      image:'/explain/spirit.png',
+    },
+    {
+      name:'리큐르',
+      explain:'전통주를 바탕으로 세상에 없던 다양한 허브, 향신료, 꽃 등을 더해 양조장 주인장의 개성을 듬뿍 담아 만든 독특한 술입니다.',
+      flavor:'맛과 향이 매우 다채롭고 재미있어서, 마실 때마다 감탄이 절로 나오는 반전 매력이 있답니다.',
+      recommend:'맨날 마시던 평범한 술 말고, 아주 색다른 경험을 해보고 싶으실 때 도전해 보세요!',
+      image:'/explain/liqueur.png',
+    }
+  ]
   return (
     <div className={styles.page}>
       <section className={styles.revealStage} ref={stageRef} aria-label="상품 소개">
@@ -207,6 +280,7 @@ const ProductList = () => {
 
       <div className={styles.shopBody}>
       <div className={styles.catalog}>
+        <img className={styles.topOrnament} src={productListOrnament} alt="" aria-hidden="true" />
         <nav className={styles.mainCategories} aria-label="상품 대분류">
           {mainCategories.map((category, index) => (
             <div className={styles.categoryGroup} key={category.id}>
@@ -214,7 +288,7 @@ const ProductList = () => {
                 {category.id !== 'all' && <img src={resolveImage(category.data[0]?.imageUrl)} alt="" aria-hidden="true" />}
                 <span className={styles.categoryLabel}>{category.label}</span>
               </button>
-              {index < mainCategories.length - 1 && <span aria-hidden="true">⌘</span>}
+              {index < mainCategories.length - 1 && <img className={styles.categoryPattern} src={categoryPattern} alt="" aria-hidden="true" />}
             </div>
           ))}
         </nav>
@@ -226,7 +300,15 @@ const ProductList = () => {
           </header>
           <div className={styles.filterBar} key={`filters-${categoryId}`}>
             <div className={styles.detailFilters}>
-              {detailOptions.map((option) => <button className={detailFilter === option ? styles.activeFilter : ''} type="button" onClick={() => { setDetailFilter(option); setCurrentPage(1) }} key={option}>{option}</button>)}
+              {detailOptions.map((option) => {
+                const alcoholInfo = alcoholExplain.find(({ name }) => name === option)
+                return (
+                  <div className={styles.detailFilterItem} key={option}>
+                    {alcoholInfo && <button className={styles.alcoholInfoButton} type="button" aria-label={`${option} 설명 보기`} onClick={() => setSelectedAlcohol(alcoholInfo)}>ⓘ</button>}
+                    <button className={detailFilter === option ? styles.activeFilter : ''} type="button" onClick={() => { setDetailFilter(option); setCurrentPage(1) }}>{option}</button>
+                  </div>
+                )
+              })}
             </div>
             <div className={styles.selects}>
               <label><span>가격</span><select value={priceFilter} onChange={(event) => { setPriceFilter(event.target.value); setCurrentPage(1) }}><option value="all">전체가격</option><option value="under20000">2만원 미만</option><option value="20000to40000">2~4만원</option><option value="over40000">4만원 이상</option></select></label>
@@ -234,7 +316,7 @@ const ProductList = () => {
             </div>
           </div>
           {visibleProducts.length > 0 ? (
-            <div className={styles.productGrid} key={`products-${categoryId}-${detailFilter}-${priceFilter}-${sortBy}`}>{visibleProducts.map((product) => <ProductCard product={product} isWished={wishes.has(product.productId)} onToggleWish={handleWish} key={product.productId} />)}</div>
+            <div className={styles.productGrid} key={`products-${categoryId}-${detailFilter}-${priceFilter}-${sortBy}`}>{visibleProducts.map((product) => <ProductCard product={product} isWished={wishes.has(product.productId)} onToggleWish={handleWish} onAddToCart={handleAddToCart} key={product.productId} />)}</div>
           ) : <p className={styles.empty} key={`empty-${categoryId}-${detailFilter}-${priceFilter}`}>조건에 맞는 상품이 없습니다.</p>}
           <Pagination currentPage={currentPage} totalPages={totalPages} onChange={handlePage} />
         </section>
@@ -244,6 +326,29 @@ const ProductList = () => {
         <div className={styles.marqueeTrack}>{[...seededStylingImages, ...seededStylingImages].map((image, index) => <img src={image} alt="전통주와 안주 스타일링" loading="lazy" key={`${image}-${index}`} />)}</div>
       </section>
       </div>
+      {selectedAlcohol && (
+        <div className={styles.modalBackdrop} role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedAlcohol(null) }}>
+          <section className={styles.alcoholModal} role="dialog" aria-modal="true" aria-labelledby="alcohol-modal-title">
+            <button className={styles.modalClose} type="button" aria-label="팝업 닫기" onClick={() => setSelectedAlcohol(null)}>×</button>
+            <div className={styles.modalImage}><img src={resolveAlcoholExplainImage(selectedAlcohol.image)} alt={`${selectedAlcohol.name} 이미지`} /></div>
+            <div className={styles.modalContent}>
+              <h2 id="alcohol-modal-title">{selectedAlcohol.name}</h2>
+              <p className={styles.modalExplain}>“{selectedAlcohol.explain}”</p>
+              <div className={styles.modalDetails}>
+                <div><h3>특징</h3><p>{selectedAlcohol.flavor}</p></div>
+                <div><h3>추천 상황</h3><p>{selectedAlcohol.recommend}</p></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
+      {cartToast && (
+        <div className={styles.cartToast} role="status" aria-live="polite">
+          <span className={styles.toastCheck} aria-hidden="true">✓</span>
+          <p><strong>장바구니에 담았어요</strong><small>{cartToast}</small></p>
+          <Link to={PATHS.cart}>장바구니 보기 <span aria-hidden="true">›</span></Link>
+        </div>
+      )}
     </div>
   )
 }
