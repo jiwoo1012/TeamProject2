@@ -176,7 +176,7 @@ const DesktopHeader = () => {
               onMouseEnter={() => openMegaMenu('shop')}
             >
               <Link
-                to="/shop?category=liquor"
+                to="/shop"
                 className={styles.gnbLink}
               >
                 스토어

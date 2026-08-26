@@ -9,6 +9,42 @@
   box-sizing: border-box;
 }
 
+.backButton {
+  position: absolute;
+  top: 24px;
+  left: 28px;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 4px;
+
+  border: none;
+  background: transparent;
+
+  color: #75685f;
+
+  font-family: inherit;
+  font-size: 20px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    color: #568b86;
+    transform: translateX(-2px);
+  }
+}
+
+.backArrow {
+  font-size: 20px;
+  line-height: 1;
+}
 
 /* ========================================
    전체 설문 박스

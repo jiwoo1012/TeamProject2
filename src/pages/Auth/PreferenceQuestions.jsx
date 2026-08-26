@@ -13,11 +13,27 @@ import sournessLowImg from '../../assets/icons/preferenceQuestions/sourness-low.
 import sournessMediumImg from '../../assets/icons/preferenceQuestions/sourness-medium.png'
 import sournessHighImg from '../../assets/icons/preferenceQuestions/sourness-high.png'
 
+// Q3 무게감
+import bodyLightImg from '../../assets/icons/preferenceQuestions/body-light.png'
+import bodyMediumImg from '../../assets/icons/preferenceQuestions/body-medium.png'
+import bodyHighImg from '../../assets/icons/preferenceQuestions/body-full.png'
+
+// Q4 향
+import aromaMildImg from '../../assets/icons/preferenceQuestions/aroma-mild.png'
+import aromaMediumImg from '../../assets/icons/preferenceQuestions/aroma-medium.png'
+import aromaStrongImg from '../../assets/icons/preferenceQuestions/aroma-strong.png'
+
+// Q5 도수
+import ABVLightImg from '../../assets/icons/preferenceQuestions/ABV-light.png'
+import ABVModerateImg from '../../assets/icons/preferenceQuestions/ABV-moderate.png'
+import ABVStrongImg from '../../assets/icons/preferenceQuestions/ABV-strong.png'
+import ABVVeryStrongImg from '../../assets/icons/preferenceQuestions/ABV-verystrong.png'
+
 import styles from './PreferenceQuestions.module.scss'
 
 
 const QUESTIONS = [
-  // Q1
+  // Q1 단맛
   {
     id: 'sweetness',
     category: '단맛',
@@ -52,7 +68,7 @@ const QUESTIONS = [
     ],
   },
 
-  // Q2
+  // Q2 신맛
   {
     id: 'sourness',
     category: '신맛',
@@ -87,36 +103,117 @@ const QUESTIONS = [
     ],
   },
 
-  // Q3
+  // Q3 무게감
   {
-    id: 'question3',
-    category: '질문 3',
-    title: '세 번째 질문이 들어갈 자리예요.',
-    description: '질문 설명이 들어갑니다.',
-    type: 'multiple',
-    maxSelect: 2,
-    options: [],
-  },
-
-  // Q4
-  {
-    id: 'question4',
-    category: '질문 4',
-    title: '네 번째 질문이 들어갈 자리예요.',
-    description: '질문 설명이 들어갑니다.',
+    id: 'body',
+    category: '무게감',
+    title: '입안에서 어느 정도 무게감이 느껴지는 술을 좋아하나요?',
+    description:
+      '가볍게 퍼지는 술부터 진하고 묵직한 술까지, 평소 더 편하게 느끼는 쪽을 골라주세요.',
     type: 'single',
-    options: [],
+    options: [
+      {
+        value: 'light',
+        label: '가볍고 깔끔한 술',
+        description: '입안에 오래 남지 않고 가볍게 마실 수 있는 술',
+        image: bodyLightImg,
+      },
+      {
+        value: 'medium',
+        label: '적당한 무게감의 술',
+        description: '가볍지도 무겁지도 않은 균형 잡힌 술',
+        image: bodyMediumImg,
+      },
+      {
+        value: 'full',
+        label: '진하고 묵직한 술',
+        description: '풍미와 여운이 입안에 오래 남는 술',
+        image: bodyHighImg,
+      },
+      {
+        value: 'unknown',
+        label: '아직 잘 모르겠어요',
+        description: '어떤 무게감이 좋은지 아직 잘 모르겠어요',
+        icon: '?',
+      },
+    ],
   },
 
-  // Q5
+  // Q4 향
   {
-    id: 'question5',
-    category: '질문 5',
-    title: '다섯 번째 질문이 들어갈 자리예요.',
-    description: '질문 설명이 들어갑니다.',
-    type: 'multiple',
-    maxSelect: 2,
-    options: [],
+    id: 'aroma',
+    category: '향',
+    title: '향은 어느 정도 또렷한 게 좋나요?',
+    description: '술잔을 들었을 때 향이 얼마나 느껴졌으면 좋을까요?',
+    type: 'single',
+    options: [
+      {
+        value: 'mild',
+        label: '은은한 향',
+        description: '향이 튀지 않고 편안한 게 좋아요.',
+        image: aromaMildImg,
+      },
+      {
+        value: 'medium',
+        label: '적당히 느껴지는 향',
+        description: '마실 때 자연스럽게 향이 느껴지면 좋아요.',
+        image: aromaMediumImg,
+      },
+      {
+        value: 'strong',
+        label: '향이 확실한 술',
+        description:
+          '과실·꽃·곡물·허브처럼 개성 있는 향이 또렷한 게 좋아요.',
+        image: aromaStrongImg,
+      },
+      {
+        value: 'any',
+        label: '향은 크게 상관없어요',
+        description: '향의 강도는 크게 중요하지 않아요.',
+        icon: '?',
+      },
+    ],
+  },
+
+  // Q5 도수
+  {
+    id: 'abv',
+    category: '도수',
+    title: '평소 어느 정도 도수가 편한가요?',
+    description: '부담 없이 즐길 수 있는 정도를 알려주세요.',
+    type: 'single',
+    options: [
+      {
+        value: 'light',
+        label: '가볍게',
+        description: '10도 이하',
+        image: ABVLightImg,
+      },
+      {
+        value: 'moderate',
+        label: '적당하게',
+        description: '11~16도',
+        image: ABVModerateImg,
+      },
+      {
+        value: 'strong',
+        label: '제법 진하게',
+        description: '17~25도',
+        image: ABVStrongImg,
+      },
+      {
+        value: 'veryStrong',
+        label: '강한 술도 좋아요',
+        description: '26도 이상',
+        image: ABVVeryStrongImg,
+      },
+      {
+        value: 'any',
+        label: '도수는 크게 상관없어요',
+        description: '술의 도수는 크게 중요하지 않아요.',
+        icon: '?',
+      },
+    ],
   },
 ]
 
@@ -133,6 +230,8 @@ const PreferenceQuestions = () => {
   const isFirstStep = currentStep === 0
   const isLastStep = currentStep === QUESTIONS.length - 1
   const hasAnswer = selectedValues.length > 0
+
+  const isAbvQuestion = currentQuestion.id === 'abv'
 
 
   // ==============================
@@ -196,6 +295,7 @@ const PreferenceQuestions = () => {
 
     if (isLastStep) {
       console.log('최종 취향 답변:', answers)
+      navigate('/preference/safety-intro')
       return
     }
 
@@ -292,73 +392,68 @@ const PreferenceQuestions = () => {
         {/* 선택지 */}
         <section className={styles.optionsArea}>
 
-          <div className={styles.optionGrid}>
+          <div
+            className={`
+              ${styles.optionGrid}
+              ${isAbvQuestion ? styles.fiveOptions : ''}
+            `}
+          >
 
-            {currentQuestion.options.length > 0 ? (
+            {currentQuestion.options.map((option) => {
+              const isSelected = selectedValues.includes(option.value)
 
-              currentQuestion.options.map((option) => {
-                const isSelected = selectedValues.includes(option.value)
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={`
+                    ${styles.optionCard}
+                    ${isSelected ? styles.selected : ''}
+                  `}
+                  onClick={() => handleSelect(option.value)}
+                >
 
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    className={`
-                      ${styles.optionCard}
-                      ${isSelected ? styles.selected : ''}
-                    `}
-                    onClick={() => handleSelect(option.value)}
-                  >
+                  {isSelected && (
+                    <span className={styles.check}>
+                      ✓
+                    </span>
+                  )}
 
-                    {isSelected && (
-                      <span className={styles.check}>
-                        ✓
+
+                  <div className={styles.optionVisual}>
+
+                    {option.image && (
+                      <img
+                        src={option.image}
+                        alt=""
+                        className={styles.optionImage}
+                      />
+                    )}
+
+                    {!option.image && option.icon && (
+                      <span className={styles.optionIcon}>
+                        {option.icon}
                       </span>
                     )}
 
-
-                    <div className={styles.optionVisual}>
-
-                      {option.image && (
-                        <img
-                          src={option.image}
-                          alt=""
-                          className={styles.optionImage}
-                        />
-                      )}
-
-                      {!option.image && option.icon && (
-                        <span className={styles.optionIcon}>
-                          {option.icon}
-                        </span>
-                      )}
-
-                    </div>
+                  </div>
 
 
-                    <div className={styles.optionText}>
+                  <div className={styles.optionText}>
 
-                      <strong className={styles.optionLabel}>
-                        {option.label}
-                      </strong>
+                    <strong className={styles.optionLabel}>
+                      {option.label}
+                    </strong>
 
-                      <span className={styles.optionDescription}>
-                        {option.description}
-                      </span>
+                    <span className={styles.optionDescription}>
+                      {option.description}
+                    </span>
 
-                    </div>
+                  </div>
 
-                  </button>
-                )
-              })
-
-            ) : (
-
-              <div className={styles.placeholder}>
-                다음 질문의 선택지를 여기에 추가하면 됩니다.
-              </div>
-
-            )}
+                </button>
+              )
+            })}
 
           </div>
 

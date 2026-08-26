@@ -25,7 +25,7 @@
 
 
 /* ========================================
-   나중에 하기
+   나중에 하기 버튼
 ======================================== */
 
 .skipArea {
@@ -289,6 +289,13 @@
 }
 
 
+/* Q5 도수 - 5개 한 줄 */
+.fiveOptions {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+}
+
+
 .optionCard {
   position: relative;
 
@@ -381,6 +388,7 @@
   flex-shrink: 0;
 }
 
+
 .optionImage {
   display: block;
 
@@ -393,27 +401,6 @@
   pointer-events: none;
 }
 
-.optionIcon {
-  width: 58px;
-  height: 58px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border: 1px solid #cbdedb;
-  border-radius: 50%;
-
-  background: #eaf2f0;
-  color: #568b86;
-
-  font-size: 34px;
-  font-weight: 500;
-  line-height: 1;
-}
-
-
-/* 물음표 */
 
 .optionIcon {
   width: 58px;
@@ -449,6 +436,7 @@
   text-align: center;
 }
 
+
 .optionLabel {
   width: 100%;
   min-height: 44px;
@@ -469,6 +457,7 @@
   word-break: keep-all;
 }
 
+
 .optionDescription {
   width: 100%;
   min-height: 34px;
@@ -485,6 +474,7 @@
   text-align: center;
   word-break: keep-all;
 }
+
 
 .placeholder {
   grid-column: 1 / -1;
@@ -628,8 +618,10 @@
     display: none;
   }
 
-  .optionGrid {
+  .optionGrid,
+  .fiveOptions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
   }
 
   .optionCard {
@@ -697,7 +689,8 @@
   }
 
 
-  .optionGrid {
+  .optionGrid,
+  .fiveOptions {
     grid-template-columns: 1fr;
 
     gap: 14px;
