@@ -61,9 +61,7 @@ const AdultModal = ({
           </h2>
 
           <p className={styles.description}>
-            <strong>자작(JAJAK)</strong>은 주류 판매 사이트로
-            <br />
-            만 19세 이상만 이용할 수 있습니다.
+            <strong>자작(JAJAK)</strong>은 만 19세 이상만 이용할 수 있습니다.
             <br />
             본인인증 후 서비스를 이용해주세요.
           </p>
@@ -77,7 +75,7 @@ const AdultModal = ({
             className={styles.verifyButton}
             onClick={handleVerify}
           >
-            성인 인증하기
+            만 19세 이상입니다
           </button>
 
           <button

@@ -5,7 +5,8 @@ import { login, subscribeToAuthState } from '../../firebase/auth'
 import { PATHS } from '../../routes/paths'
 
 import makdongImage from '../../assets/characters/M007_Poses03.png'
-import eyeIconImage from '../../assets/icons/eyeIcon.png'
+import eyeIconImage from '../../assets/icons/eye.png'
+import eyeNoIconImage from '../../assets/icons/eyeNO.png'
 
 import styles from './Login.module.scss'
 
@@ -145,7 +146,11 @@ const Login = () => {
               onClick={() => setIsPasswordVisible((prev) => !prev)}
               aria-label={isPasswordVisible ? '비밀번호 숨기기' : '비밀번호 보기'}
             >
-              <img src={eyeIconImage} alt="" className={styles.eyeIcon} />
+              <img
+              src={isPasswordVisible ? eyeNoIconImage : eyeIconImage}
+              alt=""
+              className={styles.eyeIcon}
+            />
             </button>
             </div>
             <p className={styles.hint}>

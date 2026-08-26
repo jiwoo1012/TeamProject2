@@ -1,4 +1,10 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { useState } from 'react'
+import {
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from 'react-router-dom'
 
 import SiteLayout from './components/common/SiteLayout'
 import AdultModal from './components/common/AdultModal'
@@ -49,6 +55,7 @@ import MyPageErrorContent from './pages/MyPage/MyPageErrorContent'
 // Event
 import EventList from './pages/Event/EventList'
 import RouletteEvent from './pages/Event/RouletteEvent'
+import OxQuizEvent from './pages/Event/OxQuizEvent'
 
 // Support
 import NoticeList from './pages/Support/NoticeList'
@@ -68,11 +75,40 @@ import AdminErrorContent from './pages/Admin/AdminErrorContent'
 import NotFound from './pages/NotFound/NotFound'
 
 
+const ADULT_VERIFIED_KEY = 'jajak_adult_verified'
+
+
 const App = () => {
+  const location = useLocation()
+
+  const [isAdultVerified, setIsAdultVerified] = useState(() => {
+    return sessionStorage.getItem(ADULT_VERIFIED_KEY) === 'true'
+  })
+
+
+  // 성인 확인 완료
+  const handleAdultVerify = () => {
+    sessionStorage.setItem(
+      ADULT_VERIFIED_KEY,
+      'true'
+    )
+
+    setIsAdultVerified(true)
+  }
+
+
+  // 스플래시 / 관리자 페이지에서는 성인 확인 팝업을 띄우지 않음
+  const shouldShowAdultModal =
+    !isAdultVerified &&
+    location.pathname !== '/intro' &&
+    !location.pathname.startsWith('/admin')
+
+
   return (
     <>
       {/* 페이지 이동 시 항상 스크롤 맨 위로 */}
       <ScrollToTop />
+
 
       <Routes>
 
@@ -85,17 +121,6 @@ const App = () => {
         <Route
           path="/intro"
           element={<SplashIntro />}
-        />
-
-
-        {/* ========================================
-            성인 인증 모달 테스트
-            디자인 확인 후 삭제 예정
-        ======================================== */}
-
-        <Route
-          path="/adult-test"
-          element={<AdultModal />}
         />
 
 
@@ -188,7 +213,12 @@ const App = () => {
           {/* 기존 Header 링크 대응 */}
           <Route
             path="/brand/story"
-            element={<Navigate to="/brand/makdong" replace />}
+            element={
+              <Navigate
+                to="/brand/makdong"
+                replace
+              />
+            }
           />
 
 
@@ -238,15 +268,26 @@ const App = () => {
           />
 
 
-          {/* Event */}
+          {/* ========================================
+              Event
+          ======================================== */}
+
+          {/* 이벤트 목록 */}
           <Route
             path="/events"
             element={<EventList />}
           />
 
+          {/* 룰렛 이벤트 */}
           <Route
             path="/events/roulette"
             element={<RouletteEvent />}
+          />
+
+          {/* OX 퀴즈 이벤트 */}
+          <Route
+            path="/events/ox-quiz"
+            element={<OxQuizEvent />}
           />
 
 
@@ -374,8 +415,20 @@ const App = () => {
         </Route>
 
       </Routes>
+
+
+      {/* ========================================
+          전역 성인 확인 팝업
+          Splash / Admin 제외
+      ======================================== */}
+
+      <AdultModal
+        isOpen={shouldShowAdultModal}
+        onVerify={handleAdultVerify}
+      />
     </>
   )
 }
+
 
 export default App
