@@ -3,6 +3,14 @@ import { updatePassword, updateProfile } from 'firebase/auth'
 import { subscribeToAuthState, getCurrentUserData } from '../../firebase/auth'
 import { updateDocument } from '../../firebase/firestore'
 import makdongPose from '../../assets/characters/M007_Poses03.png'
+import profileAvatarMakdongDefault from '../../assets/images/mypage/profileAvatar-makdong-default.png'
+import profileAvatarMakdongCheers from '../../assets/images/mypage/profileAvatar-makdong-cheers.png'
+import profileAvatarMakdongJeon from '../../assets/images/mypage/profileAvatar-makdong-jeon.png'
+import profileAvatarMakdongPouch from '../../assets/images/mypage/profileAvatar-makdong-pouch.png'
+import profileAvatarMakdongTipsy from '../../assets/images/mypage/profileAvatar-makdong-tipsy.png'
+import profileAvatarMakdongSleepy from '../../assets/images/mypage/profileAvatar-makdong-sleepy.png'
+import profileAvatarMakdongServing from '../../assets/images/mypage/profileAvatar-makdong-serving.png'
+import profileAvatarMakdongRainy from '../../assets/images/mypage/profileAvatar-makdong-rainy.png'
 import styles from './ProfileEdit.module.scss'
 
 const deliveryAddresses = [
@@ -10,6 +18,19 @@ const deliveryAddresses = [
   { label: '회사', phone: '010-1234-5678', address: '서울특별시 강남구 테헤란로 123, 4동 (역삼동)' },
   { label: '부모님댁', phone: '010-1234-5678', address: '서울특별시 강남구 테헤란로 123, 4동 (역삼동)' },
 ]
+
+const avatarPresets = [
+  { id: 'profile-makdong-default', label: '막둥이 기본 프로필', src: profileAvatarMakdongDefault },
+  { id: 'profile-makdong-cheers', label: '술잔을 든 막둥이', src: profileAvatarMakdongCheers },
+  { id: 'profile-makdong-jeon', label: '전을 든 막둥이', src: profileAvatarMakdongJeon },
+  { id: 'profile-makdong-pouch', label: '복주머니 막둥이', src: profileAvatarMakdongPouch },
+  { id: 'profile-makdong-tipsy', label: '살짝 취한 막둥이', src: profileAvatarMakdongTipsy },
+  { id: 'profile-makdong-sleepy', label: '잠든 막둥이', src: profileAvatarMakdongSleepy },
+  { id: 'profile-makdong-serving', label: '한 상 대령 막둥이', src: profileAvatarMakdongServing },
+  { id: 'profile-makdong-rainy', label: '비 오는 날 막둥이', src: profileAvatarMakdongRainy },
+]
+
+const getAvatarStorageKey = (uid) => `jajak_profile_avatar_${uid}`
 
 const getMemberLabel = (role) => {
   if (role === 'admin') return '관리자'
@@ -27,7 +48,12 @@ const EmptyProfileCard = () => (
 
 const EmptyDeliveryCard = () => (
   <article className={`${styles.infoCard} ${styles.emptyCard}`}>
-    <span className={styles.emptyIcon} aria-hidden="true" />
+    <span className={`${styles.emptyIcon} ${styles.deliveryEmptyIcon}`} aria-hidden="true">
+      <svg viewBox="0 0 64 64" fill="none">
+        <path d="M32 56S14 41.4 14 28a18 18 0 1 1 36 0c0 13.4-18 28-18 28Z" />
+        <circle cx="32" cy="28" r="6" />
+      </svg>
+    </span>
     <h2>등록된 배송지가 없습니다.</h2>
     <p>자주 사용하는 배송지를 추가하면<br />더 빠르게 주문할 수 있어요.</p>
     <button type="button" className={styles.addAddressButton}><span aria-hidden="true">+</span> 새 배송지 추가</button>
@@ -43,6 +69,7 @@ const ProfileEdit = () => {
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
   const [passwordError, setPasswordError] = useState('')
+  const [selectedAvatarId, setSelectedAvatarId] = useState('pose03')
 
   useEffect(() => {
     const unsubscribe = subscribeToAuthState(async (user) => {
@@ -51,8 +78,16 @@ const ProfileEdit = () => {
 
       if (!user) {
         setUserData(null)
+        setSelectedAvatarId('pose03')
         setIsLoading(false)
         return
+      }
+
+      const savedAvatarId = localStorage.getItem(getAvatarStorageKey(user.uid))
+      if (avatarPresets.some((avatar) => avatar.id === savedAvatarId)) {
+        setSelectedAvatarId(savedAvatarId)
+      } else {
+        setSelectedAvatarId('pose03')
       }
 
       try {
@@ -87,19 +122,28 @@ const ProfileEdit = () => {
     [firebaseUser, userData],
   )
 
-  const memberName =
-    userData?.nickname ||
-    firebaseUser?.displayName ||
-    firebaseUser?.email?.split('@')[0] ||
-    '회원'
+  const memberName = firebaseUser
+    ? userData?.nickname ||
+      firebaseUser?.displayName ||
+      firebaseUser?.email?.split('@')[0] ||
+      '회원'
+    : ''
 
   const memberLabel = getMemberLabel(userData?.role)
   const points = Number(userData?.points ?? 0)
 
   const hasProfile = Boolean(firebaseUser)
-  const hasAddresses = deliveryAddresses.length > 0
+  const hasAddresses = false
   const isProfileForm = viewMode === 'profileForm'
   const isPasswordForm = viewMode === 'passwordForm'
+  const selectedAvatar = avatarPresets.find((avatar) => avatar.id === selectedAvatarId) || avatarPresets[2]
+
+  const handleAvatarPreset = (avatarId) => {
+    if (!firebaseUser) return
+
+    setSelectedAvatarId(avatarId)
+    localStorage.setItem(getAvatarStorageKey(firebaseUser.uid), avatarId)
+  }
 
   const handleProfileComplete = async (event) => {
     event.preventDefault()
@@ -182,6 +226,26 @@ const ProfileEdit = () => {
       return (
         <form className={`${styles.infoCard} ${styles.formCard}`} onSubmit={handleProfileComplete}>
           <h2>기본 정보</h2>
+          <section className={styles.avatarPicker} aria-labelledby="avatar-picker-title">
+            <div className={styles.avatarPickerHeading}>
+              <h3 id="avatar-picker-title">프로필 캐릭터</h3>
+              <p>이 브라우저에서만 적용됩니다.</p>
+            </div>
+            <div className={styles.avatarPresetList}>
+              {avatarPresets.map((avatar) => (
+                <button
+                  key={avatar.id}
+                  type="button"
+                  className={selectedAvatarId === avatar.id ? styles.avatarPresetActive : ''}
+                  aria-pressed={selectedAvatarId === avatar.id}
+                  aria-label={`${avatar.label} 적용`}
+                  onClick={() => handleAvatarPreset(avatar.id)}
+                >
+                  <img src={avatar.src} alt="" />
+                </button>
+              ))}
+            </div>
+          </section>
           <div className={styles.fieldList}>
             {profileDetails.map(({ label, value }) => {
               const isNickname = label === '이름'
@@ -241,8 +305,14 @@ const ProfileEdit = () => {
     return (
       <article className={styles.infoCard}>
         <h2>기본 정보</h2>
+        <p className={styles.infoDescription}>회원 계정 정보를 확인하고 관리할 수 있습니다.</p>
         <dl className={styles.detailList}>
-          {profileDetails.map(({ label, value }) => <div key={label} className={styles.detailRow}><dt>{label}</dt><dd>{value}</dd></div>)}
+          {profileDetails.map(({ label, value }) => (
+            <div key={label} className={styles.detailRow}>
+              <dt>{label}</dt>
+              <dd className={value === '등록되지 않음' ? styles.unregisteredValue : ''}>{value}</dd>
+            </div>
+          ))}
         </dl>
         <button
           type="button"
@@ -304,24 +374,43 @@ const ProfileEdit = () => {
   }
 
   return (
-    <section className={styles.page} aria-labelledby="profile-title">
-      {isLoading && <p role="status">회원정보를 불러오는 중입니다.</p>}
-      {!isLoading && loadError && <p role="alert">{loadError}</p>}
-      {!isLoading && !firebaseUser && (
-        <p role="status">로그인 후 회원정보를 확인할 수 있습니다.</p>
-      )}
+   <section className={styles.page} aria-labelledby="profile-title">
+  {isLoading && <p role="status">회원정보를 불러오는 중입니다.</p>}
+  {!isLoading && loadError && <p role="alert">{loadError}</p>}
 
-      <div className={styles.profileBanner}>
-        <div className={styles.avatar} aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="24" r="11" /><path d="M13 55c1-12 9-19 19-19s18 7 19 19" /></svg></div>
+  <div className={styles.profileBanner}>
+        <button
+          type="button"
+          className={styles.avatar}
+          disabled={!firebaseUser}
+          aria-label="프로필 캐릭터 수정"
+          onClick={() => {
+            setSaveError('')
+            setViewMode('profileForm')
+          }}
+        >
+          {firebaseUser ? <img src={selectedAvatar.src} alt="" /> : <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="24" r="11" /><path d="M13 55c1-12 9-19 19-19s18 7 19 19" /></svg>}
+        </button>
         <div className={styles.bannerCopy}>
-          <h2 id="profile-title"><span className={styles.memberName}>{memberName} 님,</span> 반갑습니다.</h2>
-          <p>자작의 회원정보를 관리해보세요.</p>
-          <div className={styles.memberMeta}><span className={styles.memberBadge}>{memberLabel}</span><span>보유 포인트</span><strong>{points.toLocaleString('ko-KR')}P</strong></div>
+          <h2 id="profile-title">
+            {firebaseUser ? (
+              <><span className={styles.memberName}>{memberName} 님,</span> 반갑습니다.</>
+            ) : (
+              '로그인 후 이용해주세요.'
+            )}
+          </h2>
+          <p>{firebaseUser ? '자작의 회원정보를 관리해보세요.' : '로그인 후 회원정보를 확인할 수 있습니다.'}</p>
+          <div className={styles.memberMeta}>
+            <span className={styles.memberBadge}>{firebaseUser ? memberLabel : '-'}</span>
+            <span>보유 포인트</span>
+            <strong>{firebaseUser ? points.toLocaleString('ko-KR') : 0}P</strong>
+          </div>
         </div>
         <div className={styles.bannerActions}>
           <button
             type="button"
             className={styles.outlineButton}
+            disabled={!firebaseUser}
             onClick={() => {
               setSaveError('')
               setViewMode('profileForm')
@@ -332,6 +421,7 @@ const ProfileEdit = () => {
           <button
             type="button"
             className={styles.primaryButton}
+            disabled={!firebaseUser}
             onClick={() => {
               setPasswordError('')
               setViewMode('passwordForm')

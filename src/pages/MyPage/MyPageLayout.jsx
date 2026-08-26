@@ -1,5 +1,7 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { PATHS } from '../../routes/paths'
+import { logout, subscribeToAuthState } from '../../firebase/auth'
 import mypageTopOrnament from '../../assets/images/mypage/mypageTopOrnament.svg'
 import styles from './MyPageLayout.module.scss'
 
@@ -32,6 +34,29 @@ const menuItems = [
 ]
 
 const MyPageLayout = () => {
+  const navigate = useNavigate()
+  const [currentUser, setCurrentUser] = useState(null)
+
+  useEffect(() => subscribeToAuthState(setCurrentUser), [])
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      navigate(PATHS.home)
+    } catch (error) {
+      console.error('로그아웃 실패:', error)
+    }
+  }
+
+  const handleAccountAction = () => {
+    if (!currentUser) {
+      navigate(PATHS.login)
+      return
+    }
+
+    handleLogout()
+  }
+
   return (
     <section className={styles.page}>
       <header className={styles.pageHeader}>
@@ -48,9 +73,11 @@ const MyPageLayout = () => {
         <button
           className={styles.logoutButton}
           type="button"
+          onClick={handleAccountAction}
+          aria-label={currentUser ? '로그아웃' : '로그인'}
         >
           <svg
-            className={styles.logoutIcon}
+            className={`${styles.logoutIcon} ${!currentUser ? styles.loginIcon : ''}`}
             viewBox="0 0 24 24"
             aria-hidden="true"
           >
@@ -58,8 +85,7 @@ const MyPageLayout = () => {
             <path d="M14 8l4 4-4 4" />
             <path d="M18 12H8" />
           </svg>
-
-          <span>로그아웃</span>
+          <span>{currentUser ? '로그아웃' : '로그인'}</span>
         </button>
       </div>
 
@@ -88,7 +114,6 @@ const MyPageLayout = () => {
               </NavLink>
             ))}
           </nav>
-
         </aside>
 
         <main className={styles.content}>

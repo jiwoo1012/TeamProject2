@@ -30,6 +30,20 @@
   line-height: v.$line-height-base;
 }
 
+.ornamentArea {
+  width: min(
+    1480px,
+    calc(100% - #{v.$grid-gutter * 12 + v.$space-10 + v.$side-margin-desktop})
+  );
+  margin: 0 v.$side-margin-desktop v.$space-6 calc(v.$grid-gutter * 12 + v.$space-10);
+}
+
+.topOrnament {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 /* =========================
    전체 Layout
 ========================= */
@@ -167,8 +181,10 @@
 
 .content {
   width: calc(100% - v.$side-margin-desktop);
-  max-width: calc(v.$container-max - v.$space-24);
+  max-width: 1360px;
   min-width: 0;
+  box-sizing: border-box;
+  padding-left: v.$space-6;
 }
 
 /* =========================
@@ -178,6 +194,11 @@
 @media (max-width: v.$breakpoint-tablet-max) {
   .pageHeader {
     padding: 0 v.$side-margin-tablet;
+  }
+
+  .ornamentArea {
+    width: calc(100% - #{v.$grid-gutter * 10 + v.$space-8 + v.$side-margin-tablet});
+    margin: 0 v.$side-margin-tablet v.$space-6 calc(v.$grid-gutter * 10 + v.$space-8);
   }
 
   .layout {
@@ -190,6 +211,7 @@
 
   .content {
     width: calc(100% - v.$side-margin-tablet);
+    padding-left: v.$space-4;
   }
 }
 
@@ -205,6 +227,10 @@
   .pageHeader {
     margin-bottom: v.$space-6;
     padding: 0 v.$side-margin-mobile;
+  }
+
+  .ornamentArea {
+    display: none;
   }
 
   .title {
@@ -257,5 +283,10 @@
     width: auto;
     max-width: none;
     margin: 0 v.$side-margin-mobile;
+    padding-left: 0;
   }
+}
+
+.loginIcon {
+  transform: scaleX(-1);
 }

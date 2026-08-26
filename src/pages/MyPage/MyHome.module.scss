@@ -106,6 +106,19 @@
   margin: v.$space-8 0 0;
 }
 
+.memberActivity {
+  display: inline-flex;
+  width: max-content;
+  max-width: 100%;
+  margin: v.$space-4 0 0;
+  padding: v.$space-2 v.$space-3;
+  border-radius: v.$radius-pill;
+  background: rgb(255 255 255 / 52%);
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-semibold;
+}
+
 .memberInfo div {
   display: grid;
   grid-template-columns: 70px minmax(0, 1fr);
@@ -213,6 +226,19 @@
   flex-direction: column;
   justify-content: space-between;
   padding: v.$space-6 v.$space-4;
+  color: inherit;
+  text-decoration: none;
+  transition: background-color v.$transition-fast;
+}
+
+.orderCountItem:hover {
+  background: color-mix(in srgb, v.$color-primary 9%, transparent);
+}
+
+.orderCountItem:focus-visible {
+  z-index: 2;
+  outline: 2px solid v.$color-primary;
+  outline-offset: -2px;
 }
 
 .orderCountItem span {

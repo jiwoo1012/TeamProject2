@@ -10,23 +10,13 @@
 }
 
 .topOrnament {
-  position: relative;
-  height: 52px;
-  border-top: 2px solid v.$color-taupe;
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: v.$space-5;
+  transform: scaleX(1.05);
+  transform-origin: left center;
 }
-
-.topOrnament::before,
-.topOrnament::after {
-  position: absolute;
-  top: -16px;
-  width: 28px;
-  height: 28px;
-  border: 2px solid v.$color-taupe;
-  content: '';
-}
-
-.topOrnament::before { left: -12px; border-right: 0; border-bottom: 0; }
-.topOrnament::after { right: -12px; border-left: 0; border-bottom: 0; }
 
 .purchaseSteps {
   display: flex;
@@ -40,7 +30,7 @@
 }
 
 .purchaseSteps strong { color: v.$color-text-primary; }
-.stepFlower { width: 28px; height: 28px; stroke: v.$color-primary; stroke-width: 1.5; }
+.stepFlower { width: 42px; height: 26px; flex: 0 0 42px; }
 
 .completeCard {
   width: 940px;

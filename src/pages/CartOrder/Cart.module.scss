@@ -3,7 +3,7 @@
 .page {
   width: min(1606px, calc(100% - 132px));
   margin: 0 auto;
-  padding: 79px 0 0;
+  padding: 79px 0 v.$space-16;
   color: v.$color-text-primary;
   font-family: v.$font-family-base;
 }
@@ -19,31 +19,12 @@
 }
 
 .topOrnament {
-  position: relative;
-  height: 102px;
-  border-top: 3px solid v.$color-taupe;
-}
-
-.topOrnament::before,
-.topOrnament::after {
-  position: absolute;
-  top: -4px;
-  width: 34px;
-  height: 34px;
-  border: 3px solid v.$color-taupe;
-  content: '';
-}
-
-.topOrnament::before {
-  left: -12px;
-  border-right: 0;
-  border-bottom: 0;
-}
-
-.topOrnament::after {
-  right: -12px;
-  border-left: 0;
-  border-bottom: 0;
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: v.$space-6;
+  transform: scaleX(1.05);
+  transform-origin: left center;
 }
 
 .pageHeader {
@@ -52,6 +33,7 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 31px;
+  margin-left: v.$space-6;
 }
 
 .pageHeader h1 {
@@ -66,9 +48,9 @@
   right: 494px;
   display: inline-flex;
   align-items: center;
-  gap: 18px;
+  gap: v.$space-4;
   color: v.$color-text-muted;
-  font-size: v.$font-size-md;
+  font-size: v.$font-size-lg;
   font-weight: v.$font-weight-medium;
   white-space: nowrap;
 }
@@ -79,11 +61,9 @@
 }
 
 .stepFlower {
-  width: 26px;
+  width: 42px;
   height: 26px;
-  flex: 0 0 26px;
-  stroke: v.$color-primary;
-  stroke-width: 1.8;
+  flex: 0 0 42px;
 }
 
 .mainGrid {
@@ -91,6 +71,7 @@
   grid-template-columns: minmax(0, 1100px) 417px;
   align-items: start;
   gap: 77px;
+  margin-left: v.$space-6;
 }
 
 .cartArea {
@@ -344,7 +325,9 @@
 }
 
 .summaryCard {
-  position: relative;
+  position: sticky;
+  top: v.$space-6;
+  align-self: start;
   margin-top: -72px;
   min-height: 713px;
   overflow: hidden;
@@ -352,6 +335,9 @@
 }
 
 .summaryCard h2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: v.$space-3;
   margin: 0;
   padding: 36px 29px 23px;
   color: #346561;
@@ -361,10 +347,22 @@
 
 .summaryCard h2::after {
   display: block;
+  grid-column: 1 / -1;
   height: 2px;
   margin-top: 20px;
   background: #4d7e7b;
   content: '';
+}
+
+.summaryCard h2 em {
+  align-self: center;
+  padding: v.$space-1 v.$space-3;
+  border-radius: v.$radius-pill;
+  background: color-mix(in srgb, v.$color-primary 12%, v.$color-white);
+  color: v.$color-primary;
+  font-size: v.$font-size-xs;
+  font-style: normal;
+  font-weight: v.$font-weight-semibold;
 }
 
 .summaryList {
@@ -499,6 +497,37 @@
   cursor: default;
 }
 
+.undoToast {
+  position: fixed;
+  z-index: v.$z-toast;
+  right: v.$space-6;
+  bottom: v.$space-6;
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: v.$space-3;
+  padding: 0 v.$space-4;
+  border-radius: v.$radius-md;
+  background: v.$color-text-primary;
+  box-shadow: v.$shadow-sm;
+  color: v.$color-white;
+  font-size: v.$font-size-sm;
+}
+
+.undoToast button {
+  border: 0;
+  background: transparent;
+  color: v.$color-primary-light;
+  font: inherit;
+  font-weight: v.$font-weight-bold;
+  cursor: pointer;
+}
+
+.undoToast button:last-child {
+  color: v.$color-white;
+  font-size: v.$font-size-lg;
+}
+
 .recommendationCard {
   min-height: 300px;
   margin-top: 47px;
@@ -574,10 +603,21 @@
 }
 
 .emptyCircle {
+  display: grid;
   width: 124px;
   height: 124px;
+  place-items: center;
   border-radius: v.$radius-pill;
   background: color-mix(in srgb, v.$color-primary 52%, v.$color-white);
+}
+
+.emptyCartIcon {
+  width: 64px;
+  height: 64px;
+  stroke: v.$color-white;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3.5;
 }
 
 .emptyCard strong {
@@ -632,6 +672,7 @@
   }
 
   .summaryCard {
+    position: relative;
     margin-top: 0;
     min-height: 520px;
   }
@@ -661,6 +702,11 @@
     align-items: flex-start;
     flex-direction: column;
     gap: v.$space-5;
+    margin-left: 0;
+  }
+
+  .mainGrid {
+    margin-left: 0;
   }
 
   .purchaseSteps {
@@ -700,5 +746,12 @@
 
   .emptyRecommendationThumb {
     height: 160px;
+  }
+
+  .undoToast {
+    right: v.$space-4;
+    bottom: v.$space-4;
+    left: v.$space-4;
+    justify-content: space-between;
   }
 }

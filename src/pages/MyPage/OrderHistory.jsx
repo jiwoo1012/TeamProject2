@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { Link } from 'react-router-dom'
 import { getOrderStatusLabel, ORDER_STATUS } from '../../constants/orderStatus'
-import { subscribeToAuthState } from '../../firebase/auth'
+import { subscribeToAuthState, getCurrentUserData } from '../../firebase/auth'
 import { db } from '../../firebase/firebase'
 import makdongPose from '../../assets/characters/M007_Poses03.png'
 import styles from './OrderHistory.module.scss'
@@ -17,10 +17,10 @@ const filterItems = [
 ]
 
 const summaryStats = [
-  { type: 'order', label: '주문 내역', value: 12, unit: '건', caption: '이번 달 기준' },
-  { type: 'wish', label: '찜 목록', value: 8, unit: '개', caption: '이번 달 기준' },
-  { type: 'ai', label: 'AI 추천 기록', value: 3, unit: '회', caption: '최근 이용 기준' },
-  { type: 'event', label: '이벤트 참여', value: 3, unit: '회', caption: '당첨 및 참여' },
+  { type: 'order', label: '주문 내역', value: 0, unit: '건', caption: '이번 달 기준' },
+  { type: 'wish', label: '찜 목록', value: 0, unit: '개', caption: '이번 달 기준' },
+  { type: 'ai', label: 'AI 추천 기록', value: 0, unit: '회', caption: '최근 이용 기준' },
+  { type: 'event', label: '이벤트 참여', value: 0, unit: '회', caption: '당첨 및 참여' },
 ]
 
 
@@ -60,6 +60,8 @@ const SummaryIcon = ({ type }) => {
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([])
+  const [firebaseUser, setFirebaseUser] = useState(null)
+  const [userData, setUserData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
   const [activeFilter, setActiveFilter] = useState('all')
@@ -70,8 +72,11 @@ const OrderHistory = () => {
     let isActive = true
 
     const unsubscribe = subscribeToAuthState(async (user) => {
+      if (isActive) setFirebaseUser(user)
+
       if (!user) {
         if (isActive) {
+          setUserData(null)
           setOrders([])
           setLoadError('로그인 후 주문 내역을 확인할 수 있습니다.')
           setIsLoading(false)
@@ -81,6 +86,14 @@ const OrderHistory = () => {
 
       setIsLoading(true)
       setLoadError('')
+
+      try {
+        const memberData = await getCurrentUserData(user.uid)
+        if (isActive) setUserData(memberData)
+      } catch (error) {
+        console.error('회원정보 조회 실패:', error)
+        if (isActive) setUserData(null)
+      }
 
       try {
         const ordersQuery = query(
@@ -177,6 +190,18 @@ const OrderHistory = () => {
     stat.type === 'order' ? { ...stat, value: orders.length } : stat,
   )
 
+  const memberName =
+    userData?.nickname ||
+    firebaseUser?.displayName ||
+    firebaseUser?.email?.split('@')[0] ||
+    '회원'
+  const memberLabel = firebaseUser
+    ? userData?.role === 'admin'
+      ? '관리자'
+      : '일반 회원'
+    : '-'
+  const points = firebaseUser ? Number(userData?.points ?? 0) : 0
+
   return (
     <section className={styles.page} aria-labelledby="order-history-title">
       <h2 id="order-history-title" className={styles.srOnly}>주문 내역</h2>
@@ -192,20 +217,20 @@ const OrderHistory = () => {
 
           <div className={styles.memberCopy}>
             <p className={styles.greeting}>안녕하세요,</p>
-            <strong className={styles.memberName}>홍길동 <span>님</span></strong>
+            <strong className={styles.memberName}>{memberName} <span>님</span></strong>
 
             <div className={styles.memberMeta}>
-              <span className={styles.memberBadge}>일반 회원</span>
-              <span>다음 등급까지</span>
-              <strong>1,200P</strong>
+              <span className={styles.memberBadge}>{memberLabel}</span>
+              <span>보유 포인트</span>
+              <strong>{points.toLocaleString('ko-KR')}P</strong>
             </div>
           </div>
 
           <div className={styles.progressArea}>
-            <div className={styles.progressTrack} aria-label="등급 진행도">
-              <span className={styles.progressValue} />
+            <div className={styles.progressTrack} aria-label="보유 포인트">
+              <span className={styles.progressValue} style={{ width: '0%' }} />
             </div>
-            <span className={styles.progressText}>1,200P / 3,000P</span>
+            <span className={styles.progressText}>{points.toLocaleString('ko-KR')}P</span>
           </div>
 
           <p className={styles.summaryMessage}>
