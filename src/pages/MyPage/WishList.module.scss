@@ -1,5 +1,209 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as v;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-6;
+}
+
+.status {
+  padding: v.$space-12 0;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-md;
+  text-align: center;
+}
+
+.notice {
+  padding: v.$space-3 v.$space-4;
+  border-radius: v.$radius-md;
+  background: v.$color-surface;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-sm;
+}
+
+// 찜 개수 안내 배너
+.banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: v.$space-4;
+  padding: v.$space-5 v.$space-6;
+  border-radius: v.$radius-lg;
+  background: v.$color-surface;
+}
+
+.bannerCharacter {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.bannerText {
+  margin: 0;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-sm;
+}
+
+.bannerCount {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: v.$space-1;
+  flex-shrink: 0;
+
+  span {
+    font-size: v.$font-size-xs;
+    color: v.$color-text-muted;
+  }
+
+  strong {
+    font-size: v.$font-size-xl;
+    font-weight: v.$font-weight-bold;
+    color: v.$color-primary;
+  }
+}
+
+// 빈 상태
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: v.$space-3;
+  padding: v.$space-16 v.$space-6;
+  border-radius: v.$radius-lg;
+  background: v.$color-white;
+  text-align: center;
+}
+
+.emptyIcon {
+  width: 96px;
+  height: 96px;
+  border-radius: v.$radius-pill;
+  background: v.$color-surface;
+  margin-bottom: v.$space-2;
+}
+
+.empty h2 {
+  margin: 0;
+  font-size: v.$font-size-xl;
+  font-weight: v.$font-weight-semibold;
+  color: v.$color-text-primary;
+}
+
+.empty p {
+  margin: 0;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+  line-height: v.$line-height-relaxed;
+}
+
+.emptyButton {
+  margin-top: v.$space-3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 v.$space-8;
+  border-radius: v.$radius-md;
+  background: v.$color-primary;
+  color: v.$color-white;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+  transition: opacity v.$transition-fast ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+// 채워진 상태 - 목록 헤더
+.listHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: v.$space-3;
+}
+
+.listHeader h2 {
+  margin: 0;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-semibold;
+  color: v.$color-text-primary;
+}
+
+.listControls {
+  display: flex;
+  align-items: center;
+  gap: v.$space-4;
+}
+
+.pageSizeGroup {
+  display: flex;
+  gap: v.$space-2;
+
+  button {
+    padding: v.$space-1 v.$space-3;
+    border: 1px solid v.$color-border;
+    border-radius: v.$radius-pill;
+    background: v.$color-white;
+    color: v.$color-text-muted;
+    font-size: v.$font-size-xs;
+    transition: all v.$transition-fast ease;
+
+    &:hover {
+      border-color: v.$color-primary;
+      color: v.$color-primary;
+    }
+  }
+}
+
+.activePageSize {
+  border-color: v.$color-primary !important;
+  background: v.$color-primary !important;
+  color: v.$color-white !important;
+}
+
+.sortSelect select {
+  height: 32px;
+  padding: 0 v.$space-3;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-md;
+  background: v.$color-white;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-xs;
+}
+
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: v.$grid-gutter;
+}
+
+@media (max-width: v.$breakpoint-tablet-max) {
+  .productGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: v.$breakpoint-mobile-max) {
+  .banner {
+    flex-wrap: wrap;
+  }
+
+  .bannerCount {
+    margin-left: 0;
+    align-items: flex-start;
+  }
+
+  .productGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .listHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

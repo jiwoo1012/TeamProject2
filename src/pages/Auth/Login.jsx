@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 
 import { login, subscribeToAuthState } from '../../firebase/auth'
@@ -28,6 +28,7 @@ const getLoginErrorMessage = (error) => {
 
 const Login = () => {
   const navigate = useNavigate()
+  const pageRef = useRef(null)
 
   const [form, setForm] = useState({
     email: '',
@@ -38,8 +39,41 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 
+  // Header가 일반 문서 흐름에서 위쪽 공간을 차지하고 있어서, .login에
+  // height: 100vh만 주면 (헤더 높이만큼) 뷰포트를 넘어 스크롤이 생긴다.
+  // 실제 렌더링된 헤더 높이를 측정해 CSS 변수로 빼주는 방식으로 처리한다.
+  // (ProductDetail.jsx에서 쓰는 것과 동일한 패턴)
+  useEffect(() => {
+    const page = pageRef.current
+    const header = document.querySelector('body > #root header') ?? document.querySelector('header')
+    if (!page || !header) return undefined
+
+    const updateHeaderHeight = () => {
+      page.style.setProperty('--auth-header-height', `${header.getBoundingClientRect().height}px`)
+    }
+
+    updateHeaderHeight()
+    const resizeObserver = new ResizeObserver(updateHeaderHeight)
+    resizeObserver.observe(header)
+    window.addEventListener('resize', updateHeaderHeight)
+
+    return () => {
+      resizeObserver.disconnect()
+      window.removeEventListener('resize', updateHeaderHeight)
+      page.style.removeProperty('--auth-header-height')
+    }
+  }, [])
+
+  // login() 내부에서 Firestore status(suspended)를 확인하는 동안
+  // Firebase Auth 상태는 이미 "로그인됨"으로 바뀌어 있어서, 아래
+  // onAuthStateChanged가 먼저 반응해 홈으로 이동시켜버릴 수 있다.
+  // 그 사이 signOut이 뒤늦게 실행되며 "홈으로는 이동했는데 로그인은
+  // 풀려있는" 상태가 되는 것을 막기 위한 플래그.
+  const isCheckingStatusRef = useRef(false)
+
   useEffect(() => {
     const unsubscribe = subscribeToAuthState((user) => {
+      if (isCheckingStatusRef.current) return
       if (user && !user.isAnonymous) {
         navigate(PATHS.home, { replace: true })
       }
@@ -59,6 +93,7 @@ const Login = () => {
     e.preventDefault()
     setError('')
     setIsSubmitting(true)
+    isCheckingStatusRef.current = true
 
     try {
       await login(form.email, form.password, form.rememberMe)
@@ -67,11 +102,12 @@ const Login = () => {
       setError(getLoginErrorMessage(err))
     } finally {
       setIsSubmitting(false)
+      isCheckingStatusRef.current = false
     }
   }
 
   return (
-    <div className={styles.login}>
+    <div className={styles.login} ref={pageRef}>
       <div className={styles.visual}>
         <img src={makdongImage} alt="막동이" />
       </div>

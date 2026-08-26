@@ -3,10 +3,11 @@
 .login {
   position: relative;
   width: 100%;
+  height: calc(100vh - var(--auth-header-height, 0px));
   background: $color-surface;
   overflow: hidden;
-  padding-top: 147px;
-  padding-bottom: 300px;
+  display: flex;
+  align-items: center;
 
   &::before {
     content: '';
@@ -14,7 +15,7 @@
     left: 0;
     right: 0;
     top: 0;
-    height: 300px;
+    height: 220px;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 50' preserveAspectRatio='none'%3E%3Cpath d='M0,0 L1440,0 L1440,20 C1200,30 960,10 720,18 C480,26 240,10 0,20 Z' fill='%23FDFBF9'/%3E%3C/svg%3E");
     background-size: 100% 100%;
     pointer-events: none;
@@ -27,7 +28,6 @@
     left: 0;
     right: 0;
     bottom: 0;
-    height: 140px;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 80' preserveAspectRatio='none'%3E%3Cpath d='M0,40 C240,70 480,10 720,30 C960,50 1200,10 1440,35 L1440,80 L0,80 Z' fill='%23FDFBF9'/%3E%3C/svg%3E");
     background-size: 100% 100%;
     pointer-events: none;
@@ -35,11 +35,12 @@
   }
 
   @media (max-width: $breakpoint-mobile-max) {
+    height: auto;
+    min-height: calc(100vh - var(--auth-header-height, 0px));
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     overflow: visible;
-    padding-top: 0;
-    padding-bottom: 0;
 
     &::before,
     &::after {
@@ -50,16 +51,18 @@
 
 .visual {
   position: absolute;
-  left: 100px;
-  top: 100px;
-  width: 820px;
-  height: 800px;
+  left: 350px;
+  top: 52%;
+  transform: translateY(-50%);
+  height: clamp(380px, 78vh, 800px);
+  aspect-ratio: 820 / 800;
+  width: auto;
   border-radius: 500px 760px 1560px 0;
   overflow: hidden;
   z-index: 1;
 
   img {
-    width: 100%;
+    width: 65%;
     height: 100%;
     object-fit: cover;
     object-position: 50% 20%;
@@ -67,8 +70,10 @@
 
   @media (max-width: $breakpoint-mobile-max) {
     position: static;
+    transform: none;
     width: 100%;
     height: 240px;
+    aspect-ratio: auto;
     border-radius: 0;
     background: $color-surface;
     display: flex;
@@ -88,15 +93,15 @@
 .formArea {
   margin-left: 934px;
   width: 400px;
-  padding-top: 60px;
+  margin-top: 100px;
 
   h1 {
     font-family: $font-family-display;
-    font-size: $font-size-5xl;
+    font-size: clamp(28px, 4vh, $font-size-5xl);
     font-weight: $font-weight-bold;
     color: $color-text-primary;
     line-height: $line-height-tight;
-    margin-bottom: $space-8;
+    margin-bottom: clamp($space-4, 3vh, $space-8);
   }
 
   form {
@@ -113,7 +118,8 @@
   }
 
   input[type='email'],
-  input[type='password'] {
+  input[type='password'],
+  input[type='text'] {
     height: 48px;
     padding: 0 $space-4;
     background: $color-white;
@@ -199,7 +205,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 1px; // 더 위로 바짝 붙임
+  margin-top: 1px;
 }
 
 .rememberLabel {
@@ -225,27 +231,32 @@
   color: $color-text-muted;
   cursor: pointer;
   position: relative;
-  top: 4px; // 
+  top: 4px;
+  transition: color $transition-fast ease;
+
+  &:hover {
+    color: $color-primary;
+  }
 }
 
 .switchLink {
-  margin-top: $space-8;
+  margin-top: clamp($space-4, 3vh, $space-8);
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: $font-size-sm;
   color: $color-text-muted;
-
-  a {
-    color: $color-text-primary;
-    font-weight: $font-weight-semibold;
-  }
 }
 .switchLinkAction {
-  color: $color-text-primary;
+  color: $color-primary;
   font-weight: $font-weight-semibold;
   position: relative;
-  top: 4px; 
+  top: 4px;
+  transition: color $transition-fast ease;
+
+  &:hover {
+    color: $color-primary-light;
+  }
 }
 .checkboxBox {
   display: inline-flex;
@@ -282,6 +293,7 @@
 .container {
   position: relative;
   max-width: 1440px;
+  width: 100%;
   margin: 0 auto;
 
   @media (max-width: $breakpoint-mobile-max) {
