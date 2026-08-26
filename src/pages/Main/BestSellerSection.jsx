@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { Link } from 'react-router-dom'
 
+import bestSellerTransitionImage from '../../assets/images/main/best-seller/bestseller.png'
 import styles from './MainPage.module.scss'
 
 const productImages = import.meta.glob('../../assets/images/products/product*.png', {
@@ -12,7 +13,19 @@ const productImages = import.meta.glob('../../assets/images/products/product*.pn
 const resolveProductImage = (imageUrl) => Object.entries(productImages)
   .find(([path]) => path.endsWith(`/${imageUrl}`))?.[1]
 
+const fallbackProducts = [
+  { productId: 'liq_001', productName: '햇쌀 맑은 이화주', imageUrl: 'product1.png' },
+  { productId: 'liq_002', productName: '새벽 솔잎 막걸리', imageUrl: 'product2.png' },
+  { productId: 'liq_003', productName: '메밀밭 생 막걸리', imageUrl: 'product3.png' },
+  { productId: 'liq_004', productName: '들꽃 국화주', imageUrl: 'product4.png' },
+].map((product) => ({ ...product, imageSrc: resolveProductImage(product.imageUrl) }))
+
 const IS_SCROLL_SEQUENCE_ENABLED = true
+const EXIT_EXPAND_DURATION = 1.15
+const EXIT_SCROLL_DURATION = 1.2
+const EXIT_SCROLL_DELAY = 0.1
+const EXIT_HOLD_DURATION = 0.65
+const EXIT_FADE_DURATION = 0.38
 
 const BestSellerSection = ({
   products,
@@ -24,10 +37,7 @@ const BestSellerSection = ({
   const cardRefs = useRef([])
   const displayProducts = products.length > 0
     ? products
-    : Array.from({ length: 4 }, (_, index) => ({
-        productId: `placeholder-${index}`,
-        isPlaceholder: true,
-      }))
+    : fallbackProducts
   const cardCount = displayProducts.length
 
   useLayoutEffect(() => {
@@ -41,8 +51,6 @@ const BestSellerSection = ({
     let currentStep = 0
     let lastStepTime = 0
     let finalStepReachedAt = 0
-    let exitWheelDelta = 0
-    let exitWheelResetTimer
     let removeWheelHandler = () => {}
 
     const context = gsap.context(() => {
@@ -78,16 +86,8 @@ const BestSellerSection = ({
         if (direction > 0 && currentIndex === cardCount && nextSectionRef.current) {
           event.preventDefault()
 
-          if (performance.now() - finalStepReachedAt < 650) return
+          if (isMoving || performance.now() - finalStepReachedAt < 360) return
 
-          exitWheelDelta += Math.abs(event.deltaY)
-          window.clearTimeout(exitWheelResetTimer)
-          exitWheelResetTimer = window.setTimeout(() => {
-            exitWheelDelta = 0
-          }, 450)
-          if (exitWheelDelta < 140) return
-
-          exitWheelDelta = 0
           isMoving = true
           transitionActiveRef.current = true
 
@@ -104,6 +104,11 @@ const BestSellerSection = ({
           transitionCard = cardVisual.cloneNode(true)
           transitionCard.classList.add(styles.bestSellerTransitionCard)
           transitionCard.setAttribute('aria-hidden', 'true')
+          const transitionImage = transitionCard.querySelector('img')
+          if (transitionImage) {
+            transitionImage.src = bestSellerTransitionImage
+            transitionImage.alt = ''
+          }
           Object.assign(transitionCard.style, {
             position: 'fixed',
             top: `${rect.top}px`,
@@ -138,20 +143,20 @@ const BestSellerSection = ({
               backgroundColor: '#4D7E7B',
               backgroundImage: 'none',
               boxShadow: 'none',
-              duration: 0.68,
+              duration: EXIT_EXPAND_DURATION,
               ease: 'power3.inOut',
             })
             .to(exitScroll, {
               y: nextSectionRef.current.offsetTop,
-              duration: 0.72,
+              duration: EXIT_SCROLL_DURATION,
               ease: 'power2.inOut',
               onUpdate: () => window.scrollTo(0, exitScroll.y),
-            }, 0.08)
+            }, EXIT_SCROLL_DELAY)
             .to(transitionCard, {
               autoAlpha: 0,
-              duration: 0.24,
+              duration: EXIT_FADE_DURATION,
               ease: 'power1.out',
-            }, 1.85)
+            }, EXIT_SCROLL_DELAY + EXIT_SCROLL_DURATION + EXIT_HOLD_DURATION)
           return
         }
 
@@ -163,7 +168,6 @@ const BestSellerSection = ({
         lastStepTime = stepTime
         currentStep = targetIndex
         if (targetIndex === cardCount) finalStepReachedAt = stepTime
-        if (direction < 0) exitWheelDelta = 0
         setIsRevealComplete(targetIndex === cardCount)
         setCardsForStep(currentIndex)
 
@@ -199,7 +203,6 @@ const BestSellerSection = ({
       removeWheelHandler()
       scrollTween?.kill()
       exitTimeline?.kill()
-      window.clearTimeout(exitWheelResetTimer)
       transitionCard?.remove()
       transitionActiveRef.current = false
       context.revert()
@@ -233,22 +236,18 @@ const BestSellerSection = ({
                 },
               }
 
-              if (product.isPlaceholder) {
-                return (
-                  <div key={product.productId} {...cardProps} aria-hidden="true">
-                    <div className={`${styles.bestSellerCardVisual} ${styles.bestSellerPlaceholder}`} />
-                  </div>
-                )
-              }
-
               return (
                 <div key={product.productId ?? product.id} {...cardProps}>
                   <Link
                     className={styles.bestSellerCardVisual}
                     to={`/shop/${product.productId ?? product.id}`}
+                    aria-label={`${product.productName} 상세 페이지로 이동`}
                   >
-                    <span>{product.brandManufacturer ?? 'JAJAK'}</span>
-                    <img src={resolveProductImage(product.imageUrl)} alt={product.productName} />
+                    <span>{product.brandManufacturer ?? 'BEST PICK'}</span>
+                    <img
+                      src={product.imageSrc ?? resolveProductImage(product.imageUrl)}
+                      alt={product.productName}
+                    />
                     <strong>{product.productName}</strong>
                   </Link>
                 </div>

@@ -10,6 +10,9 @@ const useMainSectionWheel = ({
   makdongSectionRef,
   canMovePastHeroRef,
   bestSellerTransitionRef,
+  heroSunPlayRef,
+  heroSunResetRef,
+  isHeroSunCompleteRef,
 }) => {
   useLayoutEffect(() => {
     const root = document.documentElement
@@ -56,6 +59,24 @@ const useMainSectionWheel = ({
       const bestSellerEnd = bestSeller.offsetTop + bestSeller.offsetHeight - window.innerHeight
       const hasBestSellerSteps = bestSellerEnd > bestSeller.offsetTop + 2
       let targetTop
+
+      const isAtSunStage = Math.abs(currentScroll - heroStops[1]) <= 2
+      if (isAtSunStage && direction < 0 && isHeroSunCompleteRef.current) {
+        event.preventDefault()
+        heroSunResetRef.current?.()
+        return
+      }
+
+      if (isAtSunStage && direction > 0) {
+        event.preventDefault()
+
+        if (!isHeroSunCompleteRef.current) {
+          heroSunPlayRef.current?.()
+          return
+        }
+
+        targetTop = firstSectionTop
+      }
 
       if (hasBestSellerSteps && (
         currentScroll > bestSeller.offsetTop + 2 &&
@@ -110,7 +131,7 @@ const useMainSectionWheel = ({
           const targetIndex = currentIndex + direction
 
           if (targetIndex < 0) {
-            targetTop = heroStops[heroStops.length - 1]
+            targetTop = heroStops[2]
           } else if (targetIndex >= sectionTops.length) {
             return
           } else {
@@ -155,6 +176,9 @@ const useMainSectionWheel = ({
     canMovePastHeroRef,
     eventsGridRef,
     featureSectionRef,
+    heroSunPlayRef,
+    heroSunResetRef,
+    isHeroSunCompleteRef,
     mainContentRef,
     makdongSectionRef,
   ])

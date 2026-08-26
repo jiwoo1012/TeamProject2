@@ -7,18 +7,26 @@ gsap.registerPlugin(ScrollTrigger)
 const HEADER_VISIBLE_CLASS = 'main-header-visible'
 const HERO_COVER_EXIT_START = 'top top-=100'
 const HERO_IMAGE_DURATION = 0.72
+const HERO_SUN_PATH_DURATION = 4.5
+const HERO_SUN_PATH_MIDPOINT = HERO_SUN_PATH_DURATION / 2
+const HERO_SUN_COLOR = '#e9ae32'
 
 const useHeroReveal = ({
   mainContentRef,
   heroCoverRef,
   heroImageRef,
   heroPhotoRef,
+  heroSunsetPhotoRef,
+  heroSunRef,
   leftHeroTitleRef,
   rightHeroTitleRef,
   heroCaptionRef,
   shopButtonRef,
   canMovePastHeroRef,
   heroRevealRef,
+  heroSunPlayRef,
+  heroSunResetRef,
+  isHeroSunCompleteRef,
 }) => {
   useLayoutEffect(() => {
     const root = document.documentElement
@@ -26,6 +34,81 @@ const useHeroReveal = ({
     gsap.set(heroCoverRef.current, { autoAlpha: 1, scale: 1 })
     gsap.set(heroImageRef.current, { clearProps: 'transform', autoAlpha: 1 })
     gsap.set(heroPhotoRef.current, { clearProps: 'transform' })
+    gsap.set(heroSunsetPhotoRef.current, { autoAlpha: 0 })
+    const sunProgress = { angle: 0 }
+    const placeSunOnArch = (angle) => {
+      const imageGroup = heroImageRef.current
+      const sun = heroSunRef.current
+      if (!imageGroup || !sun || window.innerWidth < 1200) return
+
+      const groupStyles = window.getComputedStyle(imageGroup)
+      const frameStyles = window.getComputedStyle(imageGroup.querySelector('figure'))
+      const frameOffset = Number.parseFloat(groupStyles.getPropertyValue('--hero-frame-offset'))
+      const outlineGap = Number.parseFloat(groupStyles.getPropertyValue('--hero-arch-outline-gap'))
+      const outlineStroke = Number.parseFloat(groupStyles.getPropertyValue('--hero-arch-stroke'))
+      const outlineTrim = Number.parseFloat(groupStyles.getPropertyValue('--hero-arch-trim'))
+      const radiusValues = frameStyles.borderTopLeftRadius.split(' ')
+      const archRadius = Number.parseFloat(radiusValues[1] || radiusValues[0])
+      const radiusX = imageGroup.offsetWidth / 2 + outlineGap + outlineStroke / 2
+      const radiusY = archRadius + outlineGap + outlineStroke / 2
+      const trimAngle = Math.acos(1 - (outlineTrim - outlineStroke / 2) / radiusX)
+      const pathAngle = Math.PI - trimAngle - (angle / Math.PI) * (Math.PI - trimAngle * 2)
+      const x = imageGroup.offsetWidth / 2 + radiusX * Math.cos(pathAngle)
+      const y = frameOffset + archRadius - radiusY * Math.sin(pathAngle)
+
+      gsap.set(sun, {
+        x,
+        y,
+        rotation: 0,
+      })
+    }
+
+    placeSunOnArch(sunProgress.angle)
+    const originalRightTitleColor = window.getComputedStyle(rightHeroTitleRef.current).color
+    const sunTimeline = gsap.timeline({
+      paused: true,
+      onComplete: () => {
+        isHeroSunCompleteRef.current = true
+      },
+      onReverseComplete: () => {
+        isHeroSunCompleteRef.current = false
+      },
+    })
+      .set(heroSunRef.current, { attr: { 'data-phase': 'sun' } })
+      .set(rightHeroTitleRef.current, { color: HERO_SUN_COLOR })
+      .to(sunProgress, {
+        angle: Math.PI,
+        duration: HERO_SUN_PATH_DURATION,
+        ease: 'sine.inOut',
+        onUpdate: () => placeSunOnArch(sunProgress.angle),
+      })
+      .to(heroSunsetPhotoRef.current, {
+        autoAlpha: 1,
+        duration: HERO_SUN_PATH_DURATION,
+        ease: 'none',
+      }, '<')
+      .set(heroSunRef.current, { attr: { 'data-phase': 'moon' } }, HERO_SUN_PATH_MIDPOINT)
+      .to(rightHeroTitleRef.current, {
+        color: originalRightTitleColor,
+        duration: 0.7,
+        ease: 'power1.inOut',
+      }, HERO_SUN_PATH_MIDPOINT)
+
+    heroSunPlayRef.current = () => {
+      if (sunTimeline.isActive() || isHeroSunCompleteRef.current) return
+      sunTimeline.restart()
+    }
+    heroSunResetRef.current = () => {
+      if (!isHeroSunCompleteRef.current || sunTimeline.isActive()) return
+      sunTimeline.reverse()
+    }
+
+    const sunResetTrigger = ScrollTrigger.create({
+      trigger: heroImageRef.current,
+      start: 'bottom top',
+      onEnter: () => heroSunResetRef.current?.(),
+    })
+
     gsap.set(heroImageRef.current.parentElement, { autoAlpha: 0 })
     gsap.set([leftHeroTitleRef.current, rightHeroTitleRef.current], {
       autoAlpha: 1,
@@ -47,6 +130,7 @@ const useHeroReveal = ({
         start: HERO_COVER_EXIT_START,
         toggleActions: 'play none none reverse',
         invalidateOnRefresh: true,
+        onRefresh: () => placeSunOnArch(sunProgress.angle),
       },
     })
       .to(heroCoverRef.current, {
@@ -69,10 +153,12 @@ const useHeroReveal = ({
         duration: 0.92,
         ease: 'power3.inOut',
       })
+      .addLabel('heroReady', '-=0.16')
+      .set(rightHeroTitleRef.current, { color: HERO_SUN_COLOR }, 'heroReady')
       .to(
         heroImageRef.current.parentElement,
         { autoAlpha: 1, duration: 0.16, ease: 'none' },
-        '-=0.16',
+        'heroReady',
       )
       .to(
         heroCoverRef.current,
@@ -87,6 +173,8 @@ const useHeroReveal = ({
         trigger: mainContentRef.current,
         start: () => `top top-=${window.innerHeight + 100}`,
         toggleActions: 'play none none reverse',
+        invalidateOnRefresh: true,
+        onRefresh: () => placeSunOnArch(sunProgress.angle),
       },
     })
       .to(heroImageRef.current, {
@@ -122,11 +210,18 @@ const useHeroReveal = ({
 
     return () => {
       headerTrigger.kill()
+      sunResetTrigger.kill()
       coverTimeline.scrollTrigger?.kill()
       coverTimeline.kill()
+      sunTimeline.kill()
       timeline.scrollTrigger?.kill()
       timeline.kill()
       heroRevealRef.current = null
+      heroSunPlayRef.current = null
+      heroSunResetRef.current = null
+      isHeroSunCompleteRef.current = false
+      gsap.set(rightHeroTitleRef.current, { clearProps: 'color' })
+      gsap.set(heroSunsetPhotoRef.current, { clearProps: 'opacity,visibility' })
       root.classList.remove(HEADER_VISIBLE_CLASS)
     }
   }, [
@@ -135,7 +230,12 @@ const useHeroReveal = ({
     heroCoverRef,
     heroImageRef,
     heroPhotoRef,
+    heroSunsetPhotoRef,
+    heroSunRef,
     heroRevealRef,
+    heroSunPlayRef,
+    heroSunResetRef,
+    isHeroSunCompleteRef,
     leftHeroTitleRef,
     mainContentRef,
     rightHeroTitleRef,
