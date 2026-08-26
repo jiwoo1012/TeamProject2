@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PATHS } from '../../routes/paths'
 import { getCart, saveCart } from '../../utils/cartStorage'
+import cartTopOrnament from '../../assets/images/mypage/cartTopOrnament.svg'
+import cartStepOrnament from '../../assets/images/mypage/cartStepOrnament.svg'
 import styles from './Cart.module.scss'
 
 const initialCartItems = [
@@ -45,6 +47,14 @@ const formatPrice = (value) => `${value.toLocaleString('ko-KR')}원`
 const getInitialCartItems = () => {
   const savedCart = getCart()
   const hasSavedCart = localStorage.getItem('jajak_cart') !== null
+  const cartCatalog = [
+    ...initialCartItems,
+    ...mockRecommendations.map((product) => ({
+      ...product,
+      option: '추천 상품',
+      discount: 0,
+    })),
+  ]
 
   if (!hasSavedCart) {
     return initialCartItems
@@ -53,7 +63,7 @@ const getInitialCartItems = () => {
   return savedCart
     .map((savedItem) => {
       const normalizedProductId = String(savedItem.productId || '').replace('liq-', 'liq_')
-      const initialItem = initialCartItems.find((item) => item.id === normalizedProductId)
+      const initialItem = cartCatalog.find((item) => item.id === normalizedProductId)
       const quantity = Number(savedItem.quantity)
 
       if (!initialItem || !Number.isFinite(quantity) || quantity < 1) {
@@ -65,24 +75,23 @@ const getInitialCartItems = () => {
     .filter(Boolean)
 }
 
-const StepFlower = () => (
-  <svg className={styles.stepFlower} viewBox="0 0 26 26" fill="none" aria-hidden="true">
-    <circle cx="13" cy="5" r="3.5" />
-    <circle cx="21" cy="13" r="3.5" />
-    <circle cx="13" cy="21" r="3.5" />
-    <circle cx="5" cy="13" r="3.5" />
-    <circle cx="13" cy="13" r="2.5" />
-  </svg>
-)
-
 const PurchaseSteps = () => (
   <nav className={styles.purchaseSteps} aria-label="주문 진행 단계">
     <strong className={styles.currentStep}>장바구니</strong>
-    <StepFlower />
+    <img className={styles.stepFlower} src={cartStepOrnament} alt="" />
     <span>주문서 작성 / 결제</span>
-    <StepFlower />
+    <img className={styles.stepFlower} src={cartStepOrnament} alt="" />
     <span>완료</span>
   </nav>
+)
+
+const EmptyCartIcon = () => (
+  <svg className={styles.emptyCartIcon} viewBox="0 0 64 64" fill="none" aria-hidden="true">
+    <path d="M8 13h8l5.5 28h27.5l6-20H20" />
+    <path d="M25 30h25" />
+    <circle cx="26" cy="50" r="3.5" />
+    <circle cx="47" cy="50" r="3.5" />
+  </svg>
 )
 
 const ProductImage = ({ imageUrl, name }) => (
@@ -107,6 +116,7 @@ const Cart = () => {
   const navigate = useNavigate()
   const [items, setItems] = useState(getInitialCartItems)
   const [selectedIds, setSelectedIds] = useState(() => items.map((item) => item.id))
+  const [removedItems, setRemovedItems] = useState([])
 
   useEffect(() => {
     const cartItems = items.map((item) => ({
@@ -139,6 +149,9 @@ const Cart = () => {
     }
   }, [items, selectedIds, pointInput])
 
+  const allUsablePoints = Math.min(3000, totals.itemTotal)
+  const isUsingAllPoints = allUsablePoints > 0 && totals.usedPoints === allUsablePoints
+
   const handleSelectAll = () => {
     setSelectedIds(isAllSelected ? [] : items.map((item) => item.id))
   }
@@ -158,18 +171,43 @@ const Cart = () => {
   }
 
   const handleDeleteSelected = () => {
+    const nextRemovedItems = items.filter((item) => selectedIds.includes(item.id))
+
+    if (nextRemovedItems.length === 0) return
+
+    setRemovedItems(nextRemovedItems)
     setItems((current) => current.filter((item) => !selectedIds.includes(item.id)))
     setSelectedIds([])
+  }
+
+  const handleUndoDelete = () => {
+    setItems((current) => [...current, ...removedItems.filter((item) => !current.some((currentItem) => currentItem.id === item.id))])
+    setSelectedIds(removedItems.map((item) => item.id))
+    setRemovedItems([])
   }
 
   const handleClearAll = () => {
     setItems([])
     setSelectedIds([])
     setPointInput('0')
+    setRemovedItems([])
+  }
+
+  const handleAddRecommendation = (product) => {
+    setItems((current) => {
+      const existingItem = current.find((item) => item.id === product.id)
+
+      if (existingItem) {
+        return current.map((item) => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item)
+      }
+
+      return [...current, { ...product, option: '추천 상품', discount: 0, quantity: 1 }]
+    })
+    setSelectedIds((current) => current.includes(product.id) ? current : [...current, product.id])
   }
 
   const handleUseAllPoints = () => {
-    setPointInput(String(Math.min(3000, totals.itemTotal)))
+    setPointInput(isUsingAllPoints ? '0' : String(allUsablePoints))
   }
 
   const handleOrder = () => {
@@ -185,7 +223,7 @@ const Cart = () => {
 
   return (
     <section className={styles.page} aria-labelledby="cart-title">
-      <div className={styles.topOrnament} aria-hidden="true" />
+      <img className={styles.topOrnament} src={cartTopOrnament} alt="" />
 
       <header className={styles.pageHeader}>
         <h1 id="cart-title">장바구니</h1>
@@ -196,9 +234,9 @@ const Cart = () => {
         <div className={styles.cartArea}>
           {isEmpty ? (
             <div className={styles.emptyCard}>
-              <div className={styles.emptyCircle} aria-hidden="true" />
+              <div className={styles.emptyCircle}><EmptyCartIcon /></div>
               <strong>장바구니가 비어 있습니다.</strong>
-              <button type="button" className={styles.browseButton}>상품 둘러보기</button>
+              <button type="button" className={styles.browseButton} onClick={() => navigate(PATHS.shop)}>상품 둘러보기</button>
             </div>
           ) : (
             <div className={styles.cartTable}>
@@ -266,7 +304,7 @@ const Cart = () => {
                   모두 비우기
                 </button>
               </div>
-              <button type="button" className={styles.outlineButton}>쇼핑 계속하기</button>
+              <button type="button" className={styles.outlineButton} onClick={() => navigate(PATHS.shop)}>쇼핑 계속하기</button>
             </div>
           )}
 
@@ -291,7 +329,7 @@ const Cart = () => {
                       <strong>{product.name}</strong>
                       <span>{formatPrice(product.price)}</span>
                     </div>
-                    <button type="button">+ 담기</button>
+                    <button type="button" onClick={() => handleAddRecommendation(product)}>+ 담기</button>
                   </article>
                 ))}
               </div>
@@ -300,7 +338,7 @@ const Cart = () => {
         </div>
 
         <aside className={`${styles.summaryCard} ${isEmpty ? styles.emptySummary : ''}`} aria-label="주문 금액">
-          <h2>주문 금액</h2>
+          <h2><span>주문 금액</span>{!isEmpty && <em>선택 {selectedIds.length}개</em>}</h2>
           <dl className={styles.summaryList}>
             <div><dt>총 상품 금액</dt><dd>{isEmpty ? '' : formatPrice(totals.itemTotal)}</dd></div>
             <div><dt>상품 할인</dt><dd>{isEmpty ? '' : formatPrice(0)}</dd></div>
@@ -326,7 +364,9 @@ const Cart = () => {
                     />
                     <span>P</span>
                   </label>
-                  <button type="button" onClick={handleUseAllPoints}>전액사용</button>
+                  <button type="button" onClick={handleUseAllPoints}>
+                    {isUsingAllPoints ? '사용 취소' : '전액사용'}
+                  </button>
                 </div>
                 <p>사용 포인트 <strong>-{totals.usedPoints.toLocaleString('ko-KR')}P</strong></p>
               </div>
@@ -348,6 +388,14 @@ const Cart = () => {
           </button>
         </aside>
       </div>
+
+      {removedItems.length > 0 && (
+        <div className={styles.undoToast} role="status">
+          <span>{removedItems.length}개 상품을 장바구니에서 삭제했습니다.</span>
+          <button type="button" onClick={handleUndoDelete}>되돌리기</button>
+          <button type="button" onClick={() => setRemovedItems([])} aria-label="알림 닫기">×</button>
+        </div>
+      )}
     </section>
   )
 }

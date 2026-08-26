@@ -43,14 +43,39 @@
   height: 118px;
   flex: 0 0 118px;
   place-items: center;
+  padding: v.$space-2;
+  overflow: hidden;
+  border: 0;
   border-radius: v.$radius-pill;
   background: v.$color-white;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: box-shadow v.$transition-fast, transform v.$transition-fast;
+}
+
+.avatar:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.avatar:focus-visible {
+  outline: 3px solid v.$color-primary-light;
+  outline-offset: 3px;
+}
+
+.avatar:disabled {
+  cursor: default;
 }
 
 .avatar svg {
   width: 74px;
   height: 74px;
   fill: #c5c5c5;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .bannerCopy {
@@ -278,6 +303,7 @@
   display: grid;
   width: 100%;
   grid-template-columns: minmax(0, 0.6fr) minmax(0, 1fr);
+  align-items: start;
   gap: 38px;
   margin-top: 43px;
 }
@@ -293,7 +319,73 @@
 }
 
 .infoCard:first-child {
-  height: 642px;
+  min-height: 0;
+}
+
+.avatarPicker {
+  margin: v.$space-4 0 v.$space-5;
+  padding: v.$space-4;
+  border: 1px solid color-mix(in srgb, v.$color-primary 20%, v.$color-border);
+  border-radius: v.$radius-lg;
+  background: color-mix(in srgb, v.$color-primary 6%, v.$color-white);
+}
+
+.avatarPickerHeading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: v.$space-3;
+}
+
+.avatarPickerHeading h3,
+.avatarPickerHeading p {
+  margin: 0;
+}
+
+.avatarPickerHeading h3 {
+  color: v.$color-text-primary;
+  font-size: v.$font-size-sm;
+}
+
+.avatarPickerHeading p {
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-xs;
+}
+
+.avatarPresetList {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: v.$space-2;
+  margin-top: v.$space-3;
+}
+
+.avatarPresetList button {
+  display: grid;
+  aspect-ratio: 1;
+  place-items: center;
+  padding: v.$space-1;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: v.$radius-md;
+  background: v.$color-white;
+}
+
+.avatarPresetList button:hover,
+.avatarPresetList button:focus-visible,
+.avatarPresetActive {
+  border-color: v.$color-primary !important;
+  background: color-mix(in srgb, v.$color-primary 12%, v.$color-white) !important;
+}
+
+.avatarPresetList button:focus-visible {
+  outline: 2px solid v.$color-primary-light;
+  outline-offset: 2px;
+}
+
+.avatarPresetList img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .infoCard:first-child h2 {
@@ -311,6 +403,13 @@
   font-size: v.$font-size-lg;
   font-weight: v.$font-weight-bold;
   line-height: v.$line-height-tight;
+}
+
+.infoDescription {
+  margin: 0 0 v.$space-4;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+  line-height: v.$line-height-base;
 }
 
 /* Figma: 이름/이메일/휴대폰/생년월일 사이 구분선 */
@@ -344,10 +443,15 @@
   font-weight: v.$font-weight-semibold;
 }
 
+.detailRow .unregisteredValue {
+  color: v.$color-text-muted;
+  font-weight: v.$font-weight-regular;
+}
+
 .editProfileButton {
-  width: min(263px, 100%);
-  height: 50px;
-  align-self: center;
+  min-width: 136px;
+  height: 44px;
+  align-self: flex-end;
   margin-top: v.$space-6;
   border-radius: v.$radius-lg;
   background: v.$color-primary;
@@ -576,6 +680,12 @@
   .avatar svg {
     width: 44px;
     height: 44px;
+  }
+
+  .avatarPickerHeading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: v.$space-1;
   }
 
   .bannerCopy {
@@ -833,11 +943,23 @@
 }
 
 .emptyIcon {
+  position: relative;
+  display: grid;
   width: 134px;
   height: 134px;
+  place-items: center;
   margin-bottom: v.$space-10;
   border-radius: v.$radius-pill;
   background: color-mix(in srgb, v.$color-primary 45%, v.$color-white);
+}
+
+.deliveryEmptyIcon svg {
+  width: 62px;
+  height: 62px;
+  stroke: v.$color-white;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.5;
 }
 
 .emptyCard h2 {

@@ -6,24 +6,18 @@ import { subscribeToAuthState } from '../../firebase/auth'
 import { auth, db } from '../../firebase/firebase'
 import { PATHS } from '../../routes/paths'
 import { clearCart } from '../../utils/cartStorage'
+import cartTopOrnament from '../../assets/images/mypage/cartTopOrnament.svg'
+import cartStepOrnament from '../../assets/images/mypage/cartStepOrnament.svg'
 import styles from './Checkout.module.scss'
 
 const formatPrice = (value) => `${value.toLocaleString('ko-KR')}원`
 
-const StepFlower = () => (
-  <svg className={styles.stepFlower} viewBox="0 0 26 26" fill="none" aria-hidden="true">
-    <circle cx="13" cy="5" r="3.5" /><circle cx="21" cy="13" r="3.5" />
-    <circle cx="13" cy="21" r="3.5" /><circle cx="5" cy="13" r="3.5" />
-    <circle cx="13" cy="13" r="2.5" />
-  </svg>
-)
-
 const PurchaseSteps = () => (
   <nav className={styles.purchaseSteps} aria-label="주문 진행 단계">
     <span>장바구니</span>
-    <StepFlower />
+    <img className={styles.stepFlower} src={cartStepOrnament} alt="" />
     <strong>주문서 작성 / 결제</strong>
-    <StepFlower />
+    <img className={styles.stepFlower} src={cartStepOrnament} alt="" />
     <span>완료</span>
   </nav>
 )
@@ -53,6 +47,13 @@ const RoundCheckbox = ({ checked, onChange, label, muted = false }) => (
   </label>
 )
 
+const sampleAddresses = [
+  { id: 'home', label: '우리 집', recipient: '홍길동', phone: '010-1234-5678', address: '서울특별시 마포구 자작로 12', detailAddress: '101동 1203호', isDefault: true },
+  { id: 'office', label: '회사', recipient: '홍길동', phone: '010-1234-5678', address: '서울특별시 종로구 전통길 48', detailAddress: '자작빌딩 5층', isDefault: false },
+]
+
+const deliveryMemoPresets = ['문 앞에 놓아주세요', '배송 전 연락주세요', '경비실에 맡겨주세요']
+
 const Checkout = () => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -64,6 +65,9 @@ const Checkout = () => {
   const [saveDelivery, setSaveDelivery] = useState(true)
   const [agreed, setAgreed] = useState(false)
   const [pointInput, setPointInput] = useState(() => String(location.state?.usedPoints || 0))
+  const [activeModal, setActiveModal] = useState(null)
+  const [profileDraft, setProfileDraft] = useState({ name: '', phone: '', email: '' })
+  const [selectedAddressId, setSelectedAddressId] = useState(sampleAddresses[0].id)
   const [shipping, setShipping] = useState({
     recipient: '',
     phone: '',
@@ -73,8 +77,20 @@ const Checkout = () => {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
 
   useEffect(() => subscribeToAuthState(setCurrentUser), [])
+
+  useEffect(() => {
+    if (!activeModal) return undefined
+
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setActiveModal(null)
+    }
+
+    window.addEventListener('keydown', closeOnEscape)
+    return () => window.removeEventListener('keydown', closeOnEscape)
+  }, [activeModal])
 
   const itemTotal = orderItems.reduce((sum, item) => sum + (item.price - item.discount) * item.quantity, 0)
   const usedPoints = Math.min(Number(pointInput) || 0, 3000, itemTotal)
@@ -89,6 +105,34 @@ const Checkout = () => {
   const handleShippingChange = (event) => {
     const { name, value } = event.target
     setShipping((current) => ({ ...current, [name]: value }))
+    setFieldErrors((current) => ({ ...current, [name]: '' }))
+  }
+
+  const openProfileModal = () => {
+    setProfileDraft(member)
+    setActiveModal('profile')
+  }
+
+  const applySelectedAddress = () => {
+    const selectedAddress = sampleAddresses.find((address) => address.id === selectedAddressId)
+
+    if (!selectedAddress) return
+
+    setShipping((current) => ({
+      ...current,
+      recipient: selectedAddress.recipient,
+      phone: selectedAddress.phone,
+      address: selectedAddress.address,
+      detailAddress: selectedAddress.detailAddress,
+    }))
+    setFieldErrors((current) => ({
+      ...current,
+      recipient: '',
+      phone: '',
+      address: '',
+    }))
+    setDeliveryMode('default')
+    setActiveModal(null)
   }
 
   const handlePayment = async () => {
@@ -102,7 +146,14 @@ const Checkout = () => {
       return
     }
 
-    if (!shipping.recipient || !shipping.phone || !shipping.address) {
+    const nextFieldErrors = {
+      recipient: shipping.recipient ? '' : '받으실 분을 입력해주세요.',
+      phone: shipping.phone ? '' : '휴대폰 번호를 입력해주세요.',
+      address: shipping.address ? '' : '주소를 입력해주세요.',
+    }
+
+    if (Object.values(nextFieldErrors).some(Boolean)) {
+      setFieldErrors(nextFieldErrors)
       setSubmitError('받으실 분, 주소, 휴대폰 번호를 입력해주세요.')
       return
     }
@@ -164,7 +215,7 @@ const Checkout = () => {
 
   return (
     <section className={styles.page} aria-labelledby="checkout-title">
-      <div className={styles.topOrnament} aria-hidden="true" />
+      <img className={styles.topOrnament} src={cartTopOrnament} alt="" />
 
       <header className={styles.pageHeader}>
         <h1 id="checkout-title">주문서 작성 / 결제</h1>
@@ -215,7 +266,7 @@ const Checkout = () => {
                   onChange={() => setOrdererMode('direct')}
                   label="직접 입력"
                 />
-                <button type="button">기본 정보 관리</button>
+                <button type="button" onClick={openProfileModal}>기본 정보 관리</button>
               </div>
               <dl className={styles.ordererInfo}>
                 <div><dt>주문자 성함</dt><dd>{member.name}</dd></div>
@@ -248,21 +299,22 @@ const Checkout = () => {
                   onChange={() => setDeliveryMode('orderer')}
                   label="주문자 정보와 동일"
                 />
-                <button type="button">배송지 관리</button>
+                <button type="button" onClick={() => setActiveModal('address')}>배송지 관리</button>
               </div>
 
               <div className={styles.inputRows}>
-                <label><span>받으실 분</span><input name="recipient" type="text" value={shipping.recipient} onChange={handleShippingChange} placeholder="성함을 입력해주세요" /></label>
+                <label><span>받으실 분</span><div><input className={fieldErrors.recipient ? styles.inputError : ''} name="recipient" type="text" value={shipping.recipient} onChange={handleShippingChange} placeholder="성함을 입력해주세요" />{fieldErrors.recipient && <small>{fieldErrors.recipient}</small>}</div></label>
                 <div className={styles.addressRow}>
                   <span>받으실 곳</span>
                   <div>
-                    <input name="address" type="text" value={shipping.address} onChange={handleShippingChange} placeholder="주소를 검색해주세요" />
+                    <input className={fieldErrors.address ? styles.inputError : ''} name="address" type="text" value={shipping.address} onChange={handleShippingChange} placeholder="주소를 검색해주세요" />
+                    {fieldErrors.address && <small>{fieldErrors.address}</small>}
                     <input name="detailAddress" type="text" value={shipping.detailAddress} onChange={handleShippingChange} placeholder="상세 주소를 입력해주세요" />
                   </div>
                 </div>
                 <label><span>전화번호</span><input type="tel" placeholder="전화번호를 입력해주세요" /></label>
-                <label><span>휴대폰 번호</span><input name="phone" type="tel" value={shipping.phone} onChange={handleShippingChange} placeholder="휴대폰 번호를 입력해주세요" /></label>
-                <label><span>남기실 말씀</span><input name="memo" type="text" value={shipping.memo} onChange={handleShippingChange} placeholder="문구를 작성해주세요" /></label>
+                <label><span>휴대폰 번호</span><div><input className={fieldErrors.phone ? styles.inputError : ''} name="phone" type="tel" value={shipping.phone} onChange={handleShippingChange} placeholder="휴대폰 번호를 입력해주세요" />{fieldErrors.phone && <small>{fieldErrors.phone}</small>}</div></label>
+                <label><span>남기실 말씀</span><div><input name="memo" type="text" value={shipping.memo} onChange={handleShippingChange} placeholder="문구를 작성해주세요" /><div className={styles.memoChips}>{deliveryMemoPresets.map((memo) => <button type="button" key={memo} onClick={() => setShipping((current) => ({ ...current, memo }))}>{memo}</button>)}</div></div></label>
               </div>
 
               <div className={styles.saveLine}>
@@ -305,7 +357,7 @@ const Checkout = () => {
         </div>
 
         <aside className={styles.summaryCard} aria-label="주문 금액">
-          <h2>주문 금액</h2>
+          <h2><span>주문 금액</span><em>선택 {orderItems.length}개</em></h2>
           <dl className={styles.summaryList}>
             <div><dt>총 상품 금액</dt><dd>{formatPrice(itemTotal)}</dd></div>
             <div><dt>상품 할인</dt><dd>{formatPrice(0)}</dd></div>
@@ -333,6 +385,56 @@ const Checkout = () => {
           </button>
         </aside>
       </div>
+
+      {activeModal && (
+        <div className={styles.modalBackdrop} role="presentation" onMouseDown={() => setActiveModal(null)}>
+          <section className={styles.managementModal} role="dialog" aria-modal="true" aria-labelledby="checkout-modal-title" onMouseDown={(event) => event.stopPropagation()}>
+            <header className={styles.modalHeader}>
+              <div>
+                <p className={styles.modalEyebrow}>{activeModal === 'profile' ? 'MY PROFILE' : 'DELIVERY ADDRESS'}</p>
+                <h2 id="checkout-modal-title">{activeModal === 'profile' ? '기본 정보 관리' : '배송지 관리'}</h2>
+                <p>{activeModal === 'profile' ? '주문에 사용할 회원 정보를 확인하고 수정할 수 있습니다.' : '주문에 사용할 배송지를 선택해주세요.'}</p>
+              </div>
+              <button className={styles.modalClose} type="button" onClick={() => setActiveModal(null)} aria-label="닫기">×</button>
+            </header>
+
+            {activeModal === 'profile' ? (
+              <div className={styles.modalBody}>
+                <p className={styles.modalNotice}>안전한 주문을 위해 회원 정보를 한 번 더 확인해주세요.</p>
+                <div className={styles.profileFields}>
+                  <label><span>성함</span><input value={profileDraft.name} onChange={(event) => setProfileDraft((current) => ({ ...current, name: event.target.value }))} /></label>
+                  <label><span>휴대폰 번호</span><input value={profileDraft.phone} onChange={(event) => setProfileDraft((current) => ({ ...current, phone: event.target.value }))} /></label>
+                  <label><span>이메일</span><input type="email" value={profileDraft.email} onChange={(event) => setProfileDraft((current) => ({ ...current, email: event.target.value }))} /></label>
+                </div>
+              </div>
+            ) : (
+              <div className={styles.modalBody}>
+                <div className={styles.addressList}>
+                  {sampleAddresses.map((address) => (
+                    <label className={`${styles.addressOption} ${selectedAddressId === address.id ? styles.selectedAddress : ''}`} key={address.id}>
+                      <input type="radio" name="savedAddress" checked={selectedAddressId === address.id} onChange={() => setSelectedAddressId(address.id)} />
+                      <span className={styles.addressRadio} aria-hidden="true" />
+                      <span className={styles.addressCopy}>
+                        <strong>{address.label}{address.isDefault && <em>기본 배송지</em>}</strong>
+                        <span>{address.recipient} · {address.phone}</span>
+                        <span>{address.address} {address.detailAddress}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                <p className={styles.modalNotice}>선택한 배송지는 현재 주문서 입력란에만 반영됩니다.</p>
+              </div>
+            )}
+
+            <footer className={styles.modalFooter}>
+              <button type="button" onClick={() => setActiveModal(null)}>취소</button>
+              <button className={styles.modalConfirm} type="button" onClick={activeModal === 'profile' ? () => setActiveModal(null) : applySelectedAddress}>
+                {activeModal === 'profile' ? '확인' : '선택한 배송지 적용'}
+              </button>
+            </footer>
+          </section>
+        </div>
+      )}
     </section>
   )
 }

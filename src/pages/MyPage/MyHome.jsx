@@ -11,38 +11,19 @@ import styles from './MyHome.module.scss'
 // 아래 렌더링 구조(map, 링크, 상태 표시)는 그대로 사용할 수 있습니다.
 const mockMyHomeData = {
   member: {
-    name: '홍길동',
-    membership: '일반 회원',
-    userId: 'aa11',
-    phone: '010-1234-5678',
-    email: 'aa11@naver.com',
+    name: '회원',
+    membership: '-',
+    userId: '',
+    phone: '등록되지 않음',
+    email: '등록되지 않음',
   },
   account: {
-    points: 5000,
-    wishlistCount: 3,
+    points: 0,
+    wishlistCount: 0,
   },
   orderCounts: [],
   recentOrders: [],
-  aiRecommendations: [
-    {
-      id: 'recommend-01',
-      title: '분위기 좋은 저녁 술술 메뉴 추천',
-      createdAt: '최근 추천 기록',
-      itemCount: 4,
-    },
-    {
-      id: 'recommend-02',
-      title: '우중충하고 비오는 날 술술 메뉴 추천',
-      createdAt: '최근 추천 기록',
-      itemCount: 2,
-    },
-    {
-      id: 'recommend-03',
-      title: '분위기 좋은 저녁 술술 메뉴 추천',
-      createdAt: '최근 추천 기록',
-      itemCount: 4,
-    },
-  ],
+  aiRecommendations: [],
 }
 
 const formatNumber = (value) => new Intl.NumberFormat('ko-KR').format(value)
@@ -219,15 +200,21 @@ const MyHome = () => {
         userData?.email ||
         firebaseUser?.email ||
         '등록되지 않음',
-      membership: userData?.role === 'admin' ? '관리자' : '일반 회원',
+      membership: firebaseUser
+        ? userData?.role === 'admin'
+          ? '관리자'
+          : '일반 회원'
+        : '-',
       phone: '등록되지 않음',
     },
     account: {
       ...mockMyHomeData.account,
-      points: Number(userData?.points ?? 0),
+      points: firebaseUser ? Number(userData?.points ?? 0) : 0,
+      wishlistCount: 0,
     },
     orderCounts,
     recentOrders,
+    aiRecommendations: [],
   }
 
   return (
@@ -240,6 +227,7 @@ const MyHome = () => {
             <h3><strong>{data.member.name}</strong> 님 환영합니다.</h3>
             <span className={styles.membershipBadge}>{data.member.membership}</span>
           </div>
+          <p className={styles.memberActivity}>이번 달 주문 {data.orderCounts.reduce((sum, item) => sum + item.value, 0)}건 · AI 추천 {data.aiRecommendations.length}회</p>
 
           <dl className={styles.memberInfo}>
             <div>
@@ -270,10 +258,10 @@ const MyHome = () => {
 
         <article className={styles.orderCountCard} aria-label="주문 상태 요약">
           {data.orderCounts.map((item) => (
-            <div key={item.key} className={styles.orderCountItem}>
+            <Link key={item.key} to="orders" className={styles.orderCountItem}>
               <span>{item.label}</span>
               <strong>{item.value}</strong>
-            </div>
+            </Link>
           ))}
         </article>
       </section>

@@ -9,23 +9,13 @@
 }
 
 .topOrnament {
-  position: relative;
-  height: 102px;
-  border-top: 3px solid v.$color-taupe;
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: v.$space-6;
+  transform: scaleX(1.05);
+  transform-origin: left center;
 }
-
-.topOrnament::before,
-.topOrnament::after {
-  position: absolute;
-  top: -4px;
-  width: 34px;
-  height: 34px;
-  border: 3px solid v.$color-taupe;
-  content: '';
-}
-
-.topOrnament::before { left: -12px; border-right: 0; border-bottom: 0; }
-.topOrnament::after { right: -12px; border-left: 0; border-bottom: 0; }
 
 .pageHeader {
   position: relative;
@@ -33,6 +23,7 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 31px;
+  margin-left: v.$space-6;
 }
 
 .pageHeader h1 {
@@ -47,9 +38,9 @@
   right: 494px;
   display: inline-flex;
   align-items: center;
-  gap: 18px;
+  gap: v.$space-4;
   color: v.$color-text-muted;
-  font-size: v.$font-size-md;
+  font-size: v.$font-size-lg;
   font-weight: v.$font-weight-medium;
   white-space: nowrap;
 }
@@ -60,11 +51,9 @@
 }
 
 .stepFlower {
-  width: 26px;
+  width: 42px;
   height: 26px;
-  flex: 0 0 26px;
-  stroke: v.$color-primary;
-  stroke-width: 1.8;
+  flex: 0 0 42px;
 }
 
 .mainGrid {
@@ -72,6 +61,7 @@
   grid-template-columns: minmax(0, 1100px) 417px;
   align-items: start;
   gap: 77px;
+  margin-left: v.$space-6;
 }
 
 .checkoutContent { min-width: 0; }
@@ -303,6 +293,42 @@
   opacity: 0.72;
 }
 
+.inputRows .inputError {
+  border-color: v.$color-error;
+}
+
+.inputRows small {
+  display: block;
+  margin-top: v.$space-1;
+  color: v.$color-error;
+  font-size: v.$font-size-xs;
+}
+
+.memoChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: v.$space-2;
+  margin-top: v.$space-2;
+}
+
+.memoChips button {
+  min-height: 28px;
+  padding: 0 v.$space-3;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-pill;
+  background: v.$color-white;
+  color: v.$color-text-secondary;
+  font: inherit;
+  font-size: v.$font-size-xs;
+  cursor: pointer;
+}
+
+.memoChips button:hover,
+.memoChips button:focus-visible {
+  border-color: v.$color-primary;
+  color: v.$color-primary;
+}
+
 .addressRow > div { display: grid; gap: v.$space-3; padding: v.$space-4 0; }
 
 .saveLine {
@@ -368,7 +394,9 @@
 }
 
 .summaryCard {
-  position: relative;
+  position: sticky;
+  top: v.$space-6;
+  align-self: start;
   margin-top: -72px;
   min-height: 713px;
   padding-bottom: 82px;
@@ -378,6 +406,9 @@
 }
 
 .summaryCard h2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: v.$space-3;
   margin: 0;
   padding: 36px 29px 23px;
   color: #346561;
@@ -387,10 +418,22 @@
 
 .summaryCard h2::after {
   display: block;
+  grid-column: 1 / -1;
   height: 2px;
   margin-top: 20px;
   background: #4d7e7b;
   content: '';
+}
+
+.summaryCard h2 em {
+  align-self: center;
+  padding: v.$space-1 v.$space-3;
+  border-radius: v.$radius-pill;
+  background: color-mix(in srgb, v.$color-primary 12%, v.$color-white);
+  color: v.$color-primary;
+  font-size: v.$font-size-xs;
+  font-style: normal;
+  font-weight: v.$font-weight-semibold;
 }
 
 .summaryList {
@@ -484,10 +527,233 @@
 
 .payButton:not(:disabled) { background: #4d7e7b; }
 
+.modalBackdrop {
+  position: fixed;
+  z-index: v.$z-modal;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: v.$space-6;
+  background: color-mix(in srgb, v.$color-text-primary 40%, transparent);
+}
+
+.managementModal {
+  width: min(560px, 100%);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, v.$color-primary 26%, v.$color-border);
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
+  box-shadow: 0 18px 48px color-mix(in srgb, v.$color-text-primary 18%, transparent);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: v.$space-5;
+  padding: v.$space-6 v.$space-8;
+  background: color-mix(in srgb, v.$color-primary 34%, v.$color-bg);
+}
+
+.modalHeader h2,
+.modalHeader p,
+.modalNotice {
+  margin: 0;
+}
+
+.modalEyebrow {
+  color: v.$color-primary;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-bold;
+  letter-spacing: 0.08em;
+}
+
+.modalHeader h2 {
+  margin-top: v.$space-2;
+  font-size: v.$font-size-2xl;
+}
+
+.modalHeader p:not(.modalEyebrow) {
+  margin-top: v.$space-2;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+}
+
+.modalClose {
+  display: inline-flex;
+  width: v.$space-8;
+  height: v.$space-8;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, v.$color-primary 16%, v.$color-white);
+  color: v.$color-primary;
+  font-size: v.$font-size-xl;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modalBody {
+  padding: v.$space-6 v.$space-8;
+}
+
+.modalNotice {
+  padding: v.$space-3 v.$space-4;
+  border-radius: v.$radius-md;
+  background: color-mix(in srgb, v.$color-primary 8%, v.$color-white);
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+  line-height: v.$line-height-base;
+}
+
+.profileFields {
+  display: grid;
+  gap: v.$space-4;
+  margin-top: v.$space-5;
+}
+
+.profileFields label {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr);
+  align-items: center;
+  gap: v.$space-4;
+}
+
+.profileFields label > span {
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+}
+
+.profileFields input {
+  width: 100%;
+  height: 44px;
+  box-sizing: border-box;
+  padding: 0 v.$space-4;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-md;
+  background: v.$color-bg;
+  color: v.$color-text-primary;
+  font: inherit;
+}
+
+.addressList {
+  display: grid;
+  gap: v.$space-3;
+}
+
+.addressOption {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: v.$space-3;
+  padding: v.$space-4;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+  cursor: pointer;
+}
+
+.addressOption input {
+  position: absolute;
+  opacity: 0;
+}
+
+.addressOption.selectedAddress {
+  border-color: v.$color-primary;
+  background: color-mix(in srgb, v.$color-primary 8%, v.$color-white);
+}
+
+.addressRadio {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid v.$color-border;
+  border-radius: 50%;
+}
+
+.selectedAddress .addressRadio {
+  border: 5px solid v.$color-primary;
+}
+
+.addressCopy {
+  display: grid;
+  gap: v.$space-1;
+}
+
+.addressCopy strong {
+  display: flex;
+  align-items: center;
+  gap: v.$space-2;
+  font-size: v.$font-size-md;
+}
+
+.addressCopy em {
+  padding: 2px v.$space-2;
+  border-radius: v.$radius-pill;
+  background: v.$color-white;
+  color: v.$color-primary;
+  font-size: v.$font-size-xs;
+  font-style: normal;
+  font-weight: v.$font-weight-medium;
+}
+
+.addressCopy > span {
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+  line-height: v.$line-height-base;
+}
+
+.addressList + .modalNotice {
+  margin-top: v.$space-5;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: v.$space-3;
+  padding: 0 v.$space-8 v.$space-6;
+}
+
+.modalFooter button {
+  display: inline-flex;
+  min-width: 96px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 v.$space-5;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-pill;
+  background: v.$color-white;
+  color: v.$color-text-secondary;
+  font: inherit;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+  cursor: pointer;
+}
+
+.modalFooter .modalConfirm {
+  border-color: v.$color-primary;
+  background: v.$color-primary;
+  color: v.$color-white;
+}
+
+.modalClose:focus-visible,
+.profileFields input:focus-visible,
+.addressOption:focus-within,
+.modalFooter button:focus-visible {
+  outline: 2px solid v.$color-primary-light;
+  outline-offset: 2px;
+}
+
 @media (max-width: v.$breakpoint-tablet-max) {
   .page { width: calc(100% - 80px); }
   .mainGrid { grid-template-columns: 1fr; }
   .summaryCard {
+    position: relative;
     margin-top: 0;
     min-height: 620px;
     padding-bottom: 82px;
@@ -497,7 +763,8 @@
 @media (max-width: v.$breakpoint-mobile-max) {
   .page { width: calc(100% - 40px); padding-top: v.$space-8; }
   .topOrnament { display: none; }
-  .pageHeader { position: static; align-items: flex-start; flex-direction: column; gap: v.$space-5; }
+  .pageHeader { position: static; align-items: flex-start; flex-direction: column; gap: v.$space-5; margin-left: 0; }
+  .mainGrid { margin-left: 0; }
   .purchaseSteps { position: static; flex-wrap: wrap; font-size: v.$font-size-sm; }
   .productHead { display: none; }
   .productRow { grid-template-columns: 1fr; gap: v.$space-3; text-align: left; }
@@ -512,4 +779,8 @@
   .saveLine { align-items: flex-start; flex-wrap: wrap; padding: v.$space-5; }
   .paymentOptions { align-items: flex-start; flex-direction: column; }
   .agreementLine { align-items: flex-start; padding: v.$space-5; }
+  .modalBackdrop { padding: v.$space-4; }
+  .modalHeader, .modalBody, .modalFooter { padding-right: v.$space-5; padding-left: v.$space-5; }
+  .profileFields label { grid-template-columns: 1fr; gap: v.$space-2; }
+  .modalFooter { padding-bottom: v.$space-5; }
 }

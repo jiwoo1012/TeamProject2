@@ -1,16 +1,27 @@
-# React + Vite
+# JAJAK
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+전통주와 안주, 주류용품을 함께 제안하는 AI 큐레이션 쇼핑몰 포트폴리오 프로젝트입니다.
 
-Currently, two official plugins are available:
+## 실행
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+npm run dev
+```
 
-## React Compiler
+개발 서버가 출력하는 주소(기본 `http://localhost:5173`)에서 화면을 확인할 수 있습니다.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 주요 화면
 
-## Expanding the Oxlint configuration
+- 장바구니, 주문서 작성, 주문 완료
+- 마이페이지: 회원 요약, 주문 내역, 기본 정보
+- 관리자: 공통 레이아웃, 회원 목록·검색·상태 관리
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+현재 관리자 회원 관리와 주문서의 관리 모달은 화면 검증을 위한 로컬 상태 기반 UI입니다. 실제 회원·주문 데이터 연동은 Firebase 데이터 계약에 맞춰 별도 연결합니다.
+
+## 검증
+
+```bash
+npm run lint
+npm run build
+```

@@ -1,6 +1,10 @@
-import { useEffect, useRef } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import gsap from 'gsap'
+
+import mypageTopOrnament from '../../assets/images/mypage/mypageTopOrnament.svg'
+import { logout, subscribeToAuthState } from '../../firebase/auth'
+import { PATHS } from '../../routes/paths'
 
 import styles from './AdminLayout.module.scss'
 
@@ -32,6 +36,10 @@ const AdminLayout = () => {
   const navRef = useRef(null)
   const moveBoxRef = useRef(null)
   const location = useLocation()
+  const navigate = useNavigate()
+  const [currentUser, setCurrentUser] = useState(null)
+
+  useEffect(() => subscribeToAuthState(setCurrentUser), [])
 
   const moveActiveBox = (element, immediate = false) => {
     if (!element || !navRef.current || !moveBoxRef.current) return
@@ -82,6 +90,20 @@ const AdminLayout = () => {
     moveActiveBox(activeMenu)
   }, [location.pathname])
 
+  const handleAccountAction = async () => {
+    if (!currentUser) {
+      navigate(PATHS.login)
+      return
+    }
+
+    try {
+      await logout()
+      navigate(PATHS.home)
+    } catch (error) {
+      console.error('로그아웃 실패:', error)
+    }
+  }
+
   return (
     <section className={styles.page}>
       <header className={styles.pageHeader}>
@@ -91,6 +113,10 @@ const AdminLayout = () => {
           자작 운영 현황을 관리합니다.
         </p>
       </header>
+
+      <div className={styles.ornamentArea} aria-hidden="true">
+        <img className={styles.topOrnament} src={mypageTopOrnament} alt="" />
+      </div>
 
       <div className={styles.layout}>
         <aside className={styles.sidebar}>
@@ -129,9 +155,11 @@ const AdminLayout = () => {
           <button
             className={styles.logoutButton}
             type="button"
+            onClick={handleAccountAction}
+            aria-label={currentUser ? '로그아웃' : '로그인'}
           >
             <svg
-              className={styles.logoutIcon}
+              className={`${styles.logoutIcon} ${!currentUser ? styles.loginIcon : ''}`}
               viewBox="0 0 24 24"
               aria-hidden="true"
             >
@@ -140,7 +168,7 @@ const AdminLayout = () => {
               <path d="M18 12H8" />
             </svg>
 
-            <span>로그아웃</span>
+            <span>{currentUser ? '로그아웃' : '로그인'}</span>
           </button>
         </aside>
 

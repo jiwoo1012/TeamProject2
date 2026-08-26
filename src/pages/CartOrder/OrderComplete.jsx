@@ -1,5 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { PATHS } from '../../routes/paths'
+import cartTopOrnament from '../../assets/images/mypage/cartTopOrnament.svg'
+import cartStepOrnament from '../../assets/images/mypage/cartStepOrnament.svg'
 import styles from './OrderComplete.module.scss'
 
 const formatPrice = (value) => `${value.toLocaleString('ko-KR')}원`
@@ -19,14 +21,6 @@ const formatDateTime = (value) => {
   }).format(date)
 }
 
-const StepFlower = () => (
-  <svg className={styles.stepFlower} viewBox="0 0 26 26" fill="none" aria-hidden="true">
-    <circle cx="13" cy="5" r="3.5" /><circle cx="21" cy="13" r="3.5" />
-    <circle cx="13" cy="21" r="3.5" /><circle cx="5" cy="13" r="3.5" />
-    <circle cx="13" cy="13" r="2.5" />
-  </svg>
-)
-
 const OrderComplete = () => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -38,11 +32,11 @@ const OrderComplete = () => {
 
   return (
   <section className={styles.page} aria-labelledby="complete-title">
-    <div className={styles.topOrnament} aria-hidden="true" />
+    <img className={styles.topOrnament} src={cartTopOrnament} alt="" />
 
     <nav className={styles.purchaseSteps} aria-label="주문 진행 단계">
-      <span>장바구니</span><StepFlower />
-      <span>주문서 작성 / 결제</span><StepFlower />
+      <span>장바구니</span><img className={styles.stepFlower} src={cartStepOrnament} alt="" />
+      <span>주문서 작성 / 결제</span><img className={styles.stepFlower} src={cartStepOrnament} alt="" />
       <strong>완료</strong>
     </nav>
 
@@ -83,7 +77,11 @@ const OrderComplete = () => {
       </div>
     </article>
 
-    <div className={`${styles.topOrnament} ${styles.bottomOrnament}`} aria-hidden="true" />
+    <img
+      className={`${styles.topOrnament} ${styles.bottomOrnament}`}
+      src={cartTopOrnament}
+      alt=""
+    />
   </section>
   )
 }
