@@ -1,0 +1,482 @@
+.preferenceComplete {
+  width: 100%;
+  min-height: calc(100vh - 70px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #fbfaf7;
+  color: #382b22;
+
+  box-sizing: border-box;
+}
+
+
+.content {
+  width: min(620px, 90%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+
+  transform: translateY(-10px);
+
+  animation: contentAppear 0.6s ease both;
+}
+
+
+/* ========================================
+   저장 완료 안내
+======================================== */
+
+.saveStatus {
+  margin-bottom: 20px;
+  padding: 8px 15px;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  border-radius: 999px;
+
+  background: #edf4f2;
+  color: #568b86;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+.saveCheck {
+  width: 18px;
+  height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #568b86;
+  color: #ffffff;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+/* ========================================
+   텍스트
+======================================== */
+
+.textArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.title {
+  margin: 0;
+
+  color: #392b22;
+
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -1px;
+}
+
+
+.description {
+  margin: 19px 0 0;
+
+  color: #62564d;
+
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.75;
+
+  word-break: keep-all;
+}
+
+
+/* ========================================
+   막둥이
+======================================== */
+
+.characterArea {
+  position: relative;
+
+  width: 230px;
+  height: 205px;
+
+  margin: 22px 0 25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.character {
+  display: block;
+
+  width: 175px;
+  height: 195px;
+
+  object-fit: contain;
+
+  user-select: none;
+  pointer-events: none;
+
+  animation: characterAppear 0.7s ease 0.15s both;
+}
+
+
+/* ========================================
+   반짝이
+======================================== */
+
+.sparkle {
+  position: absolute;
+
+  color: #d5a052;
+
+  opacity: 0;
+
+  animation: sparkle 1.6s ease-in-out infinite;
+}
+
+
+.sparkleOne {
+  top: 38px;
+  left: 12px;
+
+  font-size: 13px;
+
+  animation-delay: 0.1s;
+}
+
+
+.sparkleTwo {
+  top: 15px;
+  right: 42px;
+
+  font-size: 21px;
+
+  animation-delay: 0.45s;
+}
+
+
+.sparkleThree {
+  top: 70px;
+  right: 9px;
+
+  font-size: 11px;
+
+  animation-delay: 0.75s;
+}
+
+
+.sparkleFour {
+  bottom: 42px;
+  left: 27px;
+
+  font-size: 19px;
+
+  animation-delay: 1s;
+}
+
+
+/* ========================================
+   이동 버튼
+======================================== */
+
+.buttonArea {
+  width: 220px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  gap: 10px;
+}
+
+
+/* AI 추천 - 메인 CTA */
+
+.aiButton {
+  width: 100%;
+  height: 48px;
+
+  padding: 0 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+
+  border: 1px solid #568b86;
+  border-radius: 7px;
+
+  background: #568b86;
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    background: #477d78;
+    border-color: #477d78;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 6px 14px rgba(86, 139, 134, 0.15);
+  }
+}
+
+
+/* 상품 둘러보기 - 보조 CTA */
+
+.shopButton {
+  width: 100%;
+  height: 46px;
+
+  padding: 0 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+
+  border: 1px solid #7ba6a2;
+  border-radius: 7px;
+
+  background: transparent;
+  color: #568b86;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    background: rgba(86, 139, 134, 0.06);
+    border-color: #568b86;
+
+    transform: translateY(-1px);
+  }
+}
+
+
+/* 마이페이지 - 텍스트 액션 */
+
+.myPageButton {
+  margin-top: 2px;
+  padding: 7px 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  border: none;
+
+  background: transparent;
+  color: #6f645b;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    color: #568b86;
+
+    transform: translateX(2px);
+  }
+}
+
+
+.arrow {
+  font-size: 19px;
+  line-height: 1;
+}
+
+
+.textArrow {
+  font-size: 16px;
+  line-height: 1;
+}
+
+
+/* ========================================
+   애니메이션
+======================================== */
+
+@keyframes contentAppear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(-10px);
+  }
+}
+
+
+@keyframes characterAppear {
+  0% {
+    opacity: 0;
+
+    transform:
+      translateY(15px)
+      scale(0.92);
+  }
+
+  70% {
+    opacity: 1;
+
+    transform:
+      translateY(-3px)
+      scale(1.03);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.75);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+
+/* ========================================
+   모바일
+======================================== */
+
+@media (max-width: 650px) {
+  .preferenceComplete {
+    min-height: calc(100vh - 64px);
+
+    padding: 45px 0;
+  }
+
+
+  .content {
+    width: 88%;
+
+    transform: none;
+  }
+
+
+  .saveStatus {
+    margin-bottom: 17px;
+
+    font-size: 11px;
+  }
+
+
+  .title {
+    font-size: 25px;
+  }
+
+
+  .description {
+    margin-top: 16px;
+
+    font-size: 13px;
+  }
+
+
+  .characterArea {
+    width: 200px;
+    height: 185px;
+
+    margin: 18px 0 22px;
+  }
+
+
+  .character {
+    width: 155px;
+    height: 175px;
+  }
+
+
+  .buttonArea {
+    width: min(220px, 100%);
+  }
+
+
+  .aiButton {
+    height: 46px;
+
+    font-size: 13px;
+  }
+
+
+  .shopButton {
+    height: 44px;
+
+    font-size: 12px;
+  }
+
+
+  .myPageButton {
+    font-size: 11px;
+  }
+
+
+  @keyframes contentAppear {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

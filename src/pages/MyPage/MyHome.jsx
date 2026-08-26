@@ -1,4 +1,9 @@
+import { useEffect, useState } from 'react'
+import { collection, getDocs, query, where } from 'firebase/firestore'
 import { Link } from 'react-router-dom'
+import { getOrderStatusLabel, ORDER_STATUS } from '../../constants/orderStatus'
+import { subscribeToAuthState, getCurrentUserData } from '../../firebase/auth'
+import { db } from '../../firebase/firebase'
 import styles from './MyHome.module.scss'
 
 // 이번 주는 UI 껍데기 구현 단계라 임시 데이터를 사용합니다.
@@ -6,71 +11,19 @@ import styles from './MyHome.module.scss'
 // 아래 렌더링 구조(map, 링크, 상태 표시)는 그대로 사용할 수 있습니다.
 const mockMyHomeData = {
   member: {
-    name: '홍길동',
-    membership: '일반 회원',
-    userId: 'aa11',
-    phone: '010-1234-5678',
-    email: 'aa11@naver.com',
+    name: '회원',
+    membership: '-',
+    userId: '',
+    phone: '등록되지 않음',
+    email: '등록되지 않음',
   },
   account: {
-    points: 5000,
-    wishlistCount: 3,
+    points: 0,
+    wishlistCount: 0,
   },
-  orderCounts: [
-    { key: 'preparing', label: '상품 준비 중', value: 0 },
-    { key: 'shipping', label: '배송 중', value: 0 },
-    { key: 'completed', label: '배송 완료', value: 0 },
-    { key: 'claim', label: '취소 / 반품 / 환불', value: 0 },
-  ],
-  recentOrders: [
-    {
-      id: '20260802-0001',
-      title: '오늘의 한 상 전통주 세트',
-      orderedAt: '2026.08.02',
-      itemCount: 1,
-      status: 'shipping',
-      statusLabel: '배송 중',
-      imageUrl: '',
-    },
-    {
-      id: '20260731-0002',
-      title: '달빛 막걸리 선물세트',
-      orderedAt: '2026.07.31',
-      itemCount: 2,
-      status: 'completed',
-      statusLabel: '배송 완료',
-      imageUrl: '',
-    },
-    {
-      id: '20260728-0003',
-      title: '안주 페어링 박스',
-      orderedAt: '2026.07.28',
-      itemCount: 1,
-      status: 'completed',
-      statusLabel: '배송 완료',
-      imageUrl: '',
-    },
-  ],
-  aiRecommendations: [
-    {
-      id: 'recommend-01',
-      title: '분위기 좋은 저녁 술술 메뉴 추천',
-      createdAt: '최근 추천 기록',
-      itemCount: 4,
-    },
-    {
-      id: 'recommend-02',
-      title: '우중충하고 비오는 날 술술 메뉴 추천',
-      createdAt: '최근 추천 기록',
-      itemCount: 2,
-    },
-    {
-      id: 'recommend-03',
-      title: '분위기 좋은 저녁 술술 메뉴 추천',
-      createdAt: '최근 추천 기록',
-      itemCount: 4,
-    },
-  ],
+  orderCounts: [],
+  recentOrders: [],
+  aiRecommendations: [],
 }
 
 const formatNumber = (value) => new Intl.NumberFormat('ko-KR').format(value)
@@ -129,8 +82,140 @@ const WelcomeDecor = () => (
 )
 
 const MyHome = () => {
-  // 실제 데이터 연동 시 mockMyHomeData 대신 store/API 결과를 넣으면 됩니다.
-  const data = mockMyHomeData
+  const [firebaseUser, setFirebaseUser] = useState(null)
+  const [userData, setUserData] = useState(null)
+  const [orders, setOrders] = useState([])
+  const [orderLoadError, setOrderLoadError] = useState('')
+
+  useEffect(() => {
+    const unsubscribe = subscribeToAuthState(async (user) => {
+      setFirebaseUser(user)
+
+      if (!user) {
+        setUserData(null)
+        setOrders([])
+        setOrderLoadError('로그인 후 주문 내역을 확인할 수 있습니다.')
+        return
+      }
+
+      try {
+        const data = await getCurrentUserData(user.uid)
+        setUserData(data)
+      } catch (error) {
+        console.error('마이페이지 회원정보 조회 실패:', error)
+        setUserData(null)
+      }
+
+      try {
+        const ordersQuery = query(
+          collection(db, 'orders'),
+          where('userId', '==', user.uid),
+        )
+        const snapshot = await getDocs(ordersQuery)
+        const nextOrders = snapshot.docs.map((orderDocument) => {
+          const order = orderDocument.data()
+          const createdDate = order.createdAt?.toDate?.() || new Date(order.createdAt || 0)
+          const createdAtMs = Number.isNaN(createdDate.getTime()) ? 0 : createdDate.getTime()
+          const firstItem = order.items?.[0]
+          const itemCount = Array.isArray(order.items)
+            ? order.items.reduce((sum, item) => sum + Number(item.quantity || 0), 0)
+            : 0
+          const statusTone = order.status === ORDER_STATUS.SHIPPED
+            ? 'shipping'
+            : order.status === ORDER_STATUS.DELIVERED
+              ? 'completed'
+              : order.status === ORDER_STATUS.CANCELLED
+                ? 'cancelled'
+                : 'preparing'
+
+          return {
+            id: orderDocument.id,
+            title: firstItem
+              ? `${firstItem.productName}${order.items.length > 1 ? ` 외 ${order.items.length - 1}개` : ''}`
+              : '주문 상품',
+            orderedAt: createdAtMs
+              ? new Date(createdAtMs).toLocaleDateString('ko-KR')
+              : '-',
+            createdAtMs,
+            itemCount,
+            status: statusTone,
+            statusLabel: getOrderStatusLabel(order.status),
+            imageUrl: firstItem?.imageUrl || '',
+            rawStatus: order.status,
+          }
+        })
+
+        setOrders(nextOrders)
+        setOrderLoadError('')
+      } catch (error) {
+        console.error('마이페이지 주문 조회 실패:', error)
+        setOrders([])
+        setOrderLoadError('주문 정보를 불러오지 못했습니다.')
+      }
+    })
+
+    return unsubscribe
+  }, [])
+
+  const orderCounts = [
+    {
+      key: 'preparing',
+      label: '상품 준비 중',
+      value: orders.filter((order) =>
+        [ORDER_STATUS.PAID, ORDER_STATUS.PREPARING].includes(order.rawStatus),
+      ).length,
+    },
+    {
+      key: 'shipping',
+      label: '배송 중',
+      value: orders.filter((order) => order.rawStatus === ORDER_STATUS.SHIPPED).length,
+    },
+    {
+      key: 'completed',
+      label: '배송 완료',
+      value: orders.filter((order) => order.rawStatus === ORDER_STATUS.DELIVERED).length,
+    },
+    {
+      key: 'claim',
+      label: '취소 / 반품 / 환불',
+      value: orders.filter((order) => order.rawStatus === ORDER_STATUS.CANCELLED).length,
+    },
+  ]
+
+  const recentOrders = [...orders]
+    .sort((a, b) => b.createdAtMs - a.createdAtMs)
+    .slice(0, 3)
+
+  // 찜/AI 데이터는 기존 mock을 유지하고 회원정보와 주문만 실제 데이터로 덮어씁니다.
+  const data = {
+    ...mockMyHomeData,
+    member: {
+      ...mockMyHomeData.member,
+      name:
+        userData?.nickname ||
+        firebaseUser?.displayName ||
+        firebaseUser?.email?.split('@')[0] ||
+        '회원',
+      email:
+        userData?.email ||
+        firebaseUser?.email ||
+        '등록되지 않음',
+      membership: firebaseUser
+        ? userData?.role === 'admin'
+          ? '관리자'
+          : '일반 회원'
+        : '-',
+      phone: '등록되지 않음',
+    },
+    account: {
+      ...mockMyHomeData.account,
+      points: firebaseUser ? Number(userData?.points ?? 0) : 0,
+      wishlistCount: 0,
+    },
+    orderCounts,
+    recentOrders,
+    aiRecommendations: [],
+  }
 
   return (
     <section className={styles.page} aria-labelledby="my-home-title">
@@ -142,11 +227,12 @@ const MyHome = () => {
             <h3><strong>{data.member.name}</strong> 님 환영합니다.</h3>
             <span className={styles.membershipBadge}>{data.member.membership}</span>
           </div>
+          <p className={styles.memberActivity}>이번 달 주문 {data.orderCounts.reduce((sum, item) => sum + item.value, 0)}건 · AI 추천 {data.aiRecommendations.length}회</p>
 
           <dl className={styles.memberInfo}>
             <div>
-              <dt>ID</dt>
-              <dd>{data.member.userId}</dd>
+              <dt>등급</dt>
+              <dd>{data.member.membership}</dd>
             </div>
             <div>
               <dt>휴대폰</dt>
@@ -172,10 +258,10 @@ const MyHome = () => {
 
         <article className={styles.orderCountCard} aria-label="주문 상태 요약">
           {data.orderCounts.map((item) => (
-            <div key={item.key} className={styles.orderCountItem}>
+            <Link key={item.key} to="orders" className={styles.orderCountItem}>
               <span>{item.label}</span>
               <strong>{item.value}</strong>
-            </div>
+            </Link>
           ))}
         </article>
       </section>
@@ -192,6 +278,7 @@ const MyHome = () => {
           </header>
 
           <div className={styles.recentOrderList}>
+            {orderLoadError && <p role="alert">{orderLoadError}</p>}
             {data.recentOrders.map((order) => (
               <article key={order.id} className={styles.recentOrderItem}>
                 <div className={styles.productThumb}>

@@ -14,7 +14,7 @@
 
   font-family: $font-family-base;
 
-  background: $color-bg;
+  background: transparent;
 }
 
 
@@ -28,12 +28,25 @@
 
   width: 100%;
 
-  background: $color-bg;
+  background: transparent;
 
   border-bottom:
     1px
     solid
     rgba($color-text-primary, 0.1);
+
+  &::before {
+    position: absolute;
+    top: calc(50% - 31px);
+    left: 0;
+    z-index: 0;
+    width: 100%;
+    aspect-ratio: 2103 / 748;
+    background: url('../../assets/images/common/header-hanji.webp') center top / 100% auto no-repeat;
+    content: '';
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
 }
 
 
@@ -41,6 +54,7 @@
   @include container;
 
   position: relative;
+  z-index: 1;
 
   display: flex;
   align-items: center;
@@ -73,7 +87,7 @@
     display: block;
 
     width: auto;
-    height: 55px;
+    height: 77px;
 
     object-fit: contain;
   }
@@ -200,7 +214,6 @@
 
 
   &:hover {
-
     img {
       opacity: 0.65;
 
@@ -516,10 +529,12 @@
   padding-right: $space-8;
 }
 
+
 .aiSnb {
   display: flex;
   flex-direction: column;
 }
+
 
 .snbLink {
   position: relative;
@@ -750,17 +765,32 @@
 
 .productImage {
   width: 100%;
+
   aspect-ratio: 1 / 0.8;
 
   margin-bottom: $space-2;
 
+  overflow: hidden;
+
   background:
     rgba($color-white, 0.14);
 
-  border-radius: $radius-md;
+  border-radius: $radius-lg;
 
   transition:
     transform $transition-fast ease;
+
+
+  img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    border-radius: inherit;
+  }
 }
 
 
@@ -776,6 +806,7 @@
 
 .productCard strong {
   font-size: 11px;
+
   font-weight: $font-weight-semibold;
 }
 
@@ -840,6 +871,20 @@
     display: none;
   }
 }
-.makdongLink { font-size: 0; }
-.makdongLink::after { content: '막둥이 소개'; font-size: 16px; }
-.hiddenBrandLink { display: none; }
+
+
+.makdongLink {
+  font-size: 0;
+}
+
+
+.makdongLink::after {
+  content: '막둥이 소개';
+
+  font-size: 16px;
+}
+
+
+.hiddenBrandLink {
+  display: none;
+}

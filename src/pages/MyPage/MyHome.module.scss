@@ -2,20 +2,11 @@
 
 .page {
   position: relative;
-  width: 1161px;
+  width: 100%;
   max-width: none;
   padding: v.$space-8 0 v.$space-20;
   color: v.$color-text-primary;
   font-family: v.$font-family-base;
-}
-
-.page::before {
-  position: absolute;
-  top: calc(v.$space-12 * -1);
-  right: 0;
-  left: 0;
-  border-top: 2px solid v.$color-primary;
-  content: '';
 }
 
 .srOnly {
@@ -34,8 +25,8 @@
 
 .summaryGrid {
   display: grid;
-  width: 1161px;
-  grid-template-columns: 463.63px 327.04px 327.04px;
+  width: 100%;
+  grid-template-columns: minmax(0, 1.42fr) repeat(2, minmax(0, 1fr));
   column-gap: 21.645px;
   min-height: 210px;
 }
@@ -113,6 +104,19 @@
   display: grid;
   gap: v.$space-4;
   margin: v.$space-8 0 0;
+}
+
+.memberActivity {
+  display: inline-flex;
+  width: max-content;
+  max-width: 100%;
+  margin: v.$space-4 0 0;
+  padding: v.$space-2 v.$space-3;
+  border-radius: v.$radius-pill;
+  background: rgb(255 255 255 / 52%);
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-semibold;
 }
 
 .memberInfo div {
@@ -222,6 +226,19 @@
   flex-direction: column;
   justify-content: space-between;
   padding: v.$space-6 v.$space-4;
+  color: inherit;
+  text-decoration: none;
+  transition: background-color v.$transition-fast;
+}
+
+.orderCountItem:hover {
+  background: color-mix(in srgb, v.$color-primary 9%, transparent);
+}
+
+.orderCountItem:focus-visible {
+  z-index: 2;
+  outline: 2px solid v.$color-primary;
+  outline-offset: -2px;
 }
 
 .orderCountItem span {
@@ -245,7 +262,7 @@
 
 .welcomeBanner {
   display: flex;
-  width: 1156px;
+  width: 100%;
   min-height: 124px;
   align-items: center;
   justify-content: center;
@@ -268,9 +285,9 @@
 
 .activityGrid {
   display: grid;
-  width: 1156px;
-  grid-template-columns: 657.85px 436.68px;
-  gap: 61.47px;
+  width: 100%;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: v.$space-12;
   margin-top: v.$space-8;
 }
 

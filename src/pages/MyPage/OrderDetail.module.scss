@@ -1,7 +1,7 @@
 @use '../../styles/variables' as v;
 
 .page {
-  width: 1078px;
+  width: 100%;
   max-width: none;
   padding: v.$space-2 0 v.$space-20;
   color: v.$color-text-primary;

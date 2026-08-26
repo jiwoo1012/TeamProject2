@@ -1,381 +1,192 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Link } from 'react-router-dom'
 
 import JourneySection from './JourneySection'
-import heroImage from '../../assets/images/main/main-hero-table.webp'
-import tornPaperFrame from '../../assets/images/main/main-torn-paper.png'
-import peekFaceDefault from '../../assets/images/main/peek-face-default.webp'
-import peekFaceSmile from '../../assets/images/main/peek-face-smile.webp'
-import peekFaceUp from '../../assets/images/main/peek-face-up.webp'
+import BestSellerSection from './BestSellerSection'
+import useHeroReveal from './useHeroReveal'
+import useLogoScrollReset from './useLogoScrollReset'
+import useMainSectionWheel from './useMainSectionWheel'
+import useSectionReveals from './useSectionReveals'
+import heroImage from '../../assets/images/main/hero/main-hero-table.webp'
+import heroSunsetImage from '../../assets/images/main/hero/main-hero-table-sunset.webp'
+import heroSunIcon from '../../assets/images/main/hero/hero-sun.png'
+import heroMoonIcon from '../../assets/images/main/hero/hero-moon.png'
+import tornPaperFrame from '../../assets/images/main/ai-recommendation/main-torn-paper.png'
+import peekFaceDefault from '../../assets/images/main/ai-recommendation/peek-face-default.webp'
+import peekFaceSmile from '../../assets/images/main/ai-recommendation/peek-face-smile.webp'
+import peekFaceUp from '../../assets/images/main/ai-recommendation/peek-face-up.webp'
+import happyDayFood from '../../assets/images/main/ai-recommendation/happy-day-grilled-pollock.png'
+import happyDayLiquor from '../../assets/images/main/ai-recommendation/happy-day-black-liquor.png'
+import happyDayCup from '../../assets/images/main/ai-recommendation/happy-day-black-cup.png'
+import rainyDayFood from '../../assets/images/main/ai-recommendation/rainy-day-kimchi-pancake.png'
+import rainyDayLiquor from '../../assets/images/main/ai-recommendation/rainy-day-blue-liquor.png'
+import rainyDayCup from '../../assets/images/main/ai-recommendation/rainy-day-blue-cup.png'
+import sweetDayFood from '../../assets/images/main/ai-recommendation/sweet-craving-yakgwa.png'
+import sweetDayLiquor from '../../assets/images/main/ai-recommendation/sweet-craving-orange-liquor.png'
+import sweetDayCup from '../../assets/images/main/ai-recommendation/sweet-craving-orange-cup.png'
+import brandStoryImage from '../../assets/images/main/brand-story/brand-story-pouring.webp'
+import brandStoryPourBefore from '../../assets/images/main/brand-story/brand-story-pour-before.png'
+import brandStoryPourAfter from '../../assets/images/main/brand-story/brand-story-pour-after.png'
+import brandStoryCup from '../../assets/images/main/brand-story/brand-story-cup.png'
+import makdongCharacter from '../../assets/characters/M007_Poses01.png'
+import eventsData from '../../data/events.json'
+import { getCollection } from '../../firebase/firestore'
 import styles from './MainPage.module.scss'
 
 gsap.registerPlugin(ScrollTrigger)
 
+const IS_JOURNEY_ENABLED = false
+const eventBannerImages = import.meta.glob('../../assets/images/banner/eventBanner*.png', {
+  eager: true,
+  import: 'default',
+})
+
+const resolveEventBanner = (bannerUrl) => {
+  const fileName = bannerUrl?.split('/').pop()
+  return Object.entries(eventBannerImages).find(([path]) => path.endsWith(`/${fileName}`))?.[1]
+}
+
+const mainEvents = eventsData.map(({ event }, index) => ({
+  ...event,
+  id: `event-${index + 1}`,
+  bannerSrc: resolveEventBanner(event.image.bannerUrl),
+}))
+
+const makdongTraits = [
+  { icon: '✣', title: '다정한 안내자', description: '전통주의 매력을\n쉽고 재미있게 소개해요.' },
+  { icon: '♟', title: '호기심 많은 탐험가', description: '새로운 술과 이야기를\n찾아 전국을 여행해요.' },
+  { icon: '▱', title: '찐 애주가', description: '막둥이의 취향으로\n솔직하게 추천해요.' },
+  { icon: '♥', title: '따뜻한 친구', description: '막둥이의 이야기가\n당신의 일상에 스며들어요.' },
+]
+
+const moodRecommendations = [
+  {
+    badge: '안주',
+    variants: [
+      { mood: 'moodHappy', name: '황태구이', description: '담백하게 구운 황태로\n기분 좋은 한 잔을 열어요.', image: happyDayFood, alt: '행복한 날 추천 안주' },
+      { mood: 'moodRainy', name: '김치전', description: '바삭하고 고소한 전에\n부드러운 술과 잘 어울려요.', image: rainyDayFood, alt: '비 오는 날 추천 안주' },
+      { mood: 'moodSweet', name: '약과', description: '은은한 단맛이 번지는\n달콤한 한입을 곁들여요.', image: sweetDayFood, alt: '달콤한 날 추천 안주' },
+    ],
+  },
+  {
+    badge: '전통주',
+    variants: [
+      { mood: 'moodHappy', name: '오늘의 전통주', description: '깔끔한 풍미와 부드러운 끝맛으로\n기분 좋은 날을 채워요.', image: happyDayLiquor, alt: '행복한 날 추천 전통주' },
+      { mood: 'moodRainy', name: '오늘의 전통주', description: '은은한 단맛과 깔끔한 목넘김으로\n비 오는 날을 따뜻하게.', image: rainyDayLiquor, alt: '비 오는 날 추천 전통주' },
+      { mood: 'moodSweet', name: '오늘의 전통주', description: '향긋하고 산뜻한 한 잔으로\n달콤한 여운을 더해요.', image: sweetDayLiquor, alt: '달콤한 날 추천 전통주' },
+    ],
+  },
+  {
+    badge: '잔',
+    variants: [
+      { mood: 'moodHappy', name: '먹빛잔', description: '깊은 빛의 잔에 담아\n오늘의 기분을 선명하게.', image: happyDayCup, alt: '행복한 날 추천 술잔' },
+      { mood: 'moodRainy', name: '구름잔', description: '구름을 닮은 잔에 담아\n마음까지 편안해지는 시간.', image: rainyDayCup, alt: '비 오는 날 추천 술잔' },
+      { mood: 'moodSweet', name: '노을잔', description: '따뜻한 빛의 잔에 담아\n달콤한 시간을 완성해요.', image: sweetDayCup, alt: '달콤한 날 추천 술잔' },
+    ],
+  },
+]
+
 const MainPage = () => {
-  const [isIntroSkipped, setIsIntroSkipped] = useState(false)
+  const [isIntroSkipped, setIsIntroSkipped] = useState(!IS_JOURNEY_ENABLED)
+  const [bestSellerProducts, setBestSellerProducts] = useState([])
   const mainContentRef = useRef(null)
   const transitionRef = useRef(null)
   const isTransitioningRef = useRef(false)
   const heroCaptionRef = useRef(null)
   const shopButtonRef = useRef(null)
+  const heroCoverRef = useRef(null)
   const heroImageRef = useRef(null)
   const heroPhotoRef = useRef(null)
+  const heroSunsetPhotoRef = useRef(null)
+  const heroSunRef = useRef(null)
   const leftHeroTitleRef = useRef(null)
   const rightHeroTitleRef = useRef(null)
   const aiIntroRef = useRef(null)
   const featureSectionRef = useRef(null)
-  const bestSellerRef = useRef(null)
+  const featureCupRef = useRef(null)
+  const bestSellerSectionRef = useRef(null)
   const eventsGridRef = useRef(null)
+  const makdongSectionRef = useRef(null)
   const canMovePastHeroRef = useRef(false)
+  const heroRevealRef = useRef(null)
+  const bestSellerTransitionRef = useRef(false)
+  const heroSunPlayRef = useRef(null)
+  const heroSunResetRef = useRef(null)
+  const isHeroSunCompleteRef = useRef(false)
 
-  useLayoutEffect(() => {
+  useMainSectionWheel({
+    mainContentRef,
+    aiIntroRef,
+    featureSectionRef,
+    bestSellerSectionRef,
+    eventsGridRef,
+    makdongSectionRef,
+    canMovePastHeroRef,
+    bestSellerTransitionRef,
+    heroSunPlayRef,
+    heroSunResetRef,
+    isHeroSunCompleteRef,
+  })
+
+  useHeroReveal({
+    mainContentRef,
+    heroCoverRef,
+    heroImageRef,
+    heroPhotoRef,
+    heroSunsetPhotoRef,
+    heroSunRef,
+    leftHeroTitleRef,
+    rightHeroTitleRef,
+    heroCaptionRef,
+    shopButtonRef,
+    canMovePastHeroRef,
+    heroRevealRef,
+    heroSunPlayRef,
+    heroSunResetRef,
+    isHeroSunCompleteRef,
+  })
+
+  useLogoScrollReset({
+    mainContentRef,
+    transitionRef,
+    canMovePastHeroRef,
+    heroRevealRef,
+  })
+
+  useSectionReveals({
+    aiIntroRef,
+    featureSectionRef,
+    featureCupRef,
+    eventsGridRef,
+    makdongSectionRef,
+  })
+
+  useEffect(() => {
+    if (IS_JOURNEY_ENABLED) return undefined
+
     const root = document.documentElement
-    const headerVisibleClass = 'main-header-visible'
+    root.classList.add('main-header-visible')
 
-    gsap.set(heroImageRef.current, {
-      clearProps: 'opacity,visibility,transform',
-    })
-    gsap.set(heroPhotoRef.current, {
-      clearProps: 'transform',
-    })
-    gsap.set([leftHeroTitleRef.current, rightHeroTitleRef.current], {
-      autoAlpha: 1,
-      y: 0,
-    })
-    gsap.set(transitionRef.current, {
-      autoAlpha: 0,
-    })
-    gsap.set(
-      [aiIntroRef.current, featureSectionRef.current, bestSellerRef.current]
-        .flatMap((section) => [...section.querySelectorAll('*')]),
-      { clearProps: 'opacity,visibility' },
-    )
+    return () => root.classList.remove('main-header-visible')
+  }, [])
 
-    const trigger = ScrollTrigger.create({
-      trigger: mainContentRef.current,
-      start: 'top top',
-      onEnter: () => root.classList.add(headerVisibleClass),
-      onEnterBack: () => root.classList.add(headerVisibleClass),
-    })
-    let promoScrollTween
-    let bestCardTween
-    let bestCardStep = 0
-    let isBestWheelLocked = false
-    let bestWheelReleaseTimer
-    let previousScrollBehavior = ''
-    const isDesktop = window.innerWidth >= 1200
-    const bestCards = [...bestSellerRef.current.querySelectorAll(`.${styles.productMock}`)]
-    const bestProductsButton = bestSellerRef.current.querySelector(`.${styles.allProductsButton}`)
+  useEffect(() => {
+    let isMounted = true
 
-    if (isDesktop) {
-      gsap.set(bestCards, {
-        y: window.innerHeight * 0.58,
-        autoAlpha: 0,
+    getCollection('products')
+      .then((items) => {
+        if (!isMounted) return
+        setBestSellerProducts(items.filter(({ status }) => status === 'selling').slice(0, 4))
       })
-      gsap.set(bestProductsButton, { autoAlpha: 0, y: 20 })
-    }
-    const heroReveal = gsap.timeline({
-      onComplete: () => {
-        canMovePastHeroRef.current = true
-      },
-      onReverseComplete: () => {
-        canMovePastHeroRef.current = false
-      },
-      scrollTrigger: {
-        trigger: mainContentRef.current,
-        start: 'top top-=100',
-        toggleActions: 'play none none reverse',
-      },
-    })
-      .to(heroImageRef.current, {
-        yPercent: () => (window.innerWidth >= 1200 ? -52 : -48),
-        duration: 0.72,
-        ease: 'power2.inOut',
+      .catch(() => {
+        if (isMounted) setBestSellerProducts([])
       })
-      .to(
-        [leftHeroTitleRef.current, rightHeroTitleRef.current],
-        { autoAlpha: 0, y: 12, duration: 0.3, ease: 'power1.out' },
-        0,
-      )
-      .fromTo(
-        heroCaptionRef.current,
-        { autoAlpha: 0, y: 28 },
-        { autoAlpha: 1, y: 0, duration: 0.65, ease: 'power2.out' },
-        '-=0.48',
-      )
-      .fromTo(
-        shopButtonRef.current,
-        { autoAlpha: 0, y: 18, scale: 0.96 },
-        { autoAlpha: 1, y: 0, scale: 1, duration: 0.45, ease: 'power2.out' },
-        '-=0.28',
-      )
-
-    const handleSectionWheel = (event) => {
-      const mainContent = mainContentRef.current
-      const sections = [
-        aiIntroRef.current,
-        featureSectionRef.current,
-        bestSellerRef.current,
-        eventsGridRef.current,
-      ]
-      if (!mainContent || sections.some((section) => !section)) return
-
-      if (promoScrollTween) {
-        event.preventDefault()
-        return
-      }
-
-      const direction = Math.sign(event.deltaY)
-      if (!direction) return
-
-      const currentScroll = window.scrollY
-      const mainTop = mainContent.offsetTop
-      const firstSectionTop = aiIntroRef.current.offsetTop
-      const sectionTops = sections.map((section) => section.offsetTop)
-      let targetTop
-
-      if (currentScroll < firstSectionTop - 2) {
-        if (currentScroll < mainTop) return
-
-        if (direction < 0) {
-          if (currentScroll <= mainTop + 2) return
-          targetTop = mainTop
-        } else if (canMovePastHeroRef.current) {
-          targetTop = firstSectionTop
-        } else {
-          targetTop = Math.min(mainTop + window.innerHeight, firstSectionTop - 2)
-        }
-      } else {
-        const currentIndex = sectionTops.reduce((closestIndex, top, index) => (
-          Math.abs(top - currentScroll) < Math.abs(sectionTops[closestIndex] - currentScroll)
-            ? index
-            : closestIndex
-        ), 0)
-        const bestSellerRect = bestSellerRef.current.getBoundingClientRect()
-        const isBestSectionActive = bestSellerRect.top <= window.innerHeight * 0.12
-          && bestSellerRect.bottom >= window.innerHeight * 0.88
-
-        if (isDesktop && isBestSectionActive) {
-          const releaseBestWheelAfterPause = () => {
-            window.clearTimeout(bestWheelReleaseTimer)
-            bestWheelReleaseTimer = window.setTimeout(() => {
-              isBestWheelLocked = false
-            }, 280)
-          }
-
-          if (isBestWheelLocked) {
-            event.preventDefault()
-            releaseBestWheelAfterPause()
-            return
-          }
-
-          if (bestCardTween) {
-            event.preventDefault()
-            return
-          }
-
-          if (direction > 0 && bestCardStep < bestCards.length) {
-            event.preventDefault()
-            isBestWheelLocked = true
-            releaseBestWheelAfterPause()
-            const card = bestCards[bestCardStep]
-            bestCardStep += 1
-            bestCardTween = gsap.to(card, {
-              y: 0,
-              autoAlpha: 1,
-              duration: 0.58,
-              ease: 'power3.out',
-              onComplete: () => {
-                if (bestCardStep === bestCards.length) {
-                  gsap.to(bestProductsButton, { autoAlpha: 1, y: 0, duration: 0.35 })
-                }
-                gsap.delayedCall(0.32, () => {
-                  bestCardTween = null
-                })
-              },
-            })
-            return
-          }
-
-          if (direction < 0 && bestCardStep > 0) {
-            event.preventDefault()
-            isBestWheelLocked = true
-            releaseBestWheelAfterPause()
-            bestCardStep -= 1
-            if (bestCardStep < bestCards.length) {
-              gsap.to(bestProductsButton, { autoAlpha: 0, y: 20, duration: 0.2 })
-            }
-            bestCardTween = gsap.to(bestCards[bestCardStep], {
-              y: window.innerHeight * 0.58,
-              autoAlpha: 0,
-              duration: 0.45,
-              ease: 'power2.in',
-              onComplete: () => {
-                gsap.delayedCall(0.32, () => {
-                  bestCardTween = null
-                })
-              },
-            })
-            return
-          }
-        }
-
-        const targetIndex = currentIndex + direction
-
-        if (targetIndex < 0) {
-          targetTop = mainTop + window.innerHeight
-        } else if (targetIndex >= sectionTops.length) {
-          return
-        } else {
-          targetTop = sectionTops[targetIndex]
-        }
-      }
-
-      event.preventDefault()
-      previousScrollBehavior = root.style.scrollBehavior
-      root.style.scrollBehavior = 'auto'
-
-      const scrollState = { y: currentScroll }
-      promoScrollTween = gsap.to(scrollState, {
-        y: targetTop,
-        duration: 0.95,
-        ease: 'power2.inOut',
-        onUpdate: () => window.scrollTo(0, scrollState.y),
-        onComplete: () => {
-          root.style.scrollBehavior = previousScrollBehavior
-          gsap.delayedCall(0.22, () => {
-            promoScrollTween = null
-          })
-        },
-      })
-    }
-
-    window.addEventListener('wheel', handleSectionWheel, { passive: false })
-
-    const handleLogoClick = (event) => {
-      const logoLink = event.target.closest('header a[href="/"]')
-      if (!logoLink || !mainContentRef.current) return
-
-      event.preventDefault()
-      const targetTop = mainContentRef.current.offsetTop
-      if (Math.abs(window.scrollY - targetTop) < 2) return
-
-      const transition = transitionRef.current
-      gsap.killTweensOf(transition)
-      gsap.timeline()
-        .to(transition, {
-          autoAlpha: 1,
-          duration: 0.5,
-          ease: 'power2.inOut',
-        })
-        .call(() => {
-          const previousBehavior = root.style.scrollBehavior
-          root.style.scrollBehavior = 'auto'
-          window.scrollTo(0, targetTop)
-          ScrollTrigger.update()
-          heroReveal.pause(0)
-          canMovePastHeroRef.current = false
-          root.style.scrollBehavior = previousBehavior
-        })
-        .to({}, { duration: 0.45 })
-        .to(transition, {
-          autoAlpha: 0,
-          duration: 0.75,
-          ease: 'power2.inOut',
-        })
-    }
-
-    document.addEventListener('click', handleLogoClick)
-
-    const aiReveal = gsap.timeline({
-      scrollTrigger: {
-        trigger: aiIntroRef.current,
-        start: 'top 72%',
-        toggleActions: 'play none none reverse',
-      },
-    })
-      .from(`.${styles.moodHeading}`, { y: 36, duration: 0.6, ease: 'power2.out' })
-      .from(`.${styles.aiIntro} h2`, { y: 24, duration: 0.45 }, '-=0.25')
-      .from(`.${styles.recommendCards} > div`, { y: 42, duration: 0.5, stagger: 0.12 }, '-=0.2')
-      .from(`.${styles.aiButton}`, { y: 20, opacity: 0, duration: 0.4 }, '-=0.2')
-
-    const featureReveal = gsap.timeline({
-      scrollTrigger: {
-        trigger: featureSectionRef.current,
-        start: 'top 72%',
-        toggleActions: 'play none none reverse',
-      },
-    })
-      .from(`.${styles.featureCopy}`, {
-        x: () => (window.innerWidth >= 1200 ? -48 : 0),
-        duration: 0.7,
-        ease: 'power2.out',
-      })
-      .from(`.${styles.featureImage}`, {
-        x: () => (window.innerWidth >= 1200 ? 48 : 0),
-        duration: 0.7,
-        ease: 'power2.out',
-      }, '-=0.48')
-
-    const bestSellerReveal = gsap.timeline({
-      scrollTrigger: {
-        trigger: bestSellerRef.current,
-        start: 'top 86%',
-        toggleActions: 'play none none reverse',
-      },
-    })
-      .from(`.${styles.bestSellerTitle}`, { y: 24, duration: 0.45 })
-
-    if (!isDesktop) {
-      bestSellerReveal
-        .from(`.${styles.productMock}`, {
-          y: 80,
-          autoAlpha: 0,
-          rotate: 0,
-          scale: 0.96,
-          duration: 0.56,
-          stagger: 0.16,
-          ease: 'power3.out',
-        }, '-=0.12')
-        .from(`.${styles.allProductsButton}`, { y: 20, duration: 0.4 }, '-=0.2')
-    }
-
-    const eventsGridReveal = gsap.timeline({
-      scrollTrigger: {
-        trigger: eventsGridRef.current,
-        start: 'top 72%',
-        toggleActions: 'play none none reverse',
-      },
-    })
-      .from(`.${styles.eventsCopy}`, {
-        x: () => (window.innerWidth >= 1200 ? -44 : 0),
-        duration: 0.65,
-        ease: 'power2.out',
-      })
-      .from(`.${styles.eventMock}`, { y: 54, scale: 0.96, duration: 0.55, stagger: 0.1, ease: 'power2.out' }, '-=0.35')
 
     return () => {
-      window.removeEventListener('wheel', handleSectionWheel)
-      document.removeEventListener('click', handleLogoClick)
-      promoScrollTween?.kill()
-      bestCardTween?.kill()
-      window.clearTimeout(bestWheelReleaseTimer)
-      root.style.scrollBehavior = previousScrollBehavior
-      trigger.kill()
-      heroReveal.scrollTrigger?.kill()
-      heroReveal.kill()
-      aiReveal.scrollTrigger?.kill()
-      aiReveal.kill()
-      featureReveal.scrollTrigger?.kill()
-      featureReveal.kill()
-      bestSellerReveal.scrollTrigger?.kill()
-      bestSellerReveal.kill()
-      eventsGridReveal.scrollTrigger?.kill()
-      eventsGridReveal.kill()
-      root.classList.remove(headerVisibleClass)
+      isMounted = false
     }
   }, [])
 
@@ -405,7 +216,6 @@ const MainPage = () => {
         root.style.scrollBehavior = 'auto'
         flushSync(() => setIsIntroSkipped(true))
         window.scrollTo(0, 0)
-        root.classList.add('main-header-visible')
         ScrollTrigger.refresh()
         root.style.scrollBehavior = previousScrollBehavior
       })
@@ -420,10 +230,19 @@ const MainPage = () => {
 
   return (
     <div className={styles.page} data-main-page>
+      {/* 여정 인트로 섹션 */}
       {!isIntroSkipped && <JourneySection onSkip={handleSkipIntro} />}
 
+      {/* 메인 히어로 섹션 */}
       <section ref={mainContentRef} className={styles.mainContent} aria-labelledby="main-content-title">
         <div className={styles.heroInner}>
+          <div ref={heroCoverRef} className={styles.heroCover} aria-hidden="true">
+            <img src={heroImage} alt="" />
+            <div className={styles.heroScrollGuide}>
+              <span className={styles.scrollMouse}><i /></span>
+              <span>SCROLL</span>
+            </div>
+          </div>
           <div className={styles.heroVisual}>
             <h1 ref={leftHeroTitleRef} id="main-content-title" className={`${styles.heroTitle} ${styles.heroTitleLeft}`}>
               오늘의
@@ -432,7 +251,18 @@ const MainPage = () => {
             <div ref={heroImageRef} className={styles.imageGroup}>
               <figure className={styles.imageFrame}>
                 <img ref={heroPhotoRef} src={heroImage} alt="전통주와 안주가 차려진 자작의 공간" />
+                <img
+                  ref={heroSunsetPhotoRef}
+                  className={styles.heroSunsetPhoto}
+                  src={heroSunsetImage}
+                  alt=""
+                  aria-hidden="true"
+                />
               </figure>
+              <span ref={heroSunRef} className={styles.heroSun} data-phase="sun" aria-hidden="true">
+                <img className={styles.heroSunIcon} src={heroSunIcon} alt="" />
+                <img className={styles.heroMoonIcon} src={heroMoonIcon} alt="" />
+              </span>
               <p ref={heroCaptionRef} className={styles.heroCaption}>
                 오늘 하루도 수고한 나에게,
                 <br />
@@ -451,12 +281,23 @@ const MainPage = () => {
         </div>
       </section>
 
+      {/* AI 맞춤 추천 소개 섹션 */}
       <section ref={aiIntroRef} className={styles.aiIntro} aria-labelledby="ai-intro-title">
+        <div className={styles.aiIntroContent}>
         <div className={styles.moodHeading}>
           <p className={styles.moodLabel} aria-label="HAPPY, RAINY, SWEET">
             <span className={styles.moodHappy} aria-hidden="true">HAPPY</span>
+            <span className={`${styles.moodHappy} ${styles.happyShower}`} aria-hidden="true">
+              {Array.from({ length: 7 }, (_, index) => <i key={index} />)}
+            </span>
             <span className={styles.moodRainy} aria-hidden="true">RAINY</span>
+            <span className={`${styles.moodRainy} ${styles.rainShower}`} aria-hidden="true">
+              {Array.from({ length: 7 }, (_, index) => <i key={index} />)}
+            </span>
             <span className={styles.moodSweet} aria-hidden="true">SWEET</span>
+            <span className={`${styles.moodSweet} ${styles.flowerShower}`} aria-hidden="true">
+              {Array.from({ length: 8 }, (_, index) => <i key={index} />)}
+            </span>
           </p>
           <div className={styles.eyePlaceholder}>
             <div className={styles.faceViewport}>
@@ -468,34 +309,64 @@ const MainPage = () => {
           </div>
           <p className={`${styles.moodLabel} ${styles.mirroredMood}`} aria-hidden="true">
             <span className={styles.moodHappy}>HAPPY</span>
+            <span className={`${styles.moodHappy} ${styles.happyShower}`}>
+              {Array.from({ length: 7 }, (_, index) => <i key={index} />)}
+            </span>
             <span className={styles.moodRainy}>RAINY</span>
+            <span className={`${styles.moodRainy} ${styles.rainShower}`}>
+              {Array.from({ length: 7 }, (_, index) => <i key={index} />)}
+            </span>
             <span className={styles.moodSweet}>SWEET</span>
+            <span className={`${styles.moodSweet} ${styles.flowerShower}`}>
+              {Array.from({ length: 8 }, (_, index) => <i key={index} />)}
+            </span>
           </p>
         </div>
 
         <h2 id="ai-intro-title" className={styles.moodCopy} aria-label="오늘의 기분에 어울리는 조합 추천">
-          <span className={styles.moodHappy}>기분 좋은 오늘에는 이런 조합 어때요?</span>
-          <span className={styles.moodRainy}>기분이 우울할 때는 이런 조합 어때요?</span>
-          <span className={styles.moodSweet}>달달한 게 당기는 날에는 이런 조합 어때요?</span>
+          <span className={styles.moodHappy}><em className={styles.moodKeyword}>기분 좋은 날</em>에는 이런 조합 어때요?</span>
+          <span className={styles.moodRainy}><em className={styles.moodKeyword}>비가 많이 내리는 날</em>에는 이런 조합 어때요?</span>
+          <span className={styles.moodSweet}><em className={styles.moodKeyword}>달달한 게 당기는 날</em>에는 이런 조합 어때요?</span>
         </h2>
 
         <div className={styles.recommendCards} aria-label="막동이 추천 미리보기">
-          <div className={styles.sideCard}>IMAGE</div>
-          <div className={styles.mainCard}>IMAGE</div>
-          <div className={styles.sideCard}>IMAGE</div>
+          {moodRecommendations.map(({ badge, variants }) => (
+            <article key={badge} className={styles.recommendCard}>
+              <div className={styles.recommendCardTitle}>
+                {variants.map(({ mood, name }) => (
+                  <strong key={mood} className={styles[mood]}>{name}</strong>
+                ))}
+              </div>
+              <div className={styles.recommendCardVisual}>
+                {variants.map(({ mood, image, alt }) => (
+                  <img key={mood} className={styles[mood]} src={image} alt={alt} />
+                ))}
+              </div>
+              <div className={styles.recommendCardDescription}>
+                {variants.map(({ mood, description }) => (
+                  <p key={mood} className={styles[mood]}>{description}</p>
+                ))}
+              </div>
+            </article>
+          ))}
         </div>
 
         <Link className={styles.aiButton} to="/ai">
-          추천 받으러 가기
+          나만의 조합 추천받기
         </Link>
+        </div>
 
       </section>
 
+      {/* 자작 브랜드 스토리 섹션 */}
       <section ref={featureSectionRef} className={styles.featureSection} aria-labelledby="feature-title">
         <div className={styles.featureCopy}>
-          <h2 id="feature-title">한 잔의 시간에 다정함을 담습니다</h2>
+          <h2 id="feature-title">
+            <span>자작은 술잔에</span>
+            <span>다정함을 담습니다</span>
+          </h2>
           <p>
-            자작은 우리 술과 안주가 건네는
+            우리 술과 안주가 건네는
             <br />
             소박하고 따뜻한 순간을 이야기합니다.
           </p>
@@ -505,55 +376,30 @@ const MainPage = () => {
         </div>
 
         <div className={styles.featureImage} role="img" aria-label="AI 큐레이션 대표 이미지 영역">
-          IMAGE
+          <div className={styles.featurePhotoFrame}>
+            <img className={styles.featureBackground} src={brandStoryImage} alt="전통주를 잔에 따르는 모습" />
+          </div>
+          <img className={`${styles.featurePourOverlay} ${styles.featurePourBefore}`} src={brandStoryPourBefore} alt="술을 따르기 전 술병을 든 모습" />
+          <img className={`${styles.featurePourOverlay} ${styles.featurePourAfter}`} src={brandStoryPourAfter} alt="잔에 술을 따르는 모습" />
+          <img ref={featureCupRef} className={styles.featureCup} src={brandStoryCup} alt="" aria-hidden="true" />
         </div>
       </section>
 
-      <section ref={bestSellerRef} className={styles.bestSeller} aria-labelledby="best-seller-title">
-        <h2 id="best-seller-title" className={styles.bestSellerTitle}>베스트 상품</h2>
+      {/* 베스트셀러 상품 섹션 */}
+      <BestSellerSection
+        products={bestSellerProducts}
+        sectionRef={bestSellerSectionRef}
+        nextSectionRef={eventsGridRef}
+        transitionActiveRef={bestSellerTransitionRef}
+      />
 
-        <div className={styles.productDeck} aria-label="베스트셀러 상품 미리보기">
-          <article className={`${styles.productMock} ${styles.productOne}`}>
-            <header className={styles.productMockHeader}>
-              <span><strong>JAJAK</strong><small>Traditional Selection</small></span>
-              <i aria-hidden="true">♥</i>
-            </header>
-            <div>IMAGE</div>
-          </article>
-          <article className={`${styles.productMock} ${styles.productTwo}`}>
-            <header className={styles.productMockHeader}>
-              <span><strong>JAJAK</strong><small>Traditional Selection</small></span>
-              <i aria-hidden="true">♥</i>
-            </header>
-            <div>IMAGE</div>
-          </article>
-          <article className={`${styles.productMock} ${styles.productThree}`}>
-            <header className={styles.productMockHeader}>
-              <span><strong>JAJAK</strong><small>Traditional Selection</small></span>
-              <i aria-hidden="true">♥</i>
-            </header>
-            <div>IMAGE</div>
-          </article>
-          <article className={`${styles.productMock} ${styles.productFour}`}>
-            <header className={styles.productMockHeader}>
-              <span><strong>JAJAK</strong><small>Traditional Selection</small></span>
-              <i aria-hidden="true">♥</i>
-            </header>
-            <div>IMAGE</div>
-          </article>
-        </div>
-
-        <Link className={styles.allProductsButton} to="/shop">
-          전체 상품 보기
-        </Link>
-      </section>
-
+      {/* 이벤트 섹션 */}
       <section ref={eventsGridRef} className={styles.eventsGrid} aria-labelledby="events-grid-title">
         <div className={styles.eventsCopy}>
+          <p>Events</p>
           <h2 id="events-grid-title">
-            자작에서 만나는
-            <br />
-            작은 즐거움
+            <span>다양한 혜택과</span>
+            <span>이벤트 지금 확인하세요</span>
           </h2>
           <Link className={styles.eventsButton} to="/events">
             전체 이벤트 보기
@@ -561,11 +407,80 @@ const MainPage = () => {
         </div>
 
         <div className={styles.eventGallery} aria-label="이벤트 이미지 미리보기">
-          <div className={`${styles.eventMock} ${styles.eventOne}`}>IMAGE</div>
-          <div className={`${styles.eventMock} ${styles.eventTwo}`}>IMAGE</div>
-          <div className={`${styles.eventMock} ${styles.eventThree}`}>IMAGE</div>
-          <div className={`${styles.eventMock} ${styles.eventFour}`}>IMAGE</div>
-          <div className={`${styles.eventMock} ${styles.eventFive}`}>IMAGE</div>
+          {mainEvents.map((event, index) => {
+            const positionClass = [
+            styles.eventOne,
+            styles.eventTwo,
+            styles.eventThree,
+            styles.eventFour,
+            styles.eventFive,
+            ][index]
+            const destination = index === 0 && event.isActive
+              ? '/events/roulette'
+              : event.isActive ? '/events' : '/mypage/events'
+
+            return (
+              <Link
+                key={event.id}
+                className={`${styles.eventMock} ${positionClass}`}
+                to={destination}
+                aria-label={`${event.title}로 이동`}
+              >
+                <span className={styles.eventCardInner}>
+                  <span className={styles.eventCardFront}>
+                    <img src={event.bannerSrc} alt="" />
+                  </span>
+                  <span className={styles.eventCardBack}>
+                    <strong>{event.title}</strong>
+                    <small>{event.isActive ? '보러가기' : '종료된 이벤트'}</small>
+                  </span>
+                </span>
+              </Link>
+            )
+          })}
+          <div
+            className={`${styles.eventMock} ${styles.eventFive} ${styles.eventPlaceholder}`}
+            aria-hidden="true"
+          >
+            <span className={styles.eventCardInner}>
+              <span className={styles.eventCardFront} />
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* 막동이 소개 페이지 진입 섹션 */}
+      <section
+        ref={makdongSectionRef}
+        className={styles.makdongSection}
+        aria-labelledby="makdong-title"
+      >
+        <div className={styles.makdongVisual} aria-hidden="true">
+          <img className={styles.makdongCharacter} src={makdongCharacter} alt="" />
+        </div>
+        <div className={styles.makdongCopy}>
+          <h2 id="makdong-title">
+            <span>우리 술 곁의</span>
+            <span>다정한 친구, <em>막동이</em></span>
+          </h2>
+          <p className={styles.makdongDescription}>
+            우리 술이 있는 순간마다 막동이가 다정함을 건넵니다.
+            <br />
+            전통주의 즐거움을 전하는 막동이와 함께해요.
+          </p>
+          <Link className={styles.makdongButton} to="/brand/makdong">
+            막둥이 이야기 보기 <span aria-hidden="true">→</span>
+          </Link>
+
+          <div className={styles.makdongTraits} aria-label="막동이의 특징">
+            {makdongTraits.map(({ icon, title, description }) => (
+              <article className={styles.makdongTrait} key={title}>
+                <span className={styles.makdongTraitIcon} aria-hidden="true">{icon}</span>
+                <strong>{title}</strong>
+                <p>{description}</p>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 

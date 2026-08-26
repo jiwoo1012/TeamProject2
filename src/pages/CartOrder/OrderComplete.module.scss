@@ -1,5 +1,138 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as v;
+
+.page {
+  width: min(1320px, calc(100% - 80px));
+  min-height: 1030px;
+  margin: 0 auto;
+  padding: v.$space-12 0 v.$space-20;
+  color: v.$color-text-primary;
+  font-family: v.$font-family-base;
+}
+
+.topOrnament {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: v.$space-5;
+  transform: scaleX(1.05);
+  transform-origin: left center;
+}
+
+.purchaseSteps {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: v.$space-4;
+  margin: v.$space-5 240px v.$space-8 0;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-semibold;
+}
+
+.purchaseSteps strong { color: v.$color-text-primary; }
+.stepFlower { width: 42px; height: 26px; flex: 0 0 42px; }
+
+.completeCard {
+  width: 940px;
+  min-height: 724px;
+  margin: 0 auto;
+  padding: 54px 122px 46px;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+  background: v.$color-white;
+}
+
+.checkIcon {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto;
+}
+
+.checkIcon svg { width: 100%; height: 100%; stroke: v.$color-primary; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.heroArea {
+  width: 690px;
+  margin: 30px auto 0;
+}
+
+.completeCopy { text-align: center; }
+.completeCopy h1 {
+  margin: 0;
+  font-size: v.$font-size-3xl;
+  font-weight: v.$font-weight-bold;
+  line-height: v.$line-height-tight;
+}
+.orderNumber { margin: v.$space-6 0 v.$space-4; font-size: v.$font-size-md; }
+.completeCopy > p:last-child { margin: 0; color: v.$color-text-secondary; font-size: v.$font-size-md; line-height: v.$line-height-relaxed; }
+
+.mascotPlaceholder {
+  display: grid;
+  width: 150px;
+  height: 132px;
+  place-items: center;
+  background: transparent;
+  font-size: 86px;
+  line-height: 1;
+  transform: translateY(-4px);
+}
+
+.orderInfo {
+  width: 690px;
+  margin: 36px auto 0;
+  padding: 28px 38px;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+}
+
+.orderInfo h2 { margin: 0 0 v.$space-5; font-size: v.$font-size-2xl; font-weight: v.$font-weight-bold; }
+.orderInfo dl { display: grid; gap: v.$space-4; margin: 0; }
+.orderInfo dl div { display: grid; grid-template-columns: 160px 1fr; }
+.orderInfo dt, .orderInfo dd { margin: 0; font-size: v.$font-size-md; }
+.orderInfo dt { color: v.$color-text-secondary; }
+.orderInfo dd { font-weight: v.$font-weight-medium; }
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 34px;
+  margin-top: 38px;
+}
+
+.actions button {
+  display: inline-flex;
+  width: 194px;
+  height: 50px;
+  align-items: center;
+  justify-content: center;
+  border-radius: v.$radius-lg;
+  font-size: v.$font-size-md;
+  font-weight: v.$font-weight-semibold;
+  text-align: center;
+}
+
+.homeButton { border: 1px solid v.$color-border; background: v.$color-white; color: v.$color-text-secondary; }
+.historyButton { border: 1px solid v.$color-primary; background: v.$color-primary; color: v.$color-white; }
+
+.bottomOrnament {
+  margin-top: 110px;
+  transform: rotate(180deg);
+}
+
+@media (max-width: v.$breakpoint-tablet-max) {
+  .page { width: calc(100% - 80px); }
+  .purchaseSteps { margin-right: 0; }
+  .completeCard { width: 100%; padding-right: v.$space-10; padding-left: v.$space-10; }
+}
+
+@media (max-width: v.$breakpoint-mobile-max) {
+  .page { width: calc(100% - 40px); min-height: auto; padding-top: v.$space-8; }
+  .topOrnament { display: none; }
+  .purchaseSteps { flex-wrap: wrap; justify-content: center; margin: 0 0 v.$space-8; font-size: v.$font-size-sm; }
+  .completeCard { padding: v.$space-8 v.$space-5; }
+  .heroArea { width: 100%; grid-template-columns: 1fr; }
+  .mascotPlaceholder { margin: 0 auto; }
+  .orderInfo { width: 100%; padding: v.$space-5; }
+  .orderInfo dl div { grid-template-columns: 110px 1fr; }
+  .actions { flex-direction: column; gap: v.$space-3; }
+  .actions button { width: 100%; }
+}

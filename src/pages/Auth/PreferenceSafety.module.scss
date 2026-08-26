@@ -1,0 +1,748 @@
+.preferenceSafety {
+  width: 100%;
+  min-height: calc(100vh - 70px);
+
+  padding: 55px 0 65px;
+
+  background: #fbfaf7;
+  color: #382b22;
+
+  box-sizing: border-box;
+}
+
+
+.inner {
+  width: min(1120px, 90%);
+
+  margin: 0 auto;
+}
+
+
+/* ========================================
+   페이지 제목
+======================================== */
+
+.headerArea {
+  margin-bottom: 42px;
+
+  text-align: center;
+}
+
+
+.categoryBadge {
+  width: fit-content;
+
+  margin: 0 auto 24px;
+  padding: 9px 25px;
+
+  border: 1px solid #dbc6aa;
+  border-radius: 999px;
+
+  background: #fffdf9;
+
+  color: #42362d;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+
+.title {
+  margin: 0;
+
+  color: #392b22;
+
+  font-size: 31px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -1px;
+
+  word-break: keep-all;
+}
+
+
+.description {
+  margin: 13px 0 0;
+
+  color: #75685f;
+
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+
+/* ========================================
+   알레르기 선택 박스
+======================================== */
+
+.allergyBox {
+  width: 100%;
+
+  padding: 30px 48px;
+
+  border: 1px solid #e9e1d8;
+  border-radius: 13px;
+
+  background: #fffdf9;
+
+  box-sizing: border-box;
+}
+
+
+.boxHeader {
+  margin-bottom: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+.boxTitleArea {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+
+.boxTitle {
+  margin: 0;
+
+  color: #44372e;
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+
+.multipleBadge {
+  padding: 3px 8px;
+
+  border-radius: 999px;
+
+  background: #e9bc72;
+  color: #ffffff;
+
+  font-size: 9px;
+  font-weight: 600;
+}
+
+
+.noneButton {
+  min-width: 125px;
+  height: 38px;
+
+  padding: 0 17px;
+
+  border: 1px solid #ddd4ca;
+  border-radius: 999px;
+
+  background: #ffffff;
+  color: #62574f;
+
+  font-family: inherit;
+  font-size: 11px;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+
+.noneButton:hover {
+  border-color: #568b86;
+  color: #568b86;
+}
+
+
+.noneSelected {
+  border-color: #568b86;
+
+  background: #568b86;
+  color: #ffffff;
+}
+
+
+.noneSelected:hover {
+  color: #ffffff;
+}
+
+
+/* ========================================
+   카테고리별 선택
+======================================== */
+
+.groups {
+  display: flex;
+  flex-direction: column;
+
+  gap: 24px;
+}
+
+
+.groupRow {
+  display: grid;
+
+  grid-template-columns: 145px 1fr;
+
+  align-items: center;
+}
+
+
+.groupLabel {
+  color: #493c33;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+
+.optionList {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 14px;
+}
+
+
+.optionButton {
+  min-width: 90px;
+  height: 38px;
+
+  padding: 0 23px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  border: 1px solid #ddd4ca;
+  border-radius: 999px;
+
+  background: #ffffff;
+  color: #51463e;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+
+  box-sizing: border-box;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+.optionButton:hover {
+  transform: translateY(-1px);
+
+  border-color: #d5a052;
+}
+
+
+.selected {
+  border-color: #d5a052;
+
+  background: #fff9ef;
+  color: #8c6028;
+}
+
+
+.expandableButton {
+  min-width: 150px;
+}
+
+
+.expandIcon {
+  width: 14px;
+  height: 14px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #d5a052;
+  border-radius: 50%;
+
+  color: #d5a052;
+
+  font-size: 8px;
+  font-weight: 700;
+}
+
+
+/* ========================================
+   펼쳐지는 공통 영역
+======================================== */
+
+.detailBox,
+.customBox {
+  width: 100%;
+
+  margin-top: 16px;
+
+  border-radius: 12px;
+
+  background: #eaf0ed;
+
+  box-sizing: border-box;
+
+  animation: detailOpen 0.3s ease both;
+}
+
+
+/* ========================================
+   세부 원료 선택
+======================================== */
+
+.detailBox {
+  min-height: 125px;
+
+  padding: 25px 48px;
+
+  display: grid;
+
+  grid-template-columns: 270px 1fr;
+
+  align-items: center;
+
+  gap: 25px;
+}
+
+
+.detailInfo {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+
+.detailTitle {
+  margin: 0;
+
+  color: #493d35;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+.detailDescription {
+  margin: 0;
+
+  color: #8a8179;
+
+  font-size: 9px;
+  line-height: 1.6;
+
+  word-break: keep-all;
+}
+
+
+.plantOptions {
+  display: grid;
+
+  grid-template-columns: repeat(5, 1fr);
+
+  gap: 12px;
+}
+
+
+.plantButton {
+  height: 32px;
+
+  padding: 0 12px;
+
+  border: 1px solid #d8d4ce;
+  border-radius: 999px;
+
+  background: #ffffff;
+  color: #51463e;
+
+  font-family: inherit;
+  font-size: 10px;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+.plantButton:hover {
+  transform: translateY(-1px);
+
+  border-color: #568b86;
+}
+
+
+.plantSelected {
+  border-color: #568b86;
+
+  background: #568b86;
+  color: #ffffff;
+}
+
+
+/* ========================================
+   직접 입력
+======================================== */
+
+.customBox {
+  padding: 24px 48px;
+}
+
+
+.customLabel {
+  display: block;
+
+  margin-bottom: 12px;
+
+  color: #493d35;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+.customInput {
+  width: 100%;
+  height: 40px;
+
+  padding: 0 15px;
+
+  border: 1px solid #d6b678;
+  border-radius: 4px;
+
+  outline: none;
+
+  background: #ffffff;
+  color: #493d35;
+
+  font-family: inherit;
+  font-size: 11px;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.customInput::placeholder {
+  color: #aaa199;
+}
+
+
+.customInput:focus {
+  border-color: #568b86;
+
+  box-shadow: 0 0 0 2px rgba(86, 139, 134, 0.08);
+}
+
+
+/* ========================================
+   안내 문구
+======================================== */
+
+.notice {
+  width: fit-content;
+
+  margin: 18px 0 0 auto;
+
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: #9a8f85;
+
+  font-size: 10px;
+}
+
+
+.noticeIcon {
+  width: 15px;
+  height: 15px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #d9ad65;
+  border-radius: 50%;
+
+  color: #c28b38;
+
+  font-family: serif;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+
+/* ========================================
+   이전 / 저장 버튼
+======================================== */
+
+.buttonArea {
+  margin-top: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+.prevButton,
+.saveButton {
+  width: 145px;
+  height: 47px;
+
+  padding: 0 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-radius: 7px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+
+  box-sizing: border-box;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease;
+
+  span {
+    font-size: 20px;
+  }
+}
+
+
+.prevButton {
+  border: 1px solid #6da29e;
+
+  background: transparent;
+  color: #4f7f7b;
+}
+
+
+.prevButton:hover {
+  background: rgba(86, 139, 134, 0.05);
+
+  transform: translateX(-2px);
+}
+
+
+.saveButton {
+  border: 1px solid #568b86;
+
+  background: #568b86;
+  color: #ffffff;
+}
+
+
+.saveButton:hover:not(:disabled) {
+  background: #477d78;
+  border-color: #477d78;
+
+  transform: translateX(2px);
+}
+
+
+.saveButton:disabled {
+  opacity: 0.35;
+
+  cursor: not-allowed;
+}
+
+
+/* ========================================
+   등장 애니메이션
+======================================== */
+
+@keyframes detailOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ========================================
+   태블릿
+======================================== */
+
+@media (max-width: 900px) {
+
+  .allergyBox,
+  .detailBox,
+  .customBox {
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+
+
+  .groupRow {
+    grid-template-columns: 120px 1fr;
+  }
+
+
+  .detailBox {
+    grid-template-columns: 200px 1fr;
+  }
+
+
+  .plantOptions {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+}
+
+
+/* ========================================
+   모바일
+======================================== */
+
+@media (max-width: 650px) {
+
+  .preferenceSafety {
+    padding: 45px 0;
+  }
+
+
+  .inner {
+    width: 88%;
+  }
+
+
+  .headerArea {
+    margin-bottom: 30px;
+  }
+
+
+  .title {
+    font-size: 24px;
+  }
+
+
+  .description {
+    font-size: 12px;
+  }
+
+
+  .allergyBox {
+    padding: 25px 20px;
+  }
+
+
+  .boxHeader {
+    align-items: flex-start;
+
+    gap: 15px;
+  }
+
+
+  .boxTitleArea {
+    flex-wrap: wrap;
+  }
+
+
+  .noneButton {
+    min-width: auto;
+
+    padding: 0 12px;
+
+    flex-shrink: 0;
+  }
+
+
+  .groups {
+    gap: 26px;
+  }
+
+
+  .groupRow {
+    grid-template-columns: 1fr;
+
+    gap: 12px;
+  }
+
+
+  .optionList {
+    gap: 10px;
+  }
+
+
+  .optionButton {
+    min-width: auto;
+
+    padding: 0 17px;
+  }
+
+
+  .detailBox {
+    padding: 22px 20px;
+
+    grid-template-columns: 1fr;
+
+    gap: 20px;
+  }
+
+
+  .plantOptions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+
+  .customBox {
+    padding: 22px 20px;
+  }
+
+
+  .notice {
+    margin-left: 0;
+  }
+
+
+  .buttonArea {
+    gap: 15px;
+  }
+
+
+  .prevButton,
+  .saveButton {
+    flex: 1;
+
+    width: auto;
+
+    padding: 0 15px;
+  }
+
+}

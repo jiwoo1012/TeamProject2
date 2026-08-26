@@ -1,5 +1,757 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as v;
+
+.page {
+  width: min(1606px, calc(100% - 132px));
+  margin: 0 auto;
+  padding: 79px 0 v.$space-16;
+  color: v.$color-text-primary;
+  font-family: v.$font-family-base;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.topOrnament {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: v.$space-6;
+  transform: scaleX(1.05);
+  transform-origin: left center;
+}
+
+.pageHeader {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 31px;
+  margin-left: v.$space-6;
+}
+
+.pageHeader h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: v.$font-weight-bold;
+  line-height: v.$line-height-tight;
+}
+
+.purchaseSteps {
+  position: absolute;
+  right: 494px;
+  display: inline-flex;
+  align-items: center;
+  gap: v.$space-4;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-medium;
+  white-space: nowrap;
+}
+
+.currentStep {
+  color: v.$color-text-primary;
+  font-weight: v.$font-weight-bold;
+}
+
+.stepFlower {
+  width: 42px;
+  height: 26px;
+  flex: 0 0 42px;
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1100px) 417px;
+  align-items: start;
+  gap: 77px;
+  margin-left: v.$space-6;
+}
+
+.cartArea {
+  min-width: 0;
+}
+
+.cartTable,
+.emptyCard,
+.summaryCard,
+.recommendationCard {
+  border: 1px solid v.$color-border;
+  background: v.$color-white;
+}
+
+.cartTable {
+  overflow: hidden;
+  border-radius: v.$radius-lg;
+}
+
+.cartTableHead {
+  display: grid;
+  height: 73px;
+  grid-template-columns: minmax(0, 1fr) 180px 160px 180px 100px;
+  align-items: center;
+  padding: 0 32px;
+  background: #4d7e7b;
+  color: v.$color-white;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-medium;
+  text-align: center;
+}
+
+.checkLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: v.$space-2;
+  justify-self: start;
+  line-height: 1;
+}
+
+.cartActionGroup {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.clearAllButton {
+  display: inline-flex;
+  min-width: 150px;
+  height: 46px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid v.$color-border;
+  border-radius: 11px;
+  background: v.$color-white;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-md;
+  font-weight: v.$font-weight-medium;
+  white-space: nowrap;
+}
+
+.cartCheckbox {
+  position: relative;
+  display: inline-grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  place-items: center;
+  cursor: pointer;
+}
+
+.cartCheckbox input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checkboxBox {
+  position: relative;
+  display: block;
+  width: 24px;
+  height: 24px;
+  border: 2px solid v.$color-primary;
+  border-radius: v.$radius-sm;
+  background: v.$color-white;
+}
+
+.cartCheckbox input:checked + .checkboxBox {
+  border-color: v.$color-primary;
+  background: v.$color-primary;
+}
+
+.cartCheckbox input:checked + .checkboxBox::after {
+  position: absolute;
+  top: 4px;
+  left: 7px;
+  width: 6px;
+  height: 10px;
+  border-right: 2px solid v.$color-white;
+  border-bottom: 2px solid v.$color-white;
+  content: '';
+  transform: rotate(45deg);
+}
+
+.headCheckbox .checkboxBox {
+  border-color: v.$color-white;
+  background: transparent;
+}
+
+.headCheckbox input:checked + .checkboxBox {
+  border-color: v.$color-white;
+  background: v.$color-white;
+}
+
+.headCheckbox input:checked + .checkboxBox::after {
+  border-color: v.$color-primary;
+}
+
+.cartRow {
+  display: grid;
+  min-height: 169px;
+  grid-template-columns: minmax(0, 1fr) 180px 160px 180px 100px;
+  align-items: center;
+  padding: 26px 32px;
+}
+
+.cartRow + .cartRow {
+  border-top: 1px solid v.$color-border;
+}
+
+.itemInfo {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 28px;
+}
+
+.productImage {
+  display: grid;
+  width: 104px;
+  height: 111px;
+  flex: 0 0 104px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 11px;
+  background: #ece4d7;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
+
+.productImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.itemCopy,
+.recommendationCopy {
+  min-width: 0;
+}
+
+.itemCopy strong,
+.recommendationCopy strong {
+  display: block;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-semibold;
+  line-height: v.$line-height-base;
+}
+
+.itemCopy span,
+.recommendationCopy span {
+  display: block;
+  margin-top: v.$space-2;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+}
+
+.quantityControl {
+  display: inline-grid;
+  width: 137px;
+  height: 50px;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  justify-self: center;
+  overflow: hidden;
+  border: 1px solid v.$color-border;
+  border-radius: 11px;
+  background: v.$color-white;
+}
+
+.quantityControl button,
+.quantityControl span {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-md;
+}
+
+.discountValue,
+.lineTotal {
+  font-size: v.$font-size-md;
+  text-align: center;
+}
+
+.lineTotal {
+  font-weight: v.$font-weight-semibold;
+}
+
+.rowCheck {
+  display: grid;
+  place-items: center;
+}
+
+.cartActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 27px;
+}
+
+.textButton {
+  display: inline-flex;
+  min-width: 150px;
+  height: 46px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid v.$color-border;
+  border-radius: 11px;
+  background: v.$color-white;
+  color: #4d7e7b;
+  font-size: v.$font-size-md;
+  font-weight: v.$font-weight-medium;
+}
+
+.outlineButton {
+  display: inline-flex;
+  width: 150px;
+  height: 46px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid v.$color-border;
+  border-radius: 11px;
+  background: v.$color-white;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-md;
+  font-weight: v.$font-weight-semibold;
+}
+
+.summaryCard {
+  position: sticky;
+  top: v.$space-6;
+  align-self: start;
+  margin-top: -72px;
+  min-height: 713px;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.summaryCard h2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: v.$space-3;
+  margin: 0;
+  padding: 36px 29px 23px;
+  color: #346561;
+  font-size: 30px;
+  font-weight: v.$font-weight-bold;
+}
+
+.summaryCard h2::after {
+  display: block;
+  grid-column: 1 / -1;
+  height: 2px;
+  margin-top: 20px;
+  background: #4d7e7b;
+  content: '';
+}
+
+.summaryCard h2 em {
+  align-self: center;
+  padding: v.$space-1 v.$space-3;
+  border-radius: v.$radius-pill;
+  background: color-mix(in srgb, v.$color-primary 12%, v.$color-white);
+  color: v.$color-primary;
+  font-size: v.$font-size-xs;
+  font-style: normal;
+  font-weight: v.$font-weight-semibold;
+}
+
+.summaryList {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 7px 29px 33px;
+  border-bottom: 1px solid v.$color-border;
+}
+
+.summaryList div,
+.pointHeading,
+.pointSection p,
+.totalPrice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.$space-4;
+}
+
+.summaryList dt,
+.summaryList dd {
+  margin: 0;
+  font-size: v.$font-size-md;
+  font-weight: v.$font-weight-medium;
+}
+
+.pointSection {
+  padding: 31px 29px 0;
+}
+
+.pointHeading h3 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: v.$font-weight-bold;
+}
+
+.pointHeading span {
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+}
+
+.pointInputRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 112px;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.pointInputRow label {
+  display: flex;
+  height: 52px;
+  align-items: center;
+  border: 1px solid v.$color-border;
+  border-radius: 11px;
+  background: v.$color-white;
+  padding: 0 v.$space-4;
+}
+
+.pointInputRow input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-md;
+}
+
+.pointInputRow button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #518c85;
+  border-radius: 11px;
+  background: v.$color-white;
+  color: #518c85;
+  font-size: v.$font-size-md;
+  font-weight: v.$font-weight-semibold;
+  text-align: center;
+}
+
+.pointSection p {
+  margin: v.$space-4 0 0;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+}
+
+.pointSection p strong {
+  color: #518c85;
+}
+
+.totalPrice {
+  align-items: flex-end;
+  flex-direction: column;
+  justify-content: center;
+  gap: v.$space-2;
+  padding: 37px 29px 25px;
+  color: #518c85;
+  text-align: right;
+}
+
+.totalPrice span {
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-semibold;
+}
+
+.totalPrice strong {
+  font-size: 36px;
+  font-weight: v.$font-weight-bold;
+  line-height: v.$line-height-tight;
+}
+
+.orderButton {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  height: 82px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: #4d7e7b;
+  color: v.$color-white;
+  font-size: v.$font-size-3xl;
+  font-weight: v.$font-weight-bold;
+  text-align: center;
+}
+
+.orderButton:disabled {
+  background: color-mix(in srgb, v.$color-text-muted 48%, v.$color-white);
+  cursor: default;
+}
+
+.undoToast {
+  position: fixed;
+  z-index: v.$z-toast;
+  right: v.$space-6;
+  bottom: v.$space-6;
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: v.$space-3;
+  padding: 0 v.$space-4;
+  border-radius: v.$radius-md;
+  background: v.$color-text-primary;
+  box-shadow: v.$shadow-sm;
+  color: v.$color-white;
+  font-size: v.$font-size-sm;
+}
+
+.undoToast button {
+  border: 0;
+  background: transparent;
+  color: v.$color-primary-light;
+  font: inherit;
+  font-weight: v.$font-weight-bold;
+  cursor: pointer;
+}
+
+.undoToast button:last-child {
+  color: v.$color-white;
+  font-size: v.$font-size-lg;
+}
+
+.recommendationCard {
+  min-height: 300px;
+  margin-top: 47px;
+  padding: 29px 32px 32px;
+  border-radius: 14px;
+}
+
+.recommendationHeader {
+  margin-bottom: 31px;
+}
+
+.recommendationHeader h2 {
+  margin: 0;
+  font-size: v.$font-size-2xl;
+  font-weight: v.$font-weight-bold;
+  line-height: v.$line-height-tight;
+}
+
+.recommendationHeader p {
+  margin-top: v.$space-2;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+  line-height: v.$line-height-base;
+}
+
+.recommendationList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  justify-items: center;
+  gap: 48px;
+}
+
+.recommendationItem {
+  display: grid;
+  width: 100%;
+  max-width: 286px;
+  grid-template-columns: 85px minmax(0, 1fr);
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.recommendationItem .productImage {
+  width: 85px;
+  height: 90px;
+  flex-basis: 85px;
+}
+
+.recommendationItem button {
+  display: flex;
+  grid-column: 2;
+  min-width: 66px;
+  height: 27px;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  margin-top: v.$space-2;
+  border-radius: 4px;
+  background: rgba(77, 126, 123, 0.5);
+  color: v.$color-white;
+  font-size: v.$font-size-xs;
+  text-align: center;
+}
+
+.emptyCard {
+  display: flex;
+  min-height: 515px;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: v.$radius-xl;
+}
+
+.emptyCircle {
+  display: grid;
+  width: 124px;
+  height: 124px;
+  place-items: center;
+  border-radius: v.$radius-pill;
+  background: color-mix(in srgb, v.$color-primary 52%, v.$color-white);
+}
+
+.emptyCartIcon {
+  width: 64px;
+  height: 64px;
+  stroke: v.$color-white;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3.5;
+}
+
+.emptyCard strong {
+  margin-top: v.$space-10;
+  font-size: v.$font-size-3xl;
+  font-weight: v.$font-weight-bold;
+}
+
+.browseButton {
+  display: flex;
+  width: 264px;
+  height: 56px;
+  align-items: center;
+  justify-content: center;
+  margin-top: v.$space-8;
+  border-radius: v.$radius-lg;
+  background: v.$color-primary;
+  color: v.$color-white;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-bold;
+}
+
+.emptySummary {
+  min-height: 440px;
+}
+
+.emptyRecommendations {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: v.$space-5;
+}
+
+.emptyRecommendationThumb {
+  display: grid;
+  height: 246px;
+  place-items: center;
+  border-radius: v.$radius-sm;
+  background: v.$color-surface;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+}
+
+@media (max-width: v.$breakpoint-tablet-max) {
+  .page {
+    width: calc(100% - 80px);
+    padding-top: v.$space-12;
+  }
+
+  .mainGrid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .summaryCard {
+    position: relative;
+    margin-top: 0;
+    min-height: 520px;
+  }
+
+  .recommendationList {
+    gap: v.$space-5;
+  }
+
+  .recommendationCard {
+    padding-right: 32px;
+    padding-left: 32px;
+  }
+}
+
+@media (max-width: v.$breakpoint-mobile-max) {
+  .page {
+    width: calc(100% - 40px);
+    padding-top: v.$space-8;
+  }
+
+  .topOrnament {
+    display: none;
+  }
+
+  .pageHeader {
+    position: static;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: v.$space-5;
+    margin-left: 0;
+  }
+
+  .mainGrid {
+    margin-left: 0;
+  }
+
+  .purchaseSteps {
+    position: static;
+    flex-wrap: wrap;
+    font-size: v.$font-size-sm;
+  }
+
+  .cartTableHead {
+    display: none;
+  }
+
+  .cartRow {
+    grid-template-columns: 1fr 80px;
+    gap: v.$space-4;
+    padding: v.$space-5;
+  }
+
+  .itemInfo {
+    grid-column: 1 / -1;
+  }
+
+  .discountValue,
+  .lineTotal {
+    text-align: left;
+  }
+
+  .rowCheck {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .recommendationList,
+  .emptyRecommendations {
+    grid-template-columns: 1fr;
+  }
+
+  .emptyRecommendationThumb {
+    height: 160px;
+  }
+
+  .undoToast {
+    right: v.$space-4;
+    bottom: v.$space-4;
+    left: v.$space-4;
+    justify-content: space-between;
+  }
+}

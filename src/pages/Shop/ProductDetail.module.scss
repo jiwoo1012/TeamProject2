@@ -15,12 +15,37 @@
 .tabs .activeTab::after { transform: scaleX(1); }
 .detailContent { min-height: 900px; margin-top: $space-16; overflow: hidden; background: $color-text-muted; border-radius: $radius-lg; }
 .detailContent img { width: 100%; }
-.reviewEmpty { @include mixins.flex-center; min-height: 480px; margin-top: $space-16; color: $color-text-muted; background: rgba($color-bg, .7); border-radius: $radius-lg; }
+.reviewSection { margin-top: $space-16; }
+.reviewForm { padding: $space-8; background: rgba($color-bg, 1); border: 1px solid $color-border; border-radius: $radius-lg; }
+.reviewForm h2 { margin-bottom: $space-5; font-size: $font-size-2xl; font-weight: $font-weight-semibold; }
+.nicknameField, .contentField { display: grid; gap: $space-2; color: $color-text-secondary; font-size: $font-size-sm; }
+.nicknameField input, .contentField textarea { padding: $space-3; color: $color-text-primary; background: $color-white; border: 1px solid $color-border; border-radius: $radius-md; }
+.nicknameField input:focus, .contentField textarea:focus { border-color: $color-primary; }
+.starField { display: flex; gap: $space-4; align-items: center; margin: $space-4 0; }
+.starField legend { float: left; color: $color-text-secondary; font-size: $font-size-sm; }
+.starField > div { display: flex; gap: $space-1; }
+.starField button { color: $color-border; font-size: $font-size-2xl; transition: color $transition-fast ease, transform $transition-fast ease; }
+.starField button:hover { color: $color-warning; transform: translateY(-2px); }
+.starField .selectedStar { color: $color-warning; }
+.formActions { display: flex; justify-content: flex-end; gap: $space-2; margin-top: $space-4; }
+.formActions button { padding: $space-2 $space-5; color: $color-text-secondary; background: $color-surface; border-radius: $radius-md; }
+.formActions button:last-child { color: $color-white; background: $color-primary; }
+.formActions button:disabled { opacity: .45; }
+.reviewList { display: grid; gap: $space-3; margin-top: $space-6; }
+.reviewEmpty { @include mixins.flex-center; min-height: 240px; color: $color-text-muted; background: rgba($color-bg, 1); border: 1px solid $color-border; border-radius: $radius-lg; }
+.reviewItem { padding: $space-5; background: rgba($color-bg, 1); border-bottom: 1px solid $color-border; border-radius: $radius-md; }
+.reviewItem header { display: flex; flex-wrap: wrap; gap: $space-3; align-items: center; }
+.reviewItem header strong { font-weight: $font-weight-semibold; }
+.reviewItem header span { color: $color-warning; }
+.reviewItem time { margin-left: auto; color: $color-text-muted; font-size: $font-size-xs; }
+.reviewItem > p { margin-top: $space-4; line-height: $line-height-relaxed; white-space: pre-wrap; }
+.reviewItem > div { display: flex; justify-content: flex-end; gap: $space-3; margin-top: $space-3; }
+.reviewItem > div button { color: $color-text-muted; font-size: $font-size-sm; text-decoration: underline; }
 .recommendedFoods { padding-top: $space-20; }
 .recommendedFoods h2 { margin-bottom: $space-8; font-size: $font-size-3xl; font-weight: $font-weight-semibold; }
 .foodGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: $grid-gutter; }
 
-.purchasePanel { position: sticky; top: calc(var(--detail-header-height) + #{$space-3}); padding: $space-4; background: $color-white; border: 1px solid $color-border; border-radius: $radius-lg; box-shadow: 0 $space-2 $space-6 rgba($color-text-primary, .08); }
+.purchasePanel { position: sticky; top: calc(var(--detail-header-height) + #{$space-3}); padding: $space-6; background: $color-bg; border: 1px solid $color-border; border-radius: $radius-lg; box-shadow: 0 $space-2 $space-6 rgba($color-text-primary, .08); }
 .brand { margin-bottom: $space-2; color: $color-text-muted; font-size: $font-size-xs; }
 .purchasePanel > h1 { font-size: $font-size-xl; font-weight: $font-weight-semibold; line-height: $line-height-tight; }
 .price { display: flex; gap: $space-2; align-items: center; margin-top: $space-3; }
@@ -31,6 +56,7 @@
 .rating span { letter-spacing: 2px; }
 .rating small { color: $color-text-muted; font-size: $font-size-xs; }
 .wishButton, .cartButton { width: 100%; padding: $space-2 $space-3; font-size: $font-size-sm; text-align: center; border-radius: $radius-md; transition: transform $transition-fast ease, background $transition-fast ease; }
+.purchaseActions { display: flex; flex-direction: column; }
 .wishButton { color: $color-text-secondary; background: $color-surface; }
 .wishButton:hover, .cartButton:hover { transform: translateY(-2px); }
 .wished { background: $color-error; color: $color-bg;}
@@ -54,7 +80,8 @@
 .miniCard > div { display: flex; justify-content: space-between; gap: $space-1; margin: $space-2 0; font-size: $font-size-xs; }
 .miniCard span { @include mixins.ellipsis; }
 .miniCard strong { flex-shrink: 0; font-weight: $font-weight-semibold; }
-.miniCart { display: block; padding: $space-2; color: $color-white; font-size: $font-size-xs; text-align: center; background: rgba($color-primary, .65); border-radius: $radius-sm; }
+.miniCart { display: block; padding: $space-2; color: $color-white; font-size: $font-size-xs; text-align: center; background: rgba($color-primary, .65); border-radius: $radius-sm; transition: color $transition-fast ease, background $transition-fast ease, transform $transition-fast ease; }
+.miniCart:hover { color: $color-white; background: $color-primary; transform: translateY(-2px); }
 .dots { @include mixins.flex-center; gap: $space-2; margin-top: $space-3; }
 .dots button { width: 8px; height: 8px; background: $color-border; border-radius: 50%; transition: width $transition-fast ease, background $transition-fast ease; }
 .dots .activeDot { background: $color-primary; }
@@ -79,9 +106,13 @@
   .thumbnails { grid-template-columns: repeat(3, 1fr); grid-template-rows: none; }
   .thumbnails img { aspect-ratio: 1; }
   .purchasePanel { position: relative; top: auto; order: 2; width: 100%; }
+  .purchaseActions { flex-direction: row; gap: $space-2; }
+  .purchaseActions .cartButton { margin-top: 0; }
   .tabs { order: 3; width: 100%; justify-content: space-around; gap: 0; margin-top: $space-4; }
   .tabs button { padding-inline: $space-3; }
-  .detailContent, .reviewEmpty { order: 4; width: 100%; min-height: 420px; margin-top: $space-8; }
+  .detailContent, .reviewSection { order: 4; width: 100%; margin-top: $space-8; }
+  .detailContent { min-height: 420px; }
+  .reviewForm { padding: $space-5; }
   .recommendedFoods { order: 5; width: 100%; padding-top: $space-16; }
   .foodGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-8 $space-3; }
 }

@@ -27,7 +27,7 @@
   position: relative;
   display: flex;
   /* 주문내역 요약 패널과 동일한 민트 배경 폭 */
-  width: 1128px;
+  width: 100%;
   height: 201px;
   align-items: center;
   overflow: visible;
@@ -43,14 +43,39 @@
   height: 118px;
   flex: 0 0 118px;
   place-items: center;
+  padding: v.$space-2;
+  overflow: hidden;
+  border: 0;
   border-radius: v.$radius-pill;
   background: v.$color-white;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: box-shadow v.$transition-fast, transform v.$transition-fast;
+}
+
+.avatar:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.avatar:focus-visible {
+  outline: 3px solid v.$color-primary-light;
+  outline-offset: 3px;
+}
+
+.avatar:disabled {
+  cursor: default;
 }
 
 .avatar svg {
   width: 74px;
   height: 74px;
   fill: #c5c5c5;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .bannerCopy {
@@ -195,13 +220,16 @@
   position: absolute;
   right: -73px;
   bottom: -10px;
-  display: grid;
   width: 174px;
   height: 157px;
-  place-items: center;
-  font-size: 116px;
-  line-height: 1;
   pointer-events: none;
+}
+
+.mascotImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .mascotFace,
@@ -273,8 +301,9 @@
 
 .infoGrid {
   display: grid;
-  width: 1220px;
-  grid-template-columns: 444px 738px;
+  width: 100%;
+  grid-template-columns: minmax(0, 0.6fr) minmax(0, 1fr);
+  align-items: start;
   gap: 38px;
   margin-top: 43px;
 }
@@ -283,29 +312,104 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  padding: 28px 29px v.$space-10;
+  padding: v.$space-6 v.$space-8 v.$space-8;
   border: 1px solid v.$color-border;
   border-radius: v.$radius-lg;
   background: v.$color-white;
 }
 
 .infoCard:first-child {
-  height: 642px;
+  min-height: 0;
+}
+
+.avatarPicker {
+  margin: v.$space-4 0 v.$space-5;
+  padding: v.$space-4;
+  border: 1px solid color-mix(in srgb, v.$color-primary 20%, v.$color-border);
+  border-radius: v.$radius-lg;
+  background: color-mix(in srgb, v.$color-primary 6%, v.$color-white);
+}
+
+.avatarPickerHeading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: v.$space-3;
+}
+
+.avatarPickerHeading h3,
+.avatarPickerHeading p {
+  margin: 0;
+}
+
+.avatarPickerHeading h3 {
+  color: v.$color-text-primary;
+  font-size: v.$font-size-sm;
+}
+
+.avatarPickerHeading p {
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-xs;
+}
+
+.avatarPresetList {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: v.$space-2;
+  margin-top: v.$space-3;
+}
+
+.avatarPresetList button {
+  display: grid;
+  aspect-ratio: 1;
+  place-items: center;
+  padding: v.$space-1;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: v.$radius-md;
+  background: v.$color-white;
+}
+
+.avatarPresetList button:hover,
+.avatarPresetList button:focus-visible,
+.avatarPresetActive {
+  border-color: v.$color-primary !important;
+  background: color-mix(in srgb, v.$color-primary 12%, v.$color-white) !important;
+}
+
+.avatarPresetList button:focus-visible {
+  outline: 2px solid v.$color-primary-light;
+  outline-offset: 2px;
+}
+
+.avatarPresetList img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .infoCard:first-child h2 {
-  font-weight: v.$font-weight-semibold;
+  margin-bottom: v.$space-1;
+  font-size: v.$font-size-xl;
+  font-weight: v.$font-weight-bold;
 }
 
 /* Figma: 카드 제목 아래 구분선 */
 .infoCard h2 {
   margin: 0;
-  padding-bottom: v.$space-4;
+  padding-bottom: v.$space-3;
   border-bottom: 1px solid v.$color-border;
   color: v.$color-text-primary;
-  font-size: v.$font-size-xl;
+  font-size: v.$font-size-lg;
   font-weight: v.$font-weight-bold;
   line-height: v.$line-height-tight;
+}
+
+.infoDescription {
+  margin: 0 0 v.$space-4;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+  line-height: v.$line-height-base;
 }
 
 /* Figma: 이름/이메일/휴대폰/생년월일 사이 구분선 */
@@ -316,11 +420,11 @@
 
 .detailRow {
   display: grid;
-  min-height: 68px;
-  grid-template-columns: 104px minmax(0, 1fr);
+  min-height: 60px;
+  grid-template-columns: 88px minmax(0, 1fr);
   align-items: center;
   border-bottom: 1px solid v.$color-border;
-  font-size: 20px;
+  font-size: v.$font-size-md;
   line-height: v.$line-height-base;
 }
 
@@ -330,24 +434,29 @@
 
 .detailRow dt {
   color: v.$color-text-muted;
-  font-weight: v.$font-weight-medium;
+  font-weight: v.$font-weight-regular;
 }
 
 .detailRow dd {
   margin: 0;
   color: v.$color-text-primary;
-  font-weight: v.$font-weight-medium;
+  font-weight: v.$font-weight-semibold;
+}
+
+.detailRow .unregisteredValue {
+  color: v.$color-text-muted;
+  font-weight: v.$font-weight-regular;
 }
 
 .editProfileButton {
-  width: 263px;
-  height: 56px;
-  align-self: center;
-  margin-top: auto;
+  min-width: 136px;
+  height: 44px;
+  align-self: flex-end;
+  margin-top: v.$space-6;
   border-radius: v.$radius-lg;
   background: v.$color-primary;
   color: v.$color-white;
-  font-size: v.$font-size-lg;
+  font-size: v.$font-size-md;
 }
 
 .deliveryCard {
@@ -571,6 +680,12 @@
   .avatar svg {
     width: 44px;
     height: 44px;
+  }
+
+  .avatarPickerHeading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: v.$space-1;
   }
 
   .bannerCopy {
@@ -828,11 +943,23 @@
 }
 
 .emptyIcon {
+  position: relative;
+  display: grid;
   width: 134px;
   height: 134px;
+  place-items: center;
   margin-bottom: v.$space-10;
   border-radius: v.$radius-pill;
   background: color-mix(in srgb, v.$color-primary 45%, v.$color-white);
+}
+
+.deliveryEmptyIcon svg {
+  width: 62px;
+  height: 62px;
+  stroke: v.$color-white;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.5;
 }
 
 .emptyCard h2 {

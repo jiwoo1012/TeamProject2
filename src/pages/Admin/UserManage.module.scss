@@ -1,5 +1,983 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as v;
+
+.page {
+  width: 100%;
+  color: v.$color-text-primary;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.introCard,
+.summaryGrid,
+.filterBar,
+.managementGrid {
+  width: 100%;
+}
+
+.introCard h3,
+.introCard p,
+.sectionHeading h3,
+.detailPanel h3,
+.modalHeader h3,
+.modalHeader p,
+.activitySummary h4,
+.memberControls h4,
+.memberControls p {
+  margin: 0;
+}
+
+.introActions span,
+.statusBadge,
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: v.$radius-pill;
+  white-space: nowrap;
+}
+
+.introCard {
+  display: flex;
+  min-height: 126px;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.$space-8;
+  margin-bottom: v.$space-4;
+  padding: v.$space-6 v.$space-8;
+  border: 1px solid color-mix(in srgb, v.$color-primary 34%, v.$color-border);
+  border-radius: v.$radius-xl;
+  background: color-mix(in srgb, v.$color-primary 40%, v.$color-bg);
+}
+
+.introCard h3 {
+  font-size: v.$font-size-2xl;
+  font-weight: v.$font-weight-bold;
+}
+
+.introCard p {
+  margin-top: v.$space-2;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-md;
+}
+
+.introActions {
+  display: flex;
+  gap: v.$space-3;
+}
+
+.introActions span {
+  min-height: 34px;
+  padding: 0 v.$space-4;
+  border: 1px solid v.$color-border;
+  background: v.$color-white;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-xs;
+}
+
+.introActions span:first-child {
+  border-color: v.$color-primary;
+  background: v.$color-primary;
+  color: v.$color-white;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: v.$space-4;
+  margin-bottom: v.$space-4;
+}
+
+.summaryCard {
+  position: relative;
+  display: flex;
+  min-height: 96px;
+  flex-direction: column;
+  justify-content: center;
+  gap: v.$space-1;
+  padding: v.$space-5 v.$space-6;
+  overflow: hidden;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
+}
+
+.summaryCard::before {
+  position: absolute;
+  top: v.$space-4;
+  right: v.$space-4;
+  width: v.$space-5;
+  height: v.$space-5;
+  border-radius: 50%;
+  background: color-mix(in srgb, v.$color-primary 24%, v.$color-white);
+  content: '';
+}
+
+.summaryCard span {
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+}
+
+.summaryCard strong {
+  font-size: v.$font-size-2xl;
+  line-height: 1;
+}
+
+.summaryCard em {
+  margin-top: v.$space-1;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-xs;
+  font-style: normal;
+}
+
+.filterBar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.5fr) repeat(3, minmax(108px, 0.62fr)) auto;
+  gap: v.$space-3;
+  margin-bottom: v.$space-6;
+  padding: v.$space-4;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
+}
+
+.searchField,
+.selectField {
+  display: flex;
+  min-width: 0;
+  height: 42px;
+  align-items: center;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-pill;
+  background: v.$color-bg;
+}
+
+.searchField {
+  gap: v.$space-2;
+  padding: 0 v.$space-4;
+}
+
+.searchField svg {
+  width: v.$space-5;
+  height: v.$space-5;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: v.$color-text-muted;
+  stroke-linecap: round;
+  stroke-width: 1.5;
+}
+
+.searchField input,
+.selectField select,
+.controlFields select {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: v.$color-text-primary;
+  font: inherit;
+}
+
+.searchField input {
+  min-width: 0;
+  font-size: v.$font-size-sm;
+}
+
+.searchField input::placeholder {
+  color: v.$color-text-muted;
+}
+
+.selectField {
+  padding: 0 v.$space-3;
+}
+
+.selectField select {
+  cursor: pointer;
+  font-size: v.$font-size-sm;
+}
+
+.resetButton,
+.viewButton,
+.detailButton,
+.emptyState button,
+.modalFooter button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid v.$color-border;
+  background: v.$color-white;
+  color: v.$color-text-secondary;
+  font: inherit;
+  line-height: 1;
+  text-align: center;
+  cursor: pointer;
+}
+
+.resetButton {
+  min-width: 72px;
+  border-radius: v.$radius-pill;
+  font-size: v.$font-size-xs;
+}
+
+.searchField:focus-within,
+.selectField:focus-within {
+  border-color: v.$color-primary;
+  box-shadow: 0 0 0 2px color-mix(in srgb, v.$color-primary 14%, transparent);
+}
+
+.managementGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  align-items: start;
+  gap: v.$space-4;
+}
+
+.memberSection,
+.detailPanel {
+  min-width: 0;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: v.$space-3;
+  padding: 0 v.$space-2 0 v.$space-1;
+}
+
+.sectionTitle {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: v.$space-3;
+}
+
+.sectionTitle > span {
+  width: 48px;
+  height: 1px;
+  background: v.$color-border;
+}
+
+.sectionHeading h3,
+.detailPanel h3 {
+  font-size: v.$font-size-xl;
+  font-weight: v.$font-weight-bold;
+}
+
+.memberCount {
+  display: inline-flex;
+  min-width: 48px;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-pill;
+  background: color-mix(in srgb, v.$color-surface 26%, v.$color-white);
+  color: v.$color-primary;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+}
+
+.tableWrap,
+.detailPanel {
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
+}
+
+.tableWrap {
+  overflow: auto;
+}
+
+.memberTable {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+}
+
+.memberTable th,
+.memberTable td {
+  padding: v.$space-4 v.$space-3;
+  border-bottom: 1px solid color-mix(in srgb, v.$color-border 72%, transparent);
+  font-size: v.$font-size-sm;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.memberTable th {
+  color: v.$color-text-muted;
+  font-weight: v.$font-weight-medium;
+}
+
+.memberTable tbody tr {
+  cursor: pointer;
+  transition: background-color v.$transition-fast, box-shadow v.$transition-fast;
+}
+
+.memberTable tbody tr:hover,
+.memberTable .selectedRow {
+  background: color-mix(in srgb, v.$color-primary 7%, v.$color-white);
+}
+
+.memberTable tbody tr:hover {
+  box-shadow: inset 3px 0 0 v.$color-primary;
+}
+
+.memberTable tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: v.$space-2;
+  padding: v.$space-4;
+  border-top: 1px solid v.$color-border;
+}
+
+.pagination button {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid v.$color-border;
+  border-radius: 50%;
+  background: v.$color-white;
+  color: v.$color-text-secondary;
+  font: inherit;
+  font-size: v.$font-size-sm;
+  cursor: pointer;
+}
+
+.pagination .activePage {
+  border-color: v.$color-primary;
+  background: v.$color-primary;
+  color: v.$color-white;
+}
+
+.memberIdentity,
+.previewProfile,
+.modalProfile {
+  display: flex;
+  align-items: center;
+}
+
+.memberIdentity {
+  gap: v.$space-3;
+  white-space: nowrap;
+}
+
+.avatar {
+  display: inline-flex;
+  width: v.$space-8;
+  height: v.$space-8;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, v.$color-surface 76%, v.$color-white);
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-bold;
+}
+
+.largeAvatar {
+  width: 64px;
+  height: 64px;
+  font-size: v.$font-size-xl;
+}
+
+.statusBadge,
+.roleBadge {
+  min-height: 24px;
+  padding: 0 v.$space-3;
+  font-size: v.$font-size-xs;
+}
+
+.statusBadge.active {
+  background: color-mix(in srgb, v.$color-success 16%, v.$color-white);
+  color: v.$color-success;
+}
+
+.statusBadge::before {
+  width: 6px;
+  height: 6px;
+  margin-right: v.$space-1;
+  border-radius: 50%;
+  background: currentcolor;
+  content: '';
+}
+
+.statusBadge.suspended::before {
+  width: 7px;
+  height: 2px;
+  border-radius: v.$radius-pill;
+}
+
+.statusBadge.suspended {
+  background: color-mix(in srgb, v.$color-error 14%, v.$color-white);
+  color: v.$color-error;
+}
+
+.roleBadge {
+  background: color-mix(in srgb, v.$color-surface 62%, v.$color-white);
+  color: v.$color-text-secondary;
+}
+
+.viewButton {
+  min-width: 52px;
+  min-height: 28px;
+  border-radius: v.$radius-pill;
+  font-size: v.$font-size-xs;
+}
+
+.viewButton:hover,
+.detailButton:hover,
+.emptyState button:hover,
+.resetButton:hover {
+  border-color: v.$color-primary;
+  color: v.$color-primary;
+}
+
+.detailPanel {
+  padding: v.$space-5;
+}
+
+.detailPanel > h3 {
+  margin-bottom: v.$space-5;
+}
+
+.previewProfile,
+.modalProfile {
+  gap: v.$space-4;
+}
+
+.previewProfile > div,
+.modalProfile > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: v.$space-1;
+}
+
+.previewProfile strong,
+.modalProfile strong {
+  font-size: v.$font-size-lg;
+}
+
+.previewProfile > div > span,
+.modalProfile > div > span {
+  overflow: hidden;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: v.$space-2;
+  margin-top: v.$space-2;
+}
+
+.previewList,
+.infoCard {
+  margin: 0;
+}
+
+.previewList {
+  display: grid;
+  gap: v.$space-3;
+  margin-top: v.$space-6;
+}
+
+.previewList div,
+.infoCard div {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  gap: v.$space-3;
+}
+
+.previewList dt,
+.previewList dd,
+.infoCard dt,
+.infoCard dd {
+  margin: 0;
+  font-size: v.$font-size-sm;
+}
+
+.previewList dt,
+.infoCard dt {
+  color: v.$color-text-muted;
+}
+
+.previewList dd,
+.infoCard dd {
+  overflow-wrap: anywhere;
+  font-weight: v.$font-weight-semibold;
+}
+
+.detailButton {
+  width: 100%;
+  min-height: 40px;
+  margin-top: v.$space-6;
+  border-color: v.$color-primary;
+  border-radius: v.$radius-lg;
+  background: v.$color-primary;
+  color: v.$color-white;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+}
+
+.detailButton:hover {
+  background: color-mix(in srgb, v.$color-primary 90%, v.$color-text-primary);
+  color: v.$color-white;
+}
+
+.emptyState {
+  display: grid;
+  min-height: 280px;
+  place-items: center;
+  align-content: center;
+  gap: v.$space-2;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
+  text-align: center;
+}
+
+.emptyState p,
+.noSelection {
+  margin: 0;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+}
+
+.emptyState button {
+  min-height: 36px;
+  margin-top: v.$space-3;
+  padding: 0 v.$space-4;
+  border-radius: v.$radius-pill;
+  font-size: v.$font-size-xs;
+}
+
+.modalBackdrop {
+  position: fixed;
+  z-index: v.$z-modal;
+  inset: 0;
+  display: grid;
+  overflow-y: auto;
+  place-items: center;
+  padding: v.$space-6;
+  background: color-mix(in srgb, v.$color-text-primary 42%, transparent);
+}
+
+.modal {
+  width: min(720px, 100%);
+  max-height: calc(100vh - #{v.$space-12});
+  overflow-y: auto;
+  border: 1px solid color-mix(in srgb, v.$color-primary 28%, v.$color-border);
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
+  box-shadow: 0 18px 48px color-mix(in srgb, v.$color-text-primary 18%, transparent);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: v.$space-5;
+  padding: v.$space-6 v.$space-8 v.$space-4;
+  background: color-mix(in srgb, v.$color-primary 40%, v.$color-bg);
+}
+
+.modalHeader h3 {
+  font-size: v.$font-size-2xl;
+}
+
+.modalHeader p {
+  margin-top: v.$space-2;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-md;
+}
+
+.closeButton {
+  display: inline-flex;
+  width: v.$space-8;
+  height: v.$space-8;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, v.$color-primary 18%, v.$color-white);
+  color: v.$color-primary;
+  font-size: v.$font-size-xl;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.memberIdRow {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: v.$space-3;
+  margin: v.$space-4 v.$space-8 0;
+  padding: 0 v.$space-4;
+  border: 1px solid color-mix(in srgb, v.$color-primary 24%, v.$color-border);
+  border-radius: v.$radius-pill;
+  background: color-mix(in srgb, v.$color-primary 10%, v.$color-white);
+}
+
+.memberIdRow span {
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+}
+
+.memberIdRow strong {
+  color: v.$color-primary;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+}
+
+.modalBody {
+  display: grid;
+  gap: v.$space-5;
+  padding: v.$space-6 v.$space-8;
+}
+
+.modalProfile {
+  padding: 0 v.$space-1;
+}
+
+.modalProfile strong {
+  font-size: v.$font-size-xl;
+}
+
+.modalProfile > div > span {
+  font-size: v.$font-size-sm;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: v.$space-4;
+}
+
+.infoCard {
+  display: grid;
+  gap: v.$space-4;
+  padding: v.$space-5;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-xl;
+  background: color-mix(in srgb, v.$color-primary 5%, v.$color-white);
+}
+
+.infoCard div {
+  grid-template-columns: 76px minmax(0, 1fr);
+}
+
+.modal .infoCard dt,
+.modal .infoCard dd {
+  font-size: v.$font-size-md;
+}
+
+.activitySummary h4,
+.memberControls h4 {
+  font-size: v.$font-size-lg;
+}
+
+.activitySummary > div {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: v.$space-3;
+  margin-top: v.$space-3;
+}
+
+.activitySummary article {
+  display: flex;
+  min-height: 76px;
+  flex-direction: column;
+  justify-content: center;
+  gap: v.$space-2;
+  padding: v.$space-4;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+  background: v.$color-white;
+}
+
+.activitySummary span {
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-medium;
+}
+
+.activitySummary strong {
+  font-size: v.$font-size-xl;
+}
+
+.memberControls {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: v.$space-5;
+  padding: v.$space-5;
+  border: 1px solid color-mix(in srgb, v.$color-primary 24%, v.$color-border);
+  border-radius: v.$radius-xl;
+  background: color-mix(in srgb, v.$color-primary 16%, v.$color-bg);
+}
+
+.memberControls p {
+  margin-top: v.$space-2;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+}
+
+.controlFields {
+  display: flex;
+  gap: v.$space-3;
+}
+
+.controlFields label {
+  display: grid;
+  gap: v.$space-1;
+}
+
+.controlFields label > span {
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
+
+.controlFields select {
+  min-width: 116px;
+  height: 38px;
+  box-sizing: border-box;
+  padding: 0 v.$space-4;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-pill;
+  background: v.$color-white;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-sm;
+  line-height: 38px;
+  text-align: center;
+  text-align-last: center;
+  vertical-align: middle;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: v.$space-3;
+  padding: 0 v.$space-8 v.$space-6;
+}
+
+.modalFooter button {
+  min-width: 88px;
+  min-height: 40px;
+  border-radius: v.$radius-pill;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-semibold;
+}
+
+.modalFooter .saveButton {
+  border-color: v.$color-primary;
+  background: v.$color-primary;
+  color: v.$color-white;
+}
+
+.suspensionConfirm {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: v.$space-2 v.$space-4;
+  margin-top: v.$space-4;
+  padding: v.$space-4;
+  border: 1px solid color-mix(in srgb, v.$color-error 34%, v.$color-border);
+  border-radius: v.$radius-lg;
+  background: color-mix(in srgb, v.$color-error 7%, v.$color-white);
+  color: v.$color-text-primary;
+}
+
+.suspensionConfirm strong {
+  font-size: v.$font-size-sm;
+}
+
+.suspensionConfirm p {
+  margin: 0;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-xs;
+}
+
+.suspensionConfirm div {
+  display: flex;
+  gap: v.$space-2;
+  margin-left: auto;
+}
+
+.suspensionConfirm button {
+  min-width: 68px;
+  min-height: 34px;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-pill;
+  background: v.$color-white;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-xs;
+}
+
+.suspensionConfirm button:last-child {
+  border-color: v.$color-error;
+  background: v.$color-error;
+  color: v.$color-white;
+}
+
+.toast {
+  position: fixed;
+  z-index: v.$z-toast;
+  right: v.$space-6;
+  bottom: v.$space-6;
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: v.$space-3;
+  padding: 0 v.$space-4;
+  border-radius: v.$radius-md;
+  background: v.$color-text-primary;
+  box-shadow: v.$shadow-sm;
+  color: v.$color-white;
+  font-size: v.$font-size-sm;
+}
+
+.toast button {
+  border: 0;
+  background: transparent;
+  color: v.$color-white;
+  font-size: v.$font-size-lg;
+  cursor: pointer;
+}
+
+.resetButton:focus-visible,
+.viewButton:focus-visible,
+.detailButton:focus-visible,
+.emptyState button:focus-visible,
+.closeButton:focus-visible,
+.modalFooter button:focus-visible {
+  outline: 2px solid v.$color-primary-light;
+  outline-offset: 2px;
+}
+
+@media (max-width: v.$breakpoint-tablet-max) {
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filterBar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .searchField {
+    grid-column: 1 / -1;
+  }
+
+  .managementGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .detailPanel {
+    order: -1;
+  }
+}
+
+@media (max-width: v.$breakpoint-mobile-max) {
+  .introCard,
+  .memberControls {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .introActions {
+    display: none;
+  }
+
+  .introCard {
+    min-height: auto;
+    padding: v.$space-5;
+  }
+
+  .summaryGrid,
+  .filterBar,
+  .infoGrid,
+  .activitySummary > div {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryCard {
+    min-height: 88px;
+  }
+
+  .searchField {
+    grid-column: auto;
+  }
+
+  .filterBar {
+    padding: v.$space-3;
+  }
+
+  .resetButton {
+    min-height: 40px;
+  }
+
+  .detailPanel {
+    padding: v.$space-4;
+  }
+
+  .modalBackdrop {
+    align-items: end;
+    padding: 0;
+  }
+
+  .modal {
+    width: 100%;
+    max-height: 92vh;
+    border-radius: v.$radius-xl v.$radius-xl 0 0;
+  }
+
+  .modalHeader,
+  .modalBody,
+  .modalFooter {
+    padding-right: v.$space-5;
+    padding-left: v.$space-5;
+  }
+
+  .memberIdRow {
+    margin-right: v.$space-5;
+    margin-left: v.$space-5;
+  }
+
+  .controlFields {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .controlFields select {
+    width: 100%;
+  }
+
+  .suspensionConfirm div {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .suspensionConfirm button {
+    flex: 1;
+  }
+}

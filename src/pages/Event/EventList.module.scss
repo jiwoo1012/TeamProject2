@@ -1,5 +1,71 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as mixins;
+
+.page { position: relative; isolation: isolate; min-height: 100vh; padding: $space-30 0 $space-20; color: $color-text-primary; background: $color-white; font-family: $font-family-base; }
+.page::before { position: absolute; z-index: -1; inset: 0; content: ''; pointer-events: none; background-image: var(--event-texture); background-repeat: repeat; background-size: 620px auto; opacity: 0.8; }
+.container { width: calc(100% - (#{$side-margin-desktop} * 2)); max-width: 1600px; margin-inline: auto; }
+.hero { position: relative; display: flex; align-items: center; min-height: 240px; padding: $space-8 34% $space-8 9%; overflow: visible; color: $color-white; background: rgba($color-primary-light, .78); border-radius: $radius-xl; box-shadow: 0 $space-3 $space-6 rgba($color-text-primary, .08); }
+.alcohol { flex: 0 0 auto; width: 200px; margin-right: $space-10; }
+.heroText { position: relative; z-index: 2; }
+.heroText > p { font-size: $font-size-5xl; font-weight: $font-weight-bold; }
+.heroText h1 { margin-top: $space-2; font-size: $font-size-3xl; font-weight: $font-weight-bold; line-height: $line-height-tight; }
+.heroText span { display: block; margin-top: $space-2; font-size: $font-size-md; }
+.makdongCrop { position: absolute; right: 7%; bottom: 0; width: min(34%, 430px); height: 350px; overflow: hidden; pointer-events: none; }
+.makdong { position: absolute; top: 0; left: 50%; width: min(500px, 90%); max-width: none; transform: translateX(-50%); }
+
+.eventGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: $grid-gutter; margin-top: $space-20; }
+.eventCard { overflow: hidden; background: $color-white; border: 1px solid rgba($color-taupe, .32); border-radius: $radius-xl; box-shadow: 0 $space-2 $space-5 rgba($color-text-primary, .05); transition: transform $transition-base ease, box-shadow $transition-base ease; }
+.eventCard:hover { transform: translateY(-$space-2); box-shadow: 0 $space-4 $space-8 rgba($color-text-primary, .1); }
+.imageArea { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: rgba($color-surface, .55); }
+.imageArea img { width: 100%; height: 100%; object-fit: cover; transition: transform $transition-base ease, filter $transition-base ease; }
+.eventCard:hover .imageArea img { transform: scale(1.025); }
+.status { position: absolute; top: $space-5; left: $space-5; padding: $space-2 $space-5; color: $color-white; font-size: $font-size-sm; background: $color-primary; border-radius: $radius-pill; }
+.endedCard .imageArea img { filter: grayscale(1) saturate(.55); opacity: .72; }
+.endedCard .status { background: $color-text-muted; }
+.cardContent { display: flex; align-items: center; flex-direction: column; min-height: 272px; padding: $space-10 $space-8 $space-8; text-align: center; }
+.cardContent h2 { font-size: $font-size-2xl; font-weight: $font-weight-bold; }
+.cardContent p { margin-top: $space-4; color: $color-text-muted; font-size: $font-size-md; }
+.cardContent time { margin-top: $space-5; font-size: $font-size-sm; }
+.cardContent > a { display: flex; align-items: center; justify-content: center; width: 100%; margin-top: auto; padding: $space-3 $space-5; color: $color-white; background: $color-primary-light;  border-radius: $radius-md; transition: background $transition-fast ease, transform $transition-fast ease; }
+.cardContent > a:hover { background: $color-primary; transform: translateY(-2px); }
+.cardContent > a span { margin-left: $space-6; }
+.endedCard .cardContent > a { background: $color-text-muted; border-color: $color-text-muted; }
+.endedCard .cardContent > a:hover { background: $color-text-secondary; }
+
+.pagination { @include mixins.flex-center; gap: $space-8; padding-top: $space-20; }
+.pagination button { @include mixins.flex-center; min-width: 48px; height: 48px; color: $color-text-primary; font-size: $font-size-md; border-radius: 50%; transition: color $transition-fast ease, background $transition-fast ease; }
+.pagination button:hover:not(:disabled) { color: $color-white; background: $color-primary-light; }
+.pagination button:disabled { opacity: .3; }
+.pagination .currentPage { color: $color-white; background: $color-primary-light; }
+
+@include mixins.tablet {
+  .page { padding-top: $space-20; }
+  .container { width: calc(100% - (#{$side-margin-tablet} * 2)); }
+  .hero { min-height: 220px; padding-left: $space-10; }
+  .alcohol { width: 104px; margin-right: $space-6; }
+  .heroText > p { font-size: $font-size-4xl; }
+  .heroText h1 { font-size: $font-size-2xl; }
+  .makdongCrop { right: 2%; width: 38%; height: 330px; }
+  .eventGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@include mixins.mobile {
+  .page { padding: $space-10 0 $space-20; }
+  .page::before { background-size: 500px auto; opacity: .3; }
+  .container { width: calc(100% - (#{$side-margin-mobile} * 2)); }
+  .hero { align-items: flex-start; min-height: 300px; padding: $space-8 $space-6; }
+  .alcohol { width: 72px; margin-right: $space-4; }
+  .heroText { padding-right: 0; }
+  .heroText > p { font-size: $font-size-3xl; }
+  .heroText h1 { font-size: $font-size-xl; }
+  .heroText span { margin-top: $space-4; font-size: $font-size-sm; }
+  .makdongCrop { right: 0; width: 58%; height: 190px; }
+  .makdong { width: 105%; }
+  .eventGrid { grid-template-columns: 1fr; margin-top: $space-12; }
+  .imageArea { aspect-ratio: 16 / 9; }
+  .cardContent { min-height: 248px; padding: $space-8 $space-5 $space-6; }
+  .cardContent h2 { font-size: $font-size-xl; }
+  .cardContent p { font-size: $font-size-sm; }
+  .pagination { gap: $space-2; padding-top: $space-12; }
+  .pagination button { min-width: 42px; height: 42px; font-size: $font-size-md; }
+}

@@ -15,8 +15,26 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin: 0 0 v.$space-12;
+  margin: 0 0 v.$space-3;
   padding: 0 v.$space-12;
+}
+
+.ornamentArea {
+  position: relative;
+  width: min(
+    1161px,
+    calc(100% - #{v.$grid-gutter * 14 + v.$space-12 + v.$space-2 + v.$side-margin-desktop})
+  );
+  margin: 0 v.$side-margin-desktop v.$space-8
+    calc(v.$grid-gutter * 14 + v.$space-12 + v.$space-2);
+}
+
+.topOrnament {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform: scaleX(1.05);
+  transform-origin: left center;
 }
 
 .title {
@@ -142,15 +160,15 @@
 ========================= */
 
 .logoutButton {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + v.$space-3);
   display: flex;
+  height: 36px;
   align-items: center;
   gap: v.$space-3;
   justify-content: center;
-  /* MyPage 하위 콘텐츠의 데스크톱 우측 끝선에 맞춤 */
-  // MyHome 카드 영역(1161px)을 기준으로 우측 끝을 맞춘다.
-  // ProfileEdit 카드 그리드(1220px)와의 차이 59px을 더해 보정한다.
-  margin-right: calc(v.$space-20 + 59px);
-  padding: v.$space-2 0;
+  padding: 0 v.$space-2;
 
   border: 0;
   background: transparent;
@@ -159,6 +177,10 @@
   font: inherit;
 
   cursor: pointer;
+}
+
+.logoutButton:hover {
+  color: v.$color-primary;
 }
 
 .logoutIcon {
@@ -172,13 +194,21 @@
   stroke-linejoin: round;
 }
 
+.loginIcon {
+  transform: scaleX(-1);
+}
+
 /* =========================
    Outlet Content
 ========================= */
 
 .content {
-  width: 100%;
-  max-width: calc(v.$container-max - v.$grid-gutter * 12);
+  padding: v.$space-4 0 0 v.$space-6;
+  width: min(
+    1161px,
+    calc(100vw - #{v.$grid-gutter * 14 + v.$space-12 + v.$space-2 + v.$side-margin-desktop})
+  );
+  max-width: none;
   min-width: 0;
 }
 
@@ -191,6 +221,11 @@
     padding: 0 v.$side-margin-tablet;
   }
 
+  .ornamentArea {
+    width: calc(100% - v.$side-margin-tablet * 2);
+    margin: 0 auto v.$space-8;
+  }
+
   .layout {
     grid-template-columns:
       calc(v.$grid-gutter * 10) minmax(0, 1fr);
@@ -199,12 +234,10 @@
   }
 
   .content {
-    width: calc(100% - v.$side-margin-tablet);
+    width: 100%;
+    padding: v.$space-3 0 0 v.$space-4;
   }
 
-  .logoutButton {
-    margin-right: 0;
-  }
 }
 
 /* =========================
@@ -221,6 +254,17 @@
     padding: 0 v.$side-margin-mobile;
   }
 
+  .ornamentArea {
+    display: flex;
+    width: auto;
+    justify-content: flex-end;
+    margin: 0 v.$side-margin-mobile v.$space-5;
+  }
+
+  .topOrnament {
+    display: none;
+  }
+
   .title {
     font-size: v.$font-size-3xl;
   }
@@ -231,6 +275,10 @@
 
   .layout {
     display: block;
+  }
+
+  .content {
+    padding: 0;
   }
 
   .sidebar {
@@ -265,8 +313,7 @@
   }
 
   .logoutButton {
-    margin-top: v.$space-4;
-    margin-left: 0;
+    position: static;
   }
 
   .content {

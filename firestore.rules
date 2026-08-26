@@ -1,6 +1,64 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} { allow read, write: if false; }
+
+    // ========================================
+    // USERS
+    // 본인 회원정보만 생성 / 조회 / 수정 / 삭제 가능
+    // ========================================
+    match /users/{userId} {
+      allow create: if request.auth != null
+                    && request.auth.uid == userId;
+
+      allow read, update, delete: if request.auth != null
+                                  && request.auth.uid == userId;
+
+
+      // ========================================
+      // WISHLIST
+      // 로그인 사용자는 본인의 찜 목록만
+      // 생성 / 조회 / 수정 / 삭제 가능
+      // ========================================
+      match /wishlist/{wishlistId} {
+        allow read, create, update, delete: if request.auth != null
+                                            && request.auth.uid == userId;
+      }
+    }
+
+
+    // ========================================
+    // PRODUCTS
+    // 상품은 누구나 조회 가능
+    // 클라이언트에서 수정은 불가능
+    // ========================================
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+
+    // ========================================
+    // ORDERS
+    // 로그인 사용자는 본인의 주문만 생성 / 조회 가능
+    // ========================================
+    match /orders/{orderId} {
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid;
+
+      allow read: if request.auth != null
+                  && resource.data.userId == request.auth.uid;
+
+      allow update, delete: if false;
+    }
+
+
+    // ========================================
+    // DEFAULT
+    // 위에서 허용하지 않은 모든 접근 차단
+    // ========================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
 }

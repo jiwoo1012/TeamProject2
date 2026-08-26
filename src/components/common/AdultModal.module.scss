@@ -1,1 +1,298 @@
-/* Module styles. */
+.overlay {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px;
+
+  background: rgba(37, 30, 25, 0.55);
+  backdrop-filter: blur(3px);
+
+  z-index: 9999;
+
+  box-sizing: border-box;
+}
+
+
+/* ========================================
+   모달
+======================================== */
+
+.modal {
+  position: relative;
+
+  width: min(470px, 100%);
+
+  padding: 54px 52px 42px;
+
+  border-radius: 22px;
+
+  background: #fbfaf7;
+  color: #382b22;
+
+  box-shadow:
+    0 20px 60px rgba(41, 31, 23, 0.18),
+    0 4px 14px rgba(41, 31, 23, 0.08);
+
+  box-sizing: border-box;
+
+  text-align: center;
+}
+
+
+/* ========================================
+   막둥이 + 금지 표시
+======================================== */
+
+.visualArea {
+  display: flex;
+  justify-content: center;
+
+  margin-bottom: 32px;
+}
+
+.prohibition {
+  position: relative;
+
+  width: 155px;
+  height: 155px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 8px solid #e83838;
+  border-radius: 50%;
+
+  box-sizing: border-box;
+}
+
+.makdong {
+  width: 108px;
+  height: 108px;
+
+  object-fit: contain;
+
+  filter: grayscale(100%);
+
+  user-select: none;
+  pointer-events: none;
+}
+
+/* 금지 대각선 */
+.slash {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  width: 162px;
+  height: 8px;
+
+  background: #e83838;
+  border-radius: 999px;
+
+  transform: translate(-50%, -50%) rotate(45deg);
+  transform-origin: center;
+
+  z-index: 2;
+
+  pointer-events: none;
+}
+
+
+/* ========================================
+   텍스트
+======================================== */
+
+.content {
+  margin-bottom: 34px;
+}
+
+
+.title {
+  margin: 0 0 22px;
+
+  color: #33271f;
+
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -0.8px;
+}
+
+
+.description {
+  margin: 0;
+
+  color: #7b7169;
+
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.85;
+
+  word-break: keep-all;
+
+  strong {
+    color: #5a4b40;
+    font-weight: 700;
+  }
+}
+
+
+/* ========================================
+   버튼
+======================================== */
+
+.buttonArea {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+
+.verifyButton,
+.exitButton {
+  width: 100%;
+  height: 58px;
+
+  border-radius: 10px;
+
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+
+  box-sizing: border-box;
+}
+
+
+.verifyButton {
+  border: 1px solid #568b86;
+
+  background: #568b86;
+  color: #ffffff;
+
+  &:hover {
+    background: #477d78;
+    border-color: #477d78;
+
+    transform: translateY(-1px);
+  }
+}
+
+
+.exitButton {
+  border: 1px solid #b9afa6;
+
+  background: transparent;
+  color: #493b32;
+
+  &:hover {
+    border-color: #8e8177;
+
+    background: #f4f1ec;
+  }
+}
+
+
+/* ========================================
+   하단 안내
+======================================== */
+
+.notice {
+  margin: 24px 0 0;
+
+  color: #92877e;
+
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+
+/* ========================================
+   모바일
+======================================== */
+
+@media (max-width: 550px) {
+  .overlay {
+    padding: 20px;
+  }
+
+
+  .modal {
+    padding: 42px 28px 32px;
+
+    border-radius: 18px;
+  }
+
+
+  .visualArea {
+    margin-bottom: 27px;
+  }
+
+
+  .prohibition {
+    width: 135px;
+    height: 135px;
+
+    border-width: 7px;
+  }
+
+
+.makdong {
+  width: 108px;
+  height: 108px;
+  object-fit: contain;
+  transform: translateY(3px);
+  filter: grayscale(100%);
+}
+
+
+  .slash {
+    width: 160px;
+    height: 7px;
+  }
+
+
+  .title {
+    margin-bottom: 18px;
+
+    font-size: 24px;
+  }
+
+
+  .description {
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+
+  .verifyButton,
+  .exitButton {
+    height: 54px;
+
+    font-size: 16px;
+  }
+
+
+  .notice {
+    margin-top: 20px;
+
+    font-size: 12px;
+  }
+}

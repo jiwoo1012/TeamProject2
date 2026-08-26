@@ -119,7 +119,7 @@ const MobileHeader = () => {
               className={styles.menuTitle}
               onClick={() => toggleAccordion('brand')}
             >
-              <span>브랜드</span>
+              <span>브랜드 소개</span>
 
               <span
                 className={`${styles.arrow} ${
@@ -170,7 +170,7 @@ const MobileHeader = () => {
               className={styles.menuTitle}
               onClick={() => toggleAccordion('shop')}
             >
-              <span>상품</span>
+              <span>스토어</span>
 
               <span
                 className={`${styles.arrow} ${

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import ProductCard from '../../components/ui/ProductCard/ProductCard'
 import { foods, products } from '../../data/products'
@@ -34,6 +34,12 @@ const ProductDetail = () => {
   const [pairPage, setPairPage] = useState(0)
   const [isWished, setIsWished] = useState(false)
   const [notice, setNotice] = useState('')
+  const [reviews, setReviews] = useState([])
+  const [reviewNickname, setReviewNickname] = useState('')
+  const [reviewRating, setReviewRating] = useState(0)
+  const [reviewContent, setReviewContent] = useState('')
+  const [editingReviewId, setEditingReviewId] = useState(null)
+  const authorIdRef = useRef(globalThis.crypto?.randomUUID?.() ?? `guest-${Date.now()}`)
 
   useEffect(() => {
     const page = document.querySelector(`.${styles.page}`)
@@ -101,6 +107,41 @@ const ProductDetail = () => {
     window.setTimeout(() => setNotice(''), 1800)
   }
 
+  const handleReviewSubmit = (event) => {
+    event.preventDefault()
+    const nickname = reviewNickname.trim()
+    const content = reviewContent.trim()
+    if (!nickname || !content || reviewRating === 0) return
+    if (editingReviewId) {
+      setReviews((current) => current.map((review) => review.id === editingReviewId ? { ...review, nickname, rating: reviewRating, content } : review))
+    } else {
+      setReviews((current) => [{ id: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}`, authorId: authorIdRef.current, nickname, rating: reviewRating, content, createdAt: new Date().toLocaleDateString('ko-KR') }, ...current])
+    }
+    setEditingReviewId(null)
+    setReviewNickname('')
+    setReviewRating(0)
+    setReviewContent('')
+  }
+
+  const handleReviewEdit = (review) => {
+    setEditingReviewId(review.id)
+    setReviewNickname(review.nickname)
+    setReviewRating(review.rating)
+    setReviewContent(review.content)
+  }
+
+  const handleReviewDelete = (reviewId) => {
+    setReviews((current) => current.filter(({ id }) => id !== reviewId))
+    if (editingReviewId === reviewId) {
+      setEditingReviewId(null)
+      setReviewNickname('')
+      setReviewRating(0)
+      setReviewContent('')
+    }
+  }
+
+  const averageRating = reviews.length ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length : 0
+
   return (
     <main className={styles.page}>
       <div className={styles.layout}>
@@ -114,14 +155,39 @@ const ProductDetail = () => {
 
           <div className={styles.tabs} role="tablist">
             <button className={activeTab === 'detail' ? styles.activeTab : ''} type="button" role="tab" aria-selected={activeTab === 'detail'} onClick={() => setActiveTab('detail')}>상품 상세 정보</button>
-            <button className={activeTab === 'review' ? styles.activeTab : ''} type="button" role="tab" aria-selected={activeTab === 'review'} onClick={() => setActiveTab('review')}>리뷰(0)</button>
+            <button className={activeTab === 'review' ? styles.activeTab : ''} type="button" role="tab" aria-selected={activeTab === 'review'} onClick={() => setActiveTab('review')}>리뷰({reviews.length})</button>
           </div>
 
           {activeTab === 'detail' ? (
             <section className={styles.detailContent} aria-label="상품 상세 정보">
               {productDetailImages.map((image, index) => <img src={image} alt={`${product.productName} 상세 설명 ${index + 1}`} loading="lazy" key={`${image}-detail`} />)}
             </section>
-          ) : <section className={styles.reviewEmpty}>아직 등록된 리뷰가 없습니다.</section>}
+          ) : (
+            <section className={styles.reviewSection}>
+              <form className={styles.reviewForm} onSubmit={handleReviewSubmit}>
+                <h2>{editingReviewId ? '리뷰 수정' : '리뷰 작성'}</h2>
+                <label className={styles.nicknameField}><span>닉네임</span><input value={reviewNickname} maxLength={20} required onChange={(event) => setReviewNickname(event.target.value)} /></label>
+                <fieldset className={styles.starField}>
+                  <legend>별점</legend>
+                  <div>{[1, 2, 3, 4, 5].map((star) => <button className={star <= reviewRating ? styles.selectedStar : ''} type="button" aria-label={`${star}점`} aria-pressed={star === reviewRating} onClick={() => setReviewRating(star)} key={star}>★</button>)}</div>
+                </fieldset>
+                <label className={styles.contentField}><span>리뷰 내용</span><textarea value={reviewContent} rows="5" maxLength={500} required onChange={(event) => setReviewContent(event.target.value)} /></label>
+                <div className={styles.formActions}>
+                  {editingReviewId && <button type="button" onClick={() => { setEditingReviewId(null); setReviewNickname(''); setReviewRating(0); setReviewContent('') }}>취소</button>}
+                  <button type="submit" disabled={!reviewNickname.trim() || !reviewContent.trim() || reviewRating === 0}>{editingReviewId ? '수정 완료' : '리뷰 등록'}</button>
+                </div>
+              </form>
+              <div className={styles.reviewList}>
+                {reviews.length === 0 ? <p className={styles.reviewEmpty}>아직 등록된 리뷰가 없습니다.</p> : reviews.map((review) => (
+                  <article className={styles.reviewItem} key={review.id}>
+                    <header><strong>{review.nickname}</strong><span>{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span><time>{review.createdAt}</time></header>
+                    <p>{review.content}</p>
+                    {review.authorId === authorIdRef.current && <div><button type="button" onClick={() => handleReviewEdit(review)}>수정</button><button type="button" onClick={() => handleReviewDelete(review.id)}>삭제</button></div>}
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
 
           {recommendedFoods.length > 0 && (
             <section className={styles.recommendedFoods}>
@@ -136,9 +202,11 @@ const ProductDetail = () => {
           <h1>{product.productName}</h1>
           <div className={styles.price}>{discountRate > 0 && <span>{discountRate}%</span>}<strong>{salePrice.toLocaleString('ko-KR')}원</strong></div>
           <p className={styles.description}>{product.productDescription}</p>
-          <div className={styles.rating} aria-label="평점 정보 없음"><span>☆☆☆☆☆</span><small>리뷰 0개</small></div>
-          <button className={`${styles.wishButton} ${isWished ? styles.wished : ''}`} type="button" onClick={() => setIsWished((value) => !value)}>{isWished ? '♥ 찜한 상품' : '♡ 찜하기'}</button>
-          <button className={styles.cartButton} type="button" onClick={() => handleNotice('장바구니 기능 연결 전입니다.')}>장바구니에 담기</button>
+          <div className={styles.rating} aria-label={reviews.length ? `평균 별점 ${averageRating.toFixed(1)}점` : '평점 정보 없음'}><span>{reviews.length ? `${averageRating.toFixed(1)} ★` : '☆☆☆☆☆'}</span><small>리뷰 {reviews.length}개</small></div>
+          <div className={styles.purchaseActions}>
+            <button className={`${styles.wishButton} ${isWished ? styles.wished : ''}`} type="button" onClick={() => setIsWished((value) => !value)}>{isWished ? '♥ 찜한 상품' : '♡ 찜하기'}</button>
+            <button className={styles.cartButton} type="button" onClick={() => handleNotice('장바구니 기능 연결 전입니다.')}>장바구니에 담기</button>
+          </div>
           {notice && <p className={styles.notice} role="status">{notice}</p>}
 
           <div className={styles.accordions}>
