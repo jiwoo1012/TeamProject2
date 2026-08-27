@@ -4,8 +4,19 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // ========================================
+    // 관리자 확인
+    // Firebase Auth Custom Claims
+    // admin: true 기준
+    // ========================================
+    function isAdmin() {
+      return request.auth != null
+             && request.auth.token.admin == true;
+    }
+
+
+    // ========================================
     // USERS
-    // 본인 회원정보만 생성 / 조회 / 수정 / 삭제 가능
+    // 기존 회원가입 / 로그인 관련 규칙 그대로 유지
     // ========================================
     match /users/{userId} {
       allow create: if request.auth != null
@@ -16,9 +27,15 @@ service cloud.firestore {
 
 
       // ========================================
+      // ADMIN 추가
+      // 관리자는 전체 회원 조회 / 수정 / 삭제 가능
+      // ========================================
+      allow read, update, delete: if isAdmin();
+
+
+      // ========================================
       // WISHLIST
-      // 로그인 사용자는 본인의 찜 목록만
-      // 생성 / 조회 / 수정 / 삭제 가능
+      // 기존 규칙 그대로 유지
       // ========================================
       match /wishlist/{wishlistId} {
         allow read, create, update, delete: if request.auth != null
@@ -29,18 +46,23 @@ service cloud.firestore {
 
     // ========================================
     // PRODUCTS
-    // 상품은 누구나 조회 가능
-    // 클라이언트에서 수정은 불가능
+    // 기존 조회 규칙 유지
+    // 관리자 기능만 추가
     // ========================================
     match /products/{productId} {
       allow read: if true;
+
+      // 기존 차단 규칙
       allow write: if false;
+
+      // 관리자만 상품 등록 / 수정 / 삭제 가능
+      allow create, update, delete: if isAdmin();
     }
 
 
     // ========================================
     // ORDERS
-    // 로그인 사용자는 본인의 주문만 생성 / 조회 가능
+    // 기존 사용자 주문 규칙 그대로 유지
     // ========================================
     match /orders/{orderId} {
       allow create: if request.auth != null
@@ -50,12 +72,19 @@ service cloud.firestore {
                   && resource.data.userId == request.auth.uid;
 
       allow update, delete: if false;
+
+
+      // ========================================
+      // ADMIN 추가
+      // 전체 주문 조회 / 주문 상태 수정 가능
+      // ========================================
+      allow read, update: if isAdmin();
     }
 
 
     // ========================================
     // DEFAULT
-    // 위에서 허용하지 않은 모든 접근 차단
+    // 기존 그대로
     // ========================================
     match /{document=**} {
       allow read, write: if false;
