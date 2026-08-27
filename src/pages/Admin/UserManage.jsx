@@ -1,33 +1,36 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { subscribeToAuthState } from '../../firebase/auth'
+import { getCollection, updateDocument } from '../../firebase/firestore'
 import styles from './UserManage.module.scss'
 
-const initialMembers = [
-  {
-    id: 'USR-00081', nickname: '홍길동', email: 'hong@example.com', joinedAt: '2026-08-26',
-    lastLoginAt: '2026-08-26 10:24', updatedAt: '2026-08-26 09:52', status: 'active', role: 'user',
-    orders: 12, wishlist: 8, events: 5, recommendations: 4,
-  },
-  {
-    id: 'USR-00080', nickname: '김자작', email: 'jajak@shop.com', joinedAt: '2026-08-04',
-    lastLoginAt: '2026-08-06 09:18', updatedAt: '2026-08-05 18:30', status: 'active', role: 'user',
-    orders: 7, wishlist: 11, events: 2, recommendations: 6,
-  },
-  {
-    id: 'USR-00079', nickname: '관리자', email: 'admin@jajak.com', joinedAt: '2026-08-03',
-    lastLoginAt: '2026-08-06 11:02', updatedAt: '2026-08-06 11:02', status: 'active', role: 'admin',
-    orders: 0, wishlist: 0, events: 0, recommendations: 1,
-  },
-  {
-    id: 'USR-00078', nickname: '박전통', email: 'park@brew.com', joinedAt: '2026-08-01',
-    lastLoginAt: '2026-08-05 20:41', updatedAt: '2026-08-05 20:41', status: 'active', role: 'user',
-    orders: 4, wishlist: 3, events: 1, recommendations: 2,
-  },
-  {
-    id: 'USR-00077', nickname: '이막동', email: 'makdong@example.com', joinedAt: '2026-07-29',
-    lastLoginAt: '2026-08-02 14:10', updatedAt: '2026-08-04 16:22', status: 'suspended', role: 'user',
-    orders: 2, wishlist: 5, events: 0, recommendations: 3,
-  },
-]
+const formatDate = (timestamp) => {
+  const date = timestamp?.toDate?.()
+  if (!date) return '-'
+  return new Intl.DateTimeFormat('ko-CA').format(date)
+}
+
+const formatDateTime = (timestamp) => {
+  const date = timestamp?.toDate?.()
+  if (!date) return '-'
+  return new Intl.DateTimeFormat('ko-KR', {
+    year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false,
+  }).format(date)
+}
+
+const toMember = (member) => ({
+  id: member.id,
+  nickname: member.nickname || member.email?.split('@')[0] || '회원',
+  email: member.email || '-',
+  joinedAt: formatDate(member.createdAt),
+  lastLoginAt: formatDateTime(member.lastLoginAt),
+  updatedAt: formatDateTime(member.updatedAt),
+  status: member.status === 'suspended' ? 'suspended' : 'active',
+  role: member.role === 'admin' ? 'admin' : 'user',
+  orders: 0,
+  wishlist: 0,
+  events: 0,
+  recommendations: 0,
+})
 
 const statusLabels = { active: '정상', suspended: '이용 정지' }
 const roleLabels = { user: '일반 회원', admin: '관리자' }
@@ -39,18 +42,47 @@ const UserAvatar = ({ nickname, large = false }) => (
 )
 
 const UserManage = () => {
-  const [members, setMembers] = useState(initialMembers)
+  const [members, setMembers] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
   const [query, setQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [roleFilter, setRoleFilter] = useState('all')
   const [sortOrder, setSortOrder] = useState('newest')
-  const [selectedId, setSelectedId] = useState(initialMembers[0].id)
+  const [selectedId, setSelectedId] = useState(null)
   const [modalMember, setModalMember] = useState(null)
   const [draftStatus, setDraftStatus] = useState('active')
   const [draftRole, setDraftRole] = useState('user')
   const [currentPage, setCurrentPage] = useState(1)
   const [toastMessage, setToastMessage] = useState('')
   const [confirmSuspension, setConfirmSuspension] = useState(false)
+
+  useEffect(() => {
+    const unsubscribe = subscribeToAuthState((user) => {
+      if (!user) {
+        setMembers([])
+        setIsLoading(false)
+        return
+      }
+
+      setIsLoading(true)
+      setLoadError('')
+      getCollection('users')
+        .then((docs) => {
+          const nextMembers = docs.map(toMember)
+          setMembers(nextMembers)
+          setSelectedId((current) => current || nextMembers[0]?.id || null)
+        })
+        .catch((error) => {
+          console.error('회원 목록 조회 실패:', error)
+          setLoadError('회원 목록을 불러오지 못했습니다. 관리자 권한을 확인해주세요.')
+        })
+        .finally(() => setIsLoading(false))
+    })
+
+    return unsubscribe
+  }, [])
 
   const filteredMembers = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()
@@ -77,7 +109,8 @@ const UserManage = () => {
   const visibleMembers = filteredMembers.slice((safeCurrentPage - 1) * 4, safeCurrentPage * 4)
   const suspendedCount = members.filter((member) => member.status === 'suspended').length
   const adminCount = members.filter((member) => member.role === 'admin').length
-  const todayCount = members.filter((member) => member.joinedAt === '2026-08-26').length
+  const today = new Intl.DateTimeFormat('ko-CA').format(new Date())
+  const todayCount = members.filter((member) => member.joinedAt === today).length
 
   const resetFilters = () => {
     setQuery('')
@@ -94,20 +127,34 @@ const UserManage = () => {
     setConfirmSuspension(false)
   }
 
-  const saveMockChanges = () => {
+  const saveMemberChanges = async () => {
     if (draftStatus === 'suspended' && modalMember.status !== 'suspended' && !confirmSuspension) {
       setConfirmSuspension(true)
       return
     }
 
-    setMembers((currentMembers) => currentMembers.map((member) => (
-      member.id === modalMember.id
-        ? { ...member, status: draftStatus, role: draftRole }
-        : member
-    )))
-    setModalMember(null)
-    setConfirmSuspension(false)
-    setToastMessage(`${modalMember.nickname} 회원 정보가 변경되었습니다.`)
+    if (modalMember.role === 'admin' && draftRole !== 'admin' && adminCount <= 1) {
+      setToastMessage('최소 한 명의 관리자 계정이 필요합니다.')
+      return
+    }
+
+    setIsSaving(true)
+    try {
+      await updateDocument('users', modalMember.id, { status: draftStatus, role: draftRole })
+      setMembers((currentMembers) => currentMembers.map((member) => (
+        member.id === modalMember.id
+          ? { ...member, status: draftStatus, role: draftRole, updatedAt: '방금 전' }
+          : member
+      )))
+      setModalMember(null)
+      setConfirmSuspension(false)
+      setToastMessage(`${modalMember.nickname} 회원 정보가 변경되었습니다.`)
+    } catch (error) {
+      console.error('회원 정보 저장 실패:', error)
+      setToastMessage('회원 정보 저장에 실패했습니다.')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -162,7 +209,11 @@ const UserManage = () => {
             <div className={styles.sectionTitle}><h3 id="member-list-title">회원 목록</h3><span aria-hidden="true" /></div>
             <span className={styles.memberCount}>{filteredMembers.length}명</span>
           </div>
-          {filteredMembers.length > 0 ? (
+          {isLoading ? (
+            <div className={styles.emptyState}><strong>회원 목록을 불러오는 중입니다.</strong></div>
+          ) : loadError ? (
+            <div className={styles.emptyState}><strong>{loadError}</strong></div>
+          ) : filteredMembers.length > 0 ? (
             <div className={styles.tableWrap}>
               <table className={styles.memberTable}>
                 <thead><tr><th scope="col">회원</th><th scope="col">이메일</th><th scope="col">가입일</th><th scope="col">상태</th><th scope="col">권한</th><th scope="col">관리</th></tr></thead>
@@ -226,7 +277,7 @@ const UserManage = () => {
                 <h4 id="activity-summary-title">활동 요약</h4><div><article><span>주문 내역</span><strong>{modalMember.orders}건</strong></article><article><span>찜 목록</span><strong>{modalMember.wishlist}건</strong></article><article><span>이벤트 참여</span><strong>{modalMember.events}건</strong></article><article><span>AI 추천</span><strong>{modalMember.recommendations}건</strong></article></div>
               </section>
               <section className={styles.memberControls} aria-labelledby="member-control-title">
-                <div><h4 id="member-control-title">회원 관리</h4><p>현재는 화면 확인용이며 변경 내용은 서버에 저장되지 않습니다.</p></div>
+                <div><h4 id="member-control-title">회원 관리</h4><p>변경한 상태와 권한은 회원 데이터에 바로 저장됩니다.</p></div>
                 <div className={styles.controlFields}>
                   <label><span>상태 변경</span><select value={draftStatus} onChange={(event) => setDraftStatus(event.target.value)}><option value="active">정상</option><option value="suspended">이용 정지</option></select></label>
                   <label><span>권한 변경</span><select value={draftRole} onChange={(event) => setDraftRole(event.target.value)}><option value="user">일반 회원</option><option value="admin">관리자</option></select></label>
@@ -238,12 +289,12 @@ const UserManage = () => {
                   <p>저장 후에도 이 관리자 화면에서만 반영됩니다.</p>
                   <div>
                     <button type="button" onClick={() => setConfirmSuspension(false)}>취소</button>
-                    <button type="button" onClick={saveMockChanges}>이용 정지</button>
+                    <button type="button" onClick={saveMemberChanges} disabled={isSaving}>이용 정지</button>
                   </div>
                 </section>
               )}
             </div>
-            <footer className={styles.modalFooter}><button type="button" onClick={() => setModalMember(null)}>취소</button><button className={styles.saveButton} type="button" onClick={saveMockChanges}>변경 저장</button></footer>
+            <footer className={styles.modalFooter}><button type="button" onClick={() => setModalMember(null)}>취소</button><button className={styles.saveButton} type="button" disabled={isSaving} onClick={saveMemberChanges}>{isSaving ? '저장 중...' : '변경 저장'}</button></footer>
           </section>
         </div>
       )}

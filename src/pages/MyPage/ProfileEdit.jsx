@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { updatePassword, updateProfile } from 'firebase/auth'
 import { subscribeToAuthState, getCurrentUserData } from '../../firebase/auth'
-import { updateDocument } from '../../firebase/firestore'
+import { addDocument, deleteDocument, getCollection, updateDocument } from '../../firebase/firestore'
 import makdongPose from '../../assets/characters/M007_Poses03.png'
 import profileAvatarMakdongDefault from '../../assets/images/mypage/profileAvatar-makdong-default.png'
 import profileAvatarMakdongCheers from '../../assets/images/mypage/profileAvatar-makdong-cheers.png'
@@ -12,12 +12,6 @@ import profileAvatarMakdongSleepy from '../../assets/images/mypage/profileAvatar
 import profileAvatarMakdongServing from '../../assets/images/mypage/profileAvatar-makdong-serving.png'
 import profileAvatarMakdongRainy from '../../assets/images/mypage/profileAvatar-makdong-rainy.png'
 import styles from './ProfileEdit.module.scss'
-
-const deliveryAddresses = [
-  { label: '배송지명', name: '홍길동 님', phone: '010-1234-5678', address: '서울특별시 강남구 테헤란로 123, 4동 (역삼동)', isDefault: true },
-  { label: '회사', phone: '010-1234-5678', address: '서울특별시 강남구 테헤란로 123, 4동 (역삼동)' },
-  { label: '부모님댁', phone: '010-1234-5678', address: '서울특별시 강남구 테헤란로 123, 4동 (역삼동)' },
-]
 
 const avatarPresets = [
   { id: 'profile-makdong-default', label: '막둥이 기본 프로필', src: profileAvatarMakdongDefault },
@@ -46,7 +40,7 @@ const EmptyProfileCard = () => (
   </article>
 )
 
-const EmptyDeliveryCard = () => (
+const EmptyDeliveryCard = ({ onAdd }) => (
   <article className={`${styles.infoCard} ${styles.emptyCard}`}>
     <span className={`${styles.emptyIcon} ${styles.deliveryEmptyIcon}`} aria-hidden="true">
       <svg viewBox="0 0 64 64" fill="none">
@@ -56,7 +50,7 @@ const EmptyDeliveryCard = () => (
     </span>
     <h2>등록된 배송지가 없습니다.</h2>
     <p>자주 사용하는 배송지를 추가하면<br />더 빠르게 주문할 수 있어요.</p>
-    <button type="button" className={styles.addAddressButton}><span aria-hidden="true">+</span> 새 배송지 추가</button>
+    <button type="button" className={styles.addAddressButton} onClick={onAdd}><span aria-hidden="true">+</span> 새 배송지 추가</button>
   </article>
 )
 
@@ -70,6 +64,9 @@ const ProfileEdit = () => {
   const [saveError, setSaveError] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [selectedAvatarId, setSelectedAvatarId] = useState('pose03')
+  const [addresses, setAddresses] = useState([])
+  const [editingAddressId, setEditingAddressId] = useState(null)
+  const [addressError, setAddressError] = useState('')
 
   useEffect(() => {
     const unsubscribe = subscribeToAuthState(async (user) => {
@@ -78,6 +75,7 @@ const ProfileEdit = () => {
 
       if (!user) {
         setUserData(null)
+        setAddresses([])
         setSelectedAvatarId('pose03')
         setIsLoading(false)
         return
@@ -91,8 +89,12 @@ const ProfileEdit = () => {
       }
 
       try {
-        const data = await getCurrentUserData(user.uid)
+        const [data, addressDocs] = await Promise.all([
+          getCurrentUserData(user.uid),
+          getCollection(`users/${user.uid}/addresses`),
+        ])
         setUserData(data)
+        setAddresses(addressDocs)
       } catch (error) {
         console.error('회원정보 조회 실패:', error)
         setUserData(null)
@@ -115,7 +117,7 @@ const ProfileEdit = () => {
         label: '이메일',
         value: userData?.email || firebaseUser?.email || '등록되지 않음',
       },
-      { label: '휴대폰', value: '등록되지 않음' },
+      { label: '휴대폰', value: userData?.phone || '등록되지 않음' },
       { label: '생년월일', value: '등록되지 않음' },
       { label: '성별', value: '등록되지 않음' },
     ],
@@ -133,9 +135,10 @@ const ProfileEdit = () => {
   const points = Number(userData?.points ?? 0)
 
   const hasProfile = Boolean(firebaseUser)
-  const hasAddresses = false
+  const hasAddresses = addresses.length > 0
   const isProfileForm = viewMode === 'profileForm'
   const isPasswordForm = viewMode === 'passwordForm'
+  const isAddressForm = viewMode === 'addressForm'
   const selectedAvatar = avatarPresets.find((avatar) => avatar.id === selectedAvatarId) || avatarPresets[2]
 
   const handleAvatarPreset = (avatarId) => {
@@ -214,9 +217,60 @@ const ProfileEdit = () => {
     }
   }
 
-  const handleShellComplete = (event) => {
+  const openAddressForm = (address = null) => {
+    setEditingAddressId(address?.id || null)
+    setAddressError('')
+    setViewMode('addressForm')
+  }
+
+  const handleAddressComplete = async (event) => {
     event.preventDefault()
-    setViewMode('summary')
+    if (!firebaseUser) return
+
+    const formData = new FormData(event.currentTarget)
+    const address = {
+      label: String(formData.get('label') || '').trim(),
+      recipient: String(formData.get('recipient') || '').trim(),
+      phone: String(formData.get('phone') || '').trim(),
+      address: String(formData.get('address') || '').trim(),
+      detailAddress: String(formData.get('detailAddress') || '').trim(),
+      isDefault: editingAddressId
+        ? Boolean(addresses.find((item) => item.id === editingAddressId)?.isDefault)
+        : addresses.length === 0,
+    }
+
+    if (!address.label || !address.recipient || !address.phone || !address.address) {
+      setAddressError('배송지명, 받으실 분, 휴대폰 번호와 주소를 입력해주세요.')
+      return
+    }
+
+    try {
+      if (editingAddressId) {
+        await updateDocument(`users/${firebaseUser.uid}/addresses`, editingAddressId, address)
+        setAddresses((current) => current.map((item) => (
+          item.id === editingAddressId ? { ...item, ...address } : item
+        )))
+      } else {
+        const id = await addDocument(`users/${firebaseUser.uid}/addresses`, address)
+        setAddresses((current) => [...current, { id, ...address }])
+      }
+      setViewMode('summary')
+    } catch (error) {
+      console.error('배송지 저장 실패:', error)
+      setAddressError('배송지를 저장하지 못했습니다. 잠시 후 다시 시도해주세요.')
+    }
+  }
+
+  const handleAddressDelete = async (addressId) => {
+    if (!firebaseUser) return
+
+    try {
+      await deleteDocument(`users/${firebaseUser.uid}/addresses`, addressId)
+      setAddresses((current) => current.filter((address) => address.id !== addressId))
+    } catch (error) {
+      console.error('배송지 삭제 실패:', error)
+      setAddressError('배송지를 삭제하지 못했습니다. 잠시 후 다시 시도해주세요.')
+    }
   }
 
   const renderProfileCard = () => {
@@ -329,23 +383,22 @@ const ProfileEdit = () => {
   }
 
   const renderDeliveryCard = () => {
-    if (!hasAddresses) return <EmptyDeliveryCard />
+    const editingAddress = addresses.find((address) => address.id === editingAddressId)
 
-    if (isProfileForm) {
+    if (!hasAddresses && !isAddressForm) return <EmptyDeliveryCard onAdd={() => openAddressForm()} />
+
+    if (isAddressForm) {
       return (
-        <form className={`${styles.infoCard} ${styles.formCard} ${styles.deliveryFormCard}`} onSubmit={handleShellComplete}>
+        <form key={editingAddressId || 'new'} className={`${styles.infoCard} ${styles.formCard} ${styles.deliveryFormCard}`} onSubmit={handleAddressComplete}>
           <h2>배송지 관리</h2>
           <div className={styles.fieldList}>
-            <label className={styles.formRow}><span>배송지 이름</span><input aria-label="배송지 이름" placeholder="이름을 입력해주세요" /></label>
-            <label className={styles.formRow}><span>받으실 분</span><input aria-label="받으실 분" placeholder="성함을 입력해주세요" /></label>
-            <label className={styles.formRow}><span>받으실 곳</span><input aria-label="받으실 곳" placeholder="상세 주소를 입력해주세요" /></label>
-            <label className={styles.formRow}><span>휴대폰</span><input aria-label="휴대폰" placeholder="휴대폰 번호를 입력해주세요" /></label>
+            <label className={styles.formRow}><span>배송지 이름</span><input name="label" aria-label="배송지 이름" defaultValue={editingAddress?.label || ''} placeholder="이름을 입력해주세요" /></label>
+            <label className={styles.formRow}><span>받으실 분</span><input name="recipient" aria-label="받으실 분" defaultValue={editingAddress?.recipient || ''} placeholder="성함을 입력해주세요" /></label>
+            <label className={styles.formRow}><span>주소</span><input name="address" aria-label="주소" defaultValue={editingAddress?.address || ''} placeholder="주소를 입력해주세요" /></label>
+            <label className={styles.formRow}><span>상세 주소</span><input name="detailAddress" aria-label="상세 주소" defaultValue={editingAddress?.detailAddress || ''} placeholder="상세 주소를 입력해주세요" /></label>
+            <label className={styles.formRow}><span>휴대폰</span><input name="phone" aria-label="휴대폰" defaultValue={editingAddress?.phone || ''} placeholder="휴대폰 번호를 입력해주세요" /></label>
           </div>
-          <label className={styles.defaultCheck}>
-            <input type="checkbox" defaultChecked />
-            <span className={styles.checkMark} aria-hidden="true">✓</span>
-            <span>기본 배송지로 설정합니다.</span>
-          </label>
+          {addressError && <p role="alert">{addressError}</p>}
           <button type="submit" className={styles.completeButton}>저장</button>
         </form>
       )
@@ -355,20 +408,20 @@ const ProfileEdit = () => {
       <article className={`${styles.infoCard} ${styles.deliveryCard}`}>
         <h2>배송지 관리</h2>
         <div className={styles.addressList}>
-          {deliveryAddresses.map((address) => (
+          {addresses.map((address) => (
             <section key={address.label} className={styles.addressItem}>
               <div className={styles.addressCopy}>
-                <div className={styles.addressHeading}>{address.isDefault && <span className={styles.defaultBadge}>배송지명</span>}<strong>{address.name || address.label}</strong></div>
-                <p>{address.phone}</p><p>{address.address}</p>
+                <div className={styles.addressHeading}>{address.isDefault && <span className={styles.defaultBadge}>기본 배송지</span>}<strong>{address.recipient}</strong></div>
+                <p>{address.phone}</p><p>{address.address} {address.detailAddress}</p>
               </div>
               <div className={styles.addressActions}>
-                <button type="button" className={address.isDefault ? styles.smallOutlineButton : styles.smallPrimaryButton} onClick={() => setViewMode('profileForm')}>수정</button>
-                {!address.isDefault && <button type="button" className={styles.smallOutlineButton}>삭제</button>}
+                <button type="button" className={address.isDefault ? styles.smallOutlineButton : styles.smallPrimaryButton} onClick={() => openAddressForm(address)}>수정</button>
+                {!address.isDefault && <button type="button" className={styles.smallOutlineButton} onClick={() => handleAddressDelete(address.id)}>삭제</button>}
               </div>
             </section>
           ))}
         </div>
-        <button type="button" className={styles.addAddressButton} onClick={() => setViewMode('profileForm')}><span aria-hidden="true">+</span> 새 배송지 추가</button>
+        <button type="button" className={styles.addAddressButton} onClick={() => openAddressForm()}><span aria-hidden="true">+</span> 새 배송지 추가</button>
       </article>
     )
   }

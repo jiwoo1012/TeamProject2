@@ -14,8 +14,14 @@ import {
 
 import {
   getCart,
+  getRemoteCart,
   saveCart,
+  syncRemoteCart,
 } from '../../utils/cartStorage'
+
+import {
+  subscribeToAuthState,
+} from '../../firebase/auth'
 
 import {
   products,
@@ -164,26 +170,20 @@ const getDiscountAmount = (
 }
 
 
-const mockRecommendations = [
-  {
-    id: 'rec-01',
-    name: '자작 막걸리 여유 12도',
-    price: 18000,
-    imageUrl: '',
-  },
-  {
-    id: 'rec-02',
-    name: '자작 막걸리 여유 12도',
-    price: 18000,
-    imageUrl: '',
-  },
-  {
-    id: 'rec-03',
-    name: '자작 막걸리 여유 12도',
-    price: 18000,
-    imageUrl: '',
-  },
-]
+const mockRecommendations =
+  [...products]
+    .sort(
+      () => Math.random() - 0.5
+    )
+    .slice(0, 3)
+    .map(
+      (product) => ({
+        id: product.productId,
+        name: product.productName,
+        price: Number(product.price) || 0,
+        imageUrl: resolveImage(product.imageUrl),
+      })
+    )
 
 
 const formatPrice = (
@@ -208,10 +208,8 @@ const formatPrice = (
   productId가 같은 상품을 찾아
   Cart에서 사용할 형태로 바꿔준다.
 */
-const getInitialCartItems =
-  () => {
-    const savedCart =
-      getCart()
+const getCartItems =
+  (savedCart = getCart()) => {
 
     return savedCart
       .map(
@@ -322,6 +320,10 @@ const getInitialCartItems =
       )
       .filter(Boolean)
   }
+
+
+const getInitialCartItems =
+  () => getCartItems()
 
 
 const PurchaseSteps =
@@ -457,6 +459,12 @@ const Cart = () => {
       getInitialCartItems
     )
 
+  const [currentUser, setCurrentUser] =
+    useState(null)
+
+  const [isRemoteCartReady, setIsRemoteCartReady] =
+    useState(false)
+
   const [
     selectedIds,
     setSelectedIds,
@@ -478,7 +486,65 @@ const Cart = () => {
     다시 localStorage에
     productId + quantity 형태로 저장
   */
+  useEffect(
+    () => subscribeToAuthState(setCurrentUser),
+    []
+  )
+
   useEffect(() => {
+    if (!currentUser || currentUser.isAnonymous) {
+      setIsRemoteCartReady(true)
+      return undefined
+    }
+
+    let isCancelled = false
+    setIsRemoteCartReady(false)
+
+    getRemoteCart(currentUser.uid)
+      .then(async (remoteCart) => {
+        if (isCancelled) return
+
+        const localCart = getCart()
+        const mergedCart = [...remoteCart]
+
+        localCart.forEach((localItem) => {
+          const remoteIndex = mergedCart.findIndex((item) => item.productId === localItem.productId)
+
+          if (remoteIndex < 0) {
+            mergedCart.push(localItem)
+            return
+          }
+
+          mergedCart[remoteIndex] = {
+            ...mergedCart[remoteIndex],
+            quantity: Math.max(
+              Number(mergedCart[remoteIndex].quantity) || 0,
+              Number(localItem.quantity) || 0,
+            ),
+          }
+        })
+
+        const nextItems = getCartItems(mergedCart)
+        setItems(nextItems)
+        setSelectedIds(nextItems.map((item) => item.id))
+        saveCart(mergedCart)
+        await syncRemoteCart(currentUser.uid, mergedCart)
+      })
+      .catch((error) => {
+        console.error('장바구니 동기화 실패:', error)
+      })
+      .finally(() => {
+        if (!isCancelled) setIsRemoteCartReady(true)
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [currentUser])
+
+  useEffect(() => {
+    if (!isRemoteCartReady) return
+
     const cartItems =
       items.map(
         (item) => ({
@@ -491,7 +557,12 @@ const Cart = () => {
       )
 
     saveCart(cartItems)
-  }, [items])
+
+    if (currentUser && !currentUser.isAnonymous) {
+      syncRemoteCart(currentUser.uid, cartItems)
+        .catch((error) => console.error('장바구니 저장 실패:', error))
+    }
+  }, [currentUser, isRemoteCartReady, items])
 
   const [
     pointInput,
@@ -767,6 +838,26 @@ const Cart = () => {
           ? '0'
           : String(
               allUsablePoints
+            )
+      )
+    }
+
+  const handlePointInputChange =
+    (event) => {
+      const nextValue =
+        event.target.value
+
+      setPointInput(
+        nextValue === ''
+          ? ''
+          : String(
+              Math.max(
+                0,
+                Math.min(
+                  Number(nextValue) || 0,
+                  allUsablePoints
+                )
+              )
             )
       )
     }
@@ -1319,10 +1410,8 @@ const Cart = () => {
                       onChange={(
                         event
                       ) =>
-                        setPointInput(
+                        handlePointInputChange(
                           event
-                            .target
-                            .value
                         )
                       }
                     />
