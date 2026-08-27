@@ -4,7 +4,7 @@ import { serverTimestamp } from 'firebase/firestore'
 import ProductCard from '../../components/ui/ProductCard/ProductCard'
 import { foods, products } from '../../data/products'
 import pairings from '../../data/pairings.json'
-import { subscribeToAuthState } from '../../firebase/auth'
+import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
 import { getCollection, setDocument, deleteDocument } from '../../firebase/firestore'
 import { getCart, saveCart } from '../../utils/cartStorage'
 import styles from './ProductDetail.module.scss'
@@ -100,15 +100,10 @@ const ProductDetail = () => {
   const [isAuthReady, setIsAuthReady] = useState(false)
   const [notice, setNotice] = useState('')
   const [reviews, setReviews] = useState([])
-  const [reviewNickname, setReviewNickname] = useState('')
+  const [memberNickname, setMemberNickname] = useState('')
   const [reviewRating, setReviewRating] = useState(0)
   const [reviewContent, setReviewContent] = useState('')
   const [editingReviewId, setEditingReviewId] = useState(null)
-
-  const authorIdRef = useRef(
-    globalThis.crypto?.randomUUID?.() ??
-      `guest-${Date.now()}`
-  )
 
   useEffect(() => {
     const page = document.querySelector(`.${styles.page}`)
@@ -180,12 +175,35 @@ const ProductDetail = () => {
   // 로그인 사용자 확인
   useEffect(() => {
     const unsubscribe = subscribeToAuthState((user) => {
-      setUid(user && !user.isAnonymous ? user.uid : null)
+      const member = user && !user.isAnonymous ? user : null
+      setUid(member?.uid ?? null)
+      setMemberNickname(member?.displayName ?? '')
       setIsAuthReady(true)
     })
 
     return unsubscribe
   }, [])
+
+  useEffect(() => {
+    if (!uid) {
+      setMemberNickname('')
+      return undefined
+    }
+
+    let isCancelled = false
+
+    getCurrentUserData(uid)
+      .then((userData) => {
+        if (!isCancelled) setMemberNickname(userData?.nickname ?? '')
+      })
+      .catch((error) => {
+        console.error('회원 닉네임 조회 실패:', error)
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [uid])
 
   // 현재 상품이 이미 찜되어 있는지 Firestore에서 확인
   useEffect(() => {
@@ -463,7 +481,9 @@ const ProductDetail = () => {
   const handleReviewSubmit = (event) => {
     event.preventDefault()
 
-    const nickname = reviewNickname.trim()
+    if (!uid) return
+
+    const nickname = memberNickname.trim()
     const content = reviewContent.trim()
 
     if (
@@ -494,7 +514,7 @@ const ProductDetail = () => {
             globalThis.crypto?.randomUUID?.() ??
             `${Date.now()}`,
 
-          authorId: authorIdRef.current,
+          authorId: uid,
           nickname,
           rating: reviewRating,
           content,
@@ -508,7 +528,6 @@ const ProductDetail = () => {
     }
 
     setEditingReviewId(null)
-    setReviewNickname('')
     setReviewRating(0)
     setReviewContent('')
   }
@@ -516,7 +535,6 @@ const ProductDetail = () => {
 
   const handleReviewEdit = (review) => {
     setEditingReviewId(review.id)
-    setReviewNickname(review.nickname)
     setReviewRating(review.rating)
     setReviewContent(review.content)
   }
@@ -531,7 +549,6 @@ const ProductDetail = () => {
 
     if (editingReviewId === reviewId) {
       setEditingReviewId(null)
-      setReviewNickname('')
       setReviewRating(0)
       setReviewContent('')
     }
@@ -643,6 +660,7 @@ const ProductDetail = () => {
           ) : (
             <section className={styles.reviewSection}>
 
+              {isAuthReady && uid ? (
               <form
                 className={styles.reviewForm}
                 onSubmit={handleReviewSubmit}
@@ -659,14 +677,10 @@ const ProductDetail = () => {
                   <span>닉네임</span>
 
                   <input
-                    value={reviewNickname}
+                    value={memberNickname}
                     maxLength={20}
                     required
-                    onChange={(event) =>
-                      setReviewNickname(
-                        event.target.value
-                      )
-                    }
+                    readOnly
                   />
                 </label>
 
@@ -727,7 +741,6 @@ const ProductDetail = () => {
                       type="button"
                       onClick={() => {
                         setEditingReviewId(null)
-                        setReviewNickname('')
                         setReviewRating(0)
                         setReviewContent('')
                       }}
@@ -739,7 +752,7 @@ const ProductDetail = () => {
                   <button
                     type="submit"
                     disabled={
-                      !reviewNickname.trim() ||
+                      !memberNickname.trim() ||
                       !reviewContent.trim() ||
                       reviewRating === 0
                     }
@@ -750,6 +763,13 @@ const ProductDetail = () => {
                   </button>
                 </div>
               </form>
+              ) : (
+                <p className={styles.reviewLoginNotice}>
+                  {isAuthReady
+                    ? '로그인 후 리뷰를 작성할 수 있습니다.'
+                    : '로그인 정보를 확인하고 있습니다.'}
+                </p>
+              )}
 
 
               <div className={styles.reviewList}>
@@ -782,8 +802,7 @@ const ProductDetail = () => {
 
                       <p>{review.content}</p>
 
-                      {review.authorId ===
-                        authorIdRef.current && (
+                      {uid && review.authorId === uid && (
                         <div>
                           <button
                             type="button"
