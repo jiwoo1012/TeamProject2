@@ -8,7 +8,7 @@
 
 .journey {
   position: relative;
-  height: 600svh;
+  height: 500svh;
   background: #1d130d;
 }
 .stage {
@@ -178,6 +178,11 @@
 @media (max-width: 767px) {
   .journey {
     height: 500svh;
+  }
+  .scene {
+    object-fit: contain;
+    object-position: center;
+    background: #1d130d;
   }
   .skipButton {
     top: 20px;

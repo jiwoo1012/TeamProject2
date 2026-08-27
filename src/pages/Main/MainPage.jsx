@@ -38,7 +38,7 @@ import styles from './MainPage.module.scss'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const IS_JOURNEY_ENABLED = false
+const IS_JOURNEY_ENABLED = true
 const eventBannerImages = import.meta.glob('../../assets/images/banner/eventBanner*.png', {
   eager: true,
   import: 'default',
@@ -396,7 +396,7 @@ const MainPage = () => {
       {/* 이벤트 섹션 */}
       <section ref={eventsGridRef} className={styles.eventsGrid} aria-labelledby="events-grid-title">
         <div className={styles.eventsCopy}>
-          <p>Events</p>
+          <p>EVENTS</p>
           <h2 id="events-grid-title">
             <span>다양한 혜택과</span>
             <span>이벤트 지금 확인하세요</span>
