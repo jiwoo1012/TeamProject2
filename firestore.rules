@@ -2,90 +2,90 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // ========================================
-    // 관리자 확인
-    // Firebase Auth Custom Claims
-    // admin: true 기준
-    // ========================================
-    function isAdmin() {
-      return request.auth != null
-             && request.auth.token.admin == true;
+    function signedIn() {
+      return request.auth != null;
     }
 
+    function isOwner(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
 
-    // ========================================
-    // USERS
-    // 기존 회원가입 / 로그인 관련 규칙 그대로 유지
-    // ========================================
+    function isAdmin() {
+      return signedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isValidMemberCreate(userId) {
+      return request.resource.data.uid == userId
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.role == 'user'
+        && request.resource.data.status == 'active'
+        && request.resource.data.points == 0;
+    }
+
+    function keepsMemberAuthority() {
+      return request.resource.data.uid == resource.data.uid
+        && request.resource.data.email == resource.data.email
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.status == resource.data.status
+        && request.resource.data.points == resource.data.points
+        && request.resource.data.createdAt == resource.data.createdAt;
+    }
+
+    function isValidAddress() {
+      return request.resource.data.keys().hasAll([
+          'label', 'recipient', 'phone', 'address', 'detailAddress', 'isDefault'
+        ])
+        && request.resource.data.label is string
+        && request.resource.data.recipient is string
+        && request.resource.data.phone is string
+        && request.resource.data.address is string
+        && request.resource.data.detailAddress is string
+        && request.resource.data.isDefault is bool;
+    }
+
+    function isValidCartItem(productId) {
+      return request.resource.data.keys().hasOnly(['productId', 'quantity'])
+        && request.resource.data.productId == productId
+        && request.resource.data.quantity is int
+        && request.resource.data.quantity > 0;
+    }
+
     match /users/{userId} {
-      allow create: if request.auth != null
-                    && request.auth.uid == userId;
+      allow create: if isOwner(userId) && isValidMemberCreate(userId);
+      allow read: if isOwner(userId) || isAdmin();
+      allow update: if (isOwner(userId) && keepsMemberAuthority()) || isAdmin();
+      allow delete: if isAdmin();
 
-      allow read, update, delete: if request.auth != null
-                                  && request.auth.uid == userId;
-
-
-      // ========================================
-      // ADMIN 추가
-      // 관리자는 전체 회원 조회 / 수정 / 삭제 가능
-      // ========================================
-      allow read, update, delete: if isAdmin();
-
-
-      // ========================================
-      // WISHLIST
-      // 기존 규칙 그대로 유지
-      // ========================================
       match /wishlist/{wishlistId} {
-        allow read, create, update, delete: if request.auth != null
-                                            && request.auth.uid == userId;
+        allow read, create, update, delete: if isOwner(userId);
+      }
+
+      match /addresses/{addressId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidAddress();
+        allow delete: if isOwner(userId);
+      }
+
+      match /cart/{productId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidCartItem(productId);
+        allow delete: if isOwner(userId);
       }
     }
 
-
-    // ========================================
-    // PRODUCTS
-    // 기존 조회 규칙 유지
-    // 관리자 기능만 추가
-    // ========================================
     match /products/{productId} {
       allow read: if true;
-
-      // 기존 차단 규칙
-      allow write: if false;
-
-      // 관리자만 상품 등록 / 수정 / 삭제 가능
       allow create, update, delete: if isAdmin();
     }
 
-
-    // ========================================
-    // ORDERS
-    // 기존 사용자 주문 규칙 그대로 유지
-    // ========================================
     match /orders/{orderId} {
-      allow create: if request.auth != null
-                    && request.resource.data.userId == request.auth.uid;
-
-      allow read: if request.auth != null
-                  && resource.data.userId == request.auth.uid;
-
-      allow update, delete: if false;
-
-
-      // ========================================
-      // ADMIN 추가
-      // 전체 주문 조회 / 주문 상태 수정 가능
-      // ========================================
-      allow read, update: if isAdmin();
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read: if (signedIn() && resource.data.userId == request.auth.uid) || isAdmin();
+      allow update: if isAdmin();
+      allow delete: if false;
     }
 
-
-    // ========================================
-    // DEFAULT
-    // 기존 그대로
-    // ========================================
     match /{document=**} {
       allow read, write: if false;
     }
