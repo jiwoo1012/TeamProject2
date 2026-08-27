@@ -5,7 +5,10 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../../firebase/firebase'
 
 // 상품 데이터
-import { products } from '../../data/products'
+import {
+  products,
+  liquors,
+} from '../../data/products'
 
 import jajakLogo from '../../assets/logos/jajakLogo.png'
 import cartIcon from '../../assets/icons/cartIcon.png'
@@ -44,12 +47,39 @@ const resolveImage = (imageUrl) => {
 /* ========================================
    인기 상품
 
-   현재는 전체 상품 중 앞 4개를 사용
-   추후 isPopular 등의 필드가 생기면
-   filter 방식으로 변경 가능
+   메가메뉴에서 사용하는 상품
 ======================================== */
 
 const popularProducts = products.slice(0, 4)
+
+
+/* ========================================
+   검색창 추천 상품
+
+   - 전통주만 사용
+   - 판매 중인 상품
+   - 입문자 추천 상품 우선
+   - 2개만 노출
+
+   SearchModal에서 사용 중인
+   name / description / image 형태로
+   데이터를 변환해서 전달
+======================================== */
+
+const recommendedProducts = liquors
+  .filter(
+    (product) =>
+      product.status === 'selling' &&
+      product.beginnerRecommendation === true
+  )
+  .slice(0, 2)
+  .map((product) => ({
+    ...product,
+
+    name: product.productName,
+    description: product.productDescription,
+    image: resolveImage(product.imageUrl),
+  }))
 
 
 const DesktopHeader = () => {
@@ -107,9 +137,6 @@ const DesktopHeader = () => {
 
   /* ========================================
      상품명 가져오기
-
-     현재 상품 데이터 필드명이 달라도
-     화면이 깨지지 않도록 처리
   ======================================== */
 
   const getProductName = (product) => {
@@ -157,6 +184,7 @@ const DesktopHeader = () => {
           <nav className={styles.gnb}>
 
             {/* BRAND */}
+
             <div
               className={styles.gnbItem}
               onMouseEnter={() => openMegaMenu('brand')}
@@ -171,6 +199,7 @@ const DesktopHeader = () => {
 
 
             {/* SHOP */}
+
             <div
               className={styles.gnbItem}
               onMouseEnter={() => openMegaMenu('shop')}
@@ -185,6 +214,7 @@ const DesktopHeader = () => {
 
 
             {/* AI 추천 */}
+
             <div
               className={styles.gnbItem}
               onMouseEnter={() => openMegaMenu('ai')}
@@ -199,6 +229,7 @@ const DesktopHeader = () => {
 
 
             {/* 이벤트 */}
+
             <div
               className={styles.gnbItem}
               onMouseEnter={closeMegaMenu}
@@ -241,6 +272,7 @@ const DesktopHeader = () => {
           >
 
             {/* 검색 */}
+
             <button
               type="button"
               className={`${styles.iconButton} ${
@@ -264,6 +296,7 @@ const DesktopHeader = () => {
 
 
             {/* 로그인 / 마이페이지 */}
+
             <Link
               to={user ? '/mypage' : '/login'}
               className={styles.iconButton}
@@ -282,6 +315,7 @@ const DesktopHeader = () => {
 
 
             {/* 찜 */}
+
             <Link
               to="/mypage/wishlist"
               className={styles.iconButton}
@@ -296,6 +330,7 @@ const DesktopHeader = () => {
 
 
             {/* 장바구니 */}
+
             <Link
               to="/cart"
               className={styles.iconButton}
@@ -321,6 +356,7 @@ const DesktopHeader = () => {
       <SearchModal
         isOpen={isSearchOpen}
         onClose={closeSearch}
+        recommendedProducts={recommendedProducts}
       />
 
 
@@ -338,6 +374,7 @@ const DesktopHeader = () => {
         <div className={styles.megaContainer}>
 
           {/* 브랜드 SNB */}
+
           <div className={styles.brandSnb}>
 
             <Link
@@ -360,6 +397,7 @@ const DesktopHeader = () => {
 
 
           {/* 브랜드 오른쪽 영역 */}
+
           <div className={styles.brandVisual}>
 
             <div className={styles.brandImage}>
@@ -367,7 +405,9 @@ const DesktopHeader = () => {
             </div>
 
             <div className={styles.brandText}>
-              <h2>자작이 걸어온 길</h2>
+              <h2>
+                자작이 걸어온 길
+              </h2>
 
               <p>
                 전통주의 가치를 담아온
@@ -540,14 +580,19 @@ const DesktopHeader = () => {
 
             <div className={styles.popularTitle}>
 
-              <h2>인기 상품</h2>
+              <h2>
+                인기 상품
+              </h2>
 
               <Link
                 to="/shop?category=liquor"
                 onClick={closeMegaMenu}
               >
                 전체보기
-                <span>→</span>
+
+                <span>
+                  →
+                </span>
               </Link>
 
             </div>
@@ -556,8 +601,11 @@ const DesktopHeader = () => {
             <div className={styles.productList}>
 
               {popularProducts.map((product) => {
-                const imageSrc = resolveImage(product.imageUrl)
-                const productName = getProductName(product)
+                const imageSrc =
+                  resolveImage(product.imageUrl)
+
+                const productName =
+                  getProductName(product)
 
                 return (
                   <Link
@@ -568,6 +616,7 @@ const DesktopHeader = () => {
                   >
 
                     {/* 상품 이미지 */}
+
                     <div className={styles.productImage}>
                       {imageSrc && (
                         <img
@@ -585,12 +634,14 @@ const DesktopHeader = () => {
 
 
                     {/* 상품명 */}
+
                     <span className={styles.productName}>
                       {productName}
                     </span>
 
 
                     {/* 가격 */}
+
                     <strong>
                       {formatPrice(product.price)}
                     </strong>
@@ -609,5 +660,6 @@ const DesktopHeader = () => {
     </div>
   )
 }
+
 
 export default DesktopHeader
