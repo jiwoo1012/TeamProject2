@@ -72,19 +72,22 @@
 .accordionContent.open > p { padding-bottom: $space-4; }
 .pairings { margin-top: $space-5; }
 .pairings h2 { margin-bottom: $space-3; font-size: $font-size-lg; font-weight: $font-weight-semibold; }
-.miniGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-3; animation: pairingPage .45s cubic-bezier(.22, 1, .36, 1) both; }
-.miniCard { min-width: 0; }
-.miniCard > a:first-child { display: block; overflow: hidden; aspect-ratio: 1.15; background: $color-surface; border-radius: $radius-md; }
+.pairingSlider { position: relative; width: 100%; }
+.pairingViewport { width: 100%; min-width: 0; overflow: hidden; }
+.pairingArrow { @include mixins.flex-center; position: absolute; z-index: 2; top: 50%; width: 24px; height:25px; color: $color-text-primary; font-size: $font-size-xl; background: rgba($color-bg, .5); border-radius: $radius-pill; transform: translateY(-50%); transition: color $transition-fast ease, transform $transition-fast ease; }
+.pairingArrow:first-child { left: $space-1; }
+.pairingArrow:last-child { right: $space-1; }
+.pairingArrow:hover { color: $color-primary; transform: translateY(-50%) scale(1.12); }
+.miniGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-2; animation: pairingPage .45s cubic-bezier(.22, 1, .36, 1) both; }
+.miniCard { display: flex; overflow: hidden; flex-direction: column; min-width: 0; background: $color-white; border: 1px solid $color-border; border-radius: $radius-md; }
+.miniCard > a:first-child { display: block; overflow: hidden; aspect-ratio: 1.15; background: $color-surface; }
 .miniCard img { width: 100%; height: 100%; object-fit: cover; transition: transform $transition-base ease; }
 .miniCard > a:hover img { transform: scale(1.04); }
-.miniCard > div { display: flex; justify-content: space-between; gap: $space-1; margin: $space-2 0; font-size: $font-size-xs; }
-.miniCard span { @include mixins.ellipsis; }
-.miniCard strong { flex-shrink: 0; font-weight: $font-weight-semibold; }
-.miniCart { display: block; padding: $space-2; color: $color-white; font-size: $font-size-xs; text-align: center; background: rgba($color-primary, .65); border-radius: $radius-sm; transition: color $transition-fast ease, background $transition-fast ease, transform $transition-fast ease; }
+.miniInfo { display: flex; flex: 1; flex-direction: column; gap: $space-1; padding: $space-1; font-size: $font-size-xs; }
+.miniCard .miniInfo span { overflow: visible; white-space: normal; overflow-wrap: anywhere; line-height: $line-height-base; }
+.miniCard .miniInfo strong { display: block; margin-top: auto; font-weight: $font-weight-semibold; }
+.miniCart { display: block; width: 100%; padding: $space-2; color: $color-white; font-size: $font-size-xs; text-align: center; background: rgba($color-primary, .65); border-top: 1px solid $color-border; transition: color $transition-fast ease, background $transition-fast ease, transform $transition-fast ease; }
 .miniCart:hover { color: $color-white; background: $color-primary; transform: translateY(-2px); }
-.dots { @include mixins.flex-center; gap: $space-2; margin-top: $space-3; }
-.dots button { width: 8px; height: 8px; background: $color-border; border-radius: 50%; transition: width $transition-fast ease, background $transition-fast ease; }
-.dots .activeDot { background: $color-primary; }
 @keyframes pairingPage { from { opacity: 0; transform: translateX($space-4); } to { opacity: 1; transform: translateX(0); } }
 .notFound { @include mixins.flex-center; flex-direction: column; gap: $space-4; min-height: 70vh; font-family: $font-family-base; }
 .notFound h1 { font-size: $font-size-3xl; }

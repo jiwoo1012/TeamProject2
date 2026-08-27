@@ -70,7 +70,7 @@ const MiniPairingCard = ({
       />
     </Link>
 
-    <div>
+    <div className={styles.miniInfo}>
       <span>{product.productName}</span>
 
       <strong>
@@ -87,7 +87,6 @@ const MiniPairingCard = ({
     </button>
   </article>
 )
-
 
 const ProductDetail = () => {
   const { productId } = useParams()
@@ -288,6 +287,23 @@ const ProductDetail = () => {
     )
   }, [product, relatedProducts])
 
+  const pairPageCount = Math.max(
+    1,
+    Math.ceil(relatedProducts.length / 2)
+  )
+
+  useEffect(() => {
+    setPairPage(0)
+
+    if (pairPageCount <= 1) return undefined
+
+    const timer = window.setInterval(() => {
+      setPairPage((current) => (current + 1) % pairPageCount)
+    }, 4000)
+
+    return () => window.clearInterval(timer)
+  }, [productId, pairPageCount])
+
   if (!product) {
     return (
       <main className={styles.notFound}>
@@ -305,11 +321,6 @@ const ProductDetail = () => {
 
   const salePrice = Math.round(
     product.price * (1 - discountRate / 100)
-  )
-
-  const pairPageCount = Math.max(
-    1,
-    Math.ceil(relatedProducts.length / 2)
   )
 
   const visiblePairings = relatedProducts.slice(
@@ -960,45 +971,36 @@ const ProductDetail = () => {
             <section className={styles.pairings}>
               <h2>추천 조합</h2>
 
-              <div
-                className={styles.miniGrid}
-                key={pairPage}
-              >
-                {visiblePairings.map((item) => (
-                  <MiniPairingCard
-                    product={item}
-                    onAddToCart={
-                      handleAddToCart
-                    }
-                    key={item.productId}
-                  />
-                ))}
-              </div>
+              <div className={styles.pairingSlider}>
+                <button
+                  className={styles.pairingArrow}
+                  type="button"
+                  aria-label="이전 추천 조합"
+                  onClick={() => setPairPage((current) => (current - 1 + pairPageCount) % pairPageCount)}
+                >
+                  &lt;
+                </button>
 
-              <div
-                className={styles.dots}
-                aria-label="추천 조합 페이지"
-              >
-                {Array.from(
-                  {
-                    length: pairPageCount,
-                  },
-                  (_, index) => (
-                    <button
-                      className={
-                        pairPage === index
-                          ? styles.activeDot
-                          : ''
-                      }
-                      type="button"
-                      aria-label={`${index + 1}페이지`}
-                      onClick={() =>
-                        setPairPage(index)
-                      }
-                      key={index}
-                    />
-                  )
-                )}
+                <div className={styles.pairingViewport}>
+                  <div className={styles.miniGrid} key={pairPage}>
+                    {visiblePairings.map((item) => (
+                      <MiniPairingCard
+                        product={item}
+                        onAddToCart={handleAddToCart}
+                        key={item.productId}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  className={styles.pairingArrow}
+                  type="button"
+                  aria-label="다음 추천 조합"
+                  onClick={() => setPairPage((current) => (current + 1) % pairPageCount)}
+                >
+                  &gt;
+                </button>
               </div>
             </section>
           )}
