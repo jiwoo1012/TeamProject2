@@ -26,6 +26,31 @@
     },
     {
         "event": {
+            "title": "짝꿍 카드를 찾아라!",
+            "description": "같은 카드를 찾아 뒤집고 막동이가 드리는 깜짝 포인트를 받아가세요!",
+            "detailDescription": "뒤집혀 있는 카드 속에서 숨겨진 같은 그림의 짝을 찾아보세요! 카드별로 각각 다른 랜덤 포인트가 팡팡 터져 나옵니다.",
+            "participationLimit": {
+            "type": "per_user_total",
+            "maxCount": 1
+            },
+            "eventPeriod": {
+                "startDate": "2026-08-19",
+                "endDate": "2026-09-15"
+            },
+            "precautions": [
+            "본 이벤트는 회원 로그인 후 참여 가능합니다.",
+            "하루 1회 참여 가능하며, 자정(00:00)에 초기화됩니다.",
+            "혜택은 즉시 지급되며, 마이페이지 > 포인트에서 확인 가능합니다.",
+            "부정한 방법을 통한 참여(복수 계정 이용 등) 시 지급된 포인트가 회수될 수 있습니다."
+            ],
+            "isActive": true,
+            "image": {
+            "bannerUrl": "/banner/eventBanner-5.png"
+            }
+        }
+    },
+    {
+        "event": {
             "title": "술술 풀리는 막동이 OX 퀴즈",
             "description": "전통주 퀴즈를 풀고 최대 5,000 포인트를 받아가세요!",
             "detailDescription": "전통주에 대한 상식도 쌓고 포인트도 얻는 절호의 찬스! 막동이가 출제하는 OX 퀴즈를 맞춰보세요. 한 문제 정답 시 500 POINT가 즉시 적립됩니다.",

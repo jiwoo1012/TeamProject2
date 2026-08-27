@@ -10,7 +10,7 @@ import { getCollection, setDocument, deleteDocument } from '../../firebase/fires
 import { PATHS } from '../../routes/paths'
 import bannerOne from '../../assets/images/banner/eventBanner.png'
 import bannerTwo from '../../assets/images/banner/eventBanner-1.png'
-import bannerThree from '../../assets/images/banner/eventBanner-2.png'
+import bannerThree from '../../assets/images/banner/eventBanner-5.png'
 import productListOrnament from '../../assets/images/eventPage/pattern2.png'
 import categoryPattern from '../../assets/images/eventPage/pattern.png'
 import styles from './ProductList.module.scss'
