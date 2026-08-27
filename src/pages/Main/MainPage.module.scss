@@ -23,9 +23,11 @@
   -webkit-backdrop-filter: none;
 }
 
-:global(body:has([data-main-page]) header > div > div:first-child) {
-  background: transparent !important;
-  background-color: transparent !important;
+@media (min-width: 768px) {
+  :global(body:has([data-main-page]) header > div > div:first-child) {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
 }
 
 .page {
@@ -63,7 +65,7 @@
 
     width: calc(100% - 40px);
     min-height: 0;
-    padding: 104px 0 64px;
+    padding: 84px 0 52px;
   }
 
   @media (min-width: 1200px) {
@@ -117,7 +119,7 @@
   animation: scrollGuideFloat 2.2s ease-in-out infinite;
 
   @media (max-width: 767px) {
-    bottom: 24px;
+    bottom: 120px;
     gap: 9px;
     font-size: 11px;
   }
@@ -145,8 +147,15 @@
   }
 
   @media (max-width: 767px) {
-    width: 21px;
-    height: 34px;
+    width: 32px;
+    height: 51px;
+    border-width: 3px;
+
+    i {
+      top: 9px;
+      width: 4px;
+      height: 12px;
+    }
   }
 }
 
@@ -170,7 +179,9 @@
 
   @media (max-width: 767px) {
     display: block;
-    min-height: 640px;
+    height: 100%;
+    min-height: 0;
+    translate: 0 60px;
   }
 
   @media (min-width: 1200px) {
@@ -192,9 +203,9 @@
 
   @media (max-width: 767px) {
     width: 90%;
-    height: 72svh;
-    min-height: 540px;
-    margin: 0 auto;
+    height: clamp(320px, calc(100svh - 250px), 440px);
+    min-height: 0;
+    margin: clamp(108px, 28vw, 110px) auto 0;
   }
 
   @media (min-width: 1200px) {
@@ -251,8 +262,9 @@
   will-change: transform;
 
   @media (max-width: 767px) {
-    height: 72svh;
-    min-height: 540px;
+    height: 100%;
+    min-height: 0;
+    object-position: 65% bottom;
   }
 
   @media (min-width: 1200px) {
@@ -346,7 +358,11 @@
   white-space: nowrap;
 
   @media (max-width: 767px) {
-    font-size: clamp(48px, 16vw, 72px);
+    display: flex;
+    height: 1em;
+    align-items: center;
+    font-size: clamp(46px, 15vw, 68px);
+    line-height: 1;
     letter-spacing: 0.04em;
   }
 
@@ -371,9 +387,10 @@
   left: auto;
 
   @media (max-width: 767px) {
-    top: -22px;
-    right: auto;
-    left: 0;
+    top: -130px;
+    right: calc(50% - clamp(23px, 7.5vw, 34px) + 6px);
+    bottom: auto;
+    left: auto;
     translate: none;
   }
 }
@@ -382,10 +399,10 @@
   left: calc(50% + var(--hero-image-half) + var(--hero-title-gap));
 
   @media (max-width: 767px) {
-    top: auto;
-    right: 0;
-    bottom: 70px;
-    left: auto;
+    top: -70px;
+    right: auto;
+    bottom: auto;
+    left: calc(50% + clamp(23px, 7.5vw, 34px) + 6px);
     translate: none;
   }
 }
@@ -456,6 +473,11 @@
   transform: scale(0.88);
   transform-origin: top center;
   translate: 0 28px;
+
+  @media (max-width: 767px) {
+    transform: none;
+    translate: none;
+  }
 }
 
 .moodHeading {
@@ -1000,7 +1022,7 @@
   @media (max-width: 767px) {
     width: 100%;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
+    gap: 8px;
     margin-bottom: 24px;
   }
 }
@@ -1033,8 +1055,8 @@
   }
 
   @media (max-width: 767px) {
-    min-height: 280px;
-    padding: 16px 9px 14px;
+    min-height: 230px;
+    padding: 14px 8px 12px;
 
     & + &::before {
       left: -6px;
@@ -1063,13 +1085,20 @@
   font-family: Arial, sans-serif;
   font-size: 17px;
   font-weight: $font-weight-regular;
+
+  @media (max-width: 767px) {
+    min-height: 34px;
+    font-size: clamp(11px, 3.4vw, 14px);
+    line-height: 1.3;
+    word-break: keep-all;
+  }
 }
 .recommendCardVisual {
   height: 220px;
   margin: 6px 0;
 
   @media (max-width: 767px) {
-    height: 145px;
+    height: clamp(112px, 34vw, 145px);
   }
 }
 .recommendCardVisual img {
@@ -1493,6 +1522,10 @@
       background: $color-surface;
     }
   }
+
+  @media (hover: none), (pointer: coarse) {
+    min-height: 100svh;
+  }
 }
 
 .bestSellerStage {
@@ -1690,13 +1723,15 @@
   }
 }
 
-.bestSellerCard:hover .bestSellerCardVisual,
-.bestSellerCard:focus-within .bestSellerCardVisual {
-  border-color: rgba(44, 35, 27, 0.16);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  filter: brightness(1.01);
-  translate: 0 -80px;
-  scale: 1.02;
+@media (hover: hover) and (pointer: fine) {
+  .bestSellerCard:hover .bestSellerCardVisual,
+  .bestSellerCard:focus-within .bestSellerCardVisual {
+    border-color: rgba(44, 35, 27, 0.16);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    filter: brightness(1.01);
+    translate: 0 -80px;
+    scale: 1.02;
+  }
 }
 
 .bestSellerPlaceholder {
@@ -1736,11 +1771,11 @@
 
   @media (max-width: 767px) {
     display: flex;
-    min-height: 100svh;
+    min-height: auto;
     flex-direction: column;
-    gap: 44px;
+    gap: 36px;
     justify-content: center;
-    padding: 92px 20px 56px;
+    padding: 84px 20px 64px;
   }
 
   @media (min-width: 1200px) {
@@ -1838,7 +1873,7 @@
     height: auto;
     min-height: 0;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(3, auto);
+    grid-template-rows: repeat(2, auto);
     gap: 12px;
   }
 
@@ -1880,6 +1915,10 @@
 
   .eventCardFront {
     background: #7a5c42;
+  }
+
+  @media (max-width: 767px) {
+    display: none;
   }
 }
 
@@ -2447,7 +2486,7 @@
     min-height: auto;
     grid-template-columns: 1fr;
     gap: 14px;
-    padding: 82px 20px 58px;
+    padding: 76px 20px 72px;
 
     &::before {
       top: 40px;
@@ -2459,14 +2498,14 @@
 
   .makdongVisual {
     width: min(100%, 430px);
-    height: min(52svh, 460px);
+    height: clamp(300px, 48svh, 430px);
     margin: 0 auto;
     grid-column: 1;
     grid-row: 1;
   }
 
   .makdongCharacter {
-    height: 138%;
+    height: 132%;
     translate: -2% 0;
   }
 
@@ -2483,7 +2522,42 @@
   }
 
   .makdongTraits {
-    margin-top: 44px;
+    margin-top: 36px;
+  }
+}
+
+@media (max-width: 359px) {
+  .heroInner,
+  .aiIntro,
+  .featureSection,
+  .bestSellerStage,
+  .eventsGrid,
+  .makdongSection {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .heroInner {
+    width: calc(100% - 32px);
+  }
+
+  .heroTitle {
+    font-size: 46px;
+  }
+
+  .recommendCards {
+    gap: 6px;
+  }
+
+  .bestSellerCard {
+    width: 126px;
+    height: 184px;
+    left: calc(50% + (var(--card-index) - 1.5) * 50px);
+  }
+
+  .eventsCopy h2,
+  .makdongCopy h2 {
+    font-size: 32px;
   }
 }
 

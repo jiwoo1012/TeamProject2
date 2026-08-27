@@ -175,11 +175,11 @@ const JourneySection = ({ onSkip }) => {
         const progress = Math.min(1, Math.max(0, (currentScroll - sectionStart) / (sectionEnd - sectionStart)))
         const currentIndex = Math.round(progress * lastIndex)
         const targetIndex = Math.min(lastIndex, Math.max(0, currentIndex + direction))
-      if (targetIndex === currentIndex) return
+        if (targetIndex === currentIndex) return
 
-      event.preventDefault()
-      if (targetIndex > 0) gsap.to(handElements, { autoAlpha: 0, duration: 0.12, overwrite: 'auto' })
-      isMoving = true
+        event.preventDefault()
+        if (targetIndex > 0) gsap.to(handElements, { autoAlpha: 0, duration: 0.12, overwrite: 'auto' })
+        isMoving = true
         const scrollState = { y: currentScroll }
         const targetScroll = sectionStart + (sectionEnd - sectionStart) * (targetIndex / lastIndex)
         scrollTween?.kill()
@@ -192,8 +192,11 @@ const JourneySection = ({ onSkip }) => {
         })
       }
 
-      window.addEventListener('wheel', handleWheel, { passive: false })
-      removeWheelHandler = () => window.removeEventListener('wheel', handleWheel)
+      const isDesktopStepMode = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+      if (isDesktopStepMode) {
+        window.addEventListener('wheel', handleWheel, { passive: false })
+        removeWheelHandler = () => window.removeEventListener('wheel', handleWheel)
+      }
     }, sectionRef)
 
     return () => {

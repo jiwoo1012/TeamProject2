@@ -30,6 +30,7 @@ const useHeroReveal = ({
 }) => {
   useLayoutEffect(() => {
     const root = document.documentElement
+    const heroScrollGuide = heroCoverRef.current?.querySelector('div')
 
     gsap.set(heroCoverRef.current, { autoAlpha: 1, scale: 1 })
     gsap.set(heroImageRef.current, { clearProps: 'transform', autoAlpha: 1 })
@@ -124,6 +125,25 @@ const useHeroReveal = ({
       invalidateOnRefresh: true,
     })
 
+    const mobileScrollGuideTrigger = window.matchMedia('(max-width: 767px)').matches
+      ? ScrollTrigger.create({
+        trigger: mainContentRef.current,
+        start: 'top top-=8',
+        onEnter: () => gsap.to(heroScrollGuide, {
+          autoAlpha: 0,
+          duration: 0.14,
+          ease: 'power1.out',
+          overwrite: true,
+        }),
+        onLeaveBack: () => gsap.to(heroScrollGuide, {
+          autoAlpha: 1,
+          duration: 0.12,
+          ease: 'power1.out',
+          overwrite: true,
+        }),
+      })
+      : null
+
     const coverTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: mainContentRef.current,
@@ -178,7 +198,10 @@ const useHeroReveal = ({
       },
     })
       .to(heroImageRef.current, {
-        yPercent: () => (window.innerWidth >= 1200 ? -52 : -48),
+        yPercent: () => {
+          if (window.innerWidth <= 767) return 0
+          return window.innerWidth >= 1200 ? -52 : -48
+        },
         duration: HERO_IMAGE_DURATION,
         ease: 'power2.inOut',
       })
@@ -210,6 +233,9 @@ const useHeroReveal = ({
 
     return () => {
       headerTrigger.kill()
+      mobileScrollGuideTrigger?.kill()
+      gsap.killTweensOf(heroScrollGuide)
+      gsap.set(heroScrollGuide, { clearProps: 'opacity,visibility' })
       sunResetTrigger.kill()
       coverTimeline.scrollTrigger?.kill()
       coverTimeline.kill()

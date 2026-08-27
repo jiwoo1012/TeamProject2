@@ -39,7 +39,7 @@
     @include flex-between;
 
     width: 100%;
-    height: 58px;
+    height: 76px;
     padding: 0 $side-margin-mobile;
 
     background: transparent;
@@ -48,12 +48,12 @@
 
     &::before {
       position: absolute;
-      top: calc(50% - 31px);
+      top: calc(50% - 10px);
       left: 0;
       z-index: 0;
       width: 100%;
-      aspect-ratio: 2103 / 748;
-      background: url('../../assets/images/common/header-hanji.webp') center top / 100% auto no-repeat;
+      height: 440px;
+      background: url('../../assets/images/common/header-hanji.webp') center top / auto 440px no-repeat;
       content: '';
       transform: translateY(-50%);
       pointer-events: none;
