@@ -30,6 +30,7 @@ const useHeroReveal = ({
 }) => {
   useLayoutEffect(() => {
     const root = document.documentElement
+    const heroScrollGuide = heroCoverRef.current?.querySelector('div')
 
     gsap.set(heroCoverRef.current, { autoAlpha: 1, scale: 1 })
     gsap.set(heroImageRef.current, { clearProps: 'transform', autoAlpha: 1 })
@@ -124,6 +125,25 @@ const useHeroReveal = ({
       invalidateOnRefresh: true,
     })
 
+    const mobileScrollGuideTrigger = window.matchMedia('(max-width: 767px)').matches
+      ? ScrollTrigger.create({
+        trigger: mainContentRef.current,
+        start: 'top top-=8',
+        onEnter: () => gsap.to(heroScrollGuide, {
+          autoAlpha: 0,
+          duration: 0.14,
+          ease: 'power1.out',
+          overwrite: true,
+        }),
+        onLeaveBack: () => gsap.to(heroScrollGuide, {
+          autoAlpha: 1,
+          duration: 0.12,
+          ease: 'power1.out',
+          overwrite: true,
+        }),
+      })
+      : null
+
     const coverTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: mainContentRef.current,
@@ -178,13 +198,21 @@ const useHeroReveal = ({
       },
     })
       .to(heroImageRef.current, {
-        yPercent: () => (window.innerWidth >= 1200 ? -52 : -48),
+        yPercent: () => {
+          if (window.innerWidth <= 767) return 0
+          return window.innerWidth >= 1200 ? -52 : -48
+        },
         duration: HERO_IMAGE_DURATION,
         ease: 'power2.inOut',
       })
       .to(
         [leftHeroTitleRef.current, rightHeroTitleRef.current],
-        { autoAlpha: 0, y: 12, duration: 0.3, ease: 'power1.out' },
+        {
+          autoAlpha: () => (window.innerWidth <= 767 ? 1 : 0),
+          y: () => (window.innerWidth <= 767 ? 0 : 12),
+          duration: 0.3,
+          ease: 'power1.out',
+        },
         0,
       )
       .fromTo(
@@ -199,17 +227,29 @@ const useHeroReveal = ({
         },
         '-=0.12',
       )
+      .addLabel('shopReveal', '-=0.28')
       .fromTo(
         shopButtonRef.current,
         { autoAlpha: 0, y: 18, scale: 0.96 },
         { autoAlpha: 1, y: 0, scale: 1, duration: 0.45, ease: 'power2.out' },
-        '-=0.28',
+        'shopReveal',
       )
+
+    if (window.matchMedia('(max-width: 767px)').matches) {
+      timeline.to(heroSunsetPhotoRef.current, {
+        autoAlpha: 1,
+        duration: 0.7,
+        ease: 'power1.inOut',
+      }, 'shopReveal')
+    }
 
     heroRevealRef.current = timeline
 
     return () => {
       headerTrigger.kill()
+      mobileScrollGuideTrigger?.kill()
+      gsap.killTweensOf(heroScrollGuide)
+      gsap.set(heroScrollGuide, { clearProps: 'opacity,visibility' })
       sunResetTrigger.kill()
       coverTimeline.scrollTrigger?.kill()
       coverTimeline.kill()

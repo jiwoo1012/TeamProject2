@@ -49,14 +49,15 @@
   width: 113px;
   height: 113px;
   place-items: center;
+  overflow: hidden;
   border-radius: v.$radius-pill;
   background: v.$color-white;
 }
 
-.avatar svg {
-  width: 70px;
-  height: 70px;
-  fill: color-mix(in srgb, v.$color-text-muted 45%, v.$color-white);
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .memberCopy {
@@ -149,29 +150,47 @@
 }
 
 .progressTrack {
-  width: 190px;
+  appearance: none;
+  width: auto;
   height: v.$space-2;
-  flex: 0 0 auto;
+  min-width: 0;
+  flex: 1 1 auto;
   overflow: hidden;
   border-radius: v.$radius-pill;
-  background: color-mix(in srgb, v.$color-text-muted 35%, v.$color-white);
+  background: transparent;
 }
 
-.progressValue {
-  display: block;
-  width: 40%;
-  height: 100%;
+.progressTrack::-webkit-progress-bar {
+  border-radius: inherit;
+  background: transparent;
+}
+
+.progressTrack::-webkit-progress-value {
+  border-radius: inherit;
+  background: v.$color-primary;
+}
+
+.progressTrack::-moz-progress-bar {
   border-radius: inherit;
   background: v.$color-primary;
 }
 
 .progressText {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
   margin-left: auto;
   color: v.$color-text-muted;
   font-size: v.$font-size-xs;
   font-weight: v.$font-weight-medium;
   line-height: 1;
   white-space: nowrap;
+}
+
+.progressText small {
+  color: color-mix(in srgb, v.$color-text-muted 74%, v.$color-white);
+  font-size: 10px;
+  font-weight: v.$font-weight-regular;
 }
 
 .summaryMessage {
@@ -688,9 +707,9 @@
     height: v.$space-16;
   }
 
-  .avatar svg {
-    width: v.$space-10;
-    height: v.$space-10;
+  .avatar img {
+    width: 100%;
+    height: 100%;
   }
 
   .memberCopy {
@@ -713,7 +732,6 @@
   .mascotPlaceholder {
     width: 96px;
     height: 96px;
-    font-size: 68px;
   }
 
   .stats {

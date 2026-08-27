@@ -12,6 +12,15 @@ const MAKDONG_HEADER_CLASS = 'main-makdong-header-transparent'
 
 gsap.registerPlugin(ScrollTrigger)
 
+const createHeaderTransparentTrigger = (trigger, className) => ScrollTrigger.create({
+  trigger,
+  start: 'top 72px',
+  end: 'bottom 72px',
+  onToggle: ({ isActive }) => {
+    document.documentElement.classList.toggle(className, isActive)
+  },
+})
+
 const useSectionReveals = ({
   aiIntroRef,
   featureSectionRef,
@@ -148,32 +157,18 @@ const useSectionReveals = ({
         ease: 'power2.out',
       }, '-=0.32')
 
-    const featureHeaderTrigger = ScrollTrigger.create({
-      trigger: featureSectionRef.current,
-      start: 'top 72px',
-      end: 'bottom 72px',
-      onToggle: ({ isActive }) => {
-        document.documentElement.classList.toggle(FEATURE_HEADER_CLASS, isActive)
-      },
-    })
-
-    const makdongHeaderTrigger = ScrollTrigger.create({
-      trigger: makdongSectionRef.current,
-      start: 'top 72px',
-      end: 'bottom 72px',
-      onToggle: ({ isActive }) => {
-        document.documentElement.classList.toggle(MAKDONG_HEADER_CLASS, isActive)
-      },
-    })
-
-    const eventsHeaderTrigger = ScrollTrigger.create({
-      trigger: eventsGridRef.current,
-      start: 'top 72px',
-      end: 'bottom 72px',
-      onToggle: ({ isActive }) => {
-        document.documentElement.classList.toggle(EVENTS_HEADER_CLASS, isActive)
-      },
-    })
+    const featureHeaderTrigger = createHeaderTransparentTrigger(
+      featureSectionRef.current,
+      FEATURE_HEADER_CLASS,
+    )
+    const makdongHeaderTrigger = createHeaderTransparentTrigger(
+      makdongSectionRef.current,
+      MAKDONG_HEADER_CLASS,
+    )
+    const eventsHeaderTrigger = createHeaderTransparentTrigger(
+      eventsGridRef.current,
+      EVENTS_HEADER_CLASS,
+    )
 
     const makdongHeading = makdongSectionRef.current.querySelector(`.${styles.makdongCopy} h2`)
     const makdongDescription = makdongSectionRef.current.querySelector(`.${styles.makdongDescription}`)
@@ -260,9 +255,20 @@ const useSectionReveals = ({
     }
     window.addEventListener('main:events-reveal', replayEventsReveal)
 
+    const isDesktopStepMode = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    const mobileEventsRevealTrigger = !isDesktopStepMode
+      ? ScrollTrigger.create({
+        trigger: eventsGridRef.current,
+        start: 'top 75%',
+        once: true,
+        onEnter: () => eventsReveal.restart(true),
+      })
+      : null
+
     return () => {
       const timelines = [aiReveal, featureReveal, makdongReveal, eventsReveal]
       window.removeEventListener('main:events-reveal', replayEventsReveal)
+      mobileEventsRevealTrigger?.kill()
       featureSection.removeEventListener('pointermove', handleFeaturePointerMove)
       featureSection.removeEventListener('pointerleave', resetFeatureCup)
       gsap.killTweensOf(featureCup)

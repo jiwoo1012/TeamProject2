@@ -14,7 +14,7 @@ import {
 import { serverTimestamp } from 'firebase/firestore'
 
 import { auth } from './firebase'
-import { setDocument, getDocument } from './firestore'
+import { setDocument, getDocument, updateDocument } from './firestore'
 
 // 회원가입
 // nickname, email, password만 받는다 (phone/address는 받지 않음 - AGENTS.md 확정)
@@ -34,7 +34,7 @@ export const signup = async ({ nickname, email, password }) => {
     role: 'user',
     status: 'active',
     isAdultVerified: false,
-    points: 0,
+    points: 1000,
     userPreference: null,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
@@ -69,6 +69,10 @@ export const login = async (email, password, rememberMe = true) => {
     await signOut(auth)
     throw new AccountSuspendedError()
   }
+
+  await updateDocument('users', uid, {
+    lastLoginAt: serverTimestamp(),
+  })
 
   return { user: userCredential.user, userData }
 }

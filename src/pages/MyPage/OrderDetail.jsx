@@ -4,6 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { getOrderStatusLabel, ORDER_STATUS } from '../../constants/orderStatus'
 import { subscribeToAuthState } from '../../firebase/auth'
 import { db } from '../../firebase/firebase'
+import { updateDocument } from '../../firebase/firestore'
+import orderDetailMakdongDelivering from '../../assets/images/mypage/orderDetail-makdong-delivering.png'
 import styles from './OrderDetail.module.scss'
 
 const orderStepItems = [
@@ -57,6 +59,8 @@ const OrderDetail = () => {
   const [order, setOrder] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
+  const [isUpdating, setIsUpdating] = useState(false)
+  const [actionError, setActionError] = useState('')
 
   useEffect(() => {
     let isActive = true
@@ -96,6 +100,7 @@ const OrderDetail = () => {
               name: item.productName || '상품',
               price: Number(item.price || 0),
               quantity: Number(item.quantity || 0),
+              imageUrl: item.imageUrl || '',
               type: getProductType(item.productId),
             }))
           : []
@@ -145,6 +150,30 @@ const OrderDetail = () => {
     }
   }, [orderId])
 
+  const canCancel = order?.status === ORDER_STATUS.PAID || order?.status === ORDER_STATUS.PREPARING
+
+  const handleCancelOrder = async () => {
+    if (!order || !canCancel || isUpdating) return
+    if (!window.confirm('주문을 취소하시겠습니까?')) return
+
+    setIsUpdating(true)
+    setActionError('')
+
+    try {
+      await updateDocument('orders', order.id, { status: ORDER_STATUS.CANCELLED })
+      setOrder((current) => ({
+        ...current,
+        status: ORDER_STATUS.CANCELLED,
+        shipping: { ...current.shipping, status: getOrderStatusLabel(ORDER_STATUS.CANCELLED) },
+      }))
+    } catch (error) {
+      console.error('주문 취소 실패:', error)
+      setActionError('주문을 취소하지 못했습니다. 잠시 후 다시 시도해주세요.')
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
   if (isLoading || loadError || !order) {
     return (
       <section className={styles.page} aria-labelledby="order-detail-title">
@@ -193,7 +222,14 @@ const OrderDetail = () => {
             </div>
           </dl>
 
-          <button type="button" className={styles.cancelButton}>주문 취소</button>
+          <button
+            type="button"
+            className={styles.cancelButton}
+            disabled={!canCancel || isUpdating}
+            onClick={handleCancelOrder}
+          >
+            {isUpdating ? '취소 처리 중...' : canCancel ? '주문 취소' : '취소 불가'}
+          </button>
         </div>
 
         <div className={styles.stepper} aria-label="주문 진행 상태">
@@ -206,7 +242,9 @@ const OrderDetail = () => {
           ))}
         </div>
 
-        <div className={styles.mascotPlaceholder} aria-hidden="true">🦉</div>
+        <div className={styles.mascotPlaceholder} aria-hidden="true">
+          <img className={styles.mascotImage} src={orderDetailMakdongDelivering} alt="" />
+        </div>
       </section>
 
       <section className={styles.productSection} aria-labelledby="product-info-title">
@@ -222,7 +260,11 @@ const OrderDetail = () => {
           {order.products.map((product) => (
             <article key={product.id} className={styles.productRow}>
               <div className={styles.productInfo}>
-                <ProductPlaceholder type={product.type} />
+                {product.imageUrl ? (
+                  <img className={styles.productImage} src={product.imageUrl} alt={product.name} />
+                ) : (
+                  <ProductPlaceholder type={product.type} />
+                )}
                 <div className={styles.productCopy}>
                   <strong>{product.name}</strong>
                   <span>{formatPrice(product.price)}</span>
@@ -239,7 +281,7 @@ const OrderDetail = () => {
         <section className={`${styles.infoCard} ${styles.addressCard}`} aria-labelledby="address-title">
           <div className={styles.cardHeading}>
             <h3 id="address-title">배송지 정보</h3>
-            <button type="button" className={styles.addressButton}>배송지 변경</button>
+            <span className={styles.addressNote}>주문 당시 배송지</span>
           </div>
 
           <dl className={styles.infoList}>
@@ -279,6 +321,8 @@ const OrderDetail = () => {
           </dl>
         </section>
       </div>
+
+      {actionError && <p className={styles.actionError} role="alert">{actionError}</p>}
 
       <button type="button" className={styles.backButton} onClick={() => navigate('/mypage/orders')}>
         목록으로

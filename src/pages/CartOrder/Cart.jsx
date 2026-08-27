@@ -14,8 +14,18 @@ import {
 
 import {
   getCart,
+  getRemoteCart,
   saveCart,
+  syncRemoteCart,
 } from '../../utils/cartStorage'
+
+import {
+  subscribeToAuthState,
+} from '../../firebase/auth'
+
+import {
+  getDocument,
+} from '../../firebase/firestore'
 
 import {
   products,
@@ -164,26 +174,20 @@ const getDiscountAmount = (
 }
 
 
-const mockRecommendations = [
-  {
-    id: 'rec-01',
-    name: '자작 막걸리 여유 12도',
-    price: 18000,
-    imageUrl: '',
-  },
-  {
-    id: 'rec-02',
-    name: '자작 막걸리 여유 12도',
-    price: 18000,
-    imageUrl: '',
-  },
-  {
-    id: 'rec-03',
-    name: '자작 막걸리 여유 12도',
-    price: 18000,
-    imageUrl: '',
-  },
-]
+const mockRecommendations =
+  [...products]
+    .sort(
+      () => Math.random() - 0.5
+    )
+    .slice(0, 3)
+    .map(
+      (product) => ({
+        id: product.productId,
+        name: product.productName,
+        price: Number(product.price) || 0,
+        imageUrl: resolveImage(product.imageUrl),
+      })
+    )
 
 
 const formatPrice = (
@@ -208,10 +212,8 @@ const formatPrice = (
   productId가 같은 상품을 찾아
   Cart에서 사용할 형태로 바꿔준다.
 */
-const getInitialCartItems =
-  () => {
-    const savedCart =
-      getCart()
+const getCartItems =
+  (savedCart = getCart()) => {
 
     return savedCart
       .map(
@@ -322,6 +324,10 @@ const getInitialCartItems =
       )
       .filter(Boolean)
   }
+
+
+const getInitialCartItems =
+  () => getCartItems()
 
 
 const PurchaseSteps =
@@ -457,6 +463,15 @@ const Cart = () => {
       getInitialCartItems
     )
 
+  const [currentUser, setCurrentUser] =
+    useState(null)
+
+  const [availablePoints, setAvailablePoints] =
+    useState(0)
+
+  const [isRemoteCartReady, setIsRemoteCartReady] =
+    useState(false)
+
   const [
     selectedIds,
     setSelectedIds,
@@ -478,7 +493,91 @@ const Cart = () => {
     다시 localStorage에
     productId + quantity 형태로 저장
   */
+  useEffect(
+    () => subscribeToAuthState(setCurrentUser),
+    []
+  )
+
   useEffect(() => {
+    let isCancelled = false
+
+    setAvailablePoints(0)
+
+    if (!currentUser || currentUser.isAnonymous) {
+      return undefined
+    }
+
+    getDocument('users', currentUser.uid)
+      .then((userData) => {
+        if (isCancelled) return
+
+        setAvailablePoints(Math.max(0, Number(userData?.points) || 0))
+      })
+      .catch((error) => {
+        if (!isCancelled) {
+          console.error('회원 포인트 조회 실패:', error)
+        }
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [currentUser])
+
+  useEffect(() => {
+    if (!currentUser || currentUser.isAnonymous) {
+      setIsRemoteCartReady(true)
+      return undefined
+    }
+
+    let isCancelled = false
+    setIsRemoteCartReady(false)
+
+    getRemoteCart(currentUser.uid)
+      .then(async (remoteCart) => {
+        if (isCancelled) return
+
+        const localCart = getCart()
+        const mergedCart = [...remoteCart]
+
+        localCart.forEach((localItem) => {
+          const remoteIndex = mergedCart.findIndex((item) => item.productId === localItem.productId)
+
+          if (remoteIndex < 0) {
+            mergedCart.push(localItem)
+            return
+          }
+
+          mergedCart[remoteIndex] = {
+            ...mergedCart[remoteIndex],
+            quantity: Math.max(
+              Number(mergedCart[remoteIndex].quantity) || 0,
+              Number(localItem.quantity) || 0,
+            ),
+          }
+        })
+
+        const nextItems = getCartItems(mergedCart)
+        setItems(nextItems)
+        setSelectedIds(nextItems.map((item) => item.id))
+        saveCart(mergedCart)
+        await syncRemoteCart(currentUser.uid, mergedCart)
+      })
+      .catch((error) => {
+        console.error('장바구니 동기화 실패:', error)
+      })
+      .finally(() => {
+        if (!isCancelled) setIsRemoteCartReady(true)
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [currentUser])
+
+  useEffect(() => {
+    if (!isRemoteCartReady) return
+
     const cartItems =
       items.map(
         (item) => ({
@@ -491,7 +590,12 @@ const Cart = () => {
       )
 
     saveCart(cartItems)
-  }, [items])
+
+    if (currentUser && !currentUser.isAnonymous) {
+      syncRemoteCart(currentUser.uid, cartItems)
+        .catch((error) => console.error('장바구니 저장 실패:', error))
+    }
+  }, [currentUser, isRemoteCartReady, items])
 
   const [
     pointInput,
@@ -539,7 +643,7 @@ const Cart = () => {
           Number(
             pointInput
           ) || 0,
-          3000,
+          availablePoints,
           itemTotal
         )
 
@@ -560,11 +664,12 @@ const Cart = () => {
       items,
       selectedIds,
       pointInput,
+      availablePoints,
     ])
 
   const allUsablePoints =
     Math.min(
-      3000,
+      availablePoints,
       totals.itemTotal
     )
 
@@ -767,6 +872,26 @@ const Cart = () => {
           ? '0'
           : String(
               allUsablePoints
+            )
+      )
+    }
+
+  const handlePointInputChange =
+    (event) => {
+      const nextValue =
+        event.target.value
+
+      setPointInput(
+        nextValue === ''
+          ? ''
+          : String(
+              Math.max(
+                0,
+                Math.min(
+                  Number(nextValue) || 0,
+                  allUsablePoints
+                )
+              )
             )
       )
     }
@@ -1121,88 +1246,62 @@ const Cart = () => {
               </p>
             </div>
 
-            {isEmpty ? (
-              <div
-                className={
-                  styles.emptyRecommendations
-                }
-              >
-                {Array.from(
-                  {
-                    length: 5,
-                  },
-                  (_, index) => (
+            <div
+              className={
+                styles.recommendationList
+              }
+            >
+              {mockRecommendations.map(
+                (product) => (
+                  <article
+                    className={
+                      styles.recommendationItem
+                    }
+                    key={
+                      product.id
+                    }
+                  >
+                    <ProductImage
+                      imageUrl={
+                        product.imageUrl
+                      }
+                      name={
+                        product.name
+                      }
+                    />
+
                     <div
                       className={
-                        styles.emptyRecommendationThumb
-                      }
-                      key={
-                        index
+                        styles.recommendationCopy
                       }
                     >
-                      IMG
-                    </div>
-                  )
-                )}
-              </div>
-            ) : (
-              <div
-                className={
-                  styles.recommendationList
-                }
-              >
-                {mockRecommendations.map(
-                  (product) => (
-                    <article
-                      className={
-                        styles.recommendationItem
-                      }
-                      key={
-                        product.id
-                      }
-                    >
-                      <ProductImage
-                        imageUrl={
-                          product.imageUrl
-                        }
-                        name={
+                      <strong>
+                        {
                           product.name
                         }
-                      />
+                      </strong>
 
-                      <div
-                        className={
-                          styles.recommendationCopy
-                        }
-                      >
-                        <strong>
-                          {
-                            product.name
-                          }
-                        </strong>
+                      <span>
+                        {formatPrice(
+                          product.price
+                        )}
+                      </span>
+                    </div>
 
-                        <span>
-                          {formatPrice(
-                            product.price
-                          )}
-                        </span>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleAddRecommendation(
-                            product
-                          )
-                        }
-                      >
-                        + 담기
-                      </button>
-                    </article>
-                  )
-                )}
-              </div>
-            )}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleAddRecommendation(
+                          product
+                        )
+                      }
+                    >
+                      + 담기
+                    </button>
+                  </article>
+                )
+              )}
+            </div>
           </section>
         </div>
 
@@ -1291,7 +1390,7 @@ const Cart = () => {
                   </h3>
 
                   <span>
-                    보유 3,000P
+                    보유 {availablePoints.toLocaleString('ko-KR')}P
                   </span>
                 </div>
 
@@ -1312,17 +1411,15 @@ const Cart = () => {
                     <input
                       type="number"
                       min="0"
-                      max="3000"
+                      max={allUsablePoints}
                       value={
                         pointInput
                       }
                       onChange={(
                         event
                       ) =>
-                        setPointInput(
+                        handlePointInputChange(
                           event
-                            .target
-                            .value
                         )
                       }
                     />

@@ -1,9 +1,12 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Link } from 'react-router-dom'
 
 import bestSellerTransitionImage from '../../assets/images/main/best-seller/bestseller.png'
 import styles from './MainPage.module.scss'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const productImages = import.meta.glob('../../assets/images/products/product*.png', {
   eager: true,
@@ -20,7 +23,6 @@ const fallbackProducts = [
   { productId: 'liq_004', productName: '들꽃 국화주', imageUrl: 'product4.png' },
 ].map((product) => ({ ...product, imageSrc: resolveProductImage(product.imageUrl) }))
 
-const IS_SCROLL_SEQUENCE_ENABLED = true
 const EXIT_EXPAND_DURATION = 1.15
 const EXIT_SCROLL_DURATION = 1.2
 const EXIT_SCROLL_DELAY = 0.1
@@ -42,7 +44,7 @@ const BestSellerSection = ({
 
   useLayoutEffect(() => {
     const section = sectionRef.current
-    if (!IS_SCROLL_SEQUENCE_ENABLED || !section || !cardCount) return undefined
+    if (!section || !cardCount) return undefined
 
     let scrollTween
     let exitTimeline
@@ -55,6 +57,7 @@ const BestSellerSection = ({
 
     const context = gsap.context(() => {
       const cards = cardRefs.current.slice(0, cardCount)
+      const isDesktopStepMode = window.matchMedia('(hover: hover) and (pointer: fine)').matches
       gsap.set(cards, { autoAlpha: 0, y: 48, scale: 0.94 })
 
       const setCardsForStep = (step) => {
@@ -65,6 +68,24 @@ const BestSellerSection = ({
             scale: index < step ? 1 : 0.94,
           })
         })
+      }
+
+      if (!isDesktopStepMode) {
+        setIsRevealComplete(true)
+        gsap.to(cards, {
+          autoAlpha: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.55,
+          stagger: 0.14,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 72%',
+            once: true,
+          },
+        })
+        return
       }
 
       const handleWheel = (event) => {
@@ -214,7 +235,7 @@ const BestSellerSection = ({
       ref={sectionRef}
       className={styles.bestSeller}
       style={{
-        '--best-seller-steps': IS_SCROLL_SEQUENCE_ENABLED ? cardCount + 1 : 1,
+        '--best-seller-steps': cardCount + 1,
       }}
       aria-labelledby="best-seller-title"
     >
@@ -222,6 +243,11 @@ const BestSellerSection = ({
         <h2 id="best-seller-title">BEST SELLER</h2>
 
         <div className={styles.bestSellerContent}>
+          <div className={styles.bestSellerSwipeHint} aria-hidden="true">
+            <svg viewBox="0 0 64 64" focusable="false">
+              <path d="M27 36V13a5 5 0 0 1 10 0v17-8a5 5 0 0 1 10 0v11-5a5 5 0 0 1 10 0v13c0 11-8 19-19 19h-4c-8 0-13-4-17-10L8 40a5 5 0 0 1 8-6l11 10Z" />
+            </svg>
+          </div>
           <div
             className={`${styles.cardStack} ${isRevealComplete ? styles.isBestSellerComplete : ''}`}
             aria-label="베스트셀러 상품"

@@ -9,26 +9,26 @@ import doorHandleHand from '../../assets/images/main/journey/entrance-door-handl
 import hallwayFar from '../../assets/images/main/journey/03-hallway-far.webp'
 import livingroomWide from '../../assets/images/main/journey/04-livingroom-wide.webp'
 import livingroomTable from '../../assets/images/main/journey/05-livingroom-table.webp'
-import lightOff from '../../assets/images/main/journey/06-livingroom-light-off.png'
-import lightOn from '../../assets/images/main/journey/07-livingroom-light-on.png'
-import livingroomWindow from '../../assets/images/main/journey/08-livingroom-window.png'
-import makdongWindow from '../../assets/images/main/journey/M-window-peek.png'
 import styles from './JourneySection.module.scss'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const scenes = [entranceClosed, entranceOpen, hallwayFar, livingroomWide, livingroomTable, lightOff]
+// [자주 수정하는 곳 1] 기본 장면의 재생 순서
+// 새 사진 추가 방법:
+// 1. 위 import 구간에서 이미지에 사용할 변수 이름과 파일 경로를 추가합니다.
+// 2. 아래 scenes 배열의 원하는 위치에 그 변수 이름을 추가합니다.
+// 배열의 왼쪽 이미지부터 차례대로 재생됩니다.
+const scenes = [entranceClosed, entranceOpen, hallwayFar, livingroomWide, livingroomTable]
 
 const JourneySection = ({ onSkip }) => {
+  // 화면 요소를 GSAP 애니메이션과 연결하는 참조값입니다.
+  // 장면 요소를 추가하거나 삭제하지 않는다면 이 부분은 수정하지 않아도 됩니다.
   const sectionRef = useRef(null)
   const sceneRefs = useRef([])
   const guideRef = useRef(null)
   const handRef = useRef(null)
   const handleHandRef = useRef(null)
   const bellRef = useRef(null)
-  const lightOnRef = useRef(null)
-  const windowRef = useRef(null)
-  const makdongRef = useRef(null)
 
   useLayoutEffect(() => {
     let scrollTween
@@ -45,33 +45,17 @@ const JourneySection = ({ onSkip }) => {
     const context = gsap.context(() => {
       const sceneElements = sceneRefs.current
       const handElements = [handRef.current, handleHandRef.current]
+
+      // Journey가 처음 열렸을 때 각 이미지의 투명도와 크기를 초기화합니다.
       gsap.set(sceneElements, { opacity: 0, scale: 1.06 })
       gsap.set(sceneElements[0], { opacity: 1, scale: 1 })
       gsap.set(handRef.current, { autoAlpha: 0, xPercent: -7, yPercent: -8 })
       gsap.set(handleHandRef.current, { autoAlpha: 0, xPercent: -18, yPercent: -20 })
       gsap.set(bellRef.current, { autoAlpha: 1 })
-      gsap.set([lightOnRef.current, windowRef.current, makdongRef.current], { opacity: 0 })
-      gsap.set(windowRef.current, { scale: 1.04 })
-      gsap.set(makdongRef.current, { xPercent: -24, rotate: -2 })
       stage?.classList.add(styles.cursorHidden)
 
-      const endingTimeline = gsap.timeline({ paused: true })
-        .to(lightOnRef.current, { opacity: 1, duration: 0.22 })
-        .to(lightOnRef.current, { opacity: 0.15, duration: 0.16 })
-        .to(lightOnRef.current, { opacity: 0.9, duration: 0.28 })
-        .to(lightOnRef.current, { opacity: 0.28, duration: 0.14 })
-        .to(lightOnRef.current, { opacity: 1, duration: 0.45 })
-        .to({}, { duration: 0.25 })
-        .to(sceneElements[4], { opacity: 1, scale: 1, duration: 0.65 }, 'table')
-        .to([sceneElements[5], lightOnRef.current], { opacity: 0, duration: 0.65 }, 'table')
-        .to({}, { duration: 0.45 })
-        .to(windowRef.current, { opacity: 1, scale: 1, duration: 0.8 }, 'window')
-        .to(sceneElements[4], { opacity: 0, duration: 0.8 }, 'window')
-        .to(makdongRef.current, { opacity: 1, xPercent: 0, rotate: 0, duration: 0.85, ease: 'back.out(1.35)' }, '>-=0.15')
-        .to({}, { duration: 0.8 })
-        .to(sceneElements[4], { opacity: 1, scale: 1, duration: 0.8 }, 'return')
-        .to([windowRef.current, makdongRef.current], { opacity: 0, duration: 0.8 }, 'return')
-
+      // [자주 수정하는 곳 2] 기본 장면의 전체 재생 방식
+      // PC와 모바일 모두 사용자의 스크롤 위치에 맞춰 재생됩니다.
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -89,18 +73,20 @@ const JourneySection = ({ onSkip }) => {
             stage?.classList.remove(styles.cursorHidden)
             root.classList.remove(scrollbarClass)
             root.classList.add('main-header-visible')
-            endingTimeline.restart()
           },
           onEnterBack: () => {
             root.classList.add(scrollbarClass)
             root.classList.remove('main-header-visible')
-            endingTimeline.pause(0)
-            gsap.set([lightOnRef.current, windowRef.current, makdongRef.current], { opacity: 0 })
           },
         },
       })
 
+      // 첫 스크롤이 시작되면 하단 스크롤 안내를 숨깁니다.
       timeline.to(guideRef.current, { opacity: 0, duration: 0.25 })
+
+      // [자주 수정하는 곳 3] 기본 사진 전환 속도
+      // duration: 1을 줄이면 빨라지고, 늘리면 느려집니다.
+      // 마지막 0.35는 다음 사진으로 넘어가기 전에 머무는 시간입니다.
       for (let index = 1; index < sceneElements.length; index += 1) {
         timeline
           .to(sceneElements[index - 1], { opacity: 0, scale: 1.1, duration: 1, ease: 'none' })
@@ -108,6 +94,7 @@ const JourneySection = ({ onSkip }) => {
           .to({}, { duration: 0.35 })
       }
 
+      // 마우스를 사용하는 PC에서만 손 이미지가 포인터를 따라갑니다.
       const canTrackPointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
       if (stage && canTrackPointer) {
         const moveHandX = gsap.quickTo(handRef.current, 'x', { duration: 0.12, ease: 'power2.out' })
@@ -157,6 +144,7 @@ const JourneySection = ({ onSkip }) => {
         }
       }
 
+      // PC에서 휠을 한 번 움직일 때 다음 사진 단계로 이동시키는 로직입니다.
       const handleWheel = (event) => {
         const section = sectionRef.current
         const sectionStart = section.offsetTop
@@ -175,11 +163,11 @@ const JourneySection = ({ onSkip }) => {
         const progress = Math.min(1, Math.max(0, (currentScroll - sectionStart) / (sectionEnd - sectionStart)))
         const currentIndex = Math.round(progress * lastIndex)
         const targetIndex = Math.min(lastIndex, Math.max(0, currentIndex + direction))
-      if (targetIndex === currentIndex) return
+        if (targetIndex === currentIndex) return
 
-      event.preventDefault()
-      if (targetIndex > 0) gsap.to(handElements, { autoAlpha: 0, duration: 0.12, overwrite: 'auto' })
-      isMoving = true
+        event.preventDefault()
+        if (targetIndex > 0) gsap.to(handElements, { autoAlpha: 0, duration: 0.12, overwrite: 'auto' })
+        isMoving = true
         const scrollState = { y: currentScroll }
         const targetScroll = sectionStart + (sectionEnd - sectionStart) * (targetIndex / lastIndex)
         scrollTween?.kill()
@@ -192,8 +180,11 @@ const JourneySection = ({ onSkip }) => {
         })
       }
 
-      window.addEventListener('wheel', handleWheel, { passive: false })
-      removeWheelHandler = () => window.removeEventListener('wheel', handleWheel)
+      const isDesktopStepMode = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+      if (isDesktopStepMode) {
+        window.addEventListener('wheel', handleWheel, { passive: false })
+        removeWheelHandler = () => window.removeEventListener('wheel', handleWheel)
+      }
     }, sectionRef)
 
     return () => {
@@ -209,17 +200,16 @@ const JourneySection = ({ onSkip }) => {
   return (
     <section ref={sectionRef} className={styles.journey} aria-label="자작의 공간으로 들어가는 스크롤 이야기">
       <div className={styles.stage}>
+        {/* scenes 배열의 사진을 같은 위치에 겹쳐 놓고 투명도로 전환합니다. */}
         {scenes.map((scene, index) => (
           <img key={scene} ref={(element) => { sceneRefs.current[index] = element }} className={styles.scene} src={scene} alt="" aria-hidden="true" />
         ))}
-        <img ref={lightOnRef} className={`${styles.scene} ${styles.lightOn}`} src={lightOn} alt="" aria-hidden="true" />
-        <img ref={windowRef} className={`${styles.scene} ${styles.windowScene}`} src={livingroomWindow} alt="" aria-hidden="true" />
-        <img ref={makdongRef} className={styles.makdong} src={makdongWindow} alt="창문에서 고개를 내민 막동이" />
         <img ref={handRef} className={styles.keypadHand} src={keypadHand} alt="" aria-hidden="true" />
         <img ref={handleHandRef} className={`${styles.keypadHand} ${styles.doorHandleHand}`} src={doorHandleHand} alt="" aria-hidden="true" />
         <span ref={bellRef} className={styles.doorBell} aria-hidden="true" />
         <div className={styles.shade} aria-hidden="true" />
 
+        {/* [자주 수정하는 곳 4] 인트로 건너뛰기 버튼 문구 */}
         <button className={styles.skipButton} type="button" onClick={onSkip}>
           <span>인트로 건너뛰기</span><span className={styles.skipArrow} aria-hidden="true" />
         </button>
