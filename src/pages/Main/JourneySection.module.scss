@@ -177,19 +177,26 @@
 
 @media (max-width: 767px) {
   .journey {
-    height: 520svh;
+    height: 500svh;
   }
   .skipButton {
     top: 20px;
     right: 20px;
   }
   .scrollGuide {
-    bottom: 28px;
+    right: 20px;
+    bottom: max(24px, env(safe-area-inset-bottom));
+    left: 20px;
+    transform: none;
   }
   .makdong {
     bottom: 7%;
     left: 1%;
     width: min(52vw, 280px);
+  }
+  .doorBell {
+    min-width: 44px;
+    min-height: 44px;
   }
   .keypadHand {
     display: none;

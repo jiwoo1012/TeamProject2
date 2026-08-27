@@ -15,6 +15,9 @@ const useMainSectionWheel = ({
   isHeroSunCompleteRef,
 }) => {
   useLayoutEffect(() => {
+    const isDesktopStepMode = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    if (!isDesktopStepMode) return undefined
+
     const root = document.documentElement
     let scrollTween
     let previousScrollBehavior = ''
@@ -49,18 +52,17 @@ const useMainSectionWheel = ({
       const currentScroll = window.scrollY
       const mainTop = mainContent.offsetTop
       const firstSectionTop = aiIntroRef.current.offsetTop
-      const heroStops = [
-        mainTop,
-        Math.min(mainTop + window.innerHeight, firstSectionTop - 2),
-        Math.min(mainTop + window.innerHeight * 2, firstSectionTop - 2),
-      ]
+      const heroEnterStop = mainTop
+      const heroSunStageStop = Math.min(mainTop + window.innerHeight, firstSectionTop - 2)
+      const heroExitStop = Math.min(mainTop + window.innerHeight * 2, firstSectionTop - 2)
+      const heroStops = [heroEnterStop, heroSunStageStop, heroExitStop]
       const sectionTops = sections.map((section) => section.offsetTop)
       const bestSeller = bestSellerSectionRef.current
       const bestSellerEnd = bestSeller.offsetTop + bestSeller.offsetHeight - window.innerHeight
       const hasBestSellerSteps = bestSellerEnd > bestSeller.offsetTop + 2
       let targetTop
 
-      const isAtSunStage = Math.abs(currentScroll - heroStops[1]) <= 2
+      const isAtSunStage = Math.abs(currentScroll - heroSunStageStop) <= 2
       if (isAtSunStage && direction < 0 && isHeroSunCompleteRef.current) {
         event.preventDefault()
         heroSunResetRef.current?.()
@@ -82,17 +84,12 @@ const useMainSectionWheel = ({
         currentScroll > bestSeller.offsetTop + 2 &&
         currentScroll < bestSellerEnd - 2
       )) return
-      if (hasBestSellerSteps && currentScroll <= bestSeller.offsetTop + 2 && currentScroll >= bestSeller.offsetTop - 2 && direction > 0) return
-      if (hasBestSellerSteps && currentScroll <= bestSellerEnd + 2 && currentScroll >= bestSellerEnd - 2 && direction < 0) return
-
       if (
         hasBestSellerSteps &&
-        currentScroll >= bestSellerEnd - 2 &&
-        currentScroll <= bestSellerEnd + 2 &&
+        Math.abs(currentScroll - bestSeller.offsetTop) <= 2 &&
         direction > 0
-      ) {
-        return
-      }
+      ) return
+      if (hasBestSellerSteps && Math.abs(currentScroll - bestSellerEnd) <= 2) return
 
       if (targetTop === undefined) {
         if (currentScroll < firstSectionTop - 2) {
@@ -131,7 +128,7 @@ const useMainSectionWheel = ({
           const targetIndex = currentIndex + direction
 
           if (targetIndex < 0) {
-            targetTop = heroStops[2]
+            targetTop = heroExitStop
           } else if (targetIndex >= sectionTops.length) {
             return
           } else {
