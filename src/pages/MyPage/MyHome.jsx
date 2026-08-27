@@ -3,28 +3,9 @@ import { collection, getDocs, query, where } from 'firebase/firestore'
 import { Link } from 'react-router-dom'
 import { getOrderStatusLabel, ORDER_STATUS } from '../../constants/orderStatus'
 import { subscribeToAuthState, getCurrentUserData } from '../../firebase/auth'
+import { getCollection } from '../../firebase/firestore'
 import { db } from '../../firebase/firebase'
 import styles from './MyHome.module.scss'
-
-// 이번 주는 UI 껍데기 구현 단계라 임시 데이터를 사용합니다.
-// 이후 담당자가 실제 JSON/Firebase 데이터를 연결할 때 이 객체만 교체하면
-// 아래 렌더링 구조(map, 링크, 상태 표시)는 그대로 사용할 수 있습니다.
-const mockMyHomeData = {
-  member: {
-    name: '회원',
-    membership: '-',
-    userId: '',
-    phone: '등록되지 않음',
-    email: '등록되지 않음',
-  },
-  account: {
-    points: 0,
-    wishlistCount: 0,
-  },
-  orderCounts: [],
-  recentOrders: [],
-  aiRecommendations: [],
-}
 
 const formatNumber = (value) => new Intl.NumberFormat('ko-KR').format(value)
 
@@ -85,6 +66,7 @@ const MyHome = () => {
   const [firebaseUser, setFirebaseUser] = useState(null)
   const [userData, setUserData] = useState(null)
   const [orders, setOrders] = useState([])
+  const [wishlistCount, setWishlistCount] = useState(0)
   const [orderLoadError, setOrderLoadError] = useState('')
 
   useEffect(() => {
@@ -94,13 +76,18 @@ const MyHome = () => {
       if (!user) {
         setUserData(null)
         setOrders([])
+        setWishlistCount(0)
         setOrderLoadError('로그인 후 주문 내역을 확인할 수 있습니다.')
         return
       }
 
       try {
-        const data = await getCurrentUserData(user.uid)
+        const [data, wishlist] = await Promise.all([
+          getCurrentUserData(user.uid),
+          getCollection(`users/${user.uid}/wishlist`),
+        ])
         setUserData(data)
+        setWishlistCount(wishlist.length)
       } catch (error) {
         console.error('마이페이지 회원정보 조회 실패:', error)
         setUserData(null)
@@ -186,11 +173,9 @@ const MyHome = () => {
     .sort((a, b) => b.createdAtMs - a.createdAtMs)
     .slice(0, 3)
 
-  // 찜/AI 데이터는 기존 mock을 유지하고 회원정보와 주문만 실제 데이터로 덮어씁니다.
+  // AI 추천 내역은 담당 기능에서 연결될 때까지 빈 상태로 표시합니다.
   const data = {
-    ...mockMyHomeData,
     member: {
-      ...mockMyHomeData.member,
       name:
         userData?.nickname ||
         firebaseUser?.displayName ||
@@ -205,12 +190,11 @@ const MyHome = () => {
           ? '관리자'
           : '일반 회원'
         : '-',
-      phone: '등록되지 않음',
+      phone: userData?.phone || '등록되지 않음',
     },
     account: {
-      ...mockMyHomeData.account,
       points: firebaseUser ? Number(userData?.points ?? 0) : 0,
-      wishlistCount: 0,
+      wishlistCount,
     },
     orderCounts,
     recentOrders,

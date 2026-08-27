@@ -31,6 +31,8 @@ const getMemberLabel = (role) => {
   return '일반 회원'
 }
 
+const genderLabels = { male: '남자', female: '여자', unset: '미선택' }
+
 const EmptyProfileCard = () => (
   <article className={`${styles.infoCard} ${styles.emptyCard}`}>
     <span className={styles.emptyIcon} aria-hidden="true" />
@@ -118,8 +120,8 @@ const ProfileEdit = () => {
         value: userData?.email || firebaseUser?.email || '등록되지 않음',
       },
       { label: '휴대폰', value: userData?.phone || '등록되지 않음' },
-      { label: '생년월일', value: '등록되지 않음' },
-      { label: '성별', value: '등록되지 않음' },
+      { label: '생년월일', value: userData?.birthDate || '등록되지 않음' },
+      { label: '성별', value: genderLabels[userData?.gender] || '미선택' },
     ],
     [firebaseUser, userData],
   )
@@ -158,6 +160,9 @@ const ProfileEdit = () => {
 
     const formData = new FormData(event.currentTarget)
     const nickname = String(formData.get('nickname') || '').trim()
+    const phone = String(formData.get('phone') || '').trim()
+    const birthDate = String(formData.get('birthDate') || '')
+    const gender = String(formData.get('gender') || 'unset')
 
     if (!nickname) {
       setSaveError('이름을 입력해주세요.')
@@ -168,9 +173,9 @@ const ProfileEdit = () => {
     setSaveError('')
 
     try {
-      await updateDocument('users', firebaseUser.uid, { nickname })
+      await updateDocument('users', firebaseUser.uid, { nickname, phone, birthDate, gender })
       await updateProfile(firebaseUser, { displayName: nickname })
-      setUserData((current) => ({ ...current, nickname }))
+      setUserData((current) => ({ ...current, nickname, phone, birthDate, gender }))
       setViewMode('summary')
     } catch (error) {
       console.error('회원정보 수정 실패:', error)
@@ -303,16 +308,30 @@ const ProfileEdit = () => {
           <div className={styles.fieldList}>
             {profileDetails.map(({ label, value }) => {
               const isNickname = label === '이름'
+              const fieldName = {
+                휴대폰: 'phone',
+                생년월일: 'birthDate',
+                성별: 'gender',
+              }[label]
 
               return (
                 <label key={label} className={styles.formRow}>
                   <span>{label}</span>
-                  <input
-                    aria-label={label}
-                    name={isNickname ? 'nickname' : undefined}
-                    defaultValue={value}
-                    readOnly={!isNickname}
-                  />
+                  {label === '성별' ? (
+                    <select aria-label={label} name={fieldName} defaultValue={userData?.gender || 'unset'}>
+                      <option value="male">남자</option>
+                      <option value="female">여자</option>
+                      <option value="unset">미선택</option>
+                    </select>
+                  ) : (
+                    <input
+                      aria-label={label}
+                      name={isNickname || fieldName ? (isNickname ? 'nickname' : fieldName) : undefined}
+                      type={label === '생년월일' ? 'date' : 'text'}
+                      defaultValue={fieldName && value === '등록되지 않음' ? '' : value}
+                      readOnly={!isNickname && !fieldName}
+                    />
+                  )}
                 </label>
               )
             })}

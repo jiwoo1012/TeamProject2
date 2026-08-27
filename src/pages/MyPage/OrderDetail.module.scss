@@ -167,9 +167,25 @@
   width: 112px;
   height: 112px;
   place-items: center;
-  font-size: 84px;
   line-height: 1;
   pointer-events: none;
+}
+
+.mascotImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.addressNote {
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+}
+
+.actionError {
+  margin: v.$space-4 0 0;
+  color: v.$color-error;
+  font-size: v.$font-size-sm;
 }
 
 /* =========================
@@ -241,6 +257,15 @@
   place-items: center;
   overflow: hidden;
   border-radius: v.$radius-md;
+  background: color-mix(in srgb, v.$color-surface 56%, v.$color-white);
+}
+
+.productImage {
+  width: 72px;
+  height: 72px;
+  flex: 0 0 72px;
+  border-radius: v.$radius-md;
+  object-fit: contain;
   background: color-mix(in srgb, v.$color-surface 56%, v.$color-white);
 }
 
@@ -489,6 +514,13 @@
 .addressButton:hover {
   border-color: v.$color-primary;
   color: v.$color-primary;
+}
+
+.cancelButton:disabled {
+  border-color: v.$color-border;
+  background: v.$color-bg;
+  color: v.$color-text-muted;
+  cursor: not-allowed;
 }
 
 .backButton:hover {

@@ -24,6 +24,10 @@ import {
 } from '../../firebase/auth'
 
 import {
+  getDocument,
+} from '../../firebase/firestore'
+
+import {
   products,
 } from '../../data/products'
 
@@ -462,6 +466,9 @@ const Cart = () => {
   const [currentUser, setCurrentUser] =
     useState(null)
 
+  const [availablePoints, setAvailablePoints] =
+    useState(0)
+
   const [isRemoteCartReady, setIsRemoteCartReady] =
     useState(false)
 
@@ -490,6 +497,32 @@ const Cart = () => {
     () => subscribeToAuthState(setCurrentUser),
     []
   )
+
+  useEffect(() => {
+    let isCancelled = false
+
+    setAvailablePoints(0)
+
+    if (!currentUser || currentUser.isAnonymous) {
+      return undefined
+    }
+
+    getDocument('users', currentUser.uid)
+      .then((userData) => {
+        if (isCancelled) return
+
+        setAvailablePoints(Math.max(0, Number(userData?.points) || 0))
+      })
+      .catch((error) => {
+        if (!isCancelled) {
+          console.error('회원 포인트 조회 실패:', error)
+        }
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [currentUser])
 
   useEffect(() => {
     if (!currentUser || currentUser.isAnonymous) {
@@ -610,7 +643,7 @@ const Cart = () => {
           Number(
             pointInput
           ) || 0,
-          3000,
+          availablePoints,
           itemTotal
         )
 
@@ -631,11 +664,12 @@ const Cart = () => {
       items,
       selectedIds,
       pointInput,
+      availablePoints,
     ])
 
   const allUsablePoints =
     Math.min(
-      3000,
+      availablePoints,
       totals.itemTotal
     )
 
@@ -1212,88 +1246,62 @@ const Cart = () => {
               </p>
             </div>
 
-            {isEmpty ? (
-              <div
-                className={
-                  styles.emptyRecommendations
-                }
-              >
-                {Array.from(
-                  {
-                    length: 5,
-                  },
-                  (_, index) => (
+            <div
+              className={
+                styles.recommendationList
+              }
+            >
+              {mockRecommendations.map(
+                (product) => (
+                  <article
+                    className={
+                      styles.recommendationItem
+                    }
+                    key={
+                      product.id
+                    }
+                  >
+                    <ProductImage
+                      imageUrl={
+                        product.imageUrl
+                      }
+                      name={
+                        product.name
+                      }
+                    />
+
                     <div
                       className={
-                        styles.emptyRecommendationThumb
-                      }
-                      key={
-                        index
+                        styles.recommendationCopy
                       }
                     >
-                      IMG
-                    </div>
-                  )
-                )}
-              </div>
-            ) : (
-              <div
-                className={
-                  styles.recommendationList
-                }
-              >
-                {mockRecommendations.map(
-                  (product) => (
-                    <article
-                      className={
-                        styles.recommendationItem
-                      }
-                      key={
-                        product.id
-                      }
-                    >
-                      <ProductImage
-                        imageUrl={
-                          product.imageUrl
-                        }
-                        name={
+                      <strong>
+                        {
                           product.name
                         }
-                      />
+                      </strong>
 
-                      <div
-                        className={
-                          styles.recommendationCopy
-                        }
-                      >
-                        <strong>
-                          {
-                            product.name
-                          }
-                        </strong>
+                      <span>
+                        {formatPrice(
+                          product.price
+                        )}
+                      </span>
+                    </div>
 
-                        <span>
-                          {formatPrice(
-                            product.price
-                          )}
-                        </span>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleAddRecommendation(
-                            product
-                          )
-                        }
-                      >
-                        + 담기
-                      </button>
-                    </article>
-                  )
-                )}
-              </div>
-            )}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleAddRecommendation(
+                          product
+                        )
+                      }
+                    >
+                      + 담기
+                    </button>
+                  </article>
+                )
+              )}
+            </div>
           </section>
         </div>
 
@@ -1382,7 +1390,7 @@ const Cart = () => {
                   </h3>
 
                   <span>
-                    보유 3,000P
+                    보유 {availablePoints.toLocaleString('ko-KR')}P
                   </span>
                 </div>
 
@@ -1403,7 +1411,7 @@ const Cart = () => {
                     <input
                       type="number"
                       min="0"
-                      max="3000"
+                      max={allUsablePoints}
                       value={
                         pointInput
                       }

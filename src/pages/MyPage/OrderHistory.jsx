@@ -4,10 +4,33 @@ import { Link } from 'react-router-dom'
 import { getOrderStatusLabel, ORDER_STATUS } from '../../constants/orderStatus'
 import { subscribeToAuthState, getCurrentUserData } from '../../firebase/auth'
 import { db } from '../../firebase/firebase'
+import { getCollection } from '../../firebase/firestore'
 import makdongPose from '../../assets/characters/M007_Poses03.png'
+import profileAvatarMakdongDefault from '../../assets/images/mypage/profileAvatar-makdong-default.png'
+import profileAvatarMakdongCheers from '../../assets/images/mypage/profileAvatar-makdong-cheers.png'
+import profileAvatarMakdongJeon from '../../assets/images/mypage/profileAvatar-makdong-jeon.png'
+import profileAvatarMakdongPouch from '../../assets/images/mypage/profileAvatar-makdong-pouch.png'
+import profileAvatarMakdongTipsy from '../../assets/images/mypage/profileAvatar-makdong-tipsy.png'
+import profileAvatarMakdongSleepy from '../../assets/images/mypage/profileAvatar-makdong-sleepy.png'
+import profileAvatarMakdongServing from '../../assets/images/mypage/profileAvatar-makdong-serving.png'
+import profileAvatarMakdongRainy from '../../assets/images/mypage/profileAvatar-makdong-rainy.png'
 import styles from './OrderHistory.module.scss'
 
 const ORDERS_PER_PAGE = 3
+const POINT_PROGRESS_MAX = 10000
+
+const avatarPresets = [
+  ['profile-makdong-default', profileAvatarMakdongDefault],
+  ['profile-makdong-cheers', profileAvatarMakdongCheers],
+  ['profile-makdong-jeon', profileAvatarMakdongJeon],
+  ['profile-makdong-pouch', profileAvatarMakdongPouch],
+  ['profile-makdong-tipsy', profileAvatarMakdongTipsy],
+  ['profile-makdong-sleepy', profileAvatarMakdongSleepy],
+  ['profile-makdong-serving', profileAvatarMakdongServing],
+  ['profile-makdong-rainy', profileAvatarMakdongRainy],
+]
+
+const getAvatarStorageKey = (uid) => 'jajak_profile_avatar_' + uid
 
 const filterItems = [
   { label: '전체', value: 'all' },
@@ -62,6 +85,7 @@ const OrderHistory = () => {
   const [orders, setOrders] = useState([])
   const [firebaseUser, setFirebaseUser] = useState(null)
   const [userData, setUserData] = useState(null)
+  const [wishlistCount, setWishlistCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
   const [activeFilter, setActiveFilter] = useState('all')
@@ -77,6 +101,7 @@ const OrderHistory = () => {
       if (!user) {
         if (isActive) {
           setUserData(null)
+          setWishlistCount(0)
           setOrders([])
           setLoadError('로그인 후 주문 내역을 확인할 수 있습니다.')
           setIsLoading(false)
@@ -88,8 +113,12 @@ const OrderHistory = () => {
       setLoadError('')
 
       try {
-        const memberData = await getCurrentUserData(user.uid)
+        const [memberData, wishlist] = await Promise.all([
+          getCurrentUserData(user.uid),
+          getCollection(`users/${user.uid}/wishlist`),
+        ])
         if (isActive) setUserData(memberData)
+        if (isActive) setWishlistCount(wishlist.length)
       } catch (error) {
         console.error('회원정보 조회 실패:', error)
         if (isActive) setUserData(null)
@@ -187,7 +216,11 @@ const OrderHistory = () => {
   }
 
   const displaySummaryStats = summaryStats.map((stat) =>
-    stat.type === 'order' ? { ...stat, value: orders.length } : stat,
+    stat.type === 'order'
+      ? { ...stat, value: orders.length }
+      : stat.type === 'wish'
+        ? { ...stat, value: wishlistCount }
+        : stat,
   )
 
   const memberName =
@@ -201,6 +234,9 @@ const OrderHistory = () => {
       : '일반 회원'
     : '-'
   const points = firebaseUser ? Number(userData?.points ?? 0) : 0
+  const savedAvatarId = firebaseUser ? localStorage.getItem(getAvatarStorageKey(firebaseUser.uid)) : ''
+  const avatarSrc = avatarPresets.find(([id]) => id === savedAvatarId)?.[1] || profileAvatarMakdongDefault
+  const pointProgress = Math.min(Math.max(points, 0), POINT_PROGRESS_MAX)
 
   return (
     <section className={styles.page} aria-labelledby="order-history-title">
@@ -209,10 +245,7 @@ const OrderHistory = () => {
       <section className={styles.summaryBanner} aria-label="마이페이지 이용 요약">
         <div className={styles.memberSummary}>
           <div className={styles.avatar} aria-hidden="true">
-            <svg viewBox="0 0 64 64">
-              <circle cx="32" cy="23" r="11" />
-              <path d="M13 55c1-12 9-19 19-19s18 7 19 19" />
-            </svg>
+            <img src={avatarSrc} alt="" />
           </div>
 
           <div className={styles.memberCopy}>
@@ -227,10 +260,11 @@ const OrderHistory = () => {
           </div>
 
           <div className={styles.progressArea}>
-            <div className={styles.progressTrack} aria-label="보유 포인트">
-              <span className={styles.progressValue} style={{ width: '0%' }} />
-            </div>
-            <span className={styles.progressText}>{points.toLocaleString('ko-KR')}P</span>
+            <progress className={styles.progressTrack} value={pointProgress} max={POINT_PROGRESS_MAX} aria-label={'보유 포인트 ' + points + 'P'} />
+            <span className={styles.progressText}>
+              {points.toLocaleString('ko-KR')}P
+              <small>/ 10,000P</small>
+            </span>
           </div>
 
           <p className={styles.summaryMessage}>
