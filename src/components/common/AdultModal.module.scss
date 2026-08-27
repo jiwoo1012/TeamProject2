@@ -1,99 +1,111 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+
+// ==========================================
+// Adult Modal
+// ==========================================
+
 .overlay {
   position: fixed;
   inset: 0;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex-center;
 
-  padding: 30px;
+  padding: $space-5;
 
-  background: rgba(37, 30, 25, 0.55);
+  background: rgba(20, 14, 10, 0.6);
   backdrop-filter: blur(3px);
 
-  z-index: 9999;
-
-  box-sizing: border-box;
+  z-index: 1000;
 }
 
 
-/* ========================================
-   모달
-======================================== */
+// ==========================================
+// Modal
+// ==========================================
 
 .modal {
-  position: relative;
+  width: min(470px, calc(100vw - 40px));
 
-  width: min(470px, 100%);
+  padding: $space-10 $space-10 $space-8;
 
-  padding: 54px 52px 42px;
+  background: $color-bg;
 
-  border-radius: 22px;
-
-  background: #fbfaf7;
-  color: #382b22;
-
-  box-shadow:
-    0 20px 60px rgba(41, 31, 23, 0.18),
-    0 4px 14px rgba(41, 31, 23, 0.08);
-
-  box-sizing: border-box;
+  border-radius: $radius-xl;
 
   text-align: center;
+  box-sizing: border-box;
+
+  box-shadow: 0 20px 60px rgba(44, 35, 27, 0.18);
 }
 
 
-/* ========================================
-   막둥이 + 금지 표시
-======================================== */
+// ==========================================
+// 상단 이미지
+// ==========================================
 
 .visualArea {
-  display: flex;
-  justify-content: center;
+  @include flex-center;
 
-  margin-bottom: 32px;
+  margin-bottom: $space-6;
 }
+
+
+// ==========================================
+// 금지 표시
+// ==========================================
 
 .prohibition {
   position: relative;
 
-  width: 155px;
-  height: 155px;
+  width: 150px;
+  height: 150px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex-center;
 
-  border: 8px solid #e83838;
+  border: 10px solid #e83b3b;
   border-radius: 50%;
 
   box-sizing: border-box;
 }
 
+
+// ==========================================
+// 막둥이
+// ==========================================
+
 .makdong {
-  width: 108px;
-  height: 108px;
+  position: relative;
+
+  width: 85px;
+  height: auto;
 
   object-fit: contain;
 
-  filter: grayscale(100%);
+  z-index: 1;
 
   user-select: none;
   pointer-events: none;
 }
 
-/* 금지 대각선 */
+
+// ==========================================
+// 빨간 대각선
+// ==========================================
+
 .slash {
   position: absolute;
 
   top: 50%;
   left: 50%;
 
-  width: 162px;
-  height: 8px;
+  width: 142px;
+  height: 10px;
 
-  background: #e83838;
-  border-radius: 999px;
+  background: #e83b3b;
+
+  border-radius: 9999px;
 
   transform: translate(-50%, -50%) rotate(45deg);
   transform-origin: center;
@@ -104,195 +116,246 @@
 }
 
 
-/* ========================================
-   텍스트
-======================================== */
+// ==========================================
+// Content
+// ==========================================
 
 .content {
-  margin-bottom: 34px;
+  margin-bottom: $space-6;
 }
 
 
 .title {
-  margin: 0 0 22px;
+  margin: 0 0 $space-3;
 
-  color: #33271f;
+  color: $color-text-primary;
 
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 1.4;
-  letter-spacing: -0.8px;
+  font-family: $font-family-base;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+
+  line-height: $line-height-tight;
+
+  word-break: keep-all;
 }
 
 
 .description {
   margin: 0;
 
-  color: #7b7169;
+  color: $color-text-muted;
 
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.85;
+  font-family: $font-family-base;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-regular;
+
+  line-height: $line-height-relaxed;
 
   word-break: keep-all;
 
   strong {
-    color: #5a4b40;
-    font-weight: 700;
+    color: $color-text-secondary;
+    font-weight: $font-weight-semibold;
   }
 }
 
 
-/* ========================================
-   버튼
-======================================== */
+// ==========================================
+// Button Area
+// ==========================================
 
 .buttonArea {
   width: 100%;
 
-  display: flex;
+  @include flex-center;
+
   flex-direction: column;
 
-  gap: 12px;
+  gap: $space-3;
 }
 
 
+// ==========================================
+// Buttons Common
+// ==========================================
+
 .verifyButton,
 .exitButton {
-  width: 100%;
-  height: 58px;
+  width: 320px;
+  max-width: 100%;
 
-  border-radius: 10px;
+  height: 48px;
 
-  font-family: inherit;
-  font-size: 17px;
-  font-weight: 700;
+  padding: 0 $space-5;
+
+  border-radius: $radius-md;
+
+  font-family: $font-family-base;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+
+  line-height: 1;
 
   cursor: pointer;
 
   transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease;
+    background-color 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    transform 0.2s;
 
-  box-sizing: border-box;
+  &:active {
+    transform: translateY(1px);
+  }
 }
 
+
+// ==========================================
+// 인증 버튼
+// ==========================================
 
 .verifyButton {
-  border: 1px solid #568b86;
+  border: 1px solid $color-primary;
 
-  background: #568b86;
-  color: #ffffff;
+  background: $color-primary;
+  color: $color-white;
 
   &:hover {
-    background: #477d78;
-    border-color: #477d78;
+    opacity: 0.92;
+  }
 
-    transform: translateY(-1px);
+  &:focus-visible {
+    outline: 3px solid rgba(77, 126, 123, 0.2);
+    outline-offset: 2px;
   }
 }
 
+
+// ==========================================
+// 나가기 버튼
+// ==========================================
 
 .exitButton {
-  border: 1px solid #b9afa6;
+  border: 1px solid $color-border;
 
-  background: transparent;
-  color: #493b32;
+  background: $color-white;
+  color: $color-text-primary;
 
   &:hover {
-    border-color: #8e8177;
+    background: $color-bg;
+    border-color: $color-taupe;
+  }
 
-    background: #f4f1ec;
+  &:focus-visible {
+    outline: 3px solid rgba(77, 126, 123, 0.15);
+    outline-offset: 2px;
   }
 }
 
 
-/* ========================================
-   하단 안내
-======================================== */
+// ==========================================
+// 하단 안내
+// ==========================================
 
 .notice {
-  margin: 24px 0 0;
+  margin: $space-5 0 0;
 
-  color: #92877e;
+  color: $color-text-muted;
 
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.5;
+  font-family: $font-family-base;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-regular;
+
+  line-height: $line-height-base;
+
+  word-break: keep-all;
 }
 
 
-/* ========================================
-   모바일
-======================================== */
+// ==========================================
+// Tablet
+// ==========================================
 
-@media (max-width: 550px) {
+@include tablet {
+  .modal {
+    width: 450px;
+
+    padding: $space-10 $space-8 $space-8;
+  }
+}
+
+
+// ==========================================
+// Mobile
+// ==========================================
+
+@include mobile {
   .overlay {
-    padding: 20px;
+    padding: $space-4;
   }
 
 
   .modal {
-    padding: 42px 28px 32px;
+    width: 100%;
 
-    border-radius: 18px;
+    padding: $space-8 $space-5 $space-6;
+
+    border-radius: $radius-xl;
   }
 
 
   .visualArea {
-    margin-bottom: 27px;
+    margin-bottom: $space-5;
   }
 
 
   .prohibition {
-    width: 135px;
-    height: 135px;
+    width: 132px;
+    height: 132px;
 
-    border-width: 7px;
+    border-width: 5px;
   }
 
 
-.makdong {
-  width: 108px;
-  height: 108px;
-  object-fit: contain;
-  transform: translateY(3px);
-  filter: grayscale(100%);
-}
+  .makdong {
+    width: 95px;
+  }
 
 
   .slash {
-    width: 160px;
-    height: 7px;
+    width: 124px;
+    height: 5px;
+  }
+
+
+  .content {
+    margin-bottom: $space-5;
   }
 
 
   .title {
-    margin-bottom: 18px;
+    margin-bottom: $space-3;
 
-    font-size: 24px;
+    font-size: $font-size-lg;
   }
 
 
   .description {
-    font-size: 14px;
-    line-height: 1.8;
+    font-size: $font-size-sm;
   }
 
 
   .verifyButton,
   .exitButton {
-    height: 54px;
+    width: 100%;
 
-    font-size: 16px;
+    height: 44px;
+
+    font-size: $font-size-sm;
   }
 
 
   .notice {
-    margin-top: 20px;
-
-    font-size: 12px;
+    margin-top: $space-5;
   }
 }
