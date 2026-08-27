@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { updateProfile } from 'firebase/auth'
-import { collection, doc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { collection, doc, serverTimestamp, writeBatch } from 'firebase/firestore'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ORDER_STATUS } from '../../constants/orderStatus'
 import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
@@ -201,6 +201,31 @@ const Checkout = () => {
     setActiveModal(null)
   }
 
+  const handleDeliveryModeChange = (mode) => {
+    setDeliveryMode(mode)
+
+    if (mode === 'default') {
+      const defaultAddress = savedAddresses.find((address) => address.isDefault) || savedAddresses[0]
+      if (defaultAddress) {
+        setShipping((current) => ({
+          ...current,
+          recipient: defaultAddress.recipient,
+          phone: defaultAddress.phone,
+          address: defaultAddress.address,
+          detailAddress: defaultAddress.detailAddress,
+        }))
+      }
+    }
+
+    if (mode === 'orderer') {
+      setShipping((current) => ({
+        ...current,
+        recipient: member.name,
+        phone: member.phone === '등록되지 않음' ? '' : member.phone,
+      }))
+    }
+  }
+
   const handlePointChange = (event) => {
     const nextValue = event.target.value
     setPointInput(nextValue === '' ? '' : String(Math.max(0, Math.min(Number(nextValue) || 0, allUsablePoints))))
@@ -307,7 +332,49 @@ const Checkout = () => {
     }
 
     try {
-      await setDoc(orderRef, orderSnapshot)
+      const batch = writeBatch(db)
+      batch.set(orderRef, orderSnapshot)
+
+      if (usedPoints > 0) {
+        batch.update(doc(db, 'users', currentUser.uid), {
+          points: Math.max(availablePoints - usedPoints, 0),
+          updatedAt: serverTimestamp(),
+        })
+      }
+
+      await batch.commit()
+      if (saveDelivery) {
+        const hasSameAddress = savedAddresses.some((address) => (
+          address.recipient === shipping.recipient
+          && address.phone === shipping.phone
+          && address.address === shipping.address
+          && address.detailAddress === shipping.detailAddress
+        ))
+
+        if (!hasSameAddress) {
+          try {
+            const addressId = await addDocument(`users/${currentUser.uid}/addresses`, {
+              label: '최근 배송지',
+              recipient: shipping.recipient,
+              phone: shipping.phone,
+              address: shipping.address,
+              detailAddress: shipping.detailAddress,
+              isDefault: savedAddresses.length === 0,
+            })
+            setSavedAddresses((current) => [...current, {
+              label: '최근 배송지',
+              recipient: shipping.recipient,
+              phone: shipping.phone,
+              address: shipping.address,
+              detailAddress: shipping.detailAddress,
+              isDefault: savedAddresses.length === 0,
+              id: addressId,
+            }])
+          } catch (addressError) {
+            console.error('주문 후 배송지 저장 실패:', addressError)
+          }
+        }
+      }
       clearCart()
       try {
         await clearRemoteCart(currentUser.uid)
@@ -404,19 +471,19 @@ const Checkout = () => {
                 <ChoiceRadio
                   name="deliveryMode"
                   checked={deliveryMode === 'default'}
-                  onChange={() => setDeliveryMode('default')}
+                  onChange={() => handleDeliveryModeChange('default')}
                   label="기본 배송지"
                 />
                 <ChoiceRadio
                   name="deliveryMode"
                   checked={deliveryMode === 'direct'}
-                  onChange={() => setDeliveryMode('direct')}
+                  onChange={() => handleDeliveryModeChange('direct')}
                   label="직접 입력"
                 />
                 <ChoiceRadio
                   name="deliveryMode"
                   checked={deliveryMode === 'orderer'}
-                  onChange={() => setDeliveryMode('orderer')}
+                  onChange={() => handleDeliveryModeChange('orderer')}
                   label="주문자 정보와 동일"
                 />
                 <button type="button" onClick={() => setActiveModal('address')}>배송지 관리</button>
@@ -432,7 +499,6 @@ const Checkout = () => {
                     <input name="detailAddress" type="text" value={shipping.detailAddress} onChange={handleShippingChange} placeholder="상세 주소를 입력해주세요" />
                   </div>
                 </div>
-                <label><span>전화번호</span><input type="tel" placeholder="전화번호를 입력해주세요" /></label>
                 <label><span>휴대폰 번호</span><div><input className={fieldErrors.phone ? styles.inputError : ''} name="phone" type="tel" value={shipping.phone} onChange={handleShippingChange} placeholder="휴대폰 번호를 입력해주세요" />{fieldErrors.phone && <small>{fieldErrors.phone}</small>}</div></label>
                 <label><span>남기실 말씀</span><div><input name="memo" type="text" value={shipping.memo} onChange={handleShippingChange} placeholder="문구를 작성해주세요" /><div className={styles.memoChips}>{[...deliveryMemoPresets, '기타'].map((memo) => <button type="button" key={memo} onClick={() => handleMemoPreset(memo)}>{memo}</button>)}</div></div></label>
               </div>
