@@ -243,6 +243,11 @@ const BestSellerSection = ({
         <h2 id="best-seller-title">BEST SELLER</h2>
 
         <div className={styles.bestSellerContent}>
+          <div className={styles.bestSellerSwipeHint} aria-hidden="true">
+            <svg viewBox="0 0 64 64" focusable="false">
+              <path d="M27 36V13a5 5 0 0 1 10 0v17-8a5 5 0 0 1 10 0v11-5a5 5 0 0 1 10 0v13c0 11-8 19-19 19h-4c-8 0-13-4-17-10L8 40a5 5 0 0 1 8-6l11 10Z" />
+            </svg>
+          </div>
           <div
             className={`${styles.cardStack} ${isRevealComplete ? styles.isBestSellerComplete : ''}`}
             aria-label="베스트셀러 상품"
