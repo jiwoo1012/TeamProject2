@@ -109,6 +109,9 @@ const ProductList = () => {
   const location = useLocation()
   const [searchParams] = useSearchParams()
 
+  const searchKeyword =
+    searchParams.get('search')?.trim() ?? ''
+
   const [bannerIndex, setBannerIndex] = useState(0)
   const [revealProgress, setRevealProgress] = useState(0)
   const [categoryId, setCategoryId] = useState('all')
@@ -299,7 +302,15 @@ const ProductList = () => {
     const type =
       searchParams.get('type')
 
-    if (
+    const search =
+      searchParams.get('search')?.trim()
+
+    if (search) {
+      setCategoryId('all')
+      setDetailFilter('전체')
+      setPriceFilter('all')
+      setSortBy('latest')
+    } else if (
       category &&
       mainCategories.some(
         ({ id }) => id === category
@@ -326,7 +337,7 @@ const ProductList = () => {
       Boolean(
         category ||
         type ||
-        searchParams.get('search')
+        search
       )
 
     const frameId =
@@ -473,6 +484,57 @@ const ProductList = () => {
         ...activeCategory.data,
       ]
 
+      if (searchKeyword) {
+        const searchGroups =
+          searchKeyword
+            .toLowerCase()
+            .split(/[\/·,]+/)
+            .map((group) =>
+              group
+                .trim()
+                .split(/\s+/)
+                .filter(Boolean)
+            )
+            .filter(
+              (group) =>
+                group.length > 0
+            )
+
+        result = result.filter(
+          (item) => {
+            const searchableText = [
+              item.productName,
+              item.brandManufacturer,
+              item.productDescription,
+              item.productType,
+              item.liquorType,
+              item.snackType,
+              item.glassType,
+              item.giftType,
+              item.timeOfDay,
+              item.recommendedSituation,
+              ...(Array.isArray(
+                item.flavorKeywords
+              )
+                ? item.flavorKeywords
+                : []),
+            ]
+              .filter(Boolean)
+              .join(' ')
+              .toLowerCase()
+
+            return searchGroups.some(
+              (group) =>
+                group.every((term) =>
+                  searchableText.includes(
+                    term
+                  )
+                )
+            )
+          }
+        )
+      }
+
       if (detailFilter !== '전체') {
         result = result.filter(
           (item) => {
@@ -580,6 +642,7 @@ const ProductList = () => {
       detailFilter,
       priceFilter,
       sortBy,
+      searchKeyword,
     ])
 
   const totalPages = Math.max(
@@ -596,6 +659,12 @@ const ProductList = () => {
         PAGE_SIZE,
       currentPage * PAGE_SIZE
     )
+
+  // 일반 상품 목록에서는 항상 필터를 보여주고,
+  // 검색 결과가 4개 이상일 때만 검색 결과 필터를 보여준다.
+  const showFilters =
+    !searchKeyword ||
+    filteredProducts.length >= 4
 
   const handleCategory = (id) => {
     setCategoryId(id)
@@ -915,82 +984,84 @@ const ProductList = () => {
             aria-hidden="true"
           />
 
-          <nav
-            className={
-              styles.mainCategories
-            }
-            aria-label="상품 대분류"
-          >
-            {mainCategories.map(
-              (
-                category,
-                index
-              ) => (
-                <div
-                  className={
-                    styles.categoryGroup
-                  }
-                  key={category.id}
-                >
-                  <button
-                    className={`${
-                      categoryId ===
-                      category.id
-                        ? styles.activeCategory
-                        : ''
-                    } ${
-                      category.id ===
-                      'all'
-                        ? styles.allCategory
-                        : ''
-                    }`}
-                    type="button"
-                    onClick={() =>
-                      handleCategory(
-                        category.id
-                      )
+          {showFilters && (
+            <nav
+              className={
+                styles.mainCategories
+              }
+              aria-label="상품 대분류"
+            >
+              {mainCategories.map(
+                (
+                  category,
+                  index
+                ) => (
+                  <div
+                    className={
+                      styles.categoryGroup
                     }
+                    key={category.id}
                   >
-                    {category.id !==
-                      'all' && (
+                    <button
+                      className={`${
+                        categoryId ===
+                        category.id
+                          ? styles.activeCategory
+                          : ''
+                      } ${
+                        category.id ===
+                        'all'
+                          ? styles.allCategory
+                          : ''
+                      }`}
+                      type="button"
+                      onClick={() =>
+                        handleCategory(
+                          category.id
+                        )
+                      }
+                    >
+                      {category.id !==
+                        'all' && (
+                        <img
+                          src={resolveImage(
+                            category
+                              .data[0]
+                              ?.imageUrl
+                          )}
+                          alt=""
+                          aria-hidden="true"
+                        />
+                      )}
+
+                      <span
+                        className={
+                          styles.categoryLabel
+                        }
+                      >
+                        {category.label}
+                      </span>
+                    </button>
+
+                    {index <
+                      mainCategories.length -
+                        1 && (
                       <img
-                        src={resolveImage(
-                          category
-                            .data[0]
-                            ?.imageUrl
-                        )}
+                        className={
+                          styles.categoryPattern
+                        }
+                        src={
+                          categoryPattern
+                        }
                         alt=""
                         aria-hidden="true"
                       />
                     )}
-
-                    <span
-                      className={
-                        styles.categoryLabel
-                      }
-                    >
-                      {category.label}
-                    </span>
-                  </button>
-
-                  {index <
-                    mainCategories.length -
-                      1 && (
-                    <img
-                      className={
-                        styles.categoryPattern
-                      }
-                      src={
-                        categoryPattern
-                      }
-                      alt=""
-                      aria-hidden="true"
-                    />
-                  )}
-                </div>
-              )
-            )}
-          </nav>
+                  </div>
+                )
+              )}
+            </nav>
+          )}
 
           <section
             className={
@@ -1005,169 +1076,172 @@ const ProductList = () => {
               key={`heading-${categoryId}-${detailFilter}`}
             >
               <h2>
-                {activeCategory.label}
+                {searchKeyword
+                  ? `'${searchKeyword}' 검색 결과`
+                  : activeCategory.label}
               </h2>
 
               <p>
-                {
-                  filteredProducts.length
-                }
-                개의 상품이 있습니다.
+                {searchKeyword
+                  ? `${filteredProducts.length}개의 상품을 찾았어요.`
+                  : `${filteredProducts.length}개의 상품이 있습니다.`}
               </p>
             </header>
 
-            <div
-              className={
-                styles.filterBar
-              }
-              key={`filters-${categoryId}`}
-            >
+            {showFilters && (
               <div
                 className={
-                  styles.detailFilters
+                  styles.filterBar
                 }
+                key={`filters-${categoryId}`}
               >
-                {detailOptions.map(
-                  (option) => {
-                    const alcoholInfo =
-                      alcoholExplain.find(
-                        ({ name }) =>
-                          name ===
-                          option
-                      )
+                <div
+                  className={
+                    styles.detailFilters
+                  }
+                >
+                  {detailOptions.map(
+                    (option) => {
+                      const alcoholInfo =
+                        alcoholExplain.find(
+                          ({ name }) =>
+                            name ===
+                            option
+                        )
 
-                    return (
-                      <div
-                        className={
-                          styles.detailFilterItem
-                        }
-                        key={
-                          option
-                        }
-                      >
-                        {alcoholInfo && (
+                      return (
+                        <div
+                          className={
+                            styles.detailFilterItem
+                          }
+                          key={
+                            option
+                          }
+                        >
+                          {alcoholInfo && (
+                            <button
+                              className={
+                                styles.alcoholInfoButton
+                              }
+                              type="button"
+                              aria-label={`${option} 설명 보기`}
+                              onClick={() =>
+                                setSelectedAlcohol(
+                                  alcoholInfo
+                                )
+                              }
+                            >
+                              ⓘ
+                            </button>
+                          )}
+
                           <button
                             className={
-                              styles.alcoholInfoButton
+                              detailFilter ===
+                              option
+                                ? styles.activeFilter
+                                : ''
                             }
                             type="button"
-                            aria-label={`${option} 설명 보기`}
-                            onClick={() =>
-                              setSelectedAlcohol(
-                                alcoholInfo
+                            onClick={() => {
+                              setDetailFilter(
+                                option
                               )
-                            }
+
+                              setCurrentPage(
+                                1
+                              )
+                            }}
                           >
-                            ⓘ
+                            {option}
                           </button>
-                        )}
-
-                        <button
-                          className={
-                            detailFilter ===
-                            option
-                              ? styles.activeFilter
-                              : ''
-                          }
-                          type="button"
-                          onClick={() => {
-                            setDetailFilter(
-                              option
-                            )
-
-                            setCurrentPage(
-                              1
-                            )
-                          }}
-                        >
-                          {option}
-                        </button>
-                      </div>
-                    )
-                  }
-                )}
-              </div>
-
-              <div
-                className={
-                  styles.selects
-                }
-              >
-                <label>
-                  <span>가격</span>
-
-                  <select
-                    value={
-                      priceFilter
+                        </div>
+                      )
                     }
-                    onChange={(
-                      event
-                    ) => {
-                      setPriceFilter(
-                        event.target
-                          .value
-                      )
+                  )}
+                </div>
 
-                      setCurrentPage(
-                        1
-                      )
-                    }}
-                  >
-                    <option value="all">
-                      전체가격
-                    </option>
+                <div
+                  className={
+                    styles.selects
+                  }
+                >
+                  <label>
+                    <span>가격</span>
 
-                    <option value="under20000">
-                      2만원 미만
-                    </option>
+                    <select
+                      value={
+                        priceFilter
+                      }
+                      onChange={(
+                        event
+                      ) => {
+                        setPriceFilter(
+                          event.target
+                            .value
+                        )
 
-                    <option value="20000to40000">
-                      2~4만원
-                    </option>
+                        setCurrentPage(
+                          1
+                        )
+                      }}
+                    >
+                      <option value="all">
+                        전체가격
+                      </option>
 
-                    <option value="over40000">
-                      4만원 이상
-                    </option>
-                  </select>
-                </label>
+                      <option value="under20000">
+                        2만원 미만
+                      </option>
 
-                <label>
-                  <span>정렬</span>
+                      <option value="20000to40000">
+                        2~4만원
+                      </option>
 
-                  <select
-                    value={sortBy}
-                    onChange={(
-                      event
-                    ) => {
-                      setSortBy(
-                        event.target
-                          .value
-                      )
+                      <option value="over40000">
+                        4만원 이상
+                      </option>
+                    </select>
+                  </label>
 
-                      setCurrentPage(
-                        1
-                      )
-                    }}
-                  >
-                    <option value="latest">
-                      최신순
-                    </option>
+                  <label>
+                    <span>정렬</span>
 
-                    <option value="low">
-                      낮은 가격순
-                    </option>
+                    <select
+                      value={sortBy}
+                      onChange={(
+                        event
+                      ) => {
+                        setSortBy(
+                          event.target
+                            .value
+                        )
 
-                    <option value="high">
-                      높은 가격순
-                    </option>
+                        setCurrentPage(
+                          1
+                        )
+                      }}
+                    >
+                      <option value="latest">
+                        최신순
+                      </option>
 
-                    <option value="discount">
-                      할인율순
-                    </option>
-                  </select>
-                </label>
+                      <option value="low">
+                        낮은 가격순
+                      </option>
+
+                      <option value="high">
+                        높은 가격순
+                      </option>
+
+                      <option value="discount">
+                        할인율순
+                      </option>
+                    </select>
+                  </label>
+                </div>
               </div>
-            </div>
+            )}
 
             {visibleProducts.length >
             0 ? (
@@ -1175,7 +1249,7 @@ const ProductList = () => {
                 className={
                   styles.productGrid
                 }
-                key={`products-${categoryId}-${detailFilter}-${priceFilter}-${sortBy}`}
+                key={`products-${categoryId}-${detailFilter}-${priceFilter}-${sortBy}-${searchKeyword}`}
               >
                 {visibleProducts.map(
                   (product) => (
@@ -1204,8 +1278,9 @@ const ProductList = () => {
                 }
                 key={`empty-${categoryId}-${detailFilter}-${priceFilter}`}
               >
-                조건에 맞는 상품이
-                없습니다.
+                {searchKeyword
+                  ? `'${searchKeyword}'에 대한 검색 결과가 없습니다.`
+                  : '조건에 맞는 상품이 없습니다.'}
               </p>
             )}
 
