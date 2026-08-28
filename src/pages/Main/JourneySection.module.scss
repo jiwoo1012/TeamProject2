@@ -33,6 +33,264 @@
   object-position: center;
   will-change: opacity, transform;
 }
+.compositeScene {
+  background: #1d130d;
+}
+.sceneLayer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+// makdong02.png — 거실 창문에서 빼꼼하는 막동이
+.makdongWindowPeek {
+  position: absolute;
+  top: 19%;
+  right: -2%;
+  width: clamp(240px, 29vw, 400px);
+  max-width: none;
+  height: auto;
+  transform-origin: right center;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+// makdong01.png — 창문에서 보자기를 들고 있는 막동이
+.makdongBundleHold {
+  position: absolute;
+  right: 8%;
+  bottom: -2.8%;
+  width: clamp(360px, 44vw, 650px);
+  max-width: none;
+  height: auto;
+  transform-origin: center bottom;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.tableCompositeScene {
+  background: #1d130d;
+}
+.tableFrontScene {
+  background: #1d130d;
+}
+.tableSpreadScene {
+  background: #1d130d;
+}
+.hanokEntranceScene {
+  background: #000;
+}
+.servingScene {
+  background: #1d130d;
+}
+.hanokRoomScene {
+  background: #1d130d;
+}
+.foodTrayScene {
+  background: #1d130d;
+}
+.finalMessageScene {
+  background: #1d130d;
+}
+// makdong03.png — 거실 책상 뒤에서 옷을 갈아입는 막동이
+.makdongChangingClothes {
+  position: absolute;
+  right: 20%;
+  bottom: 15%;
+  width: clamp(260px, 28vw, 450px);
+  max-width: none;
+  height: auto;
+  translate: 50% 0;
+  transform-origin: center bottom;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.livingroomTableOverlay {
+  position: absolute;
+  right: 50%;
+  bottom: -11%;
+  width: 60%;
+  max-width: none;
+  height: auto;
+  translate: 50% 0;
+  pointer-events: none;
+}
+// makdong04.png — 거실 책상 앞에 앉아 있는 막동이
+.makdongTableFront {
+  position: absolute;
+  right: 50%;
+  bottom: -15%;
+  width: clamp(360px, 42vw, 790px);
+  max-width: none;
+  height: auto;
+  translate: 50% 0;
+  transform-origin: center bottom;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+// makdong05.png — 보자기를 화면 쪽으로 펼치는 막동이
+.makdongTableSpread {
+  position: absolute;
+  right: 50%;
+  bottom: -29%;
+  width: clamp(500px, 52vw, 1000px);
+  max-width: none;
+  height: auto;
+  translate: 50% 0;
+  transform-origin: center bottom;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.darkOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: #000;
+  pointer-events: none;
+  will-change: opacity;
+}
+// O-002.png — 한옥 방 이동 이후 계속 유지되는 책상
+.hanokTableOverlay {
+  position: absolute;
+  right: 48%;
+  bottom: 13%;
+  z-index: 2;
+  width: 53%;
+  max-width: none;
+  height: auto;
+  translate: 50% 0;
+  pointer-events: none;
+}
+// makdong06.png — J-005 한옥 입구 장면 막동이
+.entranceMakdong {
+  position: absolute;
+  right: 55%;
+  bottom: 4%;
+  width: clamp(260px, 27vw, 390px);
+  max-width: none;
+  height: auto;
+  translate: 50% 0;
+  pointer-events: none;
+}
+// makdong02.png — J-005 눈 깜빡임 직후 빼꼼하는 막동이
+.entrancePeekMakdong {
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: clamp(1200px, 45vw, 900px);
+  max-width: none;
+  height: auto;
+  transform-origin: right center;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+// makdong07.png — 한옥 방에서 술상을 나르는 막동이
+.servingMakdong {
+  position: absolute;
+  right: 12%;
+  bottom: 25%;
+  width: clamp(320px, 32vw, 370px);
+  max-width: none;
+  height: auto;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+// O-003.png — 막동이가 사라진 다음 등장하는 음식상
+.hanokFoodTray {
+  position: absolute;
+  right: 48%;
+  bottom: 25%;
+  z-index: 3;
+  width: clamp(320px, 34vw, 500px);
+  max-width: none;
+  height: auto;
+  translate: 50% 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.finaleCopy {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fffaf2;
+  text-align: center;
+  text-shadow: 0 2px 18px rgba(24, 12, 5, 0.75);
+  translate: -50% 0;
+  pointer-events: auto;
+
+  p {
+    margin: 0 0 24px;
+    font-family: 'JS Arirang HON', 'Pretendard', sans-serif;
+    font-size: clamp(32px, 3.6vw, 58px);
+    font-weight: 400;
+    line-height: 1.45;
+    letter-spacing: 0.01em;
+
+    span {
+      display: block;
+      white-space: nowrap;
+    }
+  }
+
+  button {
+    display: inline-flex;
+    min-width: 164px;
+    min-height: 48px;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 28px;
+    border: 0;
+    border-radius: 9999px;
+    color: #fff;
+    background: #4d2f1d;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(24, 12, 5, 0.24);
+    transition: transform 0.2s ease, background 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+      background: #6b452d;
+      transform: translateY(-2px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 4px;
+    }
+  }
+
+  small {
+    margin-top: 10px;
+    font-size: 9px;
+    letter-spacing: 0.24em;
+  }
+}
+.finaleArrow {
+  animation: finaleArrow 1.2s ease-in-out infinite;
+}
+.finaleTransition {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: #f2e5cc;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+@keyframes finaleArrow {
+  0%, 100% { transform: translateX(-2px); }
+  50% { transform: translateX(3px); }
+}
 .lightOn {
   z-index: 2;
   pointer-events: none;
@@ -184,13 +442,97 @@
     object-position: center;
     background: #1d130d;
   }
+  .sceneLayer {
+    object-fit: contain;
+  }
+  .mobileCoverScene .sceneLayer {
+    object-fit: cover;
+  }
+  // makdong02.png — 모바일 위치
+  .makdongWindowPeek {
+    top: 22%;
+    right: 4%;
+    width: min(44vw, 330px);
+  }
+  // makdong01.png — 모바일 위치
+  .makdongBundleHold {
+    right: 5%;
+    bottom: 8%;
+    width: min(65vw, 440px);
+  }
+  .livingroomTableOverlay {
+    bottom: calc(50% - 28.125vw + 1.8vw);
+    width: 56%;
+  }
+  // makdong03.png — 모바일 위치
+  .makdongChangingClothes {
+    bottom: calc(50% - 28.125vw + 4vw);
+    width: min(38vw, 290px);
+  }
+  // makdong04.png — 모바일 위치
+  .makdongTableFront {
+    bottom: calc(50% - 28.125vw - 2vw);
+    width: min(62vw, 430px);
+  }
+  // makdong05.png — 모바일 위치
+  .makdongTableSpread {
+    bottom: calc(50% - 28.125vw - 12vw);
+    width: min(88vw, 600px);
+  }
+  // O-002.png — 모바일 위치
+  .hanokTableOverlay {
+    bottom: calc(50% - 28.125vw + 4vw);
+    width: 52%;
+  }
+  // makdong06.png — 모바일 위치
+  .entranceMakdong {
+    bottom: calc(50% - 28.125vw + 2vw);
+    width: min(38vw, 290px);
+  }
+  // makdong02.png — J-005 모바일 빼꼼 위치
+  .entrancePeekMakdong {
+    top: 22%;
+    right: 3%;
+    width: min(44vw, 330px);
+  }
+  // makdong07.png — 모바일 위치
+  .servingMakdong {
+    right: 6%;
+    bottom: calc(50% - 28.125vw + 2vw);
+    width: min(48vw, 350px);
+  }
+  // O-003.png — 모바일 위치
+  .hanokFoodTray {
+    bottom: calc(50% - 28.125vw + 2vw);
+    width: min(58vw, 420px);
+  }
+  .finaleCopy {
+    top: 18%;
+    width: calc(100% - 40px);
+
+    p {
+      margin-bottom: 20px;
+      font-size: clamp(24px, 7vw, 34px);
+      line-height: 1.5;
+
+      span {
+        white-space: normal;
+      }
+    }
+
+    button {
+      min-width: 148px;
+      min-height: 46px;
+      padding: 14px 22px;
+    }
+  }
   .skipButton {
     top: 20px;
     right: 20px;
   }
   .scrollGuide {
     right: 20px;
-    bottom: max(24px, env(safe-area-inset-bottom));
+    bottom: max(80px, calc(env(safe-area-inset-bottom) + 146px));
     left: 20px;
     transform: none;
   }
