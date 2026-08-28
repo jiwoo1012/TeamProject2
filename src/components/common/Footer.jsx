@@ -74,6 +74,7 @@ const Footer = () => {
               </div>
             </div>
 
+
             {/* =====================================
                 PC 상품 메뉴
             ===================================== */}
@@ -99,6 +100,7 @@ const Footer = () => {
               </nav>
             </div>
 
+
             {/* =====================================
                 PC 고객 지원
             ===================================== */}
@@ -106,15 +108,20 @@ const Footer = () => {
               <h3>고객 지원</h3>
 
               <nav>
-                <Link to="/notices">
-                  공지사항
+                <Link to="/faq">
+                  자주 묻는 질문
                 </Link>
 
                 <Link to="/inquiry">
-                  문의하기
+                  1:1 문의하기
+                </Link>
+
+                <Link to="/notices">
+                  공지사항
                 </Link>
               </nav>
             </div>
+
 
             {/* =====================================
                 모바일 메뉴
@@ -169,6 +176,7 @@ const Footer = () => {
                 </div>
               </div>
 
+
               {/* 고객 지원 */}
               <div className={styles.mobileMenuGroup}>
                 <button
@@ -198,17 +206,22 @@ const Footer = () => {
                   }`}
                 >
                   <div className={styles.mobileSubMenuInner}>
-                    <Link to="/notices">
-                      공지사항
+                    <Link to="/faq">
+                      자주 묻는 질문
                     </Link>
 
                     <Link to="/inquiry">
-                      문의하기
+                      1:1 문의하기
+                    </Link>
+
+                    <Link to="/notices">
+                      공지사항
                     </Link>
                   </div>
                 </div>
               </div>
             </div>
+
 
             {/* =====================================
                 구독
@@ -247,6 +260,7 @@ const Footer = () => {
             </div>
           </div>
 
+
           {/* =====================================
               FOOTER BOTTOM
           ===================================== */}
@@ -279,6 +293,7 @@ const Footer = () => {
           </div>
         </div>
       </footer>
+
 
       {/* =====================================
           구독 완료 MODAL
