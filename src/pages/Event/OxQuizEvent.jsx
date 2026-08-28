@@ -1,7 +1,7 @@
 // Page placeholder.
 import PagePlaceholder from '../../components/common/PagePlaceholder'
-import styles from './RouletteEvent.module.scss'
+import styles from './OxQuizEvent.module.scss'
 
-const RouletteEvent = () => <PagePlaceholder title="OX 퀴즈" styles={styles} />
+const OxQuizEvent = () => <PagePlaceholder title="OX 퀴즈" styles={styles} />
 
-export default RouletteEvent
+export default OxQuizEvent

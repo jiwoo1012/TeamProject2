@@ -56,6 +56,7 @@ import MyPageErrorContent from './pages/MyPage/MyPageErrorContent'
 import EventList from './pages/Event/EventList'
 import RouletteEvent from './pages/Event/RouletteEvent'
 import OxQuizEvent from './pages/Event/OxQuizEvent'
+import CardGame from './pages/Event/CardGame'
 
 // Support
 import FAQ from './pages/Support/FAQ'
@@ -291,6 +292,12 @@ const App = () => {
           <Route
             path="/events/ox-quiz"
             element={<OxQuizEvent />}
+          />
+
+          {/* 카드 게임 이벤트 */}
+          <Route
+            path="/events/card-game"
+            element={<CardGame />}
           />
 
 

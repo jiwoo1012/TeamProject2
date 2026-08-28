@@ -143,8 +143,12 @@ const EventList = () => {
 
             const isOxQuiz =
               event.title.includes('OX') ||
-              event.title.includes('O X') ||
-              event.title.includes('퀴즈')
+              event.title.includes('O X')
+
+            const isCardGame =
+              event.title.includes('카드') ||
+              event.title.includes('짝맞추기') ||
+              event.title.includes('짝 맞추기')
 
 
             /*
@@ -155,6 +159,9 @@ const EventList = () => {
 
               OX 퀴즈
               → /events/ox-quiz
+
+              카드 게임
+              → /events/card-game
 
               종료 이벤트
               → 마이페이지 이벤트 내역
@@ -168,6 +175,8 @@ const EventList = () => {
               destination = `${PATHS.events}/roulette`
             } else if (isOxQuiz) {
               destination = `${PATHS.events}/ox-quiz`
+            } else if (isCardGame) {
+              destination = `${PATHS.events}/card-game`
             }
 
 
@@ -183,6 +192,8 @@ const EventList = () => {
               buttonText = '룰렛 돌리러 가기'
             } else if (isOxQuiz) {
               buttonText = '퀴즈 풀러 가기'
+            } else if (isCardGame) {
+              buttonText = '카드 맞추러 가기'
             }
 
 
