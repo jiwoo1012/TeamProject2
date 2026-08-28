@@ -13,8 +13,39 @@
 .tabs::after { position: absolute; bottom: 0; left: 0; width: 100%; aspect-ratio: 1053 / 47; content: ''; background: $color-white; mask: url('../../assets/images/eventPage/pattern3.png') center / contain no-repeat; }
 .tabs button { position: relative; z-index: 1; padding: 0 $space-8 $space-4; color: $color-primary; font-size: $font-size-lg; font-weight: $font-weight-medium; transition: color $transition-base ease; }
 .tabs .activeTab { color: $color-white; }
-.detailContent { min-height: 900px; margin-top: $space-16; overflow: hidden; background: $color-text-muted; border-radius: $radius-lg; }
-.detailContent img { width: 100%; }
+.detailContent { min-height: 900px; margin-top: $space-16; overflow: hidden; color: $color-text-primary; background-color: $color-bg; background-image: url('../../assets/images/eventPage/background2.jpg'); background-repeat: repeat; background-position: top center; background-size: 60% auto; border-radius: $radius-lg; }
+.detailContent img { display: block; width: 100%; }
+.brandStory { @include mixins.flex-center; flex-direction: column; min-height: 520px; padding: $space-4 $space-10; text-align: center; }
+.brandStory img { width: min(34%, 240px); height: auto; object-fit: contain; }
+.brandStory h2 {font-family: $font-family-display; font-size: $font-size-5xl; }
+.brandStory p { max-width: 500px; margin-top: $space-4; font-size: $font-size-md; line-height: $line-height-relaxed; }
+.styledProduct { position: relative; min-height: 560px; overflow: hidden; color: $color-bg; }
+.styledProduct > img { position: absolute; inset: 0; height: 100%; object-fit: cover; }
+.styledProduct::after { position: absolute; inset: 0; content: ''; background: linear-gradient(180deg, rgba($color-text-primary, .22), transparent 42%, rgba($color-text-primary, .55)); }
+.styledCategory { position: absolute; z-index: 1; top: $space-12; left: $space-12; font-size: $font-size-md; font-weight: $font-weight-semibold; }
+.styledTitle { position: absolute; z-index: 1; right: $space-12; bottom: $space-12; left: $space-12; display: grid; grid-template-columns: 1fr minmax(260px, 1fr); align-items: center; }
+.styledTitle h2 { font-family: $font-family-display; font-size: $font-size-5xl; line-height: $line-height-tight; }
+.styledTitle p { padding: $space-4 $space-6; color: $color-text-primary; font-size: $font-size-sm; line-height: $line-height-base; background: rgba($color-bg, .3); border-radius: $radius-md; backdrop-filter: blur(1px); }
+.tastingSection { padding: $space-20 $space-10; text-align: center; }
+.tastingSection h2 { font-family: $font-family-display; font-size: $font-size-5xl; }
+.tastingGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: $space-8; max-width: 840px; margin: $space-12 auto 0; }
+.tastingNote { display: flex; flex-direction: column; gap: $space-3; align-items: center; color: $color-primary; font-size: $font-size-md; font-weight: $font-weight-semibold; }
+.tastingNote strong { @include mixins.flex-center; width: clamp(112px, 12vw, 150px); aspect-ratio: 1; color: $color-white; font-size: $font-size-2xl; background: $color-primary; border-radius: 50%; box-shadow: 0 $space-2 $space-4 rgba($color-text-primary, .18); }
+.detailOrnament { width: calc(100% - (#{$space-20})); margin: 0 auto; }
+.detailOrnament img { width: 100%; height: auto; object-fit: contain; }
+.faqSection { display: grid; grid-template-columns: minmax(220px, .7fr) 1.3fr; gap: $space-10; align-items: end; margin: 0 $space-10; padding: $space-10 $space-8 $space-16 $space-8}
+.faqSection > img { align-self: end; max-height: 430px; object-fit: contain; object-position: bottom; }
+.faqSection h2 { margin-bottom: $space-8; font-family: $font-family-display; font-size: $font-size-4xl; text-align: left; }
+.faqSection dl { display: grid; gap: $space-6; }
+.faqSection dt { font-size: $font-size-md; font-weight: $font-weight-bold; line-height: $line-height-base; }
+.faqSection dd { margin-top: $space-2; color: $color-text-secondary; font-size: $font-size-sm; line-height: $line-height-relaxed; }
+.secondStylingImage { min-height: 520px; }
+.secondStylingImage img { height: 100%; min-height: 520px; object-fit: cover; }
+.cautionSection { padding: $space-20 $space-12; color: $color-white; background: $color-taupe; }
+.cautionSection h2 { font-family: $font-family-display; font-size: $font-size-4xl; text-align: center; }
+.cautionSection ul { display: grid; gap: $space-6; margin-top: $space-12; }
+.cautionSection li { position: relative; padding-left: $space-5; font-size: $font-size-sm; line-height: $line-height-relaxed; }
+.cautionSection li::before { position: absolute; top: 0; left: 0; content: '•'; }
 .reviewSection { margin-top: $space-16; }
 .reviewForm { padding: $space-8; background: rgba($color-bg, 1); border: 1px solid $color-border; border-radius: $radius-lg; }
 .reviewLoginNotice { @include mixins.flex-center; min-height: 180px; padding: $space-6; color: $color-text-muted; background: rgba($color-bg, 1); border: 1px solid $color-border; border-radius: $radius-lg; text-align: center; }
@@ -97,6 +128,9 @@
   .layout { --detail-top-height: min(calc(100dvh - var(--detail-header-height) - #{$space-12}), calc(100vw - (#{$side-margin-tablet} * 2) - 290px - #{$space-6} - 164px)); grid-template-columns: minmax(0, 1fr) 290px; gap: $space-6; width: calc(100% - (#{$side-margin-tablet} * 2)); }
   .gallery { grid-template-columns: var(--detail-top-height) minmax(140px, 1fr); }
   .purchasePanel { padding: $space-5; }
+  .styledTitle { grid-template-columns: 1fr; gap: $space-4; }
+  .tastingGrid { gap: $space-4; }
+  .faqSection { grid-template-columns: minmax(180px, .55fr) 1.45fr; gap: $space-6; margin-inline: $space-6; padding-inline: 0; }
 }
 
 @include mixins.mobile {
@@ -114,6 +148,27 @@
   .tabs button { padding-inline: $space-3; }
   .detailContent, .reviewSection { order: 4; width: 100%; margin-top: $space-8; }
   .detailContent { min-height: 420px; }
+  .brandStory { min-height: 360px; padding: $space-16 $space-5; }
+  .brandStory img { width: min(48%, 180px); }
+  .brandStory h2 { font-size: $font-size-3xl; }
+  .brandStory p { font-size: $font-size-sm; }
+  .styledProduct { min-height: 520px; }
+  .styledCategory { top: $space-8; left: $space-8; font-size: $font-size-sm; }
+  .styledTitle { right: $space-8; bottom: $space-8; left: $space-8; }
+  .styledTitle h2 { font-size: $font-size-4xl; }
+  .styledTitle p { padding: $space-3; font-size: $font-size-sm; }
+  .tastingSection { padding: $space-16 $space-4; }
+  .tastingSection h2 { font-size: $font-size-4xl; }
+  .tastingGrid { grid-template-columns: repeat(2, 1fr); gap: $space-8 $space-4; margin-top: $space-8; }
+  .tastingNote strong { width: 112px; font-size: $font-size-xl; }
+  .detailOrnament { width: calc(100% - (#{$space-8})); }
+  .faqSection { grid-template-columns: 1fr; margin-inline: $space-4; padding: $space-12 $space-8; }
+  .faqSection > img { width: min(68%, 260px); margin-inline: auto; }
+  .faqSection h2 { font-size: $font-size-3xl; }
+  .secondStylingImage, .secondStylingImage img { min-height: 360px; }
+  .cautionSection { padding: $space-16 $space-8; }
+  .cautionSection h2 { font-size: $font-size-3xl; }
+  .cautionSection ul { margin-top: $space-8; }
   .reviewForm { padding: $space-5; }
   .recommendedFoods { order: 5; width: 100%; padding-top: $space-16; }
   .foodGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-8 $space-3; }
