@@ -7,6 +7,9 @@ import pairings from '../../data/pairings.json'
 import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
 import { getCollection, setDocument, deleteDocument } from '../../firebase/firestore'
 import { getCart, saveCart } from '../../utils/cartStorage'
+import jajakLogo from '../../assets/logos/jajakLogo.png'
+import faqMakdong from '../../assets/characters/M007_Poses04.png'
+import pattern2 from '../../assets/images/eventPage/pattern2.png'
 import styles from './ProductDetail.module.scss'
 
 const productImages = import.meta.glob(
@@ -25,6 +28,11 @@ const detailImages = import.meta.glob(
     eager: true,
     import: 'default',
   }
+)
+
+const stylingImages = import.meta.glob(
+  '../../assets/images/products/stylingProduct/**/*.{png,jpg,jpeg,webp}',
+  { eager: true, import: 'default' }
 )
 
 const resolveProductImage = (imageUrl) =>
@@ -47,6 +55,15 @@ const getDetailImages = (imageUrl) => {
         numeric: true,
       })
     )
+    .map(([, source]) => source)
+}
+
+const getStylingImages = (imageUrl = '') => {
+  const productNumber = getFolderName(imageUrl).replace('product', '')
+
+  return Object.entries(stylingImages)
+    .filter(([path]) => path.includes(`/stylingProduct/p${productNumber}/`))
+    .sort(([pathA], [pathB]) => pathA.localeCompare(pathB, 'ko', { numeric: true }))
     .map(([, source]) => source)
 }
 
@@ -169,6 +186,11 @@ const ProductDetail = () => {
 
   const productDetailImages = useMemo(
     () => getDetailImages(product?.imageUrl),
+    [product]
+  )
+
+  const productStylingImages = useMemo(
+    () => getStylingImages(product?.imageUrl),
     [product]
   )
 
@@ -340,6 +362,15 @@ const ProductDetail = () => {
   const salePrice = Math.round(
     product.price * (1 - discountRate / 100)
   )
+
+  const stylingImageOne = productStylingImages[0] ?? productDetailImages[0] ?? product.imageSrc
+  const stylingImageTwo = productStylingImages.at(-1) ?? productDetailImages.at(-1) ?? product.imageSrc
+  const tastingNotes = [
+    { label: '당도', value: Number(product.sweetness ?? 0) },
+    { label: '산도', value: Number(product.acidity ?? 0) },
+    { label: '탄산', value: Number(product.carbonation ?? 0) },
+    { label: '묵직함', value: Number(product.bodyWeight ?? 0) },
+  ]
 
   const visiblePairings = relatedProducts.slice(
     pairPage * 2,
@@ -644,18 +675,65 @@ const ProductDetail = () => {
               className={styles.detailContent}
               aria-label="상품 상세 정보"
             >
-              {productDetailImages.map(
-                (image, index) => (
-                  <img
-                    src={image}
-                    alt={`${product.productName} 상세 설명 ${
-                      index + 1
-                    }`}
-                    loading="lazy"
-                    key={`${image}-detail`}
-                  />
-                )
+              <section className={styles.brandStory}>
+                <img src={jajakLogo} alt="자작" />
+                <h2>자작</h2>
+                <p>“방대한 정보 속에서 헤매던 나만의 취향을 찾아, 일상 속에 우리 술의 깊은 향기를 스며들게 하는 감성 전통주 큐레이션 플랫폼.”</p>
+              </section>
+
+              <section className={styles.styledProduct}>
+                <img src={stylingImageOne} alt={`${product.productName} 연출 이미지`} loading="lazy" />
+                <div className={styles.styledCategory}>{product.productType} &gt; {product.liquorType ?? product.snackType ?? product.glassType ?? '추천 상품'}</div>
+                <div className={styles.styledTitle}>
+                  <h2>{product.productName}</h2>
+                  <p>{product.productDescription}</p>
+                </div>
+              </section>
+
+              {product.productType === '전통주' && (
+                <>
+                  <section className={styles.tastingSection}>
+                    <h2>TASTING NOTES</h2>
+                    <div className={styles.tastingGrid}>
+                      {tastingNotes.map((note) => (
+                        <div className={styles.tastingNote} key={note.label}>
+                          <span>{note.label}</span>
+                          <strong>{note.value} / 5</strong>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  <div className={styles.detailOrnament} aria-hidden="true">
+                    <img src={pattern2} alt="" />
+                  </div>
+                </>
               )}
+
+              <section className={styles.faqSection}>
+                <img src={faqMakdong} alt="질문을 안내하는 막동이" loading="lazy" />
+                <div>
+                  <h2>자주 묻는 질문</h2>
+                  <dl>
+                    <div><dt>Q1. 배송받을 때 꼭 본인이 직접 수령해야 하나요? 부재 시 어떻게 되나요?</dt><dd>주류 상품은 청소년 보호법에 따라 반드시 성인 본인 확인이 이루어져야 합니다. 만약 부재 중이실 경우 택배 기사님과 연락하여 재배송이나 지정된 수령 일정을 조율하시는 것을 권장해 드립니다.</dd></div>
+                    <div><dt>Q2. 전통주마다 유통기한이 다 다른데, 보통 얼마나 두고 마실 수 있나요?</dt><dd>주종에 따라 천차만별입니다. 생막걸리의 경우 유통기한이 짧아(약 2~4주 내외) 수령 즉시 드시는 것이 가장 좋으며, 살균 막걸리나 약주, 증류주, 리큐르는 상대적으로 유통기한이 넉넉하오니 제품 상세 페이지의 기한을 꼭 확인해 주세요.</dd></div>
+                    <div><dt>Q3. 묶음 배송으로 주문했는데, 택배 상자가 여러 개로 나누어져서 오거나 도착일이 다를 수 있나요?</dt><dd>네, 그럴 수 있습니다. 자작은 전국의 다양한 로컬 양조장들과 협력하고 있기에, 양조장의 위치나 출고지 상황에 따라 다른 물류 창고에서 출발하는 경우가 많습니다. 이 때문에 한 번에 주문하셨더라도 상품별로 택배 송장이 따로 발송되거나 도착 날짜가 하루 이틀 정도 차이가 날 수 있는 점 너른 양해 부탁드립니다.</dd></div>
+                  </dl>
+                </div>
+              </section>
+
+              <figure className={styles.secondStylingImage}>
+                <img src={stylingImageTwo} alt={`${product.productName} 두 번째 연출 이미지`} loading="lazy" />
+              </figure>
+
+              <section className={styles.cautionSection}>
+                <h2>구매 전에 확인하세요.</h2>
+                <ul>
+                  <li>알찬재료 꼼꼼히 포장하여 발송하나, 택배 배송 중 간혹 파손이 발생할 수 있습니다. 파손된 상품을 받으셨을 경우, 수령 당일 파손된 상태의 박스와 상품 사진을 남겨 고객센터로 접수해 주셔야 신속하게 처리가 가능한 점 유의해주세요.</li>
+                  <li>안전한 주류 배송 및 파손 방지를 위해 일부 도서산간 및 제주 지역은 택배사 정책에 따라 배송이 제한되거나 추가 배송비가 발생할 수 있습니다.</li>
+                  <li>주류는 단순 변심이나 개인적인 취향(맛이나 향이 기대와 다르다는 이유 등)에 의한 교환 및 환불이 법적·식품위생상 원칙적으로 불가합니다. 구매 전 상세 페이지의 테이스팅 노트와 도수를 꼼꼼히 살펴보신 후 신중한 구매를 부탁드립니다.</li>
+                </ul>
+              </section>
             </section>
           ) : (
             <section className={styles.reviewSection}>
