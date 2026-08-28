@@ -58,6 +58,7 @@ import RouletteEvent from './pages/Event/RouletteEvent'
 import OxQuizEvent from './pages/Event/OxQuizEvent'
 
 // Support
+import FAQ from './pages/Support/FAQ'
 import NoticeList from './pages/Support/NoticeList'
 import NoticeDetail from './pages/Support/NoticeDetail'
 import InquiryQnA from './pages/Support/InquiryQnA'
@@ -69,6 +70,8 @@ import UserManage from './pages/Admin/UserManage'
 import ProductManage from './pages/Admin/ProductManage'
 import AiLogManage from './pages/Admin/AiLogManage'
 import EventManage from './pages/Admin/EventManage'
+import NoticeManage from './pages/Admin/NoticeManage'
+import ReviewManage from './pages/Admin/ReviewManage'
 import AdminErrorContent from './pages/Admin/AdminErrorContent'
 
 // NotFound
@@ -291,20 +294,32 @@ const App = () => {
           />
 
 
-          {/* Support */}
+          {/* ========================================
+              Support
+          ======================================== */}
+
+          {/* 자주 묻는 질문 */}
+          <Route
+            path="/faq"
+            element={<FAQ />}
+          />
+
+          {/* 1:1 질문하기 */}
+          <Route
+            path="/inquiry"
+            element={<InquiryQnA />}
+          />
+
+          {/* 공지사항 목록 */}
           <Route
             path="/notices"
             element={<NoticeList />}
           />
 
+          {/* 공지사항 상세 */}
           <Route
             path="/notices/:noticeId"
             element={<NoticeDetail />}
-          />
-
-          <Route
-            path="/inquiry"
-            element={<InquiryQnA />}
           />
 
 
@@ -382,31 +397,49 @@ const App = () => {
           element={<AdminLayout />}
         >
 
+          {/* 관리자 대시보드 */}
           <Route
             index
             element={<Dashboard />}
           />
 
+          {/* 회원 관리 */}
           <Route
             path="users"
             element={<UserManage />}
           />
 
+          {/* 상품 관리 */}
           <Route
             path="products"
             element={<ProductManage />}
           />
 
-          <Route
-            path="ai-logs"
-            element={<AiLogManage />}
-          />
-
+          {/* 이벤트 관리 */}
           <Route
             path="events"
             element={<EventManage />}
           />
 
+          {/* AI 추천 기록 */}
+          <Route
+            path="ai-logs"
+            element={<AiLogManage />}
+          />
+
+          {/* 공지사항 관리 */}
+          <Route
+            path="notices"
+            element={<NoticeManage />}
+          />
+
+          {/* 리뷰 관리 */}
+          <Route
+            path="reviews"
+            element={<ReviewManage />}
+          />
+
+          {/* 관리자 에러 */}
           <Route
             path="error"
             element={<AdminErrorContent />}

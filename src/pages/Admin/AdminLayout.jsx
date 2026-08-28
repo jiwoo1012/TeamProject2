@@ -44,6 +44,14 @@ const menuItems = [
     label: 'AI 추천 기록',
     to: '/admin/ai-logs',
   },
+  {
+    label: '공지사항 관리',
+    to: '/admin/notices',
+  },
+  {
+    label: '리뷰 관리',
+    to: '/admin/reviews',
+  },
 ]
 
 
