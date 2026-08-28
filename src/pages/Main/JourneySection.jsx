@@ -2,13 +2,16 @@ import { useLayoutEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-import entranceClosed from '../../assets/images/main/journey/01-entrance-closed.webp'
-import entranceOpen from '../../assets/images/main/journey/02-entrance-open.webp'
+import entranceClosed from '../../assets/images/main/journey/001-entrance-closed.webp'
+import entranceOpen from '../../assets/images/main/journey/002-entrance-open.webp'
 import keypadHand from '../../assets/images/main/journey/entrance-keypad-hand.png'
 import doorHandleHand from '../../assets/images/main/journey/entrance-door-handle-hand.png'
-import hallwayFar from '../../assets/images/main/journey/03-hallway-far.webp'
-import livingroomWide from '../../assets/images/main/journey/04-livingroom-wide.webp'
-import livingroomTable from '../../assets/images/main/journey/05-livingroom-table.webp'
+import hallwayFar from '../../assets/images/main/journey/003-hallway-far.webp'
+import livingroomWide from '../../assets/images/main/journey/004-livingroom-wide.webp'
+import livingroomTable from '../../assets/images/main/journey/005-livingroom-table.webp'
+import livingroomLightOff from '../../assets/images/main/journey/006-livingroom-light-off.png'
+import livingroomLightOn from '../../assets/images/main/journey/007-livingroom-light-on.png'
+import livingroomWindow from '../../assets/images/main/journey/008-livingroom-window.png'
 import styles from './JourneySection.module.scss'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -18,7 +21,20 @@ gsap.registerPlugin(ScrollTrigger)
 // 1. 위 import 구간에서 이미지에 사용할 변수 이름과 파일 경로를 추가합니다.
 // 2. 아래 scenes 배열의 원하는 위치에 그 변수 이름을 추가합니다.
 // 배열의 왼쪽 이미지부터 차례대로 재생됩니다.
-const scenes = [entranceClosed, entranceOpen, hallwayFar, livingroomWide, livingroomTable]
+const scenes = [
+  entranceClosed,
+  entranceOpen,
+  hallwayFar,
+  livingroomWide,
+  livingroomTable,
+  livingroomLightOff,
+  livingroomLightOn,
+  livingroomWindow,
+]
+
+// 06(소등)에서 07(점등)로 넘어갈 때만 불빛을 여러 번 깜빡입니다.
+const LIGHT_OFF_INDEX = scenes.indexOf(livingroomLightOff)
+const LIGHT_ON_INDEX = scenes.indexOf(livingroomLightOn)
 
 const JourneySection = ({ onSkip }) => {
   // 화면 요소를 GSAP 애니메이션과 연결하는 참조값입니다.
@@ -84,10 +100,27 @@ const JourneySection = ({ onSkip }) => {
       // 첫 스크롤이 시작되면 하단 스크롤 안내를 숨깁니다.
       timeline.to(guideRef.current, { opacity: 0, duration: 0.25 })
 
+      // 06 장면에 도착하면 스크롤을 멈춰도 07 조명이 천천히 자동 점멸합니다.
+      const lightBlink = gsap.timeline({ paused: true })
+        .set(sceneElements[LIGHT_ON_INDEX], { opacity: 0, scale: 1 })
+        .to(sceneElements[LIGHT_ON_INDEX], { opacity: 1, duration: 0.45, ease: 'power1.inOut' })
+        .to(sceneElements[LIGHT_ON_INDEX], { opacity: 0, duration: 0.38, ease: 'power1.inOut' })
+        .to(sceneElements[LIGHT_ON_INDEX], { opacity: 1, duration: 0.42, ease: 'power1.inOut' })
+        .to(sceneElements[LIGHT_ON_INDEX], { opacity: 0, duration: 0.34, ease: 'power1.inOut' })
+        .to(sceneElements[LIGHT_ON_INDEX], { opacity: 1, duration: 0.55, ease: 'power1.inOut' })
+        .set(sceneElements[LIGHT_OFF_INDEX], { opacity: 0 })
+
       // [자주 수정하는 곳 3] 기본 사진 전환 속도
       // duration: 1을 줄이면 빨라지고, 늘리면 느려집니다.
       // 마지막 0.35는 다음 사진으로 넘어가기 전에 머무는 시간입니다.
       for (let index = 1; index < sceneElements.length; index += 1) {
+        if (index === LIGHT_ON_INDEX) {
+          timeline
+            .call(() => lightBlink.restart())
+            .to({}, { duration: 1 })
+          continue
+        }
+
         timeline
           .to(sceneElements[index - 1], { opacity: 0, scale: 1.1, duration: 1, ease: 'none' })
           .to(sceneElements[index], { opacity: 1, scale: 1, duration: 1, ease: 'none' }, '-=1')

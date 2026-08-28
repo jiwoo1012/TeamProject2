@@ -8,7 +8,7 @@
 
 .journey {
   position: relative;
-  height: 500svh;
+  height: 800svh;
   background: #1d130d;
 }
 .stage {
@@ -177,7 +177,7 @@
 
 @media (max-width: 767px) {
   .journey {
-    height: 500svh;
+    height: 800svh;
   }
   .scene {
     object-fit: contain;
