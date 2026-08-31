@@ -1,5 +1,815 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+.surveyPage,
+.guestPage,
+.loadingPage {
+  width: 100%;
+  min-height: calc(100vh - 70px);
+
+  background: #f7f5f0;
+}
+
+
+/* ========================================
+   Survey
+======================================== */
+
+.surveyPage {
+  padding: 48px 24px 80px;
+}
+
+.surveyContainer {
+  width: min(100%, 880px);
+
+  margin: 0 auto;
+}
+
+
+/* ========================================
+   Progress
+======================================== */
+
+.progressArea {
+  width: min(100%, 660px);
+
+  margin: 0 auto 24px;
+}
+
+.progressTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 11px;
+}
+
+.surveyType {
+  font-size: 12px;
+  font-weight: 600;
+
+  color: #8e857e;
+}
+
+.progressText {
+  display: flex;
+  align-items: baseline;
+
+  gap: 4px;
+
+  color: #a09891;
+
+  strong {
+    font-size: 20px;
+    font-weight: 700;
+
+    color: #559f98;
+  }
+
+  span {
+    font-size: 13px;
+  }
+}
+
+.progressBar {
+  width: 100%;
+  height: 5px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #e5e2dd;
+}
+
+.progressFill {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #559f98,
+      #99ccc6
+    );
+
+  transition: width 0.4s ease;
+}
+
+
+/* ========================================
+   Card
+======================================== */
+
+.questionCard {
+  width: 100%;
+
+  padding: 50px 64px 46px;
+
+  border: 1px solid
+    rgba(67, 54, 45, 0.06);
+
+  border-radius: 24px;
+
+  background: #fffdfb;
+
+  box-shadow:
+    0 14px 45px
+      rgba(56, 45, 37, 0.06);
+}
+
+.safetyCard {
+  background:
+    linear-gradient(
+      180deg,
+      #fffdfb 0%,
+      #fbfdfc 100%
+    );
+}
+
+
+/* ========================================
+   Question
+======================================== */
+
+.questionNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: fit-content;
+
+  min-width: 52px;
+
+  margin: 0 auto 21px;
+
+  padding: 7px 16px;
+
+  border: 1px solid
+    rgba(75, 154, 147, 0.42);
+
+  border-radius: 999px;
+
+  background:
+    rgba(80, 158, 151, 0.06);
+
+  font-size: 13px;
+  font-weight: 700;
+
+  letter-spacing: 0.02em;
+
+  color: #4f9993;
+}
+
+.questionHeader {
+  margin-bottom: 32px;
+
+  text-align: center;
+}
+
+.questionTitle {
+  margin: 0;
+
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 1.4;
+
+  color: #332820;
+
+  word-break: keep-all;
+}
+
+.questionDescription {
+  margin: 11px 0 0;
+
+  font-size: 14px;
+  line-height: 1.65;
+
+  color: #817871;
+
+  word-break: keep-all;
+}
+
+.questionHint {
+  display: inline-block;
+
+  margin-top: 12px;
+
+  padding: 5px 10px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(82, 157, 150, 0.07);
+
+  font-size: 11px;
+  font-weight: 600;
+
+  color: #619f99;
+}
+
+
+/* ========================================
+   Normal options
+======================================== */
+
+.optionList {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  width: min(100%, 660px);
+
+  margin: 0 auto;
+}
+
+.optionButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  min-height: 62px;
+
+  padding: 12px 20px;
+
+  border: 1px solid #ded9d3;
+  border-radius: 12px;
+
+  background: #fff;
+
+  color: #453a32;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    border-color:
+      rgba(76, 157, 149, 0.55);
+
+    background:
+      rgba(83, 163, 155, 0.035);
+
+    transform: translateY(-1px);
+
+    box-shadow:
+      0 5px 16px
+        rgba(54, 45, 38, 0.045);
+  }
+}
+
+.optionButton.selected {
+  border-color: #55a098;
+
+  background:
+    rgba(83, 163, 155, 0.075);
+
+  box-shadow:
+    inset 0 0 0 1px
+      rgba(83, 163, 155, 0.08);
+}
+
+.optionContent {
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+}
+
+.optionEmoji {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 32px;
+
+  font-size: 21px;
+}
+
+.optionText {
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+.optionLabel {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+
+  word-break: keep-all;
+}
+
+.optionSubLabel {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+
+  color: #968d86;
+
+  word-break: keep-all;
+}
+
+
+/* ========================================
+   Select indicator
+======================================== */
+
+.selectIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 21px;
+  height: 21px;
+
+  border: 1.5px solid #bdb6af;
+  border-radius: 50%;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  color: #fff;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.selectIndicatorActive {
+  border-color: #55a098;
+
+  background: #55a098;
+}
+
+.radioDot {
+  width: 9px;
+  height: 9px;
+
+  border-radius: 50%;
+
+  background: #55a098;
+}
+
+
+/* ========================================
+   Safety Options
+======================================== */
+
+.safetyOptionGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 10px;
+
+  width: min(100%, 660px);
+
+  margin: 0 auto;
+}
+
+.safetyWide {
+  grid-column: 1 / -1;
+}
+
+.safetyOption {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  width: 100%;
+  min-height: 48px;
+
+  padding: 10px 14px;
+
+  border: 1px solid #ddd8d2;
+  border-radius: 10px;
+
+  background: #fff;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  color: #544940;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    border-color:
+      rgba(76, 157, 149, 0.55);
+
+    background:
+      rgba(82, 160, 153, 0.035);
+  }
+}
+
+.safetySelected {
+  border-color: #55a098;
+
+  background:
+    rgba(83, 163, 155, 0.075);
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 18px;
+  height: 18px;
+
+  border: 1px solid #bbb4ad;
+  border-radius: 4px;
+
+  background: #fff;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  color: #4c9992;
+}
+
+.safetySelected .checkbox {
+  border-color: #55a098;
+
+  background:
+    rgba(83, 163, 155, 0.08);
+}
+
+
+/* ========================================
+   Other Input
+======================================== */
+
+.otherInputArea {
+  grid-column: 1 / -1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-top: 4px;
+
+  padding: 16px;
+
+  border-radius: 10px;
+
+  background:
+    rgba(83, 163, 155, 0.045);
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+
+    color: #625750;
+  }
+
+  input {
+    width: 100%;
+    height: 44px;
+
+    padding: 0 14px;
+
+    border: 1px solid #d9d3cd;
+    border-radius: 8px;
+
+    background: #fff;
+
+    font-size: 13px;
+
+    color: #453a32;
+
+    outline: none;
+
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &::placeholder {
+      color: #b5ada7;
+    }
+
+    &:focus {
+      border-color: #58a39c;
+
+      box-shadow:
+        0 0 0 3px
+          rgba(83, 163, 155, 0.09);
+    }
+  }
+}
+
+
+/* ========================================
+   Buttons
+======================================== */
+
+.buttonArea {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  width: min(100%, 660px);
+
+  margin: 34px auto 0;
+}
+
+.prevButton,
+.nextButton {
+  text-align: center;
+  height: 50px;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease,
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.prevButton {
+  width: 125px;
+
+  border: 1px solid #d8d2cc;
+
+  background: #fff;
+
+  color: #756a62;
+
+  &:hover {
+    border-color: #aaa19a;
+
+    color: #443930;
+  }
+}
+
+.nextButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  flex: 1;
+
+  border: 1px solid #529c95;
+
+  background:
+    linear-gradient(
+      135deg,
+      #549d96,
+      #66b1a9
+    );
+
+  color: #fff;
+
+  &:not(:disabled):hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+      0 7px 20px
+        rgba(78, 150, 145, 0.22);
+  }
+
+  &:disabled {
+    border-color: #d9d6d1;
+
+    background: #dedbd6;
+
+    color: #aaa39d;
+
+    cursor: not-allowed;
+
+    box-shadow: none;
+  }
+}
+
+
+/* ========================================
+   Helper
+======================================== */
+
+.helperText {
+  margin: 17px 0 0;
+
+  text-align: center;
+
+  font-size: 11px;
+  line-height: 1.5;
+
+  color: #aaa29c;
+}
+
+
+/* ========================================
+   Guest modal background
+======================================== */
+
+.guestPage {
+  position: relative;
+}
+
+
+/* ========================================
+   Loading
+======================================== */
+
+.loadingPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingSpinner {
+  width: 32px;
+  height: 32px;
+
+  border: 3px solid
+    rgba(78, 150, 145, 0.13);
+
+  border-top-color: #4e9691;
+
+  border-radius: 50%;
+
+  animation:
+    loadingSpin 0.8s
+      linear infinite;
+}
+
+@keyframes loadingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* ========================================
+   Tablet
+======================================== */
+
+@media (max-width: 1023px) {
+  .surveyPage {
+    padding: 40px 28px 70px;
+  }
+
+  .questionCard {
+    padding: 44px 44px 42px;
+  }
+}
+
+
+/* ========================================
+   Mobile
+======================================== */
+
+@media (max-width: 767px) {
+  .surveyPage {
+    padding: 26px 14px 50px;
+  }
+
+  .progressArea {
+    margin-bottom: 18px;
+  }
+
+  .questionCard {
+    padding: 32px 17px 27px;
+
+    border-radius: 18px;
+  }
+
+  .questionNumber {
+    margin-bottom: 17px;
+
+    padding: 6px 13px;
+
+    font-size: 12px;
+  }
+
+  .questionHeader {
+    margin-bottom: 25px;
+  }
+
+  .questionTitle {
+    font-size: 21px;
+  }
+
+  .questionDescription {
+    font-size: 12px;
+  }
+
+  .questionHint {
+    margin-top: 10px;
+
+    font-size: 10px;
+  }
+
+
+  /* options */
+
+  .optionButton {
+    min-height: 58px;
+
+    padding: 11px 13px;
+
+    border-radius: 10px;
+  }
+
+  .optionContent {
+    gap: 9px;
+  }
+
+  .optionEmoji {
+    width: 27px;
+
+    font-size: 19px;
+  }
+
+  .optionLabel {
+    font-size: 13px;
+  }
+
+  .optionSubLabel {
+    font-size: 11px;
+  }
+
+  .selectIndicator {
+    width: 19px;
+    height: 19px;
+  }
+
+
+  /* safety */
+
+  .safetyOptionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .safetyWide {
+    grid-column: auto;
+  }
+
+  .safetyOption {
+    min-height: 47px;
+
+    font-size: 12px;
+  }
+
+  .otherInputArea {
+    grid-column: auto;
+  }
+
+
+  /* buttons */
+
+  .buttonArea {
+    margin-top: 27px;
+  }
+
+  .prevButton {
+    width: 92px;
+  }
+
+  .prevButton,
+  .nextButton {
+    height: 47px;
+
+    font-size: 13px;
+  }
+
+  .helperText {
+    margin-top: 13px;
+
+    font-size: 10px;
+  }
+}
