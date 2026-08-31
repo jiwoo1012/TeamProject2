@@ -1,5 +1,22 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as v;
+
+.page { min-height: 70vh; padding-bottom: v.$space-20; background: v.$color-bg; }
+.hero { padding: v.$space-16 max(v.$side-margin-mobile, calc((100% - v.$container-max) / 2)); background: color-mix(in srgb, v.$color-surface 35%, v.$color-white); text-align: center; }
+.hero > span { color: v.$color-primary; font-size: v.$font-size-xs; font-weight: v.$font-weight-bold; letter-spacing: .14em; }
+.hero h1 { margin: v.$space-2 0; font-size: v.$font-size-4xl; }
+.hero p { margin: 0; color: v.$color-text-muted; }
+.content { width: min(960px, calc(100% - 40px)); margin: v.$space-12 auto 0; }
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: v.$space-4; margin-bottom: v.$space-5; }
+.toolbar h2 { margin: 0; font-size: v.$font-size-xl; }
+.toolbar em { color: v.$color-primary; font-size: v.$font-size-sm; font-style: normal; }
+.toolbar input { width: 250px; height: 42px; box-sizing: border-box; padding: 0 v.$space-4; border: 1px solid v.$color-border; border-radius: v.$radius-pill; background: v.$color-white; font: inherit; }
+.list { border-top: 2px solid v.$color-text-primary; }
+.noticeItem { display: flex; align-items: center; justify-content: space-between; gap: v.$space-6; padding: v.$space-5 v.$space-4; border-bottom: 1px solid v.$color-border; color: inherit; text-decoration: none; transition: background-color v.$transition-fast; }
+.noticeItem:hover { background: color-mix(in srgb, v.$color-primary 6%, v.$color-white); }
+.noticeItem strong { font-size: v.$font-size-md; }
+.noticeItem p { max-width: 650px; margin: v.$space-2 0 0; overflow: hidden; color: v.$color-text-muted; font-size: v.$font-size-sm; text-overflow: ellipsis; white-space: nowrap; }
+.noticeItem time { flex: 0 0 auto; color: v.$color-text-muted; font-size: v.$font-size-sm; }
+.pinBadge { display: inline-flex; min-height: 22px; align-items: center; margin-right: v.$space-2; padding: 0 v.$space-2; border-radius: v.$radius-pill; background: color-mix(in srgb, v.$color-warning 14%, v.$color-white); color: v.$color-warning; font-size: v.$font-size-xs; font-weight: v.$font-weight-bold; }
+.emptyState { min-height: 240px; display: grid; place-items: center; border-top: 2px solid v.$color-text-primary; color: v.$color-text-muted; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+@media (max-width: v.$breakpoint-mobile-max) { .hero { padding-top: v.$space-12; padding-bottom: v.$space-12; } .hero h1 { font-size: v.$font-size-3xl; } .toolbar { align-items: stretch; flex-direction: column; } .toolbar input { width: 100%; } .noticeItem { align-items: flex-start; flex-direction: column; gap: v.$space-2; } }

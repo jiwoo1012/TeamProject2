@@ -51,8 +51,8 @@
 .reviewLoginNotice { @include mixins.flex-center; min-height: 180px; padding: $space-6; color: $color-text-muted; background: rgba($color-bg, 1); border: 1px solid $color-border; border-radius: $radius-lg; text-align: center; }
 .reviewForm h2 { margin-bottom: $space-5; font-size: $font-size-2xl; font-weight: $font-weight-semibold; }
 .nicknameField, .contentField { display: grid; gap: $space-2; color: $color-text-secondary; font-size: $font-size-sm; }
-.nicknameField input, .contentField textarea { padding: $space-3; color: $color-text-primary; background: $color-white; border: 1px solid $color-border; border-radius: $radius-md; }
-.nicknameField input:focus, .contentField textarea:focus { border-color: $color-primary; }
+.nicknameField input, .nicknameField select, .contentField textarea { padding: $space-3; color: $color-text-primary; background: $color-white; border: 1px solid $color-border; border-radius: $radius-md; }
+.nicknameField input:focus, .nicknameField select:focus, .contentField textarea:focus { border-color: $color-primary; }
 .starField { display: flex; gap: $space-4; align-items: center; margin: $space-4 0; }
 .starField legend { float: left; color: $color-text-secondary; font-size: $font-size-sm; }
 .starField > div { display: flex; gap: $space-1; }

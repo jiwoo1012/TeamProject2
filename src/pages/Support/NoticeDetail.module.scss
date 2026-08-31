@@ -1,5 +1,13 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as v;
+
+.page { min-height: 70vh; padding: v.$space-12 0 v.$space-20; background: v.$color-bg; }
+.content { width: min(900px, calc(100% - 40px)); margin: 0 auto; }
+.backLink { display: inline-flex; margin-bottom: v.$space-5; color: v.$color-text-secondary; font-size: v.$font-size-sm; text-decoration: none; }
+.noticeArticle { border-top: 2px solid v.$color-text-primary; background: v.$color-white; }
+.noticeArticle header { padding: v.$space-8; border-bottom: 1px solid v.$color-border; }
+.noticeArticle h1 { margin: v.$space-3 0 v.$space-5; font-size: v.$font-size-3xl; line-height: v.$line-height-tight; }
+.noticeArticle header > div { display: flex; gap: v.$space-4; color: v.$color-text-muted; font-size: v.$font-size-sm; }
+.pinBadge { display: inline-flex; min-height: 24px; align-items: center; padding: 0 v.$space-3; border-radius: v.$radius-pill; background: color-mix(in srgb, v.$color-warning 14%, v.$color-white); color: v.$color-warning; font-size: v.$font-size-xs; font-weight: v.$font-weight-bold; }
+.body { min-height: 280px; padding: v.$space-8; color: v.$color-text-secondary; line-height: v.$line-height-relaxed; white-space: pre-wrap; }
+.emptyState { min-height: 280px; display: grid; place-items: center; border-top: 2px solid v.$color-text-primary; color: v.$color-text-muted; }
+@media (max-width: v.$breakpoint-mobile-max) { .page { padding-top: v.$space-8; } .noticeArticle header, .body { padding: v.$space-5; } .noticeArticle h1 { font-size: v.$font-size-2xl; } }

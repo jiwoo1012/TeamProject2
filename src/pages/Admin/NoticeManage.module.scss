@@ -1,5 +1,637 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as v;
+
+.page {
+  display: grid;
+  gap: v.$space-6;
+  color: v.$color-text-primary;
+}
+
+.page h3,
+.page h4,
+.page p {
+  margin: 0;
+}
+
+.page button,
+.page input,
+.page select,
+.page textarea {
+  font: inherit;
+}
+
+.page button,
+.introActions a {
+  border: 1px solid v.$color-border;
+  background: v.$color-white;
+  color: v.$color-text-secondary;
+  cursor: pointer;
+  transition: border-color v.$transition-fast, background-color v.$transition-fast, color v.$transition-fast;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.introCard {
+  display: flex;
+  min-height: 134px;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.$space-6;
+  padding: v.$space-6 v.$space-8;
+  border: 1px solid color-mix(in srgb, v.$color-primary 30%, v.$color-border);
+  border-radius: v.$radius-xl;
+  background:
+    radial-gradient(circle at 92% 20%, color-mix(in srgb, v.$color-primary-light 24%, transparent) 0 8%, transparent 9%),
+    linear-gradient(135deg, color-mix(in srgb, v.$color-primary 12%, v.$color-white), v.$color-white 62%);
+}
+
+.eyebrow,
+.detailHeading > div > span {
+  color: v.$color-primary;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-bold;
+  letter-spacing: 0.12em;
+}
+
+.introCard h3 {
+  margin-top: v.$space-2;
+  font-size: v.$font-size-2xl;
+}
+
+.introCard p {
+  margin-top: v.$space-2;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+}
+
+.introActions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: v.$space-3;
+}
+
+.introActions a,
+.introActions button {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 v.$space-5;
+  border-radius: v.$radius-pill;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+  text-decoration: none;
+}
+
+.introActions button {
+  border-color: v.$color-primary;
+  background: v.$color-primary;
+  color: v.$color-white;
+}
+
+.introActions a:hover,
+.resetButton:hover,
+.noticeTable button:hover,
+.emptyState button:hover {
+  border-color: v.$color-primary;
+  color: v.$color-primary;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: v.$space-4;
+}
+
+.summaryCard {
+  position: relative;
+  display: flex;
+  min-height: 116px;
+  flex-direction: column;
+  justify-content: center;
+  padding: v.$space-5;
+  overflow: hidden;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+  background: v.$color-white;
+}
+
+.summaryCard::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: color-mix(in srgb, v.$color-primary 72%, v.$color-primary-light);
+  content: '';
+}
+
+.summaryCard span,
+.summaryCard small {
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
+
+.summaryCard strong {
+  margin: v.$space-1 0;
+  color: v.$color-primary;
+  font-size: v.$font-size-3xl;
+  line-height: 1.2;
+}
+
+.filterBar {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) 150px 150px auto;
+  gap: v.$space-3;
+  padding: v.$space-4;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+  background: color-mix(in srgb, v.$color-surface 20%, v.$color-white);
+}
+
+.searchField {
+  position: relative;
+}
+
+.searchField svg {
+  position: absolute;
+  top: 50%;
+  left: v.$space-4;
+  width: 18px;
+  fill: none;
+  stroke: v.$color-text-muted;
+  stroke-width: 1.8;
+  transform: translateY(-50%);
+}
+
+.searchField input,
+.selectField select {
+  width: 100%;
+  height: 42px;
+  box-sizing: border-box;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-md;
+  background: v.$color-white;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-sm;
+}
+
+.searchField input {
+  padding: 0 v.$space-4 0 44px;
+}
+
+.selectField select {
+  padding: 0 v.$space-3;
+}
+
+.resetButton {
+  min-width: 70px;
+  border-radius: v.$radius-md;
+  font-size: v.$font-size-xs;
+}
+
+.managementGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  align-items: start;
+  gap: v.$space-5;
+}
+
+.listSection {
+  min-width: 0;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: v.$space-3;
+  padding: 0 v.$space-1;
+}
+
+.sectionHeading > div {
+  display: flex;
+  align-items: center;
+  gap: v.$space-3;
+}
+
+.sectionHeading h3,
+.detailHeading h3 {
+  font-size: v.$font-size-xl;
+}
+
+.sectionHeading > div > span {
+  width: 48px;
+  height: 1px;
+  background: v.$color-border;
+}
+
+.countBadge,
+.statusBadge,
+.pinBadge,
+.pinLabel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: v.$radius-pill;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-semibold;
+}
+
+.countBadge {
+  min-width: 48px;
+  min-height: 28px;
+  border: 1px solid v.$color-border;
+  color: v.$color-primary;
+}
+
+.tableWrap,
+.detailPanel {
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
+}
+
+.tableWrap {
+  overflow: auto;
+}
+
+.noticeTable {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+}
+
+.noticeTable th,
+.noticeTable td {
+  padding: v.$space-4 v.$space-3;
+  border-bottom: 1px solid color-mix(in srgb, v.$color-border 72%, transparent);
+  font-size: v.$font-size-sm;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.noticeTable th {
+  background: color-mix(in srgb, v.$color-surface 24%, v.$color-white);
+  color: v.$color-text-muted;
+  font-weight: v.$font-weight-medium;
+}
+
+.noticeTable tbody tr {
+  cursor: pointer;
+  transition: background-color v.$transition-fast, box-shadow v.$transition-fast;
+}
+
+.noticeTable tbody tr:hover,
+.noticeTable .selectedRow {
+  background: color-mix(in srgb, v.$color-primary 7%, v.$color-white);
+}
+
+.noticeTable tbody tr:hover {
+  box-shadow: inset 3px 0 0 v.$color-primary;
+}
+
+.noticeTable tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.titleCell {
+  display: flex;
+  min-width: 250px;
+  align-items: center;
+  gap: v.$space-2;
+}
+
+.pinBadge,
+.pinLabel {
+  background: color-mix(in srgb, v.$color-warning 15%, v.$color-white);
+  color: color-mix(in srgb, v.$color-warning 76%, v.$color-text-primary);
+}
+
+.pinBadge {
+  min-height: 22px;
+  padding: 0 v.$space-2;
+}
+
+.statusBadge {
+  min-height: 24px;
+  padding: 0 v.$space-3;
+}
+
+.statusBadge::before {
+  width: 6px;
+  height: 6px;
+  margin-right: v.$space-1;
+  border-radius: 50%;
+  background: currentcolor;
+  content: '';
+}
+
+.published {
+  background: color-mix(in srgb, v.$color-success 15%, v.$color-white);
+  color: v.$color-success;
+}
+
+.draft {
+  background: color-mix(in srgb, v.$color-taupe 15%, v.$color-white);
+  color: v.$color-taupe;
+}
+
+.noticeTable button {
+  min-width: 52px;
+  min-height: 28px;
+  border-radius: v.$radius-pill;
+  font-size: v.$font-size-xs;
+}
+
+.detailPanel {
+  padding: v.$space-5;
+}
+
+.detailHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: v.$space-3;
+  padding-bottom: v.$space-4;
+  border-bottom: 1px solid v.$color-border;
+}
+
+.detailHeading h3 {
+  margin-top: v.$space-1;
+}
+
+.pinLabel {
+  min-height: 26px;
+  margin-top: v.$space-5;
+  padding: 0 v.$space-3;
+}
+
+.detailPanel h4 {
+  margin-top: v.$space-4;
+  font-size: v.$font-size-lg;
+  line-height: v.$line-height-tight;
+}
+
+.previewContent {
+  min-height: 88px;
+  margin-top: v.$space-3 !important;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+  line-height: v.$line-height-relaxed;
+}
+
+.previewList {
+  display: grid;
+  gap: v.$space-3;
+  margin: v.$space-5 0 0;
+  padding-top: v.$space-4;
+  border-top: 1px solid v.$color-border;
+}
+
+.previewList div {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: v.$space-3;
+}
+
+.previewList dt,
+.previewList dd {
+  margin: 0;
+  font-size: v.$font-size-sm;
+}
+
+.previewList dt {
+  color: v.$color-text-muted;
+}
+
+.previewList dd {
+  font-weight: v.$font-weight-semibold;
+}
+
+.detailButton {
+  width: 100%;
+  min-height: 40px;
+  margin-top: v.$space-6;
+  border-color: v.$color-primary !important;
+  border-radius: v.$radius-lg;
+  background: v.$color-primary !important;
+  color: v.$color-white !important;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+}
+
+.emptyState {
+  display: grid;
+  min-height: 300px;
+  place-items: center;
+  align-content: center;
+  gap: v.$space-2;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
+  text-align: center;
+}
+
+.emptyState p,
+.noSelection,
+.demoNotice {
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+}
+
+.emptyState button {
+  min-height: 36px;
+  margin-top: v.$space-2;
+  padding: 0 v.$space-4;
+  border-radius: v.$radius-pill;
+  font-size: v.$font-size-xs;
+}
+
+.demoNotice {
+  text-align: right;
+}
+
+.modalBackdrop {
+  position: fixed;
+  z-index: v.$z-modal;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: v.$space-6;
+  overflow-y: auto;
+  background: color-mix(in srgb, v.$color-text-primary 42%, transparent);
+}
+
+.modal {
+  width: min(720px, 100%);
+  max-height: calc(100vh - #{v.$space-12});
+  overflow-y: auto;
+  border: 1px solid color-mix(in srgb, v.$color-primary 24%, v.$color-border);
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: v.$space-5;
+  padding: v.$space-6 v.$space-8 v.$space-5;
+  border-bottom: 1px solid v.$color-border;
+  background: color-mix(in srgb, v.$color-primary 12%, v.$color-white);
+}
+
+.modalHeader h3 {
+  font-size: v.$font-size-2xl;
+}
+
+.modalHeader p {
+  margin-top: v.$space-2;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+}
+
+.modalHeader > button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: v.$radius-md;
+  color: v.$color-primary;
+  font-size: v.$font-size-xl;
+}
+
+.modalBody {
+  display: grid;
+  gap: v.$space-5;
+  padding: v.$space-6 v.$space-8;
+}
+
+.modalBody > label,
+.formOptions > label:not(.checkField) {
+  display: grid;
+  gap: v.$space-2;
+}
+
+.modalBody label > span {
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+}
+
+.modalBody input[type='text'],
+.modalBody input:not([type]),
+.modalBody textarea,
+.modalBody select {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-md;
+  background: v.$color-white;
+  color: v.$color-text-primary;
+}
+
+.modalBody input:not([type]),
+.modalBody select {
+  height: 42px;
+  padding: 0 v.$space-3;
+}
+
+.modalBody textarea {
+  resize: vertical;
+  padding: v.$space-3;
+  line-height: v.$line-height-base;
+}
+
+.formOptions {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  align-items: end;
+  gap: v.$space-5;
+}
+
+.checkField {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  gap: v.$space-2;
+}
+
+.checkField input {
+  width: 18px;
+  height: 18px;
+  accent-color: v.$color-primary;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: v.$space-3;
+  padding: v.$space-5 v.$space-8 v.$space-6;
+  border-top: 1px solid v.$color-border;
+}
+
+.modalFooter button {
+  min-width: 90px;
+  min-height: 40px;
+  border-radius: v.$radius-md;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+}
+
+.modalFooter .saveButton {
+  border-color: v.$color-primary;
+  background: v.$color-primary;
+  color: v.$color-white;
+}
+
+.toast {
+  position: fixed;
+  z-index: v.$z-toast;
+  right: v.$space-6;
+  bottom: v.$space-6;
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: v.$space-3;
+  padding: 0 v.$space-4;
+  border-radius: v.$radius-md;
+  background: v.$color-text-primary;
+  color: v.$color-white;
+  font-size: v.$font-size-sm;
+}
+
+.toast button {
+  border: 0;
+  background: transparent;
+  color: v.$color-white;
+  font-size: v.$font-size-lg;
+}
+
+@media (max-width: v.$breakpoint-tablet-max) {
+  .summaryGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .filterBar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .searchField { grid-column: 1 / -1; }
+  .managementGrid { grid-template-columns: 1fr; }
+  .detailPanel { order: -1; }
+}
+
+@media (max-width: v.$breakpoint-mobile-max) {
+  .introCard { min-height: auto; align-items: flex-start; flex-direction: column; padding: v.$space-5; }
+  .introActions { width: 100%; }
+  .introActions a, .introActions button { flex: 1; padding: 0 v.$space-3; }
+  .summaryGrid, .filterBar, .formOptions { grid-template-columns: 1fr; }
+  .searchField { grid-column: auto; }
+  .detailPanel { padding: v.$space-4; }
+  .modalBackdrop { align-items: end; padding: 0; }
+  .modal { width: 100%; max-height: 92vh; border-radius: v.$radius-xl v.$radius-xl 0 0; }
+  .modalHeader, .modalBody, .modalFooter { padding-right: v.$space-5; padding-left: v.$space-5; }
+  .demoNotice { text-align: left; }
+}
