@@ -11,6 +11,8 @@ import rouletteBack from '../../assets/images/eventPage/roulette3.png'
 import rouletteWheel from '../../assets/images/eventPage/roulette2.png'
 import rouletteFront from '../../assets/images/eventPage/roulette1.png'
 import makdong from '../../assets/characters/M007_Poses07.png'
+import running2 from '../../assets/images/eventPage/running2.png'
+import running3 from '../../assets/images/eventPage/running3.png'
 import fallbackGift from '../../assets/images/products/product24.png'
 import fallbackLiquor from '../../assets/images/products/product2.png'
 import fallbackFood from '../../assets/images/products/product19.png'
@@ -29,12 +31,12 @@ const PRIZE_WEIGHTS = {
   first: {
     rank: 1, weight: 1, type: 'product', name: '자작 혼술 다정 세트',
     productId: 'gft_002', description: '전통주와 안주로 구성된 다정한 혼술 세트',
-    fallbackImage: fallbackGift, wheelAngle: 120,
+    fallbackImage: fallbackGift, wheelAngle: 60,
   },
   second: {
     rank: 2, weight: 4, type: 'product', name: '새벽 솔잎 막걸리',
     productId: 'liq_002', description: '막동이가 고른 은은한 솔향의 막걸리',
-    fallbackImage: fallbackLiquor, wheelAngle: 60,
+    fallbackImage: fallbackLiquor, wheelAngle: 120,
   },
   third: {
     rank: 3, weight: 10, type: 'product', name: '참숯 향 메추리알 장조림',
@@ -83,6 +85,8 @@ const formatToday = () =>
 const RouletteEvent = () => {
   const event = eventsData[0].event
   const wheelRef = useRef(null)
+  const stageRef = useRef(null)
+  const currentRotationRef = useRef(0)
   const [user, setUser] = useState(null)
   const [products, setProducts] = useState([])
   const [hasParticipated, setHasParticipated] = useState(false)
@@ -126,6 +130,18 @@ const RouletteEvent = () => {
       active = false
       unsubscribe()
     }
+  }, [])
+
+  useEffect(() => {
+    document.body.classList.toggle('jajak-roulette-spinning', isSpinning)
+
+    return () => document.body.classList.remove('jajak-roulette-spinning')
+  }, [isSpinning])
+
+  useEffect(() => {
+    document.body.classList.add('jajak-roulette-page')
+
+    return () => document.body.classList.remove('jajak-roulette-page')
   }, [])
 
   const prizesWithImages = useMemo(
@@ -173,6 +189,32 @@ const RouletteEvent = () => {
     })
   }
 
+  const animateWheel = (prize) => new Promise((resolve) => {
+    const wheel = wheelRef.current
+    const landingOffset = (Math.random() * 44) - 22
+    const landingAngle = (prize.wheelAngle + landingOffset + 360) % 360
+    const currentRotation = currentRotationRef.current
+    const finalAdjustment = (360 - ((currentRotation + landingAngle) % 360)) % 360
+    const fullSpins = 5 + Math.floor(Math.random() * 4)
+    const finalRotation = currentRotation + (fullSpins * 360) + finalAdjustment
+    currentRotationRef.current = finalRotation
+
+    const finish = () => {
+      wheel.removeEventListener('transitionend', handleTransitionEnd)
+      resolve()
+    }
+    const handleTransitionEnd = (eventObject) => {
+      if (eventObject.propertyName === 'transform') finish()
+    }
+
+    wheel.addEventListener('transitionend', handleTransitionEnd)
+    wheel.style.transition = 'transform 4600ms cubic-bezier(.45, 0, .15, 1)'
+    requestAnimationFrame(() => {
+      wheel.style.transform = `rotate(${finalRotation}deg)`
+    })
+    setTimeout(finish, 4800)
+  })
+
   const spin = async () => {
     if (isSpinning || isSaving || hasParticipated) return
     if (!user) {
@@ -182,34 +224,24 @@ const RouletteEvent = () => {
 
     const prize = drawPrize()
     const prizeWithImage = prizesWithImages.find((item) => item.rank === prize.rank)
+    const stageBounds = stageRef.current.getBoundingClientRect()
+    const horizontalShift = (window.innerWidth / 2) - (stageBounds.left + (stageBounds.width / 2))
+    const verticalShift = (window.innerHeight / 2) - (stageBounds.top + (stageBounds.height / 2))
+    stageRef.current.style.setProperty('--roulette-shift-x', `${horizontalShift}px`)
+    stageRef.current.style.setProperty('--roulette-shift-y', `${verticalShift}px`)
     setErrorMessage('')
     setIsSaving(true)
+    setIsSpinning(true)
+    const animation = animateWheel(prize)
 
     try {
-      await saveParticipation(prize)
+      await Promise.all([saveParticipation(prize), animation])
       setHasParticipated(true)
-      setIsSpinning(true)
       setIsSaving(false)
-
-      const finalRotation = (360 * 8) + (360 - prize.wheelAngle)
-      const animation = wheelRef.current.animate(
-        [
-          { transform: 'rotate(0deg)', offset: 0 },
-          { transform: `rotate(${finalRotation * 0.04}deg)`, offset: 0.14 },
-          { transform: `rotate(${finalRotation * 0.78}deg)`, offset: 0.62 },
-          { transform: `rotate(${finalRotation}deg)`, offset: 1 },
-        ],
-        {
-          duration: 5200,
-          easing: 'cubic-bezier(.18,.72,.18,1)',
-          fill: 'forwards',
-        }
-      )
-
-      await animation.finished
       setIsSpinning(false)
       setResult(prizeWithImage)
     } catch (error) {
+      await animation.catch(() => {})
       setIsSaving(false)
       setIsSpinning(false)
 
@@ -227,11 +259,17 @@ const RouletteEvent = () => {
       className={`${styles.page} ${isSpinning ? styles.isSpinning : ''}`}
       style={{ '--roulette-background': `url(${backgroundImage})` }}
     >
+      <div className={styles.runningTrail} aria-hidden="true" />
+      <div className={styles.runningTrack} aria-hidden="true">
+        <img className={styles.runningFrame} src={running2} alt="" />
+        <img className={styles.runningFrame} src={running3} alt="" />
+      </div>
+
       <section className={styles.hero} aria-label="막동이 룰렛 이벤트">
         <div className={styles.gameArea}>
           <img className={styles.makdong} src={makdong} alt="룰렛을 소개하는 막동이" />
 
-          <div className={styles.rouletteStage}>
+          <div ref={stageRef} className={styles.rouletteStage}>
             <img className={styles.rouletteBack} src={rouletteBack} alt="" />
             <img ref={wheelRef} className={styles.rouletteWheel} src={rouletteWheel} alt="1등부터 6등까지의 경품 룰렛" />
             <img className={styles.rouletteFront} src={rouletteFront} alt="" />
@@ -242,7 +280,7 @@ const RouletteEvent = () => {
               disabled={isSpinning || isSaving || hasParticipated}
               aria-label="룰렛 돌리기"
             >
-              {isSaving ? '준비 중' : hasParticipated ? '참여 완료' : '클릭!'}
+              {isSpinning || isSaving ? '추첨중...' : hasParticipated ? '참여 완료' : '클릭!'}
             </button>
           </div>
         </div>
