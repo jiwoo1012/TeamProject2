@@ -8,6 +8,10 @@
     "volume": "400g",
     "productDescription": "두툼하게 썬 두부를 고소한 들기름에 노릇하게 부쳐내고, 잘 익은 묵은지를 함께 볶아 곁들인 안주입니다.",
     "allergyCautionInfo": "대두(콩) 함유",
+    "allergenTags": [
+      "soybean"
+    ],
+    "plantIngredientTags": [],
     "productType": "안주",
     "snackType": "간편식",
     "stock": 100,
@@ -23,6 +27,8 @@
     "volume": "300g",
     "productDescription": "간편하게 부쳐내어 비오는 날 곁들이기 좋은 안주입니다.",
     "allergyCautionInfo": "감자 함유",
+    "allergenTags": [],
+    "plantIngredientTags": [],
     "productType": "안주",
     "snackType": "간편식",
     "stock": 100,
@@ -38,6 +44,12 @@
     "volume": "200g",
     "productDescription": "간장과 메추리알을 오랜 시간 조려내어 짭조름하고 쫄깃한 식감을 살린 상온 안주입니다.",
     "allergyCautionInfo": "계란, 대두, 밀 함유",
+    "allergenTags": [
+      "egg",
+      "soybean",
+      "wheat"
+    ],
+    "plantIngredientTags": [],
     "productType": "안주",
     "snackType": "상온안주",
     "stock": 100,
@@ -53,6 +65,10 @@
     "volume": "150g",
     "productDescription": "결대로 찢어 고소하고 바삭하게 즐기는 단골 짝꿍입니다.",
     "allergyCautionInfo": "명태(생선) 함유",
+    "allergenTags": [
+      "fish"
+    ],
+    "plantIngredientTags": [],
     "productType": "안주",
     "snackType": "상온안주",
     "stock": 100,
@@ -68,6 +84,10 @@
     "volume": "250g",
     "productDescription": "당도가 높은 곶감을 한입 크기로 썬 감말랭이와 바삭하게 조린 호두 정과를 담은 전통 디저트입니다.",
     "allergyCautionInfo": "견과류(호두) 함유",
+    "allergenTags": [
+      "nuts"
+    ],
+    "plantIngredientTags": [],
     "productType": "안주",
     "snackType": "디저트",
     "stock": 100,
@@ -83,6 +103,11 @@
     "volume": "300g",
     "productDescription": "고소한 흑임자 가루를 꿀에 반죽해 전통 문양 틀로 눌러 찍어낸 다식으로, 은은한 단맛과 진한 고소함이 어우러진 상온 디저트입니다.",
     "allergyCautionInfo": "참깨(흑임자) 함유",
+    "allergenTags": [
+      "sesame",
+      "bee"
+    ],
+    "plantIngredientTags": [],
     "productType": "안주",
     "snackType": "디저트",
     "stock": 100,
@@ -98,6 +123,13 @@
     "volume": "300g(오징어 1마리)",
     "productDescription": "통오징어를 결대로 도톰하게 썰어 노릇하게 구운 뒤 고소한 버터 한 조각을 올려낸 안주로, 매콤 마요 소스와 땅콩을 곁들여 즐길 수 있습니다.",
     "allergyCautionInfo": "오징어, 우유(버터), 대두(마요네즈), 땅콩 함유",
+    "allergenTags": [
+      "shellfish",
+      "dairy",
+      "soybean",
+      "peanut"
+    ],
+    "plantIngredientTags": [],
     "productType": "안주",
     "snackType": "간편식",
     "stock": 100,
@@ -113,6 +145,11 @@
     "volume": "300g",
     "productDescription": "오랜 시간 삶아낸 편육을 얇게 썰어 상추, 마늘, 청양고추와 함께 곁들인 정갈한 모둠 안주입니다.",
     "allergyCautionInfo": "돼지고기, 대두(장류) 함유",
+    "allergenTags": [
+      "pork",
+      "soybean"
+    ],
+    "plantIngredientTags": [],
     "productType": "안주",
     "snackType": "상온안주",
     "stock": 100,
@@ -128,6 +165,12 @@
     "volume": "400g",
     "productDescription": "쫄깃한 골뱅이를 매콤한 양념에 무쳐 깻잎, 당근 등 신선한 채소와 함께 곁들인 새콤달콤한 안주입니다.",
     "allergyCautionInfo": "골뱅이(연체동물), 대두, 참깨 함유",
+    "allergenTags": [
+      "shellfish",
+      "soybean",
+      "sesame"
+    ],
+    "plantIngredientTags": [],
     "productType": "안주",
     "snackType": "상온안주",
     "stock": 100,
@@ -143,6 +186,11 @@
     "volume": "250g(6쪽)",
     "productDescription": "부추와 김치소를 얇은 전병에 말아 노릇하게 구워낸 안주로, 알싸한 양념장에 찍어 먹으면 더욱 좋습니다.",
     "allergyCautionInfo": "밀, 대두 함유",
+    "allergenTags": [
+      "wheat",
+      "soybean"
+    ],
+    "plantIngredientTags": [],
     "productType": "안주",
     "snackType": "간편식",
     "stock": 100,
@@ -158,6 +206,10 @@
     "volume": "350g",
     "productDescription": "쫄깃한 도토리묵을 도톰하게 썰어 아삭한 채소와 새콤달콤한 양념으로 무쳐낸 정갈한 안주입니다.",
     "allergyCautionInfo": "참깨 함유",
+    "allergenTags": [
+      "sesame"
+    ],
+    "plantIngredientTags": [],
     "productType": "안주",
     "snackType": "상온안주",
     "stock": 100,

@@ -294,7 +294,14 @@ const PreferenceQuestions = () => {
     if (!hasAnswer) return
 
     if (isLastStep) {
-      console.log('최종 취향 답변:', answers)
+      // 5개 취향 답변을 알레르기 페이지까지 임시 보관
+      sessionStorage.setItem(
+        'preferenceAnswers',
+        JSON.stringify(answers)
+      )
+
+      console.log('임시 저장된 취향 답변:', answers)
+
       navigate('/preference/safety-intro')
       return
     }
@@ -308,6 +315,8 @@ const PreferenceQuestions = () => {
   // ==============================
 
   const handleSkip = () => {
+    sessionStorage.removeItem('preferenceAnswers')
+
     navigate('/')
   }
 

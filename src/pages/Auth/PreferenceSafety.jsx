@@ -1,8 +1,19 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import {
+  doc,
+  updateDoc,
+  serverTimestamp,
+} from 'firebase/firestore'
+
+import { auth, db } from '../../firebase/firebase'
 
 import styles from './PreferenceSafety.module.scss'
 
+
+// ========================================
+// 알레르기 / 기피 재료
+// ========================================
 
 const ALLERGY_GROUPS = [
   {
@@ -57,19 +68,79 @@ const ALLERGY_GROUPS = [
 ]
 
 
+// ========================================
+// 특정 과일 · 식물 원료
+// ========================================
+
 const PLANT_OPTIONS = [
   { value: 'apple', label: '사과' },
   { value: 'plum', label: '매실' },
   { value: 'mulberry', label: '오디' },
   { value: 'grape', label: '머루' },
   { value: 'citrus', label: '감귤' },
-
   { value: 'cornelianCherry', label: '산수유' },
   { value: 'ginseng', label: '인삼' },
   { value: 'chrysanthemum', label: '국화' },
   { value: 'etcPlant', label: '기타' },
   { value: 'pineNeedle', label: '솔잎' },
 ]
+
+
+// ========================================
+// 취향 설문 → 상품 JSON 수치 변환
+// ========================================
+
+const SWEETNESS_MAP = {
+  dry: 1,
+  mild: 3,
+  sweet: 5,
+  unknown: null,
+}
+
+const ACIDITY_MAP = {
+  low: 1,
+  medium: 3,
+  high: 5,
+  any: null,
+}
+
+const BODY_MAP = {
+  light: 1,
+  medium: 3,
+  full: 5,
+  unknown: null,
+}
+
+const SCENT_MAP = {
+  mild: 1,
+  medium: 3,
+  strong: 5,
+  any: null,
+}
+
+const ABV_MAP = {
+  light: {
+    min: 0,
+    max: 10,
+  },
+
+  moderate: {
+    min: 11,
+    max: 16,
+  },
+
+  strong: {
+    min: 17,
+    max: 25,
+  },
+
+  veryStrong: {
+    min: 26,
+    max: null,
+  },
+
+  any: null,
+}
 
 
 const PreferenceSafety = () => {
@@ -79,6 +150,7 @@ const PreferenceSafety = () => {
   const [selectedPlants, setSelectedPlants] = useState([])
   const [customInput, setCustomInput] = useState('')
   const [noAllergy, setNoAllergy] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
 
   const isPlantOpen = selectedItems.includes('plant')
@@ -161,25 +233,218 @@ const PreferenceSafety = () => {
   // 취향 저장
   // ========================================
 
-  const handleSave = () => {
-    const safetyAnswers = {
-      noAllergy,
-      avoidIngredients: selectedItems,
-      plantIngredients: selectedPlants,
-      customIngredient: customInput.trim(),
+  const handleSave = async () => {
+    if (isSaving) return
+
+    setIsSaving(true)
+
+    try {
+      // ========================================
+      // 현재 로그인 사용자
+      // ========================================
+
+      const user = auth.currentUser
+
+      if (!user) {
+        setIsSaving(false)
+
+        alert('로그인 정보를 확인할 수 없습니다.')
+
+        navigate('/login')
+        return
+      }
+
+
+      // ========================================
+      // 앞의 5문항 답변 가져오기
+      // ========================================
+
+      const savedAnswers =
+        sessionStorage.getItem('preferenceAnswers')
+
+      if (!savedAnswers) {
+        setIsSaving(false)
+
+        alert('취향 설문 정보를 찾을 수 없습니다.')
+
+        navigate('/preference/questions')
+        return
+      }
+
+
+      const preferenceAnswers =
+        JSON.parse(savedAnswers)
+
+
+      // ========================================
+      // 각 질문의 실제 선택값
+      // ========================================
+
+      const sweetnessValue =
+        preferenceAnswers.sweetness?.[0]
+
+      const acidityValue =
+        preferenceAnswers.sourness?.[0]
+
+      const bodyValue =
+        preferenceAnswers.body?.[0]
+
+      const scentValue =
+        preferenceAnswers.aroma?.[0]
+
+      const abvValue =
+        preferenceAnswers.abv?.[0]
+
+
+      // ========================================
+      // plant / custom은 UI용 선택값이므로
+      // 기본 기피 재료 배열에서는 제외
+      // ========================================
+
+      const avoidIngredients =
+        selectedItems.filter(
+          (item) =>
+            item !== 'plant' &&
+            item !== 'custom'
+        )
+
+
+      // ========================================
+      // 최종 Firestore 저장 데이터
+      // ========================================
+
+      const userPreference = {
+        sweetness:
+          SWEETNESS_MAP[sweetnessValue] ?? null,
+
+        acidity:
+          ACIDITY_MAP[acidityValue] ?? null,
+
+        bodyWeight:
+          BODY_MAP[bodyValue] ?? null,
+
+        scentIntensity:
+          SCENT_MAP[scentValue] ?? null,
+
+        alcoholRange:
+          ABV_MAP[abvValue] ?? null,
+
+        safety: {
+          noAllergy,
+
+          avoidIngredients:
+            noAllergy
+              ? []
+              : avoidIngredients,
+
+          plantIngredients:
+            noAllergy
+              ? []
+              : selectedPlants,
+
+          customIngredient:
+            noAllergy
+              ? ''
+              : customInput.trim(),
+        },
+      }
+
+
+      console.log(
+        'Firestore 저장 데이터:',
+        userPreference
+      )
+
+
+      // ========================================
+      // users/{uid}
+      // ========================================
+
+      const userRef = doc(
+        db,
+        'users',
+        user.uid
+      )
+
+
+      // ========================================
+      // Firestore 저장
+      // ========================================
+
+      await updateDoc(userRef, {
+        userPreference,
+        updatedAt: serverTimestamp(),
+      })
+
+
+      // ========================================
+      // 임시 설문 데이터 삭제
+      // ========================================
+
+      sessionStorage.removeItem(
+        'preferenceAnswers'
+      )
+
+
+      // ========================================
+      // 완료 페이지
+      // ========================================
+
+      navigate('/preference/complete')
+    } catch (error) {
+      console.error(
+        '취향 정보 저장 실패:',
+        error
+      )
+
+      alert(
+        '취향 정보를 저장하지 못했습니다. 다시 시도해주세요.'
+      )
+
+      setIsSaving(false)
     }
-
-    console.log('안전 확인 답변:', safetyAnswers)
-
-    navigate('/preference/complete')
   }
 
 
+  // ========================================
+  // 저장 가능 여부
+  // ========================================
+
+  const hasRegularIngredient =
+    selectedItems.some(
+      (item) =>
+        item !== 'plant' &&
+        item !== 'custom'
+    )
+
+  const hasPlantAnswer =
+    isPlantOpen &&
+    selectedPlants.length > 0
+
+  const hasCustomAnswer =
+    isCustomOpen &&
+    customInput.trim().length > 0
+
+  const plantSelectionValid =
+    !isPlantOpen ||
+    selectedPlants.length > 0
+
+  const customSelectionValid =
+    !isCustomOpen ||
+    customInput.trim().length > 0
+
+  const hasAvoidIngredient =
+    hasRegularIngredient ||
+    hasPlantAnswer ||
+    hasCustomAnswer
+
   const canSave =
     noAllergy ||
-    selectedItems.length > 0 ||
-    selectedPlants.length > 0 ||
-    customInput.trim().length > 0
+    (
+      hasAvoidIngredient &&
+      plantSelectionValid &&
+      customSelectionValid
+    )
 
 
   return (
@@ -381,7 +646,9 @@ const PreferenceSafety = () => {
         ======================================== */}
 
         <div className={styles.notice}>
-          <span className={styles.noticeIcon}>i</span>
+          <span className={styles.noticeIcon}>
+            i
+          </span>
 
           입력한 정보는 더 안전한 추천을 위한
           필터링에만 사용됩니다.
@@ -398,6 +665,7 @@ const PreferenceSafety = () => {
             type="button"
             className={styles.prevButton}
             onClick={handlePrev}
+            disabled={isSaving}
           >
             <span>‹</span>
             이전
@@ -408,10 +676,16 @@ const PreferenceSafety = () => {
             type="button"
             className={styles.saveButton}
             onClick={handleSave}
-            disabled={!canSave}
+            disabled={!canSave || isSaving}
           >
-            취향 저장하기
-            <span>›</span>
+            {isSaving
+              ? '저장 중...'
+              : '취향 저장하기'
+            }
+
+            {!isSaving && (
+              <span>›</span>
+            )}
           </button>
 
         </div>
@@ -421,6 +695,5 @@ const PreferenceSafety = () => {
     </main>
   )
 }
-
 
 export default PreferenceSafety
