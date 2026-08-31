@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { onAuthStateChanged } from 'firebase/auth'
+import { doc, getDoc } from 'firebase/firestore'
 
-import { auth } from '../../firebase/firebase'
+import { auth, db } from '../../firebase/firebase'
 
 import GuestChoiceModal from './GuestChoiceModal'
 
@@ -359,7 +360,7 @@ const GUEST_QUESTIONS = [
         label: '메밀',
       },
       {
-        value: 'soy',
+        value: 'soybean',
         label: '대두(콩)',
       },
       {
@@ -387,7 +388,7 @@ const GUEST_QUESTIONS = [
         label: '생선류',
       },
       {
-        value: 'mollusk',
+        value: 'shellfish',
         label: '연체류(오징어·골뱅이 등)',
       },
       {
@@ -395,7 +396,7 @@ const GUEST_QUESTIONS = [
         label: '돼지고기',
       },
       {
-        value: 'honey',
+        value: 'bee',
         label: '벌꿀',
       },
       {
@@ -417,6 +418,7 @@ const AiSurvey = () => {
   const [isAuthLoading, setIsAuthLoading] = useState(true)
   const [isMember, setIsMember] = useState(false)
   const [isGuestMode, setIsGuestMode] = useState(false)
+  const [userPreference, setUserPreference] = useState(null)
 
   const [currentStep, setCurrentStep] = useState(0)
   const [answers, setAnswers] = useState({})
@@ -424,23 +426,74 @@ const AiSurvey = () => {
 
 
   // ========================================
-  // 로그인 상태 확인
+  // 로그인 상태 확인 + 회원 취향 불러오기
   // ========================================
   useEffect(() => {
+    let isActive = true
+
     const unsubscribe = onAuthStateChanged(
       auth,
-      (user) => {
+      async (user) => {
+        if (!isActive) return
+
+        setIsAuthLoading(true)
+
         const member = Boolean(
           user &&
           !user.isAnonymous
         )
 
         setIsMember(member)
-        setIsAuthLoading(false)
+
+        if (!member) {
+          setUserPreference(null)
+          setIsAuthLoading(false)
+          return
+        }
+
+        try {
+          const userRef = doc(
+            db,
+            'users',
+            user.uid
+          )
+
+          const userSnap = await getDoc(
+            userRef
+          )
+
+          if (!isActive) return
+
+          if (userSnap.exists()) {
+            const userData = userSnap.data()
+
+            setUserPreference(
+              userData.userPreference ?? null
+            )
+          } else {
+            setUserPreference(null)
+          }
+        } catch (error) {
+          console.error(
+            '회원 취향 불러오기 실패:',
+            error
+          )
+
+          if (isActive) {
+            setUserPreference(null)
+          }
+        } finally {
+          if (isActive) {
+            setIsAuthLoading(false)
+          }
+        }
       }
     )
 
-    return () => unsubscribe()
+    return () => {
+      isActive = false
+      unsubscribe()
+    }
   }, [])
 
 
@@ -461,8 +514,10 @@ const AiSurvey = () => {
   // ========================================
   const handleGuest = () => {
     setIsGuestMode(true)
+    setUserPreference(null)
     setCurrentStep(0)
     setAnswers({})
+    setOtherIngredient('')
   }
 
 
@@ -689,8 +744,19 @@ const AiSurvey = () => {
               ? 'member'
               : 'guest',
 
+          // 기존 result 연결을 깨지 않도록 유지
           answers:
             finalAnswers,
+
+          // 이후 OpenAI 요청에서 사용할 오늘의 설문
+          todaySurvey:
+            finalAnswers,
+
+          // 로그인 회원만 Firestore의 평소 취향 전달
+          userPreference:
+            isMember
+              ? userPreference
+              : null,
         },
       })
 

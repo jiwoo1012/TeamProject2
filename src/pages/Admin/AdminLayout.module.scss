@@ -251,6 +251,14 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: v.$space-2;
+    padding: v.$space-2;
+    border: 1px solid color-mix(in srgb, v.$color-border 72%, transparent);
+    border-radius: v.$radius-lg;
+    background: color-mix(in srgb, v.$color-surface 18%, v.$color-white);
+  }
+
+  .moveBox {
+    display: none;
   }
 
   .menuItem {
@@ -261,7 +269,14 @@
     border-left: 1px solid v.$color-border;
     border-radius: v.$radius-md;
 
-    font-size: v.$font-size-xs;
+    box-shadow: none;
+    font-size: v.$font-size-sm;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .menuItem:first-of-type {
+    grid-column: 1 / -1;
   }
 
   .menuDot {

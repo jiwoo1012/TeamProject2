@@ -191,9 +191,63 @@
 }
 
 .resetButton {
+  display: inline-flex;
   min-width: 70px;
+  align-items: center;
+  justify-content: center;
   border-radius: v.$radius-md;
   font-size: v.$font-size-xs;
+  line-height: 1;
+  text-align: center;
+}
+
+.batchActionBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.$space-4;
+  margin-top: v.$space-3;
+  padding: v.$space-3 v.$space-4;
+  border: 1px solid color-mix(in srgb, v.$color-primary 24%, v.$color-border);
+  border-radius: v.$radius-lg;
+  background: linear-gradient(100deg, color-mix(in srgb, v.$color-primary 10%, v.$color-white), v.$color-white);
+  box-shadow: 0 8px 18px color-mix(in srgb, v.$color-primary 8%, transparent);
+}
+
+.batchActionBar > strong {
+  color: v.$color-primary;
+  font-size: v.$font-size-sm;
+}
+
+.batchActionBar > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: v.$space-2;
+}
+
+.batchActionBar button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 v.$space-3;
+  border-radius: v.$radius-pill;
+  background: v.$color-white;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-semibold;
+  line-height: 1;
+  text-align: center;
+}
+
+.batchActionBar button:first-child {
+  border-color: v.$color-primary;
+  background: v.$color-primary;
+  color: v.$color-white;
+}
+
+.batchActionBar .batchDeleteButton {
+  color: v.$color-error;
 }
 
 .managementGrid {
@@ -264,7 +318,7 @@
 
 .noticeTable {
   width: 100%;
-  min-width: 720px;
+  min-width: 780px;
   border-collapse: collapse;
 }
 
@@ -283,6 +337,50 @@
   font-weight: v.$font-weight-medium;
 }
 
+.noticeTable th:last-child,
+.noticeTable td:last-child {
+  text-align: center;
+}
+
+.noticeTable th:not(:nth-child(2)),
+.noticeTable td:not(:nth-child(2)) {
+  text-align: center;
+}
+
+.checkColumn {
+  width: 44px;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+  text-align: center !important;
+}
+
+.checkColumn input {
+  display: inline-grid;
+  width: 18px;
+  height: 18px;
+  place-items: center;
+  margin: 0;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-sm;
+  background: v.$color-white;
+  -webkit-appearance: none;
+  appearance: none;
+  vertical-align: middle;
+}
+
+.checkColumn input:checked {
+  border-color: v.$color-primary;
+  background: v.$color-primary;
+}
+
+.checkColumn input:checked::after {
+  color: v.$color-white;
+  content: '✓';
+  font-size: 12px;
+  font-weight: v.$font-weight-bold;
+  line-height: 1;
+}
+
 .noticeTable tbody tr {
   cursor: pointer;
   transition: background-color v.$transition-fast, box-shadow v.$transition-fast;
@@ -290,10 +388,11 @@
 
 .noticeTable tbody tr:hover,
 .noticeTable .selectedRow {
-  background: color-mix(in srgb, v.$color-primary 7%, v.$color-white);
+  background: color-mix(in srgb, v.$color-primary 9%, v.$color-white);
 }
 
-.noticeTable tbody tr:hover {
+.noticeTable tbody tr:hover,
+.noticeTable .selectedRow {
   box-shadow: inset 3px 0 0 v.$color-primary;
 }
 
@@ -343,11 +442,69 @@
   color: v.$color-taupe;
 }
 
+.private {
+  background: color-mix(in srgb, v.$color-text-muted 14%, v.$color-white);
+  color: v.$color-text-muted;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, v.$color-text-muted 20%, transparent);
+}
+
 .noticeTable button {
+  display: inline-flex;
   min-width: 52px;
   min-height: 28px;
+  align-items: center;
+  justify-content: center;
   border-radius: v.$radius-pill;
   font-size: v.$font-size-xs;
+  line-height: 1;
+  text-align: center;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.$space-3;
+  margin-top: v.$space-4;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
+
+.pagination > div {
+  display: flex;
+  align-items: center;
+  gap: v.$space-2;
+}
+
+.pagination button {
+  display: inline-flex;
+  min-width: 32px;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: v.$radius-pill;
+  font-size: v.$font-size-xs;
+  line-height: 1;
+  text-align: center;
+}
+
+.pagination button:first-child,
+.pagination button:last-child {
+  min-width: 54px;
+}
+
+.pagination .currentPage {
+  border-color: v.$color-primary;
+  background: v.$color-primary;
+  color: v.$color-white;
+}
+
+.pagination button:disabled {
+  opacity: .45;
+}
+
+.mobileNoticeList {
+  display: none;
 }
 
 .detailPanel {
@@ -415,16 +572,34 @@
   font-weight: v.$font-weight-semibold;
 }
 
-.detailButton {
-  width: 100%;
-  min-height: 40px;
+.detailActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: v.$space-2;
   margin-top: v.$space-6;
-  border-color: v.$color-primary !important;
+}
+
+.detailButton,
+.deleteButton {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
   border-radius: v.$radius-lg;
-  background: v.$color-primary !important;
-  color: v.$color-white !important;
   font-size: v.$font-size-sm;
   font-weight: v.$font-weight-semibold;
+  line-height: 1;
+  text-align: center;
+}
+
+.detailButton {
+  border-color: v.$color-primary !important;
+  background: v.$color-primary !important;
+  color: v.$color-white !important;
+}
+
+.deleteButton {
+  color: v.$color-error;
 }
 
 .emptyState {
@@ -469,6 +644,67 @@
   background: color-mix(in srgb, v.$color-text-primary 42%, transparent);
 }
 
+.confirmModal {
+  display: grid;
+  width: min(430px, 100%);
+  box-sizing: border-box;
+  justify-items: center;
+  gap: v.$space-3;
+  padding: v.$space-8;
+  border: 1px solid color-mix(in srgb, v.$color-error 25%, v.$color-border);
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
+  text-align: center;
+}
+
+.warningIcon {
+  display: inline-flex;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, v.$color-error 13%, v.$color-white);
+  color: v.$color-error;
+  font-size: v.$font-size-2xl;
+  font-weight: v.$font-weight-bold;
+}
+
+.confirmModal h3 {
+  font-size: v.$font-size-xl;
+}
+
+.confirmModal p {
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+  line-height: v.$line-height-base;
+}
+
+.confirmModal > strong {
+  font-size: v.$font-size-sm;
+}
+
+.confirmModal > div {
+  display: flex;
+  width: 100%;
+  gap: v.$space-3;
+  margin-top: v.$space-3;
+}
+
+.confirmModal > div button {
+  min-height: 42px;
+  flex: 1;
+  border-radius: v.$radius-md;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+}
+
+.confirmModal > div button:last-child {
+  border-color: v.$color-error;
+  background: v.$color-error;
+  color: v.$color-white;
+}
+
 .modal {
   width: min(720px, 100%);
   max-height: calc(100vh - #{v.$space-12});
@@ -499,13 +735,18 @@
 }
 
 .modalHeader > button {
+  display: inline-flex;
   width: 32px;
   height: 32px;
+  align-items: center;
+  justify-content: center;
   padding: 0;
   border: 0;
   border-radius: v.$radius-md;
   color: v.$color-primary;
   font-size: v.$font-size-xl;
+  line-height: 1;
+  text-align: center;
 }
 
 .modalBody {
@@ -565,9 +806,30 @@
 }
 
 .checkField input {
+  display: inline-grid;
   width: 18px;
   height: 18px;
+  place-items: center;
+  margin: 0;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-sm;
+  background: v.$color-white;
+  -webkit-appearance: none;
+  appearance: none;
   accent-color: v.$color-primary;
+}
+
+.checkField input:checked {
+  border-color: v.$color-primary;
+  background: v.$color-primary;
+}
+
+.checkField input:checked::after {
+  content: '✓';
+  color: v.$color-white;
+  font-size: 12px;
+  font-weight: v.$font-weight-bold;
+  line-height: 1;
 }
 
 .modalFooter {
@@ -579,11 +841,16 @@
 }
 
 .modalFooter button {
+  display: inline-flex;
   min-width: 90px;
   min-height: 40px;
+  align-items: center;
+  justify-content: center;
   border-radius: v.$radius-md;
   font-size: v.$font-size-sm;
   font-weight: v.$font-weight-semibold;
+  line-height: 1;
+  text-align: center;
 }
 
 .modalFooter .saveButton {
@@ -627,8 +894,76 @@
   .introCard { min-height: auto; align-items: flex-start; flex-direction: column; padding: v.$space-5; }
   .introActions { width: 100%; }
   .introActions a, .introActions button { flex: 1; padding: 0 v.$space-3; }
-  .summaryGrid, .filterBar, .formOptions { grid-template-columns: 1fr; }
+  .summaryGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: v.$space-3; }
+  .summaryCard { min-height: 102px; padding: v.$space-4; }
+  .summaryCard strong { font-size: v.$font-size-2xl; }
+  .filterBar, .formOptions { grid-template-columns: 1fr; }
+  .batchActionBar { align-items: flex-start; flex-direction: column; }
+  .batchActionBar > div { width: 100%; justify-content: stretch; }
+  .batchActionBar button { flex: 1; }
   .searchField { grid-column: auto; }
+  .tableWrap { display: none; }
+  .mobileNoticeList { display: grid; gap: v.$space-3; }
+  .mobileNoticeCard {
+    display: grid;
+    gap: v.$space-3;
+    padding: v.$space-4;
+    border: 1px solid v.$color-border;
+    border-radius: v.$radius-lg;
+    background: v.$color-white;
+    transition: border-color v.$transition-fast, background-color v.$transition-fast;
+  }
+  .mobileNoticeCard:active,
+  .selectedNoticeCard {
+    border-color: v.$color-primary;
+    background: color-mix(in srgb, v.$color-primary 8%, v.$color-white);
+  }
+  .mobileCardTop,
+  .mobileCardMeta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: v.$space-3;
+  }
+  .mobileCheck input {
+    display: inline-grid;
+    width: 18px;
+    height: 18px;
+    place-items: center;
+    margin: 0;
+    border: 1px solid v.$color-border;
+    border-radius: v.$radius-sm;
+    background: v.$color-white;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .mobileCheck input:checked {
+    border-color: v.$color-primary;
+    background: v.$color-primary;
+  }
+  .mobileCheck input:checked::after {
+    color: v.$color-white;
+    content: '✓';
+    font-size: 12px;
+    font-weight: v.$font-weight-bold;
+    line-height: 1;
+  }
+  .mobileNoticeCard > strong { font-size: v.$font-size-md; }
+  .mobileCardMeta { color: v.$color-text-muted; font-size: v.$font-size-xs; }
+  .mobileNoticeCard > button {
+    display: inline-flex;
+    min-height: 36px;
+    align-items: center;
+    justify-content: center;
+    border-color: color-mix(in srgb, v.$color-primary 38%, v.$color-border);
+    border-radius: v.$radius-md;
+    color: v.$color-primary;
+    font-size: v.$font-size-xs;
+    font-weight: v.$font-weight-semibold;
+    line-height: 1;
+  }
+  .pagination { align-items: flex-start; flex-direction: column; }
+  .pagination > div { width: 100%; justify-content: center; }
   .detailPanel { padding: v.$space-4; }
   .modalBackdrop { align-items: end; padding: 0; }
   .modal { width: 100%; max-height: 92vh; border-radius: v.$radius-xl v.$radius-xl 0 0; }

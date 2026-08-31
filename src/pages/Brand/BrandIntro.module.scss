@@ -1,3 +1,13 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// NOTE
+// - JS Arirang HON은 현재 프로젝트에 @font-face가 없어 로드되지 않는다.
+//   $font-family-display를 참조는 하되, 실제 폰트 로딩은 이 파일의 책임 범위가 아니다.
+//   (global.scss / 폰트 에셋은 팀장·공통 스타일 담당자 협의 대상)
+// - $font-family-display는 규칙상 강조 영역에만 제한적으로 사용한다 (Hero 타이틀, 브랜드 감성 카피).
+//   그 외 헤딩은 전부 $font-family-base를 상속한다.
+
 :global(html.brand-header-sticky) :global(body > #root > div > header) {
   position: sticky;
   top: 0;
@@ -5,10 +15,21 @@
 
 .page {
   overflow: hidden;
-  background: #f4efe6;
-  color: #27231f;
+  background: $color-bg;
+  color: $color-text-primary;
+  font-family: $font-family-base;
 }
 
+.page h1,
+.page h2,
+.page h3 {
+  margin: 0;
+  font-weight: 700;
+}
+
+// ---------------------------------------------------------------------
+// Hero
+// ---------------------------------------------------------------------
 .hero {
   position: relative;
   min-height: calc(100svh - 80px);
@@ -16,34 +37,51 @@
 }
 
 .copy {
+  @include container;
   position: relative;
   z-index: 3;
-  width: min(92%, 1440px);
-  margin: 0 auto;
-  padding-top: clamp(8rem, 16vh, 12rem);
+  padding-top: clamp($space-24, 16vh, $space-30);
 }
 
 .title {
-  margin: 0;
-  font-size: clamp(3.7rem, 6.3vw, 7.5rem);
-  font-weight: 500;
-  letter-spacing: -0.075em;
-  line-height: 0.98;
+  max-width: min(56vw, 900px);
+  font-family: $font-family-display;
+  font-size: clamp(3rem, 4.1vw, 4.65rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.32;
 }
 
 .title span {
   display: block;
+  opacity: 0;
+  transform: translateY(0.5em);
+  animation: riseIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.title span:first-child {
+  animation-delay: 0.1s;
 }
 
 .title span:last-child {
-  margin: 0.13em 0 0 0.72em;
+  margin: $space-1 0 0 0.45em;
+  animation-delay: 0.32s;
 }
 
 .description {
-  margin: 2.5rem 0 0 8.5%;
-  color: #5f574f;
-  font-size: clamp(1rem, 1.18vw, 1.25rem);
+  margin: $space-8 0 0 8.5%;
+  color: $color-text-secondary;
+  font-size: clamp(1rem, 1.18vw, 1.2rem);
   line-height: 1.9;
+  opacity: 0;
+  animation: riseIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.54s forwards;
+}
+
+@keyframes riseIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .visual {
@@ -82,65 +120,46 @@
 
 .sun {
   position: absolute;
-  top: 3%;
-  right: 7%;
+  top: 0;
+  right: 4%;
   z-index: -1;
-  width: 30%;
+  width: 38%;
   aspect-ratio: 1;
-  border-radius: 50%;
-  background: #d95d32;
-  opacity: 0.95;
+  border-radius: $radius-pill;
+  background: radial-gradient(
+    circle at 40% 35%,
+    rgba($color-primary-light, 0.85),
+    rgba($color-primary, 0.55) 65%,
+    rgba($color-primary, 0) 80%
+  );
 }
 
-.scrollGuide {
-  position: absolute;
-  bottom: 2.5rem;
-  left: 4%;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: 0;
-  color: #6b625a;
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  writing-mode: vertical-rl;
-}
-
-.scrollGuide i {
-  display: block;
-  width: 1px;
-  height: 4rem;
-  background: #27231f;
-}
-
+// ---------------------------------------------------------------------
+// Story
+// ---------------------------------------------------------------------
 .story {
   display: grid;
-  min-height: 100svh;
-  padding: clamp(7rem, 14vh, 11rem) 4%;
-  background: #fff;
+  padding-block: clamp($space-24, 14vh, $space-30);
+  background: $color-white;
   place-items: center;
 }
 
 .storyInner {
+  @include container;
   display: grid;
   grid-template-columns: minmax(300px, 0.85fr) minmax(420px, 1.15fr);
-  gap: clamp(4rem, 9vw, 10rem);
+  gap: clamp($space-16, 9vw, $space-24);
   align-items: center;
-  width: min(100%, 1360px);
 }
 
 .storyCopy h2 {
-  margin: 0;
-  font-size: clamp(2rem, 2.7vw, 3.25rem);
-  font-weight: 650;
-  letter-spacing: -0.055em;
-  line-height: 1.5;
+  font-size: clamp(1.9rem, 2.5vw, 2.9rem);
+  line-height: 1.55;
 }
 
 .storyDescription {
-  margin: 2.5rem 0 0;
-  color: #746d67;
+  margin: $space-10 0 0;
+  color: $color-text-secondary;
   font-size: clamp(0.9rem, 0.95vw, 1.05rem);
   line-height: 2;
 }
@@ -148,9 +167,9 @@
 .storyImage {
   overflow: hidden;
   margin: 0;
-  border-radius: 0.6rem;
+  border-radius: $radius-md;
   aspect-ratio: 1.42 / 1;
-  background: #eceae7;
+  background: $color-surface;
 }
 
 .storyImage img {
@@ -159,117 +178,94 @@
   object-fit: cover;
 }
 
+// ---------------------------------------------------------------------
+// Reason
+// ---------------------------------------------------------------------
 .reason {
-  min-height: 100svh;
-  padding: clamp(7rem, 14vh, 10rem) 4%;
-  background: #f8f7f4;
+  padding-block: clamp($space-24, 11vw, $space-30);
+  background: $color-bg;
   text-align: center;
 }
 
 .reasonHeading {
-  width: min(100%, 760px);
-  margin: 0 auto;
+  @include container;
+  max-width: 760px;
 }
 
 .reasonHeading h2 {
-  margin: 0;
-  font-size: clamp(2.25rem, 3.2vw, 3.75rem);
-  font-weight: 650;
-  letter-spacing: -0.06em;
+  font-size: clamp(2.1rem, 3vw, 3.4rem);
+  letter-spacing: -0.01em;
 }
 
 .reasonHeading > p:last-child {
-  margin: 2rem 0 0;
-  color: #746d67;
+  margin: $space-8 0 0;
+  color: $color-text-secondary;
   font-size: clamp(0.95rem, 1.05vw, 1.1rem);
   line-height: 1.9;
 }
 
 .reasonList {
+  @include container;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  width: min(100%, 1260px);
-  margin: clamp(5rem, 11vh, 8rem) auto 0;
+  margin-top: clamp($space-16, 8vw, $space-24);
   padding: 0;
   list-style: none;
 }
 
 .reasonList li {
-  position: relative;
-  padding: 0 clamp(1.5rem, 4vw, 4rem);
-}
-
-.reasonList li:not(:last-child)::after {
-  position: absolute;
-  top: 2.3rem;
-  left: calc(50% + 3.5rem);
-  width: calc(100% - 7rem);
-  height: 2.5rem;
-  border-top: 1px solid #8a837d;
-  border-radius: 50%;
-  content: '';
-  transform: rotate(-6deg);
-}
-
-.reasonMarker {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  width: 5rem;
-  margin: 0 auto 2rem;
-  border-radius: 1.2rem;
-  aspect-ratio: 1;
-  background: #e2e0db;
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 700;
-  place-items: center;
+  padding: $space-8 clamp($space-6, 3vw, $space-12) 0;
+  border-top: 1px solid $color-border;
+  text-align: left;
 }
 
 .reasonList strong {
   display: block;
-  font-size: clamp(1.15rem, 1.35vw, 1.4rem);
-  letter-spacing: -0.035em;
+  font-size: clamp(1.4rem, 1.9vw, 1.85rem);
+  font-weight: 700;
 }
 
 .reasonList p {
-  max-width: 15rem;
-  margin: 1rem auto 0;
-  color: #746d67;
+  max-width: 18rem;
+  margin: $space-4 0 0;
+  color: $color-text-secondary;
   font-size: 0.88rem;
   line-height: 1.75;
 }
 
+// ---------------------------------------------------------------------
+// Curation
+// ---------------------------------------------------------------------
 .curation {
   display: flex;
-  min-height: 100svh;
-  padding: clamp(7rem, 15vh, 11rem) 4%;
-  background: #e7dfd2;
+  padding-block: clamp($space-24, 11vw, $space-30);
+  background: $color-surface;
   flex-direction: column;
   justify-content: center;
   text-align: center;
 }
 
+.curationHeading {
+  @include container;
+}
+
 .curationHeading h2 {
-  margin: 0;
-  font-size: clamp(2rem, 2.8vw, 3.25rem);
-  font-weight: 650;
-  letter-spacing: -0.055em;
-  line-height: 1.45;
+  font-size: clamp(1.9rem, 2.6vw, 3rem);
+  line-height: 1.5;
 }
 
 .curationHeading p {
-  margin: 2rem 0 0;
-  color: #6e665e;
+  margin: $space-8 0 0;
+  color: $color-text-secondary;
   font-size: clamp(0.9rem, 1vw, 1.05rem);
   line-height: 1.9;
 }
 
 .curationSteps {
+  @include container;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  width: min(100%, 1320px);
-  margin: clamp(5rem, 12vh, 8rem) auto 0;
+  margin-top: clamp($space-20, 12vh, $space-24);
   padding: 0;
   list-style: none;
 }
@@ -283,156 +279,165 @@
 
 .curationSteps li:not(:last-child)::after {
   position: absolute;
-  top: 2.2rem;
+  top: $space-8;
   right: -0.25rem;
-  color: #807970;
+  color: $color-text-muted;
   content: '›';
   font-size: 1.75rem;
   font-weight: 300;
 }
 
 .stepIcon {
-  display: grid;
+  @include flex-center;
   width: 4.75rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid #93887c;
-  border-radius: 50%;
+  margin-bottom: $space-6;
+  border: 1px solid $color-primary-light;
+  border-radius: $radius-pill;
   aspect-ratio: 1;
-  background: transparent;
-  color: #61584f;
+  background: $color-white;
+  color: $color-primary;
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  place-items: center;
 }
 
 .curationSteps strong {
   font-size: clamp(0.85rem, 0.95vw, 1rem);
-  letter-spacing: -0.035em;
 }
 
+// ---------------------------------------------------------------------
+// Senses
+// ---------------------------------------------------------------------
 .senses {
-  display: grid;
-  grid-template-columns: minmax(300px, 0.82fr) minmax(500px, 1.18fr);
-  min-height: 100svh;
-  background: linear-gradient(to right, #fff 0 42%, #efefed 42% 100%);
+  padding-block: clamp($space-24, 11vw, $space-30);
+  background: $color-white;
 }
 
 .sensesHeading {
-  align-self: start;
-  position: sticky;
-  top: 72px;
-  padding: clamp(10rem, 30vh, 18rem) 6vw 8rem;
+  @include container;
+  margin-bottom: clamp($space-16, 8vw, $space-24);
 }
 
 .sensesHeading h2 {
-  margin: 0;
-  font-size: clamp(2.8rem, 4vw, 5rem);
-  font-weight: 650;
-  letter-spacing: -0.065em;
-  line-height: 1.15;
+  font-size: clamp(2.5rem, 3.6vw, 4.4rem);
+  line-height: 1.3;
 }
 
 .senseCards {
+  @include container;
   display: grid;
-  gap: clamp(6rem, 12vh, 10rem);
-  padding: clamp(8rem, 16vh, 12rem) 6vw;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp($space-16, 8vw, $space-24) clamp($space-6, 4vw, $space-16);
 }
 
 .senseCard {
-  width: min(100%, 680px);
-  margin: 0 auto;
+  margin: 0;
+}
+
+.senseCard:first-child {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+  gap: clamp($space-8, 5vw, $space-20);
+  align-items: center;
 }
 
 .senseCard img {
   display: block;
   width: 100%;
-  border-radius: 0.6rem;
+  border-radius: $radius-md;
   aspect-ratio: 1.55 / 1;
   object-fit: cover;
+  background: $color-surface;
 }
 
-.senseCard > span {
+.senseText {
+  padding-top: $space-6;
+}
+
+.senseText > span {
   display: block;
-  margin-top: 2rem;
-  color: #726b65;
-  font-size: 0.8rem;
+  color: $color-primary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
 }
 
-.senseCard h3 {
-  margin: 0.35rem 0 0;
-  font-size: clamp(1.5rem, 2vw, 2rem);
-  letter-spacing: -0.045em;
+.senseText h3 {
+  margin: $space-3 0 0;
+  font-size: clamp(1.4rem, 1.9vw, 1.85rem);
 }
 
-.senseCard p {
+.senseText p {
   max-width: 34rem;
-  margin: 1rem 0 0;
-  color: #746d67;
+  margin: $space-4 0 0;
+  color: $color-text-secondary;
   font-size: clamp(0.9rem, 1vw, 1rem);
   line-height: 1.8;
 }
 
-.senseCard p + img {
-  margin-top: 3rem;
-}
-
+// ---------------------------------------------------------------------
+// Message — 유일한 볼드 시그니처 섹션 ($color-primary 그대로 사용)
+// ---------------------------------------------------------------------
 .message {
   display: grid;
   min-height: 70svh;
-  padding: clamp(7rem, 15vh, 11rem) 1.25rem;
-  background: #fff;
-  align-content: center;
-  justify-items: center;
+  padding-block: clamp($space-24, 15vh, $space-30);
+  background: $color-primary;
+  color: $color-white;
+  place-items: center;
   text-align: center;
 }
 
+.messageInner {
+  @include container;
+  @include flex-center;
+  flex-direction: column;
+}
+
 .message h2 {
-  margin: 0;
-  font-size: clamp(2rem, 3.25vw, 3.8rem);
-  font-weight: 650;
-  letter-spacing: -0.06em;
-  line-height: 1.4;
+  max-width: 46rem;
+  font-size: clamp(1.9rem, 2.9vw, 3.4rem);
+  line-height: 1.55;
 }
 
 .messageDescription {
-  margin: 2rem 0 0;
-  color: #746d67;
+  max-width: 40rem;
+  margin: $space-8 0 0;
+  color: rgba($color-white, 0.8);
   font-size: clamp(0.9rem, 1vw, 1.05rem);
   line-height: 1.9;
 }
 
+// ---------------------------------------------------------------------
+// Closing
+// ---------------------------------------------------------------------
 .closing {
-  min-height: 100svh;
-  padding: clamp(6rem, 12vh, 9rem) 4%;
-  background: #faf9f6;
+  padding-block: clamp($space-20, 12vh, $space-24);
+  background: $color-bg;
 }
 
 .closingInner {
+  @include container;
   display: grid;
   grid-template-columns: minmax(300px, 0.85fr) minmax(480px, 1.15fr);
-  gap: clamp(4rem, 8vw, 9rem);
+  gap: clamp($space-16, 8vw, $space-20);
   align-items: end;
-  width: min(100%, 1260px);
-  margin: 0 auto;
 }
 
 .closingIntro h2 {
-  margin: 0 0 3rem;
-  font-size: clamp(2.6rem, 4vw, 4.75rem);
-  font-weight: 650;
-  letter-spacing: -0.065em;
-  line-height: 1.15;
+  margin: 0 0 $space-8;
+  font-size: clamp(2.3rem, 3.6vw, 3.9rem);
+  line-height: 1.35;
 }
 
 .makdongVisual {
-  display: grid;
+  @include flex-center;
   overflow: hidden;
   width: min(100%, 420px);
-  border-radius: 0.4rem;
+  border-radius: $radius-md;
   aspect-ratio: 0.78 / 1;
-  background: #eee8dc;
-  place-items: end center;
+  background: $color-surface;
+  align-items: flex-end;
 }
 
 .makdongVisual img {
@@ -443,122 +448,110 @@
 }
 
 .shopLink {
+  @include flex-center;
   display: inline-flex;
   min-height: 3.25rem;
-  margin: 2rem 0 0 1.25rem;
-  padding: 0 1.75rem;
-  border-radius: 999px;
-  background: #171513;
-  color: #fff;
+  margin: $space-8 0 0 $space-5;
+  padding: 0 $space-6;
+  border-radius: $radius-pill;
+  background: $color-primary;
+  color: $color-white;
   font-size: 1rem;
   font-weight: 700;
-  align-items: center;
-  justify-content: center;
   text-decoration: none;
   transition: background-color 180ms ease, transform 180ms ease;
 }
 
 .shopLink:hover,
 .shopLink:focus-visible {
-  background: #a94b2b;
+  background: $color-primary-light;
   transform: translateY(-2px);
 }
 
 .shopLink:focus-visible {
-  outline: 2px solid #a94b2b;
+  outline: 2px solid $color-primary-light;
   outline-offset: 4px;
 }
 
 .closingValues {
   display: grid;
-  gap: 1.75rem;
-  margin: 0 0 0.5rem;
+  gap: 0;
+  margin: 0 0 $space-2;
   padding: 0;
   list-style: none;
 }
 
 .closingValues li {
-  padding: 1.5rem 1.75rem;
-  border: 1px solid #c4bfb8;
-  border-radius: 0.6rem;
-  background: rgba(255, 255, 255, 0.5);
+  padding: $space-6 0;
+  border-bottom: 1px solid $color-border;
 }
 
-.closingValues span {
-  display: block;
-  margin-bottom: 0.65rem;
-  color: #746d67;
-  font-size: 0.75rem;
-  font-weight: 700;
+.closingValues li:first-child {
+  border-top: 1px solid $color-border;
 }
 
 .closingValues h3 {
-  margin: 0;
-  font-size: clamp(1.15rem, 1.4vw, 1.45rem);
-  letter-spacing: -0.04em;
+  font-size: clamp(1.1rem, 1.35vw, 1.4rem);
+  font-weight: 700;
 }
 
 .closingValues p {
-  margin: 0.75rem 0 0;
-  color: #746d67;
+  margin: $space-3 0 0;
+  color: $color-text-secondary;
   font-size: 0.88rem;
   line-height: 1.7;
 }
 
-@media (max-width: 1024px) {
+// ---------------------------------------------------------------------
+// Responsive — 팀 3단 breakpoint 기준 (mobile / tablet / desktop)
+// desktop이 기본값이므로 별도 블록 없음
+// ---------------------------------------------------------------------
+@include tablet {
   .hero { min-height: 860px; }
-  .copy { width: min(88%, 760px); padding-top: 7rem; }
-  .title { font-size: clamp(3.2rem, 8vw, 5.25rem); }
+  .copy { padding-top: $space-24; }
+  .title {
+    max-width: 62vw;
+    font-size: clamp(2.7rem, 5.2vw, 3.7rem);
+  }
   .visual { right: -10vw; width: min(68vw, 680px); }
-  .storyInner { grid-template-columns: 0.9fr 1.1fr; gap: 3rem; }
-  .storyCopy h2 { font-size: clamp(1.75rem, 3.4vw, 2.4rem); }
+  .storyInner { grid-template-columns: 0.9fr 1.1fr; gap: $space-12; }
+  .storyCopy h2 { font-size: clamp(1.65rem, 3.2vw, 2.2rem); }
   .desktopBreak { display: none; }
-  .reasonList li { padding-inline: 1.5rem; }
-  .reasonList li:not(:last-child)::after { left: calc(50% + 3rem); width: calc(100% - 6rem); }
-  .curationSteps { gap: 1rem; }
+  .curationSteps { gap: $space-4; }
   .curationSteps li:not(:last-child)::after { right: -0.75rem; }
   .stepIcon { width: 4.5rem; }
-  .senses { grid-template-columns: 0.8fr 1.2fr; }
-  .sensesHeading { padding-inline: 4vw; }
-  .senseCards { padding-inline: 4vw; }
-  .closingInner { grid-template-columns: 0.8fr 1.2fr; gap: 3rem; }
+  .closingInner { grid-template-columns: 0.8fr 1.2fr; gap: $space-12; }
 }
 
-@media (max-width: 767px) {
+@include mobile {
   .hero { min-height: calc(100svh - 60px); }
-  .copy { width: calc(100% - 2.5rem); padding-top: clamp(5rem, 12vh, 7rem); }
-  .title { font-size: clamp(2.55rem, 12.5vw, 4.25rem); line-height: 1.08; }
-  .title span:last-child { margin-left: 0; }
-  .description { margin: 1.5rem 0 0; font-size: 0.9rem; line-height: 1.75; }
-  .visual { right: -21vw; bottom: -2%; width: min(112vw, 570px); }
-  .sun { top: 5%; right: 9%; }
-  .scrollGuide { bottom: 1.5rem; left: 1.25rem; }
-  .story { min-height: auto; padding: 6rem 1.25rem; }
-  .storyInner { grid-template-columns: 1fr; gap: 2.75rem; }
-  .storyCopy h2 { font-size: clamp(1.75rem, 8vw, 2.4rem); line-height: 1.45; }
-  .storyDescription { margin-top: 1.75rem; font-size: 0.9rem; line-height: 1.8; }
-  .storyImage { aspect-ratio: 4 / 3; border-radius: 0.4rem; }
-  .reason { min-height: auto; padding: 6rem 1.25rem 7rem; }
-  .reasonHeading h2 { font-size: clamp(2rem, 10vw, 2.75rem); }
-  .reasonHeading > p:last-child { margin-top: 1.5rem; font-size: 0.9rem; line-height: 1.8; }
-  .reasonList { grid-template-columns: 1fr; gap: 4rem; margin-top: 4rem; }
-  .reasonList li { padding: 0; }
-  .reasonList li:not(:last-child)::after {
-    top: auto;
-    bottom: -3rem;
-    left: 50%;
-    width: 1px;
-    height: 2rem;
-    border: 0;
-    border-left: 1px solid #aaa39c;
-    border-radius: 0;
-    transform: none;
+  .copy { padding-top: clamp($space-20, 12vh, $space-24); }
+  .title {
+    max-width: none;
+    font-size: clamp(2.4rem, 11vw, 3.6rem);
+    line-height: 1.4;
   }
-  .reasonMarker { width: 4.5rem; margin-bottom: 1.5rem; }
-  .curation { min-height: auto; padding: 6rem 1.25rem 7rem; }
-  .curationHeading h2 { font-size: clamp(1.75rem, 8vw, 2.4rem); }
-  .curationHeading p { margin-top: 1.5rem; font-size: 0.9rem; line-height: 1.8; }
-  .curationSteps { grid-template-columns: 1fr; gap: 3rem; margin-top: 4rem; }
+  .title span:last-child { margin-left: 0; }
+  .description { margin: $space-6 0 0; font-size: 0.9rem; line-height: 1.75; }
+  .visual { right: -21vw; bottom: -2%; width: min(112vw, 570px); }
+  .sun { top: 2%; right: 6%; width: 46%; }
+  .story { padding-block: $space-24; }
+  .storyInner { grid-template-columns: 1fr; gap: $space-10; }
+  .storyCopy h2 { font-size: clamp(1.65rem, 7.5vw, 2.2rem); line-height: 1.5; }
+  .storyDescription { margin-top: $space-6; font-size: 0.9rem; line-height: 1.8; }
+  .storyImage { aspect-ratio: 4 / 3; border-radius: $radius-sm; }
+
+  .reason { padding-block: $space-24 $space-30; }
+  .desktopBreak { display: none; }
+  .reasonHeading h2 { font-size: clamp(1.9rem, 9vw, 2.5rem); }
+  .reasonHeading > p:last-child { margin-top: $space-6; font-size: 0.9rem; line-height: 1.8; }
+  .reasonList { grid-template-columns: 1fr; gap: $space-10; margin-top: $space-16; }
+  .reasonList li { padding: $space-6 0 0; }
+
+  .curation { padding-block: $space-24 $space-30; }
+  .curationHeading h2 { font-size: clamp(1.65rem, 7.5vw, 2.2rem); }
+  .curationHeading p { margin-top: $space-6; font-size: 0.9rem; line-height: 1.8; }
+  .curationSteps { grid-template-columns: 1fr; gap: $space-12; margin-top: $space-16; }
   .curationSteps li:not(:last-child)::after {
     top: auto;
     right: auto;
@@ -566,29 +559,38 @@
     content: '↓';
     font-size: 1rem;
   }
-  .stepIcon { width: 4.5rem; margin-bottom: 1rem; }
-  .senses { display: block; background: #efefed; }
-  .sensesHeading { position: static; padding: 6rem 1.25rem 0; }
-  .sensesHeading h2 { font-size: clamp(2.5rem, 12vw, 3.75rem); }
-  .senseCards { gap: 5rem; padding: 4rem 1.25rem 7rem; }
-  .senseCard img { border-radius: 0.4rem; aspect-ratio: 4 / 3; }
-  .senseCard > span { margin-top: 1.5rem; }
-  .senseCard h3 { font-size: 1.5rem; }
-  .senseCard p { font-size: 0.9rem; }
-  .senseCard p + img { margin-top: 2rem; }
-  .message { min-height: 65svh; padding-block: 6rem; }
-  .message h2 { font-size: clamp(1.7rem, 7.8vw, 2.4rem); line-height: 1.45; }
-  .messageDescription { margin-top: 1.5rem; font-size: 0.9rem; line-height: 1.8; }
-  .closing { min-height: auto; padding: 6rem 1.25rem 7rem; }
-  .closingInner { grid-template-columns: 1fr; gap: 4rem; }
-  .closingIntro h2 { margin-bottom: 2rem; font-size: clamp(2.5rem, 12vw, 3.75rem); }
+  .stepIcon { width: 4.5rem; margin-bottom: $space-4; }
+
+  .senses { padding-block: $space-24 $space-30; }
+  .sensesHeading { margin-bottom: $space-12; }
+  .sensesHeading h2 { font-size: clamp(2.3rem, 11vw, 3.2rem); }
+  .senseCards { grid-template-columns: 1fr; gap: $space-16; }
+  .senseCard:first-child { display: block; grid-column: auto; }
+  .senseCard img { border-radius: $radius-sm; aspect-ratio: 4 / 3; }
+  .senseText h3 { font-size: 1.4rem; }
+  .senseText p { font-size: 0.9rem; }
+
+  .message { min-height: 65svh; padding-block: $space-24; }
+  .message h2 { font-size: clamp(1.6rem, 7.2vw, 2.2rem); line-height: 1.55; }
+  .messageDescription { margin-top: $space-6; font-size: 0.9rem; line-height: 1.8; }
+
+  .closing { padding-block: $space-24 $space-30; }
+  .closingInner { grid-template-columns: 1fr; gap: $space-16; }
+  .closingIntro h2 { margin-bottom: $space-8; font-size: clamp(2.3rem, 11vw, 3.2rem); }
   .makdongVisual { width: 100%; max-width: 420px; margin: 0 auto; }
-  .shopLink { width: fit-content; margin: 1.5rem auto 0; }
-  .closingValues { gap: 1rem; }
-  .closingValues li { padding: 1.25rem; }
+  .shopLink { width: fit-content; margin: $space-6 auto 0; }
+  .closingValues { gap: $space-4; }
+  .closingValues li { padding: $space-5 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .title span,
+  .description {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
   .shopLink {
     transition: none;
   }
