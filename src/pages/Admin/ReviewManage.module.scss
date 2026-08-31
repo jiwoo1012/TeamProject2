@@ -130,6 +130,677 @@
   color: v.$color-error;
 }
 
+.mockNotice {
+  padding: v.$space-3 v.$space-4;
+  border: 1px dashed color-mix(in srgb, v.$color-warning 48%, v.$color-border);
+  border-radius: v.$radius-md;
+  background: color-mix(in srgb, v.$color-warning 8%, v.$color-white);
+  color: color-mix(in srgb, v.$color-warning 84%, v.$color-text-primary);
+  font-size: v.$font-size-sm;
+}
+
+.reviewWorkspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  gap: v.$space-4;
+}
+
+.trendCard,
+.attentionQueue {
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
+}
+
+.trendCard {
+  padding: v.$space-5 v.$space-6;
+  border-top: 3px solid v.$color-primary;
+}
+
+.trendCard > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: v.$space-4;
+}
+
+.trendCard header span,
+.attentionQueue header > span {
+  color: v.$color-primary;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-bold;
+  letter-spacing: .12em;
+}
+
+.trendCard h3,
+.attentionQueue h3 {
+  margin-top: v.$space-1;
+  font-size: v.$font-size-lg;
+}
+
+.trendCard header dl {
+  display: flex;
+  gap: v.$space-4;
+  margin: 0;
+}
+
+.trendCard header dl > div {
+  display: grid;
+  gap: 2px;
+  text-align: right;
+}
+
+.trendCard header dt,
+.trendCard header dd {
+  margin: 0;
+}
+
+.trendCard header dt {
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
+
+.trendCard header dd {
+  color: v.$color-primary;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-bold;
+}
+
+.trendChart {
+  display: grid;
+  height: 150px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: end;
+  gap: v.$space-3;
+  margin-top: v.$space-5;
+  padding: 0 v.$space-2;
+  border-bottom: 1px solid color-mix(in srgb, v.$color-border 80%, transparent);
+  background: repeating-linear-gradient(to top, transparent 0 36px, color-mix(in srgb, v.$color-border 46%, transparent) 37px 38px);
+}
+
+.trendColumn {
+  display: grid;
+  height: 100%;
+  grid-template-rows: 20px 1fr 20px;
+  align-items: end;
+  justify-items: center;
+  gap: v.$space-1;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
+
+.trendColumn > strong {
+  color: v.$color-text-primary;
+  font-size: v.$font-size-xs;
+}
+
+.trendColumn > div {
+  display: flex;
+  width: min(42px, 76%);
+  height: 100%;
+  align-items: end;
+}
+
+.trendColumn i {
+  width: 100%;
+  height: var(--trend-height);
+  border-radius: v.$radius-md v.$radius-md 0 0;
+  background: linear-gradient(180deg, v.$color-primary-light, v.$color-primary);
+  box-shadow: 0 5px 12px color-mix(in srgb, v.$color-primary 18%, transparent);
+}
+
+.attentionQueue {
+  display: grid;
+  gap: v.$space-2;
+  padding: v.$space-5;
+  background: linear-gradient(145deg, color-mix(in srgb, v.$color-surface 30%, v.$color-white), v.$color-white);
+}
+
+.attentionQueue header {
+  margin-bottom: v.$space-2;
+}
+
+.attentionQueue button {
+  display: flex;
+  min-height: 43px;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.$space-3;
+  padding: 0 v.$space-3;
+  border-radius: v.$radius-md;
+  background: v.$color-white;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+  text-align: left;
+}
+
+.attentionQueue button:hover {
+  border-color: v.$color-primary;
+  background: color-mix(in srgb, v.$color-primary 7%, v.$color-white);
+}
+
+.attentionQueue button strong {
+  color: v.$color-primary;
+  font-size: v.$font-size-sm;
+}
+
+.attentionQueue button:first-of-type strong {
+  color: v.$color-error;
+}
+
+.reviewOverview {
+  display: grid;
+  grid-template-columns: minmax(300px, 1.15fr) minmax(180px, .62fr) minmax(290px, .95fr);
+  gap: v.$space-4;
+}
+
+.reviewPulseCard,
+.moderationCard,
+.metricStack article {
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-xl;
+}
+
+.reviewPulseCard {
+  display: flex;
+  min-height: 174px;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.$space-5;
+  padding: v.$space-6;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 100% 0, color-mix(in srgb, v.$color-primary-light 24%, transparent) 0 20%, transparent 21%),
+    linear-gradient(135deg, color-mix(in srgb, v.$color-primary 14%, v.$color-white), v.$color-white 70%);
+}
+
+.pulseCopy > span,
+.moderationCard > div:first-child > span {
+  color: v.$color-primary;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-bold;
+  letter-spacing: .12em;
+}
+
+.pulseCopy h3,
+.moderationCard h3 {
+  margin-top: v.$space-2;
+  font-size: v.$font-size-xl;
+}
+
+.pulseCopy p,
+.moderationCard p {
+  margin-top: v.$space-2;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+  line-height: 1.5;
+}
+
+.scoreDial {
+  position: relative;
+  display: grid;
+  width: 116px;
+  height: 116px;
+  flex: 0 0 auto;
+  place-content: center;
+  border-radius: 50%;
+  background: conic-gradient(v.$color-primary 0 var(--score-rate), color-mix(in srgb, v.$color-surface 82%, v.$color-white) var(--score-rate) 100%);
+  text-align: center;
+}
+
+.scoreDial::before {
+  position: absolute;
+  width: 88px;
+  height: 88px;
+  justify-self: center;
+  align-self: center;
+  border-radius: 50%;
+  background: v.$color-white;
+  content: '';
+}
+
+.scoreDial strong,
+.scoreDial span {
+  position: relative;
+  z-index: 1;
+}
+
+.scoreDial strong {
+  color: v.$color-primary;
+  font-size: v.$font-size-2xl;
+  line-height: 1;
+}
+
+.scoreDial span {
+  margin-top: v.$space-1;
+  color: v.$color-text-muted;
+  font-size: 10px;
+}
+
+.metricStack {
+  display: grid;
+  gap: v.$space-4;
+}
+
+.metricStack article {
+  position: relative;
+  display: grid;
+  min-height: 75px;
+  align-content: center;
+  padding: v.$space-4 v.$space-5;
+  overflow: hidden;
+  background: v.$color-white;
+}
+
+.metricStack article::after {
+  position: absolute;
+  right: -12px;
+  bottom: -22px;
+  width: 72px;
+  height: 72px;
+  border: 12px solid color-mix(in srgb, v.$color-primary 10%, transparent);
+  border-radius: 50%;
+  content: '';
+}
+
+.metricStack span,
+.metricStack small {
+  position: relative;
+  z-index: 1;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
+
+.metricStack strong {
+  position: relative;
+  z-index: 1;
+  margin: 2px 0;
+  color: v.$color-primary;
+  font-size: v.$font-size-2xl;
+  line-height: 1;
+}
+
+.moderationCard {
+  display: flex;
+  min-height: 174px;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: v.$space-6;
+  background: color-mix(in srgb, v.$color-surface 36%, v.$color-white);
+}
+
+.moderationCard.hasReports {
+  border-color: color-mix(in srgb, v.$color-error 42%, v.$color-border);
+  background: linear-gradient(135deg, color-mix(in srgb, v.$color-error 8%, v.$color-white), v.$color-white);
+}
+
+.moderationCard.hasReports > div:first-child > span,
+.moderationCard.hasReports h3 {
+  color: v.$color-error;
+}
+
+.moderationFooter {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: v.$space-4;
+  margin-top: v.$space-4;
+}
+
+.moderationFooter > strong {
+  color: v.$color-error;
+  font-size: v.$font-size-4xl;
+  line-height: .9;
+}
+
+.moderationFooter > strong small {
+  margin-left: 3px;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+}
+
+.moderationFooter button {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 v.$space-3;
+  border-radius: v.$radius-pill;
+  color: v.$color-error;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-semibold;
+  line-height: 1;
+}
+
+.insightGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: v.$space-4;
+}
+
+.ratingChartCard,
+.visibilityChartCard {
+  padding: v.$space-5;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
+}
+
+.ratingChartCard {
+  border-top: 3px solid color-mix(in srgb, v.$color-primary 78%, v.$color-primary-light);
+}
+
+.visibilityChartCard {
+  background: color-mix(in srgb, v.$color-surface 25%, v.$color-white);
+}
+
+.ratingChartCard > header,
+.visibilityChartCard > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: v.$space-3;
+}
+
+.ratingChartCard header span,
+.visibilityChartCard header span {
+  color: v.$color-primary;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-bold;
+  letter-spacing: .1em;
+}
+
+.ratingChartCard h3,
+.visibilityChartCard h3 {
+  margin-top: v.$space-1;
+  font-size: v.$font-size-lg;
+}
+
+.ratingChartCard > header > strong {
+  min-width: 48px;
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: v.$radius-pill;
+  background: color-mix(in srgb, v.$color-primary 10%, v.$color-white);
+  color: v.$color-primary;
+  font-size: v.$font-size-xs;
+}
+
+.ratingBars {
+  display: grid;
+  gap: v.$space-3;
+  margin-top: v.$space-5;
+}
+
+.ratingColumns {
+  display: grid;
+  height: 126px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: end;
+  gap: v.$space-2;
+  margin-top: v.$space-4;
+  padding: 0 v.$space-2;
+  border-bottom: 1px solid color-mix(in srgb, v.$color-border 76%, transparent);
+}
+
+.ratingColumn {
+  display: grid;
+  height: 100%;
+  grid-template-rows: 20px 1fr 18px;
+  align-items: end;
+  justify-items: center;
+  gap: v.$space-1;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
+
+.ratingColumn > strong {
+  color: v.$color-text-primary;
+  font-size: v.$font-size-xs;
+}
+
+.ratingColumnTrack {
+  display: flex;
+  position: relative;
+  width: min(30px, 74%);
+  height: 100%;
+  align-items: end;
+  justify-content: center;
+}
+
+.ratingColumnTrack i {
+  width: 100%;
+  height: var(--bar-height);
+  border-radius: v.$radius-md v.$radius-md 0 0;
+  background: linear-gradient(180deg, v.$color-primary-light, v.$color-primary);
+}
+
+.ratingBarRow {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 26px;
+  align-items: center;
+  gap: v.$space-3;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-xs;
+}
+
+.ratingBarRow > strong {
+  color: v.$color-text-primary;
+  text-align: right;
+}
+
+.ratingBarTrack {
+  height: 9px;
+  overflow: hidden;
+  border-radius: v.$radius-pill;
+  background: color-mix(in srgb, v.$color-surface 66%, v.$color-white);
+}
+
+.ratingBarTrack i {
+  display: block;
+  width: var(--bar-width);
+  height: 100%;
+  min-width: 2px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, v.$color-primary, v.$color-primary-light);
+}
+
+.visibilityContent {
+  display: grid;
+  gap: v.$space-6;
+  margin-top: v.$space-4;
+}
+
+.visibilityStrip {
+  height: 18px;
+  overflow: hidden;
+  border-radius: v.$radius-pill;
+  background: color-mix(in srgb, v.$color-surface 82%, v.$color-white);
+}
+
+.visibilityStrip i {
+  display: block;
+  width: var(--visible-rate);
+  height: 100%;
+  min-width: 2px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, v.$color-primary, v.$color-primary-light);
+}
+
+.visibilityDonut {
+  position: relative;
+  display: grid;
+  width: 116px;
+  height: 116px;
+  flex: 0 0 auto;
+  place-content: center;
+  border-radius: 50%;
+  background: conic-gradient(v.$color-primary 0 var(--visible-rate), color-mix(in srgb, v.$color-surface 82%, v.$color-white) var(--visible-rate) 100%);
+  text-align: center;
+}
+
+.visibilityDonut::before {
+  position: absolute;
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  background: v.$color-white;
+  content: '';
+}
+
+.visibilityDonut strong,
+.visibilityDonut span {
+  position: relative;
+  z-index: 1;
+}
+
+.visibilityDonut strong {
+  color: v.$color-primary;
+  font-size: v.$font-size-xl;
+}
+
+.visibilityDonut span {
+  margin-top: 2px;
+  color: v.$color-text-muted;
+  font-size: 10px;
+}
+
+.visibilityContent dl {
+  display: grid;
+  width: 100%;
+  gap: v.$space-3;
+  margin: 0;
+}
+
+.visibilityContent dl > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.$space-3;
+}
+
+.visibilityContent dt,
+.visibilityContent dd {
+  margin: 0;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+}
+
+.visibilityContent dd small {
+  margin-left: v.$space-1;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-regular;
+}
+
+.visibilityContent dd {
+  color: v.$color-text-primary;
+  font-weight: v.$font-weight-semibold;
+}
+
+.visibilityContent dt i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: v.$space-2;
+  border-radius: 50%;
+}
+
+.visibleDot { background: v.$color-primary; }
+.hiddenDot { background: v.$color-surface; }
+
+.qualitySignalCard {
+  display: flex;
+  min-height: 218px;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: v.$space-5;
+  border: 1px solid color-mix(in srgb, v.$color-warning 36%, v.$color-border);
+  border-radius: v.$radius-xl;
+  background: linear-gradient(145deg, color-mix(in srgb, v.$color-warning 10%, v.$color-white), v.$color-white);
+}
+
+.qualitySignalCard header span {
+  color: color-mix(in srgb, v.$color-warning 76%, v.$color-text-primary);
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-bold;
+  letter-spacing: .1em;
+}
+
+.qualitySignalCard h3 {
+  margin-top: v.$space-1;
+  font-size: v.$font-size-lg;
+}
+
+.qualitySignalContent {
+  display: flex;
+  align-items: center;
+  gap: v.$space-3;
+}
+
+.qualitySignalContent > strong {
+  color: color-mix(in srgb, v.$color-warning 84%, v.$color-text-primary);
+  font-size: v.$font-size-4xl;
+  line-height: 1;
+}
+
+.qualitySignalContent span {
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+}
+
+.qualitySignalContent p {
+  margin-top: v.$space-1;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
+
+.qualityFacts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: v.$space-2;
+  margin: v.$space-3 0;
+}
+
+.qualityFacts div {
+  display: grid;
+  gap: 2px;
+  padding: v.$space-2 v.$space-3;
+  border-radius: v.$radius-md;
+  background: color-mix(in srgb, v.$color-warning 10%, v.$color-white);
+}
+
+.qualityFacts dt,
+.qualityFacts dd {
+  margin: 0;
+}
+
+.qualityFacts dt {
+  color: v.$color-text-muted;
+  font-size: 11px;
+}
+
+.qualityFacts dd {
+  color: v.$color-text-primary;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+}
+
+.qualitySignalCard > button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  border-radius: v.$radius-pill;
+  color: color-mix(in srgb, v.$color-warning 84%, v.$color-text-primary);
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-semibold;
+  line-height: 1;
+}
+
 .filterBar {
   display: grid;
   grid-template-columns: minmax(250px, 1fr) 122px 130px 145px auto;
@@ -176,9 +847,61 @@
 }
 
 .resetButton {
+  display: inline-flex;
   min-width: 68px;
+  align-items: center;
+  justify-content: center;
   border-radius: v.$radius-md;
   font-size: v.$font-size-xs;
+  line-height: 1;
+  text-align: center;
+}
+
+.batchActionBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.$space-4;
+  padding: v.$space-3 v.$space-4;
+  border: 1px solid color-mix(in srgb, v.$color-primary 25%, v.$color-border);
+  border-radius: v.$radius-lg;
+  background: linear-gradient(100deg, color-mix(in srgb, v.$color-primary 10%, v.$color-white), v.$color-white);
+}
+
+.batchActionBar > strong {
+  color: v.$color-primary;
+  font-size: v.$font-size-sm;
+}
+
+.batchActionBar > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: v.$space-2;
+}
+
+.batchActionBar button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 v.$space-3;
+  border-radius: v.$radius-pill;
+  background: v.$color-white;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-semibold;
+  line-height: 1;
+  text-align: center;
+}
+
+.batchActionBar button:first-child {
+  border-color: v.$color-primary;
+  background: v.$color-primary;
+  color: v.$color-white;
+}
+
+.batchActionBar .batchDeleteButton {
+  color: v.$color-error;
 }
 
 .resetButton:hover,
@@ -256,7 +979,7 @@
 
 .reviewTable {
   width: 100%;
-  min-width: 760px;
+  min-width: 810px;
   border-collapse: collapse;
 }
 
@@ -275,6 +998,45 @@
   font-weight: v.$font-weight-medium;
 }
 
+.reviewTable th:not(:nth-child(2)),
+.reviewTable td:not(:nth-child(2)) {
+  text-align: center;
+}
+
+.checkColumn {
+  width: 44px;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+  text-align: center !important;
+}
+
+.checkColumn input {
+  display: inline-grid;
+  width: 18px;
+  height: 18px;
+  place-items: center;
+  margin: 0;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-sm;
+  background: v.$color-white;
+  -webkit-appearance: none;
+  appearance: none;
+  vertical-align: middle;
+}
+
+.checkColumn input:checked {
+  border-color: v.$color-primary;
+  background: v.$color-primary;
+}
+
+.checkColumn input:checked::after {
+  color: v.$color-white;
+  content: '✓';
+  font-size: 12px;
+  font-weight: v.$font-weight-bold;
+  line-height: 1;
+}
+
 .reviewTable tbody tr {
   cursor: pointer;
   transition: background-color v.$transition-fast, box-shadow v.$transition-fast;
@@ -282,10 +1044,11 @@
 
 .reviewTable tbody tr:hover,
 .reviewTable .selectedRow {
-  background: color-mix(in srgb, v.$color-primary 7%, v.$color-white);
+  background: color-mix(in srgb, v.$color-primary 9%, v.$color-white);
 }
 
-.reviewTable tbody tr:hover {
+.reviewTable tbody tr:hover,
+.reviewTable .selectedRow {
   box-shadow: inset 3px 0 0 v.$color-primary;
 }
 
@@ -361,10 +1124,60 @@
 }
 
 .reviewTable button {
+  display: inline-flex;
   min-width: 52px;
   min-height: 28px;
+  align-items: center;
+  justify-content: center;
   border-radius: v.$radius-pill;
   font-size: v.$font-size-xs;
+  line-height: 1;
+  text-align: center;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.$space-3;
+  margin-top: v.$space-4;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
+
+.pagination > div {
+  display: flex;
+  align-items: center;
+  gap: v.$space-2;
+}
+
+.pagination button {
+  display: inline-flex;
+  min-width: 32px;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: v.$radius-pill;
+  font-size: v.$font-size-xs;
+  line-height: 1;
+  text-align: center;
+}
+
+.pagination button:first-child,
+.pagination button:last-child {
+  min-width: 54px;
+}
+
+.pagination .currentPage {
+  border-color: v.$color-primary;
+  background: v.$color-primary;
+  color: v.$color-white;
+}
+
+.pagination button:disabled { opacity: .45; }
+
+.mobileReviewList {
+  display: none;
 }
 
 .detailPanel {
@@ -388,6 +1201,9 @@
   display: grid;
   gap: v.$space-1;
   margin-top: v.$space-5;
+  padding: v.$space-3 v.$space-4;
+  border-radius: v.$radius-md;
+  background: color-mix(in srgb, v.$color-primary 7%, v.$color-white);
 }
 
 .productInfo span {
@@ -468,10 +1284,15 @@
 }
 
 .detailActions button {
+  display: inline-flex;
   min-height: 40px;
+  align-items: center;
+  justify-content: center;
   border-radius: v.$radius-md;
   font-size: v.$font-size-xs;
   font-weight: v.$font-weight-semibold;
+  line-height: 1;
+  text-align: center;
 }
 
 .detailActions button:first-child {
@@ -610,7 +1431,13 @@
 }
 
 @media (max-width: v.$breakpoint-tablet-max) {
+  .reviewWorkspace { grid-template-columns: 1fr; }
+  .attentionQueue { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .attentionQueue header { grid-column: 1 / -1; }
   .summaryGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .reviewOverview { grid-template-columns: minmax(0, 1fr) minmax(220px, .72fr); }
+  .moderationCard { grid-column: 1 / -1; min-height: 150px; }
+  .insightGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .filterBar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .searchField { grid-column: 1 / -1; }
   .managementGrid { grid-template-columns: 1fr; }
@@ -618,7 +1445,102 @@
 }
 
 @media (max-width: v.$breakpoint-mobile-max) {
+  .trendCard { padding: v.$space-4; }
+  .trendCard > header { flex-direction: column; }
+  .trendCard header dl { width: 100%; justify-content: space-between; }
+  .trendCard header dl > div { text-align: left; }
+  .trendChart { height: 132px; gap: v.$space-2; margin-top: v.$space-4; padding: 0; }
+  .trendColumn > div { width: min(32px, 86%); }
+  .attentionQueue { grid-template-columns: 1fr; padding: v.$space-4; }
+  .attentionQueue header { grid-column: auto; }
+  .batchActionBar { align-items: flex-start; flex-direction: column; }
+  .batchActionBar > div { width: 100%; }
+  .batchActionBar button { flex: 1; }
+  .pagination { align-items: flex-start; flex-wrap: wrap; }
+  .tableWrap { display: none; }
+  .mobileReviewList { display: grid; gap: v.$space-3; }
+  .mobileReviewCard {
+    display: grid;
+    gap: v.$space-3;
+    padding: v.$space-4;
+    border: 1px solid v.$color-border;
+    border-radius: v.$radius-lg;
+    background: v.$color-white;
+    transition: border-color v.$transition-fast, background-color v.$transition-fast;
+  }
+  .mobileReviewCard:active,
+  .selectedReviewCard {
+    border-color: v.$color-primary;
+    background: color-mix(in srgb, v.$color-primary 8%, v.$color-white);
+  }
+  .mobileCardTop,
+  .mobileCardMeta,
+  .mobileRatingLine {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: v.$space-3;
+  }
+  .mobileCheck input {
+    display: inline-grid;
+    width: 18px;
+    height: 18px;
+    place-items: center;
+    margin: 0;
+    border: 1px solid v.$color-border;
+    border-radius: v.$radius-sm;
+    background: v.$color-white;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .mobileCheck input:checked {
+    border-color: v.$color-primary;
+    background: v.$color-primary;
+  }
+  .mobileCheck input:checked::after {
+    color: v.$color-white;
+    content: '✓';
+    font-size: 12px;
+    font-weight: v.$font-weight-bold;
+    line-height: 1;
+  }
+  .mobileReviewTitle { display: grid; gap: 2px; }
+  .mobileReviewTitle strong { font-size: v.$font-size-md; }
+  .mobileReviewTitle small,
+  .mobileRatingLine > span,
+  .mobileCardMeta { color: v.$color-text-muted; font-size: v.$font-size-xs; }
+  .mobileReviewCard > p {
+    display: -webkit-box;
+    overflow: hidden;
+    margin: 0;
+    color: v.$color-text-secondary;
+    font-size: v.$font-size-sm;
+    line-height: v.$line-height-relaxed;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  .mobileCardMeta button {
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 v.$space-3;
+    border-color: color-mix(in srgb, v.$color-primary 38%, v.$color-border);
+    border-radius: v.$radius-pill;
+    color: v.$color-primary;
+    font-size: v.$font-size-xs;
+    line-height: 1;
+  }
   .introCard { min-height: auto; align-items: flex-start; flex-direction: column; padding: v.$space-5; }
+  .reviewOverview { grid-template-columns: 1fr; }
+  .reviewPulseCard { min-height: 150px; padding: v.$space-5; }
+  .scoreDial { width: 100px; height: 100px; }
+  .scoreDial::before { width: 76px; height: 76px; }
+  .moderationCard { grid-column: auto; min-height: 156px; padding: v.$space-5; }
+  .ratingChartCard, .visibilityChartCard { padding: v.$space-4; }
+  .qualitySignalCard { min-height: 190px; padding: v.$space-4; }
+  .visibilityContent { gap: v.$space-4; }
+  .insightGrid { grid-template-columns: 1fr; }
   .introCard > button { width: 100%; }
   .summaryGrid, .filterBar { grid-template-columns: 1fr; }
   .searchField { grid-column: auto; }
