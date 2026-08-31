@@ -317,6 +317,8 @@ const Checkout = () => {
         quantity: item.quantity,
         imageUrl: item.imageUrl || '',
       })),
+      // 리뷰 작성 권한 확인에 사용한다. Firestore Rules에서 orderId와 함께 검증한다.
+      productIds: orderItems.map((item) => item.id),
       shipping,
       paymentMethod,
       productAmount: itemTotal,

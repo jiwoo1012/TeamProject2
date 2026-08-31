@@ -81,6 +81,76 @@ service cloud.firestore {
       }
     }
 
+    // 공지사항: 일반 사용자는 게시된 공지만, 관리자는 모든 상태를 관리한다.
+    // 예상 필드: title, content, status(draft|published), isPinned,
+    // authorId, authorName, createdAt, updatedAt
+    match /notices/{noticeId} {
+      allow read: if resource.data.status == 'published' || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // 리뷰: 상품 상세에는 공개 리뷰를 표시하고, 작성자는 본인 리뷰만 수정·삭제한다.
+    // 예상 필드: orderId, productId, authorId, nickname, rating, content,
+    // status(visible|hidden), reportCount, createdAt, updatedAt
+    // orderId는 구매 상품(productIds)을 포함한 본인 주문이어야 한다.
+    function hasPurchasedProduct(orderId, productId) {
+      return get(/databases/$(database)/documents/orders/$(orderId)).data.userId
+          == request.auth.uid
+        && productId in get(/databases/$(database)/documents/orders/$(orderId))
+          .data.productIds;
+    }
+
+    function isValidReviewCreate() {
+      return request.resource.data.keys().hasAll([
+          'orderId', 'productId', 'authorId', 'nickname', 'rating', 'content',
+          'status', 'reportCount', 'createdAt'
+        ])
+        && request.resource.data.orderId is string
+        && request.resource.data.productId is string
+        && request.resource.data.authorId == request.auth.uid
+        && hasPurchasedProduct(
+          request.resource.data.orderId,
+          request.resource.data.productId
+        )
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() > 0
+        && request.resource.data.nickname.size() <= 30
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && request.resource.data.content is string
+        && request.resource.data.content.size() > 0
+        && request.resource.data.content.size() <= 500
+        && request.resource.data.status == 'visible'
+        && request.resource.data.reportCount == 0
+        && request.resource.data.createdAt is timestamp;
+    }
+
+    function isValidReviewOwnerUpdate() {
+      return request.auth.uid == resource.data.authorId
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['nickname', 'rating', 'content', 'updatedAt'])
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() > 0
+        && request.resource.data.nickname.size() <= 30
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && request.resource.data.content is string
+        && request.resource.data.content.size() > 0
+        && request.resource.data.content.size() <= 500;
+    }
+
+    match /reviews/{reviewId} {
+      allow read: if resource.data.status == 'visible'
+        || isAdmin()
+        || (signedIn() && request.auth.uid == resource.data.authorId);
+      allow create: if signedIn() && isValidReviewCreate();
+      allow update: if isAdmin() || (signedIn() && isValidReviewOwnerUpdate());
+      allow delete: if isAdmin()
+        || (signedIn() && request.auth.uid == resource.data.authorId);
+    }
+
     match /products/{productId} {
       allow read: if true;
       allow create, update, delete: if isAdmin();
