@@ -1,68 +1,690 @@
-:global(html.brand-header-sticky) :global(body > #root > div > header) { position: sticky; top: 0; }
-.page { overflow: hidden; background: #f4efe6; color: #29241f; }
-.intro { position: relative; display: grid; min-height: calc(100svh - 80px); grid-template-columns: .9fr 1.1fr; align-items: center; padding: 4rem max(5%, calc((100vw - 1440px)/2)); }
-.intro::before { position: absolute; inset: 8% 4%; border: 1px solid rgba(169,75,43,.25); border-radius: 50%; content: ''; transform: rotate(-7deg); }
-.introCopy { z-index: 1; padding-left: 3vw; }
-.intro h1 { margin: 0; font-size: clamp(5rem,10vw,11rem); letter-spacing: -.08em; line-height: .85; }
-.introCopy > p:last-child { margin: 2.5rem 0 0; color: #615950; font-size: clamp(1rem,1.25vw,1.25rem); line-height: 1.85; }
-.introVisual { position: relative; align-self: end; height: min(80vh,820px); }
-.introVisual img { position: absolute; right: -4%; bottom: -2%; width: min(100%,720px); height: 100%; object-fit: contain; object-position: bottom; }
-.introVisual span { position: absolute; top: 15%; right: 5%; z-index: 2; padding: 1rem 1.5rem; border-radius: 99px; background: #fff; font-weight: 700; transform: rotate(4deg); }
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
 
-.profile { display: grid; min-height: 100svh; grid-template-columns: .9fr 1.1fr; gap: clamp(4rem,8vw,9rem); align-items: center; padding: clamp(7rem,14vh,11rem) max(6%,calc((100vw - 1320px)/2)); background: #fff; }
-.profileVisual { overflow: hidden; height: min(70vh,720px); border-radius: 50% 50% .75rem .75rem; background: #e9dfd1; }
-.profileVisual img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
-.profile h2, .raccoon h2, .jobs h2, .outro h2 { margin: 0; font-size: clamp(2.5rem,4vw,4.75rem); letter-spacing: -.065em; line-height: 1.2; }
-.description { margin: 2.25rem 0 0; color: #675f57; font-size: clamp(1rem,1.15vw,1.15rem); line-height: 2; }
-.facts { display: grid; grid-template-columns: repeat(2,1fr); margin: 3rem 0 0; border-top: 1px solid #cfc8bf; }
-.facts div { display: grid; grid-template-columns: 5rem 1fr; padding: 1.15rem 0; border-bottom: 1px solid #cfc8bf; }
-.facts dt { color: #8a8178; font-size: .7rem; font-weight: 700; letter-spacing: .1em; }
-.facts dd { margin: 0; font-weight: 600; }
+// NOTE: $font-family-display는 BrandIntro와 동일하게 강조 영역(인트로 타이틀)에만 사용.
+// 폰트 로딩 상태(JS Arirang HON 미로드)도 BrandIntro와 동일.
 
-.raccoon { display: grid; min-height: 100svh; grid-template-columns: 1fr 1fr; align-items: center; background: #2c241e; color: #f8f3eb; }
-.raccoonCopy { padding: 8vw; }
-.raccoonCopy > p:last-child { max-width: 34rem; margin: 2.5rem 0 0; color: #cfc4b7; font-size: 1.05rem; line-height: 1.9; }
-.raccoonVisual { overflow: hidden; height: 100svh; }
-.raccoonVisual img { width: 100%; height: 100%; object-fit: cover; object-position: 52% 30%; transform: scale(1.08); }
+:global(html.brand-header-sticky) :global(body > #root > div > header) {
+  position: sticky;
+  top: 0;
+}
 
-.jobs { padding: clamp(7rem,14vh,11rem) 4%; background: #eee6da; }
-.jobs header { width: min(100%,1320px); margin: 0 auto clamp(5rem,10vh,8rem); text-align: center; }
-.jobs ol { display: grid; gap: 10rem; width: min(100%,1200px); margin: 0 auto; padding: 0; list-style: none; }
-.jobs li { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(4rem,9vw,10rem); align-items: center; }
-.jobs li:nth-child(even) .jobVisual { order: 2; }
-.jobVisual { display: grid; overflow: hidden; height: min(65vh,650px); border: 1px solid rgba(103,95,87,.14); border-radius: 50% 50% .75rem .75rem; background: #f8f3eb; place-items: end center; }
-.jobVisual img { width: 105%; height: 95%; object-fit: contain; object-position: bottom; }
-.jobCopy span { color: #a94b2b; font-size: .8rem; font-weight: 700; }
-.jobCopy h3 { margin: 1rem 0 0; font-size: clamp(2rem,3.2vw,3.5rem); letter-spacing: -.055em; }
-.jobCopy p { max-width: 28rem; margin: 1.5rem 0 0; color: #6e655c; line-height: 1.85; }
+.page {
+  overflow-x: clip;
+  overflow-y: visible;
+  color: $color-text-primary;
+  background: $color-bg;
+  font-family: $font-family-base;
+}
 
-.outro { display: grid; min-height: 100svh; grid-template-columns: 1fr 1fr; align-items: center; padding: 6rem max(6%,calc((100vw - 1320px)/2)); background: #fff; }
-.outroVisual { position: relative; display: grid; height: min(75vh,760px); place-items: end center; }
-.outroVisual img { position: relative; z-index: 1; width: 95%; height: 95%; object-fit: contain; object-position: bottom; }
-.outroVisual i { position: absolute; top: 8%; width: 70%; border-radius: 50%; aspect-ratio: 1; background: #d95d32; }
-.outroCopy { padding-left: 5vw; }
-.outroCopy > p { margin: 2rem 0 0; color: #675f57; font-size: 1.05rem; line-height: 1.9; }
-.outroCopy a { display: inline-flex; min-height: 3.5rem; margin-top: 2.5rem; padding: 0 1.75rem; border-radius: 99px; background: #24201c; color: #fff; align-items: center; gap: 1.25rem; font-weight: 700; text-decoration: none; transition: .18s ease; }
-.outroCopy a:hover, .outroCopy a:focus-visible { background: #a94b2b; transform: translateY(-2px); }
-.outroCopy a:focus-visible { outline: 2px solid #a94b2b; outline-offset: 4px; }
+// ---------------------------------------------------------------------
+// Blank intro — 추후 첫 화면 콘텐츠를 배치할 영역
+// ---------------------------------------------------------------------
+.blankIntro {
+  display: grid;
+  min-height: calc(100svh - 80px);
+  background: $color-bg;
+  place-items: center;
+}
 
-@media (max-width: 1024px) { .intro h1 { font-size: clamp(4.5rem,11vw,7rem); } .profile, .jobs li { gap: 3rem; } .facts { grid-template-columns: 1fr; } .raccoonCopy { padding: 5vw; } }
-@media (max-width: 767px) {
-  .intro, .profile, .raccoon, .jobs li, .outro { grid-template-columns: 1fr; }
-  .intro { min-height: calc(100svh - 60px); padding: 5rem 1.25rem 0; text-align: center; }
-  .intro::before { inset: 5% -20% 12%; } .introCopy { padding: 0; } .intro h1 { font-size: clamp(4rem,22vw,6rem); }
-  .introCopy > p:last-child { margin-top: 1.5rem; font-size: .9rem; } .introVisual { width: 100%; height: 48vh; min-height: 360px; }
-  .introVisual img { right: 0; width: 100%; } .introVisual span { top: 10%; right: 0; padding: .75rem 1rem; font-size: .8rem; }
-  .profile { min-height: auto; gap: 3rem; padding: 6rem 1.25rem; } .profileVisual { height: 60vh; min-height: 460px; }
-  .profile h2, .raccoon h2, .jobs h2, .outro h2 { font-size: clamp(2.35rem,11vw,3.4rem); } .description { font-size: .92rem; }
-  .raccoon { min-height: auto; } .raccoonCopy { padding: 6rem 1.25rem 4rem; } .raccoonCopy > p:last-child { margin-top: 1.5rem; font-size: .92rem; }
-  .raccoonVisual { height: 65vh; min-height: 480px; } .jobs { padding: 6rem 1.25rem 7rem; } .jobs header { margin-bottom: 4rem; text-align: left; }
-  .jobs ol { gap: 6rem; } .jobs li { gap: 2rem; } .jobs li:nth-child(even) .jobVisual { order: 0; }
-  .jobVisual { height: 55vh; min-height: 420px; } .jobCopy h3 { font-size: 2rem; } .jobCopy p { margin-top: 1rem; font-size: .9rem; }
-  .outro { min-height: auto; padding: 6rem 1.25rem 7rem; } .outroVisual { height: 55vh; min-height: 440px; }
-  .outroCopy { padding: 3rem 0 0; text-align: center; } .outroCopy > p { font-size: .92rem; }
+.blankIntroLink {
+  display: block;
+  line-height: 0;
+  transform: translateY(50px);
+}
+
+.blankIntro img {
+  display: block;
+  width: clamp(220px, 25vw, 460px);
+  max-height: 72vh;
+  cursor: pointer;
+  object-fit: contain;
+  transition: transform 280ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .blankIntro img:hover {
+    transform: scale(1.2);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Character guide
+// ---------------------------------------------------------------------
+.characterGuide {
+  min-height: calc(100svh - 80px);
+  padding-block: $space-12;
+  scroll-margin-top: 80px;
+  background: #f9f7f4;
+}
+
+.characterGuideInner {
+  @include container;
+  display: grid;
+  min-height: calc(100svh - 176px);
+  grid-template-columns: minmax(360px, 0.75fr) minmax(650px, 1fr);
+  gap: clamp($space-8, 4vw, $space-16);
+  align-items: stretch;
+}
+
+.characterIntro {
+  position: relative;
+  display: grid;
+  min-height: 700px;
+  grid-template-rows: auto 1fr auto;
+  padding-block: $space-5 $space-3;
+}
+
+.characterIntro h1 {
+  margin: 0;
+  font-family: $font-family-display;
+  font-size: clamp(4.3rem, 6.2vw, 6.8rem);
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+}
+
+.characterName {
+  margin: $space-2 0 0;
+  font-size: clamp(1.55rem, 2vw, 2.1rem);
+  font-weight: $font-weight-bold;
+}
+
+.characterRole {
+  margin: $space-5 0 0;
+  color: $color-primary;
+  font-size: clamp(1rem, 1.25vw, 1.2rem);
+  font-weight: $font-weight-bold;
+  line-height: 1.75;
+}
+
+.characterSummary {
+  margin: $space-4 0 0;
+  color: $color-text-secondary;
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+.characterTaste {
+  position: relative;
+  z-index: 2;
+  padding: $space-5 0 0;
+  border-top: 1px solid $color-border;
+}
+
+.characterTaste h2 {
+  margin: 0 0 $space-4;
+  font-size: 1.05rem;
+}
+
+.characterTaste dl {
+  display: grid;
+  gap: $space-3;
+  margin: 0;
+}
+
+.characterTaste dl div {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: $space-3;
+}
+
+.characterTaste dt,
+.characterTaste dd {
+  margin: 0;
+  color: $color-text-secondary;
+  font-size: 0.78rem;
+  line-height: 1.65;
+}
+
+.characterTaste dt {
+  color: $color-primary;
+  font-weight: $font-weight-bold;
+}
+
+.guideBoard {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  min-height: 700px;
+  grid-template-rows: auto 1fr auto;
+  padding: clamp($space-5, 2.3vw, $space-8);
+  border: 1px solid rgba($color-text-primary, 0.3);
+  background-color: #ebe8df;
+  background-image:
+    linear-gradient(rgba($color-primary, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba($color-primary, 0.09) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.guideBoard::after {
+  position: absolute;
+  inset: $space-3;
+  border: 1px solid rgba($color-primary, 0.18);
+  content: '';
+  pointer-events: none;
+}
+
+.guideBoardHeader {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: $space-4;
+  padding-bottom: $space-5;
+  border-bottom: 1px solid rgba($color-text-primary, 0.35);
+}
+
+.guideBoardHeader h2 {
+  margin: 0;
+  font-size: clamp(1.15rem, 1.7vw, 1.55rem);
+  letter-spacing: 0.04em;
+}
+
+.guideBoardHeader span {
+  color: $color-text-muted;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+
+.turnaroundBoard {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: $space-4;
+  align-items: end;
+  padding-block: $space-5;
+}
+
+.turnaroundBoard figure {
+  margin: 0;
+  text-align: center;
+}
+
+.turnaroundVisual {
+  display: grid;
+  min-height: 330px;
+  border-bottom: 1px solid rgba($color-text-primary, 0.28);
+  place-items: end center;
+}
+
+.turnaroundVisual img {
+  width: 122%;
+  height: 320px;
+  object-fit: contain;
+  object-position: bottom;
+}
+
+.turnaroundBoard figure:nth-child(2) img {
+  transform: scaleX(-1);
+}
+
+.imagePlaceholder {
+  display: grid;
+  width: 72%;
+  margin-bottom: $space-5;
+  border: 1px dashed rgba($color-primary, 0.45);
+  aspect-ratio: 0.65 / 1;
+  color: rgba($color-text-secondary, 0.7);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  line-height: 1.6;
+  place-items: center;
+}
+
+.turnaroundBoard figcaption {
+  margin-top: $space-3;
+  font-size: 0.72rem;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.12em;
+}
+
+.characterMeta {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  margin: 0;
+  border-top: 1px solid rgba($color-text-primary, 0.35);
+}
+
+.characterMeta div {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr;
+  min-height: 4.1rem;
+  padding-block: $space-3;
+  border-bottom: 1px solid rgba($color-text-primary, 0.18);
+}
+
+.characterMeta dt,
+.characterMeta dd {
+  margin: 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+}
+
+.characterMeta dt {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding-right: $space-3;
+  border-right: 1px solid rgba($color-text-primary, 0.18);
+  color: $color-text-muted;
+  font-weight: $font-weight-bold;
+}
+
+.characterMeta dd {
+  display: flex;
+  justify-content: center;
+  padding-left: $space-4;
+  flex-direction: column;
+}
+
+.characterMeta dt i {
+  width: 1.1rem;
+  color: $color-primary;
+  font-size: 1rem;
+  font-style: normal;
+  text-align: center;
+}
+
+.characterMeta dd strong {
+  font-size: 0.7rem;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.06em;
+}
+
+.characterMeta dd span {
+  margin-top: $space-1;
+  color: $color-text-secondary;
+  font-size: 0.68rem;
+  letter-spacing: -0.01em;
+  line-height: 1.5;
+}
+
+// ---------------------------------------------------------------------
+// Character story — 추후 왼쪽 이미지를 sticky로 확장할 영역
+// ---------------------------------------------------------------------
+.characterStory {
+  min-height: calc(100svh - 80px);
+  padding-block: clamp($space-20, 10vw, $space-30);
+  background: $color-white;
+}
+
+.characterStoryInner {
+  @include container;
+  display: grid;
+  grid-template-columns: minmax(380px, 0.9fr) minmax(440px, 1.1fr);
+  gap: clamp($space-12, 8vw, $space-24);
+  align-items: start;
+}
+
+.characterStoryVisual {
+  position: sticky;
+  top: calc(80px + #{$space-6});
+  display: grid;
+  height: calc(100svh - 80px - (#{$space-6} * 2));
+  min-height: 580px;
+  margin: 0;
+  background: $color-bg;
+  place-items: end center;
+}
+
+.characterStoryVisual img {
+  display: block;
+  width: min(100%, 520px);
+  max-height: 660px;
+  object-fit: contain;
+  object-position: bottom;
+}
+
+.characterStoryCopy {
+  width: 100%;
+  max-width: 38rem;
+  padding-top: clamp($space-10, 10vh, $space-20);
+}
+
+.characterStoryHeader h2 {
+  margin: 0;
+  font-size: clamp(2.4rem, 4vw, 4.5rem);
+  line-height: 1.35;
+}
+
+.characterStoryHeader > p:last-child {
+  margin: $space-8 0 0;
+  color: $color-text-secondary;
+  font-size: clamp(0.95rem, 1.1vw, 1.1rem);
+  line-height: 2;
+}
+
+.characterStorySteps {
+  display: grid;
+  margin: clamp($space-16, 10vh, $space-24) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.characterStorySteps li {
+  min-height: 54vh;
+  padding: clamp($space-12, 9vh, $space-20) 0;
+  border-top: 1px solid $color-border;
+}
+
+.characterStorySteps span {
+  display: block;
+  color: $color-primary;
+  font-size: clamp(3.5rem, 6vw, 6.5rem);
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  opacity: 0.25;
+}
+
+.characterStorySteps h3 {
+  margin: $space-6 0 0;
+  font-size: clamp(1.8rem, 2.5vw, 2.7rem);
+  line-height: 1.4;
+}
+
+.characterStorySteps p {
+  max-width: 30rem;
+  margin: $space-5 0 0;
+  color: $color-text-secondary;
+  font-size: clamp(0.95rem, 1.05vw, 1.08rem);
+  line-height: 1.9;
+}
+
+// ---------------------------------------------------------------------
+// Outro
+// ---------------------------------------------------------------------
+.outro {
+  position: relative;
+  display: grid;
+  min-height: 80svh;
+  padding: clamp($space-24, 11vw, $space-30) $space-5 clamp($space-20, 8vw, $space-24);
+  background: $color-white;
+  place-items: center;
+  text-align: center;
+  isolation: isolate;
+}
+
+.outro::before {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  z-index: -1;
+  color: rgba($color-primary, 0.07);
+  content: 'MAKDONG';
+  font-size: clamp(6rem, 17vw, 17rem);
+  font-weight: 800;
+  letter-spacing: -0.08em;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.outroVisual {
+  position: absolute;
+  bottom: -$space-10;
+  left: max(2%, calc((100vw - 1280px) / 2));
+  width: min(25vw, 330px);
+}
+
+.outroVisual img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+}
+
+.outroVisual i {
+  position: absolute;
+  top: 15%;
+  left: 10%;
+  width: 80%;
+  border-radius: $radius-pill;
+  aspect-ratio: 1;
+  background: $color-primary-light;
+  opacity: 0.42;
+}
+
+.outroCopy {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 800px);
+}
+
+.outroCopy > p {
+  margin: $space-8 0 0;
+  color: $color-text-secondary;
+  font-size: 1.05rem;
+  line-height: 1.9;
+}
+
+.outroCopy a {
+  @include flex-center;
+  display: inline-flex;
+  min-height: 3.6rem;
+  margin-top: $space-10;
+  padding: 0 $space-8;
+  border-radius: $radius-pill;
+  background: $color-primary;
+  color: $color-white;
+  gap: $space-5;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 180ms ease, transform 180ms ease;
+}
+
+.outroCopy a:hover,
+.outroCopy a:focus-visible {
+  background: $color-text-primary;
+  transform: translateY(-2px);
+}
+
+.outroCopy a:focus-visible {
+  outline: 2px solid $color-primary;
+  outline-offset: 4px;
+}
+
+// ---------------------------------------------------------------------
+// Responsive — 팀 3단 breakpoint 기준 (mobile / tablet / desktop)
+// ---------------------------------------------------------------------
+@include tablet {
+  .characterGuideInner {
+    grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+    gap: $space-6;
+  }
+
+  .characterIntro,
+  .guideBoard {
+    min-height: 650px;
+  }
+
+  .characterIntro h1 {
+    font-size: clamp(3.7rem, 7vw, 5.2rem);
+  }
+
+  .guideBoard {
+    padding: $space-6;
+  }
+
+  .guideBoardHeader {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: $space-2;
+  }
+
+  .turnaroundVisual {
+    min-height: 220px;
+  }
+
+  .turnaroundVisual img {
+    height: 210px;
+  }
+
+}
+
+@include mobile {
+  .blankIntro {
+    min-height: calc(100svh - 60px);
+  }
+
+  .characterGuide {
+    min-height: auto;
+    padding-block: $space-20;
+    scroll-margin-top: 60px;
+  }
+
+  .characterStory {
+    min-height: auto;
+    padding-block: $space-20;
+  }
+
+  .characterStoryInner {
+    min-height: auto;
+    grid-template-columns: 1fr;
+    gap: $space-12;
+  }
+
+  .characterStoryVisual {
+    position: relative;
+    top: auto;
+    height: auto;
+    min-height: 460px;
+  }
+
+  .characterStoryVisual img {
+    width: min(100%, 430px);
+    max-height: 520px;
+  }
+
+  .characterStoryCopy {
+    max-width: none;
+    padding-top: 0;
+  }
+
+  .characterStoryHeader h2 {
+    font-size: clamp(2rem, 9vw, 3rem);
+  }
+
+  .characterStorySteps {
+    margin-top: $space-16;
+  }
+
+  .characterStorySteps li {
+    min-height: auto;
+    padding-block: $space-16;
+  }
+
+  .characterStorySteps span {
+    font-size: clamp(3.5rem, 18vw, 5rem);
+  }
+
+  .characterGuideInner {
+    min-height: auto;
+    grid-template-columns: 1fr;
+    gap: $space-16;
+  }
+
+  .characterIntro {
+    min-height: auto;
+    grid-template-rows: auto auto auto;
+    padding: 0;
+  }
+
+  .characterIntro h1 {
+    font-size: clamp(4rem, 20vw, 5.7rem);
+  }
+
+  .characterTaste dl div {
+    grid-template-columns: 1fr;
+    gap: $space-1;
+  }
+
+  .guideBoard {
+    min-height: 620px;
+    padding: $space-6 $space-4;
+  }
+
+  .guideBoardHeader {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: $space-2;
+  }
+
+  .guideBoardHeader h2 {
+    font-size: 1rem;
+  }
+
+  .turnaroundBoard {
+    gap: $space-2;
+    padding-block: $space-6;
+  }
+
+  .turnaroundVisual {
+    min-height: 190px;
+  }
+
+  .turnaroundVisual img {
+    width: 125%;
+    height: 185px;
+  }
+
+  .imagePlaceholder {
+    width: 82%;
+    font-size: 0.54rem;
+  }
+
+  .characterMeta div {
+    grid-template-columns: 7rem 1fr;
+  }
+
+  .characterMeta dt {
+    gap: $space-2;
+  }
+
+  .characterMeta dd {
+    padding-left: $space-3;
+  }
+
+  .characterMeta dd span {
+    font-size: 0.62rem;
+  }
+
+  .blankIntro img {
+    width: min(58vw, 320px);
+    max-height: 68vh;
+  }
+
+  .outro h2 {
+    font-size: clamp(2.35rem, 11vw, 3.4rem);
+  }
+  .outro {
+    min-height: 78svh;
+    padding: $space-24 $space-5 $space-30;
+  }
+
+  .outro::before {
+    top: 12%;
+    font-size: 24vw;
+  }
+
+  .outroVisual {
+    bottom: -$space-8;
+    left: 50%;
+    width: min(55vw, 240px);
+    transform: translateX(-50%);
+  }
+
+  .outroCopy > p {
+    font-size: 0.92rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .outroCopy a { transition: none; }
+  .blankIntro img,
+  .outroCopy a {
+    transition: none;
+  }
 }
