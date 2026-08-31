@@ -1,7 +1,7 @@
 # JAJAK AGENTS.md
 
-> Version: 1.6  
-> Last updated: 2026-08-24  
+> Version: 1.7  
+> Last updated: 2026-08-31  
 > Purpose: JAJAK 팀 프로젝트의 프론트엔드 아키텍처, 데이터 계약, 개발 컨벤션과 협업 규칙을 Codex 및 모든 팀원이 동일하게 따르기 위한 공통 지침이다.  
 > 이 문서는 코드 작성 전 우선 확인한다. 확정된 팀 규칙과 충돌하는 임의 구현은 하지 않는다.
 
@@ -87,10 +87,16 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 
 - Header 전체
 - DesktopHeader / MobileHeader / MobileBottomNav
+- MobileSearchModal
+- SearchModal
 - SiteLayout
 - Footer
-- AdultModal
-- SearchModal
+- Footer 고객센터 링크 연결
+  - 공지사항
+  - 자주 묻는 질문
+  - 1:1 문의하기
+- AdminHeader / AdminFooter
+- ScrollToTop
 - GNB / 검색 진입 및 이동 흐름
 - 전체 URL / Routing
 - MyPage nested routing
@@ -99,11 +105,15 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 ### PreferenceSurvey / 성인인증
 
 - `PreferenceSurvey.jsx`
-- `PreferenceSurvey.module.scss`
-- 회원가입 후 기본 취향 설문
+- 회원가입 후 기본 취향 설문 전체 흐름
+- `PreferenceSafetyIntro.jsx`
+- `PreferenceSafety.jsx`
+- `PreferenceQuestions.jsx`
+- `PreferenceComplete.jsx`
 - `constants/preferenceSurvey.js`
 - `users/{uid}.userPreference` 저장 구조 관리
 - `useAdultCheck.js`
+- AdultModal
 - 비회원 성인인증 흐름
 
 ### AI
@@ -123,7 +133,8 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 - 최종 기능 시나리오 정리
 - 공통 용어 통합
 
-※ 성인인증 팝업과 검색창은 Header와 연결되는 공통 기능으로 김지우가 담당한다.
+※ `AdminHeader` / `AdminFooter`, `MobileSearchModal`, `ScrollToTop`은 김지우의 공통 영역으로 관리한다.
+※ `PreferenceSafetyIntro` → `PreferenceSafety` → `PreferenceQuestions` → `PreferenceComplete`는 `/preference` 내부 step 전환 구조이며 별도 Route를 만들지 않는다.
 ※ `useAdultCheck.js`와 비회원 AI 흐름은 `src/firebase/auth.js`의 익명 인증 함수를 호출해 실제 서비스 흐름에 연결한다.
 
 ## 김태은 — 상품 / 상품 데이터 / 검색 / 이벤트
@@ -144,9 +155,10 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 
 ### 이벤트
 
-- 이벤트 목록
-- 이벤트 상세
+- 이벤트 목록 / 상세
 - RouletteEvent
+- CardGame
+- OxQuizEvent
 - 이벤트 참여 / 추첨 로직
 - 이벤트 결과 및 경품 정보 처리
 - MyPage 이벤트 참여 내역
@@ -154,7 +166,7 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 
 ※ 상품 seed/reference JSON의 최종 관리자는 김태은이다.
 ※ Runtime 상품 정보는 Firestore를 기준으로 하며, 상품 화면 / 이벤트 연계 기능에서 현재 상품 데이터를 사용한다.
-※ 상품 ID, 카테고리, 상품 상태 등 공통 상품 데이터 규칙 변경이 필요한 경우 팀원과 먼저 공유한다.
+※ 모든 참여형 이벤트는 `eventParticipations/{eventId}_{uid}` 구조를 공통으로 사용한다.
 
 ## 백현정 — Main / Brand / Admin Dashboard / Design
 
@@ -191,8 +203,8 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 - 페이지별 디자인 구현 시 기존 JAJAK 디자인 톤 유지 여부 확인
 
 ※ Main / Brand는 사용자가 서비스의 브랜드와 주요 기능을 처음 접하는 Entry 영역으로 구성한다.
-※ Admin Dashboard는 AdminLayout 내부에서 사용하며, 관리자 공통 Layout 자체는 수정하지 않는다.
-※ 디자인에 정의되지 않은 신규 스타일을 임의로 확장하지 않고 공통 Design Token과 기존 UI 패턴을 우선한다.
+※ Main 전용 Section / Hook은 Main 영역 안에서 함께 관리할 수 있다.
+※ Admin Dashboard는 AdminLayout 내부에서 사용하며 관리자 공통 Layout 자체는 수정하지 않는다.
 
 ## 이영기 — Auth / 고객센터 / Wishlist / 상품 상세 협업
 
@@ -211,15 +223,15 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 ### 고객센터
 
 - 공지사항 목록 / 상세
-- 문의하기 페이지
-- 자주 묻는 질문 영역
+- FAQ
+- 1:1 문의하기
 - 문의 유형 구성
   - 주문 / 결제
   - 배송
   - 교환 / 환불
   - 회원 / 기타
-- 1:1 문의 등록
 - 문의 제목 / 내용 입력
+- 문의 등록
 - 문의 내역 및 답변 확인
 
 ### Wishlist / 상품
@@ -229,8 +241,8 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 - 찜 상품 장바구니 이동
 
 ※ 로그인 / 회원가입 / 로그아웃 기능 자체는 이영기가 담당한다.
-※ 고객센터는 공지사항과 문의하기를 중심으로 구성하며, FAQ와 배송 / 교환 / 환불은 별도 페이지로 분리하지 않고 InquiryQnA 내부의 자주 묻는 질문 영역에 포함한다.
-※ 회원가입 성공 후 `/preference` 이동 연결까지 이영기가 담당하며, `PreferenceSurvey.jsx` 진입 이후 설문 UI / 진행 / 저장은 김지우가 담당한다.
+※ FAQ는 `/support/faq` 별도 Route를 사용한다.
+※ 회원가입 성공 후 `/preference` 이동 연결까지 이영기가 담당하며, `/preference` 진입 이후 설문 UI / 진행 / 저장은 김지우가 담당한다.
 
 ## 이유진 — Cart / Order / MyPage / Admin / 회원관리 / 공통 구조
 
@@ -261,8 +273,10 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 ### Admin
 
 - Admin 공통 Layout
-- Admin Sidebar / Header / Content / Outlet 구조
+- Admin Sidebar / Content / Outlet 구조
 - UserManage
+- NoticeManage
+- ReviewManage
 - 회원 목록 / 검색 / 상태 관리
 - 관리자 페이지 공통 디자인 및 반응형 구조 유지
 
@@ -279,9 +293,10 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 - README 정리
 - 담당 기능의 공통 데이터 계약 및 구현 규칙 반영
 
+※ `AdminHeader` / `AdminFooter`는 김지우 공통 영역이며, AdminLayout에서는 해당 공통 컴포넌트를 사용한다.
 ※ 이유진은 로그인 / 회원가입 / 로그아웃 인증 기능 자체를 구현하지 않는다.
-※ MyPage / Admin / Cart / Order에서는 Auth 담당이 제공한 인증 함수와 Firebase 회원 데이터를 사용한다.
 ※ 비밀번호 변경 및 회원탈퇴 기능은 이번 구현 범위에 포함하지 않는다.
+
 ---
 
 # 5. Protected / Shared Files
@@ -290,6 +305,10 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 
 ## 공통 레이아웃 / 라우팅
 
+- `src/components/admin/AdminHeader.jsx`
+- `src/components/admin/AdminHeader.module.scss`
+- `src/components/admin/AdminFooter.jsx`
+- `src/components/admin/AdminFooter.module.scss`
 - `src/components/common/Header.jsx`
 - `src/components/common/DesktopHeader.jsx`
 - `src/components/common/MobileHeader.jsx`
@@ -298,6 +317,8 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 - `src/components/common/SiteLayout.jsx`
 - `src/components/common/AdultModal.jsx`
 - `src/components/common/SearchModal.jsx`
+- `src/components/common/MobileSearchModal.jsx`
+- `src/components/common/ScrollToTop.jsx`
 - 공통 Header / Footer 관련 `*.module.scss`
 - `src/pages/MyPage/MyPageLayout.jsx`
 - `src/pages/MyPage/MyPageLayout.module.scss`
@@ -326,8 +347,6 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 ## 공통 스타일
 
 - `src/styles/*`
-
-공통 스타일 파일은 팀 공통 기준이므로 임의 수정하지 않는다.
 
 ## 공용 데이터 / 설정
 
@@ -378,370 +397,280 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 
 # 6. Project Folder Structure
 
-아래 구조는 팀장이 전달한 **최종 GitHub 구조와 각 파일 역할 설명**을 기준으로 한다.
+아래 구조는 현재 저장소의 실제 구조를 기준으로 한다.
 
-`src/pages/Admin/`과 `src/pages/MyPage/`에는 작업 과정에서 추가된 에러 콘텐츠 컴포넌트를 현재 구조에 함께 반영한다.
+`assets/`는 이미지 파일 단위까지 나열하지 않고 주요 폴더만 기록한다.
+페이지 전용 Section / Hook은 해당 페이지 폴더 안에 함께 둘 수 있으며, 여러 영역에서 재사용되는 경우에만 공통 영역으로 이동한다.
 
 ```text
 jajak/
 │
-├── .env.example                         // 환경변수 이름 공유용 예시 파일 (실제 값 작성 X)
-├── .env.local                           // 개인 Firebase 환경변수 실제 값 저장 (GitHub 업로드 X)
-├── .firebaserc                          // Firebase 프로젝트 연결 정보
-├── .gitignore                           // GitHub에 올리지 않을 파일/폴더 설정
-├── .oxlintrc.json                       // Oxlint 코드 검사 설정
-├── AGENTS.md                            // 팀 공통 개발 규칙 / 역할 / 데이터 계약 문서
-├── firebase.json                        // Firebase Functions/Emulator 등 Firebase 설정
-├── firestore.indexes.json               // Firestore 복합 인덱스 설정
-├── firestore.rules                      // Firestore 읽기/쓰기 보안 규칙
-├── index.html                           // Vite 앱의 기본 HTML 진입점
-├── package.json                         // 프로젝트 패키지/스크립트 정보
-├── package-lock.json                    // 설치된 패키지 버전 고정 파일
-├── README.md                            // 프로젝트 소개 및 실행 방법 문서
-├── vite.config.js                       // Vite 빌드/개발 서버 설정
+├── .env.example
+├── .env.local
+├── .firebaserc
+├── .gitignore
+├── .oxlintrc.json
+├── AGENTS.md
+├── firebase.json
+├── firestore.indexes.json
+├── firestore.rules
+├── index.html
+├── package.json
+├── package-lock.json
+├── README.md
+├── vite.config.js
 │
-│
-├── functions/                           // Firebase Cloud Functions 서버 영역
-│   │
+├── functions/
 │   ├── src/
-│   │   └── index.js                     // Cloud Functions 진입점 / 서버 함수 export
-│   │
-│   ├── .gitignore                       // Functions 내부 Git 제외 설정
-│   ├── package.json                     // Functions 전용 패키지/스크립트
-│   └── package-lock.json                // Functions 패키지 버전 고정
+│   │   └── index.js
+│   ├── .gitignore
+│   ├── package.json
+│   └── package-lock.json
 │
+├── public/
+│   └── favicon.png
 │
-├── public/                              // 빌드 시 그대로 제공되는 정적 파일
-│   └── favicon.png                      // 브라우저 탭 JAJAK 파비콘
-│
-│
-└── src/                                 // React 프론트엔드 소스
+└── src/
+    ├── assets/
+    │   ├── characters/
+    │   ├── icons/
+    │   │   └── preferenceQuestions/
+    │   ├── images/
+    │   │   ├── banner/
+    │   │   ├── common/
+    │   │   ├── eventPage/
+    │   │   ├── main/
+    │   │   ├── mypage/
+    │   │   └── products/
+    │   ├── logos/
+    │   └── videos/
     │
-    │
-    ├── assets/                          // 이미지 / 아이콘 / 캐릭터 등 정적 리소스
+    ├── components/
+    │   ├── admin/
+    │   │   ├── AdminHeader.jsx
+    │   │   ├── AdminHeader.module.scss
+    │   │   ├── AdminFooter.jsx
+    │   │   └── AdminFooter.module.scss
     │   │
-    │   ├── characters/                  // 캐릭터 이미지
-    │   │   └── makdong                  // JAJAK 캐릭터 '막둥이' 이미지 모음
-    │   │
-    │   ├── icons/                       // 사이트 공통 아이콘
-    │   │   ├── cartIcon.png             // 장바구니 아이콘
-    │   │   ├── categoryIcon.png         // 모바일 카테고리 아이콘
-    │   │   ├── homeIcon.png             // 모바일 홈 아이콘
-    │   │   ├── loginIcon.png            // 로그인 아이콘
-    │   │   ├── mypageIcon.png           // 마이페이지 아이콘
-    │   │   ├── searchIcon.png           // 검색 아이콘
-    │   │   └── wishIcon.png             // 찜 / Wishlist 아이콘
-    │   │
-    │   ├── images/                      // 페이지별 이미지
-    │   │   ├── brand/                   // 브랜드 소개 / 막둥이 소개 이미지
-    │   │   ├── events/                  // 이벤트 페이지 이미지
-    │   │   ├── main/                    // 메인 페이지 배너/섹션 이미지
-    │   │   ├── mypage/                  // 마이페이지 관련 이미지
-    │   │   └── products/                // 상품 이미지
-    │   │
-    │   └── logos/
-    │       └── jajakLogo.png            // JAJAK 공통 로고
-    │
-    │
-    │
-    ├── components/                      // 여러 페이지에서 재사용하는 공통 컴포넌트
-    │   │
-    │   ├── common/                      // 사이트 공통 레이아웃/기능 컴포넌트
-    │   │   │
-    │   │   ├── AdultModal.jsx           // 성인인증 안내/확인 모달
-    │   │   ├── AdultModal.module.scss   // 성인인증 모달 스타일
-    │   │   │
-    │   │   ├── DesktopHeader.jsx        // PC/태블릿용 Header 및 GNB/SNB
-    │   │   ├── DesktopHeader.module.scss// PC/태블릿 Header 스타일
-    │   │   │
-    │   │   ├── ErrorBoundary.jsx        // React 렌더링 오류 발생 시 예외 처리
-    │   │   │
-    │   │   ├── Footer.jsx               // 사이트 공통 Footer
-    │   │   ├── Footer.module.scss       // Footer 반응형 스타일
-    │   │   │
-    │   │   ├── Header.jsx               // DesktopHeader/MobileHeader를 묶는 Header
-    │   │   ├── Header.module.scss       // Header 공통 스타일
-    │   │   │
-    │   │   ├── MobileBottomNav.jsx      // 모바일 하단 고정 네비게이션
+    │   ├── common/
+    │   │   ├── AdultModal.jsx
+    │   │   ├── AdultModal.module.scss
+    │   │   ├── DesktopHeader.jsx
+    │   │   ├── DesktopHeader.module.scss
+    │   │   ├── ErrorBoundary.jsx
+    │   │   ├── Footer.jsx
+    │   │   ├── Footer.module.scss
+    │   │   ├── Header.jsx
+    │   │   ├── Header.module.scss
+    │   │   ├── MobileBottomNav.jsx
     │   │   ├── MobileBottomNav.module.scss
-    │   │   │                             // 모바일 하단 네비게이션 스타일
-    │   │   │
-    │   │   ├── MobileHeader.jsx         // 모바일 상단 Header / 햄버거 메뉴
-    │   │   ├── MobileHeader.module.scss // 모바일 Header 스타일
-    │   │   │
-    │   │   ├── PagePlaceholder.jsx      // 개발 전 임시 페이지/빈 화면 표시용
-    │   │   │
-    │   │   ├── SearchModal.jsx          // 공통 상품 검색 모달/검색 UI
-    │   │   ├── SearchModal.module.scss  // 검색 모달 스타일
-    │   │   │
-    │   │   └── SiteLayout.jsx           // Header + 본문 + Footer + 모바일 하단Nav 공통 Layout
+    │   │   ├── MobileHeader.jsx
+    │   │   ├── MobileHeader.module.scss
+    │   │   ├── MobileSearchModal.jsx
+    │   │   ├── MobileSearchModal.module.scss
+    │   │   ├── PagePlaceholder.jsx
+    │   │   ├── ScrollToTop.jsx
+    │   │   ├── SearchModal.jsx
+    │   │   ├── SearchModal.module.scss
+    │   │   └── SiteLayout.jsx
     │   │
-    │   │
-    │   └── ui/                          // 재사용 가능한 작은 UI 컴포넌트
-    │       │
+    │   └── ui/
     │       ├── Badge/
-    │       │   ├── Badge.jsx            // 상태/카테고리 등 작은 배지 UI
-    │       │   └── Badge.module.scss     // Badge 스타일
-    │       │
     │       ├── Button/
-    │       │   ├── Button.jsx           // 공통 버튼 컴포넌트
-    │       │   └── Button.module.scss    // 공통 버튼 스타일
-    │       │
     │       ├── EmptyState/
-    │       │   ├── EmptyState.jsx       // 찜/주문/기록 등이 없을 때 표시
-    │       │   └── EmptyState.module.scss
-    │       │                             // EmptyState 스타일
-    │       │
     │       ├── ErrorState/
-    │       │   ├── ErrorState.jsx       // 데이터 조회 실패 등 오류 상태 UI
-    │       │   └── ErrorState.module.scss
-    │       │                             // ErrorState 스타일
-    │       │
     │       ├── Loading/
-    │       │   ├── Loading.jsx          // 로딩 상태 UI
-    │       │   └── Loading.module.scss  // 로딩 스타일
-    │       │
     │       ├── Modal/
-    │       │   ├── Modal.jsx            // 범용 모달 컴포넌트
-    │       │   └── Modal.module.scss     // 공통 모달 스타일
-    │       │
     │       ├── Pagination/
-    │       │   ├── Pagination.jsx       // 상품/공지 등 목록 페이지 번호 이동
-    │       │   └── Pagination.module.scss
-    │       │                             // Pagination 스타일
-    │       │
     │       ├── ProductCard/
-    │       │   ├── ProductCard.jsx      // 상품 목록 등에 사용하는 공통 상품 카드
-    │       │   └── ProductCard.module.scss
-    │       │                             // 상품 카드 스타일
-    │       │
     │       ├── QuestionCard/
-    │       │   ├── QuestionCard.jsx     // AI/취향 설문 질문 카드 공통 UI
-    │       │   └── QuestionCard.module.scss
-    │       │                             // 질문 카드 스타일
-    │       │
     │       └── Tabs/
-    │           ├── Tabs.jsx             // 탭 전환 공통 UI
-    │           └── Tabs.module.scss      // Tabs 스타일
     │
+    ├── constants/
+    │   ├── aiSurvey.js
+    │   ├── eventStatus.js
+    │   ├── orderStatus.js
+    │   ├── preferenceSurvey.js
+    │   ├── tasteAxis.js
+    │   └── userRole.js
     │
+    ├── data/
+    │   ├── products/
+    │   │   ├── foods.json
+    │   │   ├── gifts.json
+    │   │   ├── glasses.json
+    │   │   ├── index.js
+    │   │   └── liquors.json
+    │   ├── events.json
+    │   └── pairings.json
     │
-    ├── constants/                       // 프로젝트에서 공통으로 사용하는 고정 값
-    │   ├── aiSurvey.js                  // 당일 AI 추천 설문 질문/선택지 정의
-    │   ├── eventStatus.js               // 이벤트 상태값 정의
-    │   ├── orderStatus.js               // 주문 상태값 정의
-    │   ├── preferenceSurvey.js          // 회원가입 후 기본 취향 설문 정의
-    │   ├── tasteAxis.js                 // AI 추천용 맛/취향 기준 축 정의
-    │   └── userRole.js                  // 일반회원/관리자 등 사용자 권한 정의
+    ├── firebase/
+    │   ├── auth.js
+    │   ├── firebase.js
+    │   └── firestore.js
     │
+    ├── hooks/
+    │   ├── useAdultCheck.js
+    │   ├── useAiSurvey.js
+    │   └── useDebounce.js
     │
-    │
-    ├── data/                            // 초기/정적 데이터
-    │   │
-    │   ├── products/                    // Firestore 등록용 초기 상품 데이터
-    │   │   ├── foods.json               // 안주 상품 데이터
-    │   │   ├── gifts.json               // 선물세트 상품 데이터
-    │   │   ├── glasses.json             // 술잔 상품 데이터
-    │   │   ├── index.js                 // 각 상품 JSON 통합/export
-    │   │   └── liquors.json             // 전통주 상품 데이터
-    │   │
-    │   ├── events.json                  // 이벤트 초기/기본 데이터
-    │   └── pairings.json                // 전통주-안주-술잔 페어링 참고 데이터
-    │
-    │
-    │
-    ├── firebase/                        // Firebase 클라이언트 연동 모듈
-    │   ├── auth.js                      // 로그인/회원가입/로그아웃/익명 인증 함수
-    │   ├── firebase.js                  // Firebase 앱/Auth/Firestore 초기화
-    │   └── firestore.js                 // Firestore 공통 조회/저장/수정/삭제 함수
-    │
-    │
-    │
-    ├── hooks/                           // React 공통 Custom Hook
-    │   ├── useAdultCheck.js             // 성인인증 상태 및 AdultModal 흐름 관리
-    │   ├── useAiSurvey.js               // AI 설문 단계/답변/검증 로직 관리
-    │   └── useDebounce.js               // 검색 입력 등의 debounce 처리
-    │
-    │
-    │
-    ├── pages/                           // 실제 URL에 연결되는 페이지
-    │   │
-    │   │
-    │   ├── Admin/                       // 관리자 페이지 영역
-    │   │   │
-    │   │   ├── AdminErrorContent.jsx    // 관리자 영역 에러 상태 콘텐츠
+    ├── pages/
+    │   ├── Admin/
+    │   │   ├── AdminErrorContent.jsx
     │   │   ├── AdminErrorContent.module.scss
-    │   │   │                             // 관리자 에러 콘텐츠 스타일
-    │   │   ├── AdminLayout.jsx          // 관리자 공통 Sidebar/Header/Layout
-    │   │   ├── AdminLayout.module.scss  // 관리자 공통 Layout 스타일
-    │   │   │
-    │   │   ├── AiLogManage.jsx          // 관리자 AI 추천 사용/기록 관리 페이지
-    │   │   ├── AiLogManage.module.scss  // AI 추천 관리 페이지 스타일
-    │   │   │
-    │   │   ├── Dashboard.jsx            // 관리자 메인 대시보드
-    │   │   ├── Dashboard.module.scss    // 관리자 대시보드 스타일
-    │   │   │
-    │   │   ├── EventManage.jsx          // 관리자 이벤트 관리 페이지
-    │   │   ├── EventManage.module.scss  // 이벤트 관리 스타일
-    │   │   │
-    │   │   ├── ProductManage.jsx        // 관리자 상품/재고 관리 페이지
+    │   │   ├── AdminLayout.jsx
+    │   │   ├── AdminLayout.module.scss
+    │   │   ├── AiLogManage.jsx
+    │   │   ├── AiLogManage.module.scss
+    │   │   ├── Dashboard.jsx
+    │   │   ├── Dashboard.module.scss
+    │   │   ├── EventManage.jsx
+    │   │   ├── EventManage.module.scss
+    │   │   ├── NoticeManage.jsx
+    │   │   ├── NoticeManage.module.scss
+    │   │   ├── ProductManage.jsx
     │   │   ├── ProductManage.module.scss
-    │   │   │                             // 상품/재고 관리 스타일
-    │   │   ├── UserManage.jsx           // 관리자 회원 조회/상태 관리 페이지
-    │   │   └── UserManage.module.scss   // 회원관리 스타일
+    │   │   ├── ReviewManage.jsx
+    │   │   ├── ReviewManage.module.scss
+    │   │   ├── UserManage.jsx
+    │   │   └── UserManage.module.scss
     │   │
+    │   ├── AiCurator/
+    │   │   ├── AiIntro.jsx
+    │   │   ├── AiIntro.module.scss
+    │   │   ├── AiResult.jsx
+    │   │   ├── AiResult.module.scss
+    │   │   ├── AiSurvey.jsx
+    │   │   └── AiSurvey.module.scss
     │   │
-    │   │
-    │   ├── AiCurator/                   // AI 개인 맞춤 큐레이션 영역
-    │   │   ├── AiIntro.jsx              // AI 큐레이션 소개 / 추천 시작 페이지 (/ai)
-    │   │   ├── AiIntro.module.scss      // AI 소개 페이지 스타일
-    │   │   ├── AiResult.jsx             // AI 추천 결과 페이지
-    │   │   ├── AiResult.module.scss     // AI 추천 결과 스타일
-    │   │   ├── AiSurvey.jsx             // 당일 상황/취향 AI 추천 설문 페이지
-    │   │   └── AiSurvey.module.scss     // AI 설문 스타일
-    │   │
-    │   │
-    │   │
-    │   ├── Auth/                        // 회원 인증 및 기본 취향 설정 영역
-    │   │   ├── Login.jsx                // 로그인 페이지
-    │   │   ├── Login.module.scss        // 로그인 페이지 스타일
-    │   │   ├── PreferenceSurvey.jsx     // 회원가입 후 기본 취향 설문 페이지
+    │   ├── Auth/
+    │   │   ├── Login.jsx
+    │   │   ├── Login.module.scss
+    │   │   ├── PreferenceSurvey.jsx
     │   │   ├── PreferenceSurvey.module.scss
-    │   │   │                             // 기본 취향 설문 스타일
-    │   │   ├── Signup.jsx               // 회원가입 페이지
-    │   │   └── Signup.module.scss       // 회원가입 스타일
+    │   │   ├── PreferenceSafetyIntro.jsx
+    │   │   ├── PreferenceSafetyIntro.module.scss
+    │   │   ├── PreferenceSafety.jsx
+    │   │   ├── PreferenceSafety.module.scss
+    │   │   ├── PreferenceQuestions.jsx
+    │   │   ├── PreferenceQuestions.module.scss
+    │   │   ├── PreferenceComplete.jsx
+    │   │   ├── PreferenceComplete.module.scss
+    │   │   ├── Signup.jsx
+    │   │   └── Signup.module.scss
     │   │
+    │   ├── Brand/
+    │   │   ├── BrandIntro.jsx
+    │   │   ├── BrandIntro.module.scss
+    │   │   ├── MakdongIntro.jsx
+    │   │   └── MakdongIntro.module.scss
     │   │
-    │   │
-    │   ├── Brand/                       // JAJAK 브랜드 소개 영역
-    │   │   ├── BrandIntro.jsx           // 자작 브랜드 소개 페이지 (/brand)
-    │   │   ├── BrandIntro.module.scss   // 브랜드 소개 스타일
-    │   │   ├── MakdongIntro.jsx         // 자작 캐릭터 '막둥이' 소개 페이지
-    │   │   └── MakdongIntro.module.scss // 막둥이 소개 스타일
-    │   │
-    │   │
-    │   │
-    │   ├── CartOrder/                   // 장바구니 및 주문 흐름
-    │   │   ├── Cart.jsx                 // 장바구니 페이지
-    │   │   ├── Cart.module.scss         // 장바구니 스타일
-    │   │   ├── Checkout.jsx             // 주문/배송정보/결제수단 입력 페이지
-    │   │   ├── Checkout.module.scss     // 주문/결제 페이지 스타일
-    │   │   ├── OrderComplete.jsx        // 주문 완료 페이지
+    │   ├── CartOrder/
+    │   │   ├── Cart.jsx
+    │   │   ├── Cart.module.scss
+    │   │   ├── Checkout.jsx
+    │   │   ├── Checkout.module.scss
+    │   │   ├── OrderComplete.jsx
     │   │   └── OrderComplete.module.scss
-    │   │                                 // 주문 완료 스타일
     │   │
-    │   │
-    │   │
-    │   ├── Event/                       // 사용자 이벤트 영역
-    │   │   ├── EventList.jsx            // 이벤트 목록 페이지
-    │   │   ├── EventList.module.scss    // 이벤트 목록 스타일
-    │   │   ├── RouletteEvent.jsx        // 룰렛/경품 추천 이벤트 상세 및 응모
+    │   ├── Event/
+    │   │   ├── CardGame.jsx
+    │   │   ├── CardGame.module.scss
+    │   │   ├── EventList.jsx
+    │   │   ├── EventList.module.scss
+    │   │   ├── OxQuizEvent.jsx
+    │   │   ├── OxQuizEvent.module.scss
+    │   │   ├── RouletteEvent.jsx
     │   │   └── RouletteEvent.module.scss
-    │   │                                 // 룰렛 이벤트 스타일
     │   │
+    │   ├── Main/
+    │   │   ├── BestSellerSection.jsx
+    │   │   ├── JourneySection.jsx
+    │   │   ├── JourneySection.module.scss
+    │   │   ├── MainPage.jsx
+    │   │   ├── MainPage.module.scss
+    │   │   ├── SplashIntro.jsx
+    │   │   ├── SplashIntro.module.scss
+    │   │   ├── useHeroReveal.js
+    │   │   ├── useLogoScrollReset.js
+    │   │   ├── useMainSectionWheel.js
+    │   │   ├── useSectionReveals.js
+    │   │   └── README.md
     │   │
-    │   │
-    │   ├── Main/                        // 사이트 메인 영역
-    │   │   ├── MainPage.jsx             // JAJAK 메인 홈페이지 (/)
-    │   │   ├── MainPage.module.scss     // 메인 페이지 스타일
-    │   │   ├── SplashIntro.jsx          // Header/Footer 없는 초기 Splash 화면
-    │   │   └── SplashIntro.module.scss  // Splash 애니메이션/화면 스타일
-    │   │
-    │   │
-    │   │
-    │   ├── MyPage/                      // 로그인 회원 마이페이지 영역
-    │   │   ├── AiHistory.jsx            // 사용자의 이전 AI 추천 결과 목록
-    │   │   ├── AiHistory.module.scss    // AI 추천 기록 스타일
-    │   │   ├── EventHistory.jsx         // 사용자의 이벤트 참여/당첨 내역
-    │   │   ├── EventHistory.module.scss // 이벤트 참여 내역 스타일
-    │   │   ├── MyPageErrorContent.jsx   // 마이페이지 영역 에러 상태 콘텐츠
+    │   ├── MyPage/
+    │   │   ├── AiHistory.jsx
+    │   │   ├── AiHistory.module.scss
+    │   │   ├── EventHistory.jsx
+    │   │   ├── EventHistory.module.scss
+    │   │   ├── MyPageErrorContent.jsx
     │   │   ├── MyPageErrorContent.module.scss
-    │   │   │                             // 마이페이지 에러 콘텐츠 스타일
-    │   │   ├── MyHome.jsx               // 마이페이지 메인/요약 대시보드
-    │   │   ├── MyHome.module.scss       // 마이페이지 홈 스타일
-    │   │   ├── MyPageLayout.jsx         // 마이페이지 Sidebar/공통 Layout
-    │   │   ├── MyPageLayout.module.scss // 마이페이지 공통 Layout 스타일
-    │   │   ├── OrderDetail.jsx          // 개별 주문 상세 페이지
-    │   │   ├── OrderDetail.module.scss  // 주문 상세 스타일
-    │   │   ├── OrderHistory.jsx         // 사용자의 주문 내역 목록
-    │   │   ├── OrderHistory.module.scss // 주문 내역 스타일
-    │   │   ├── ProfileEdit.jsx          // 회원 정보 조회/수정 페이지
-    │   │   ├── ProfileEdit.module.scss  // 회원정보 수정 스타일
-    │   │   ├── WishList.jsx             // 사용자가 찜한 상품 목록 페이지
-    │   │   └── WishList.module.scss     // 찜 목록 스타일
+    │   │   ├── MyHome.jsx
+    │   │   ├── MyHome.module.scss
+    │   │   ├── MyPageLayout.jsx
+    │   │   ├── MyPageLayout.module.scss
+    │   │   ├── OrderDetail.jsx
+    │   │   ├── OrderDetail.module.scss
+    │   │   ├── OrderHistory.jsx
+    │   │   ├── OrderHistory.module.scss
+    │   │   ├── ProfileEdit.jsx
+    │   │   ├── ProfileEdit.module.scss
+    │   │   ├── WishList.jsx
+    │   │   └── WishList.module.scss
     │   │
+    │   ├── NotFound/
+    │   │   ├── NotFound.jsx
+    │   │   └── NotFound.module.scss
     │   │
-    │   │
-    │   ├── NotFound/                    // 존재하지 않는 URL 처리
-    │   │   ├── NotFound.jsx             // 404 Not Found 페이지
-    │   │   └── NotFound.module.scss     // 404 페이지 스타일
-    │   │
-    │   │
-    │   │
-    │   ├── Shop/                        // 상품 탐색/상세 영역
-    │   │   ├── ProductDetail.jsx        // 개별 상품 상세 페이지
+    │   ├── Shop/
+    │   │   ├── ProductDetail.jsx
     │   │   ├── ProductDetail.module.scss
-    │   │   │                             // 상품 상세 스타일
-    │   │   ├── ProductList.jsx          // 전체 상품 목록/카테고리/필터 페이지
-    │   │   └── ProductList.module.scss  // 상품 목록 스타일
+    │   │   ├── ProductList.jsx
+    │   │   └── ProductList.module.scss
     │   │
-    │   │
-    │   │
-    │   └── Support/                     // 고객센터 영역
-    │   │       ├── InquiryQnA.jsx       // 문의하기 페이지 (FAQ + 1:1 문의)
-    │   │       ├── InquiryQnA.module.scss
-    │   │       │                         // 문의하기/FAQ 스타일
-    │   │       ├── NoticeDetail.jsx     // 공지사항 상세 페이지
-    │   │       ├── NoticeDetail.module.scss
-    │   │       │                         // 공지사항 상세 스타일
-    │   │       ├── NoticeList.jsx       // 공지사항 목록 페이지
-    │   │       └── NoticeList.module.scss
-    │   │                                 // 공지사항 목록 스타일
+    │   └── Support/
+    │       ├── FAQ.jsx
+    │       ├── FAQ.module.scss
+    │       ├── InquiryQnA.jsx
+    │       ├── InquiryQnA.module.scss
+    │       ├── NoticeDetail.jsx
+    │       ├── NoticeDetail.module.scss
+    │       ├── NoticeList.jsx
+    │       └── NoticeList.module.scss
     │
+    ├── routes/
+    │   ├── AdminRoute.jsx
+    │   ├── paths.js
+    │   └── ProtectedRoute.jsx
     │
+    ├── services/
+    │   └── recommendationApi.js
     │
-    ├── routes/                          // 접근 권한 및 URL 관련 공통 설정
-    │   ├── AdminRoute.jsx               // 관리자 권한이 필요한 페이지 접근 제한
-    │   ├── paths.js                     // 사이트 URL 경로 상수 관리
-    │   └── ProtectedRoute.jsx           // 로그인 회원 전용 페이지 접근 제한
+    ├── styles/
+    │   ├── global.scss
+    │   ├── _mixins.scss
+    │   ├── _reset.scss
+    │   └── _variables.scss
     │
+    ├── utils/
+    │   ├── cartStorage.js
+    │   ├── format.js
+    │   └── validation.js
     │
-    │
-    ├── services/                        // 외부 API / 서버 통신 로직
-    │   └── recommendationApi.js         // AI 추천 Cloud Functions 호출 모듈
-    │
-    │
-    │
-    ├── styles/                          // 프로젝트 전체 공통 SCSS
-    │   ├── global.scss                  // 사이트 전체 기본/공통 스타일
-    │   ├── _mixins.scss                 // 반응형/container/flex 등 SCSS mixin
-    │   ├── _reset.scss                  // 브라우저 기본 CSS 초기화
-    │   └── _variables.scss              // 색상/폰트/간격/반응형 등 디자인 변수
-    │
-    │
-    │
-    ├── utils/                           // 특정 UI에 종속되지 않는 공통 함수
-    │   ├── cartStorage.js               // localStorage 장바구니 읽기/저장/삭제
-    │   ├── format.js                    // 가격/날짜 등 공통 데이터 포맷 함수
-    │   └── validation.js                // 입력값/폼 공통 검증 함수
-    │
-    │
-    ├── App.jsx                          // 전체 페이지 Route 연결 및 Layout 구성
-    └── main.jsx                         // React 앱 실행 진입점 / BrowserRouter 연결
+    ├── App.jsx
+    └── main.jsx
 ```
 
 ## Structure Rules
 
-- 실제 저장소에 존재하는 경로와 팀장이 전달한 최종 구조 설명을 우선한다.
-- 파일 역할에 대한 주석은 각 경로가 어떤 책임을 가지는지 이해하기 위한 기준으로 사용한다.
+- 실제 저장소에 존재하는 경로를 우선한다.
+- `assets/`는 주요 폴더만 문서화하며 이미지 파일 단위 변경은 AGENTS 버전 변경 사유로 삼지 않는다.
+- Main처럼 특정 페이지에만 사용하는 Section / Hook은 해당 페이지 폴더에 함께 둘 수 있다.
+- 여러 페이지에서 재사용되는 Component / Hook만 공통 영역으로 이동한다.
 - 폴더 또는 파일 위치 변경이 필요하면 팀장과 먼저 협의한다.
-- 기존 경로가 존재하는데 동일 목적의 새 폴더를 임의 생성하지 않는다.
 - `src/utils/cartStorage.js`는 승인된 공통 Cart localStorage Utility이다.
-- 현재 `functions/src/`에는 `index.js`만 두며, Functions 세부 파일 분리는 팀장 협의 없이 임의 진행하지 않는다.
+- 현재 `functions/src/`에는 `index.js`만 두며 Functions 세부 파일 분리는 팀장 협의 없이 임의 진행하지 않는다.
 - 신규 페이지 / 컴포넌트 스타일은 SCSS Modules를 사용한다.
-- `global.scss`, `_variables.scss`, `_mixins.scss`, `_reset.scss`는 공통 스타일 기준으로 사용한다.
-- `AdminErrorContent.jsx` / `MyPageErrorContent.jsx`는 각각 Admin / MyPage 영역에서 사용하는 에러 상태 콘텐츠로 관리한다.
-- `src/App.jsx`는 공통 Route 연결 파일이므로 에러 콘텐츠 연결을 포함한 수정이 필요할 때도 팀장에게 공유한 뒤 작업한다.
+
 ---
 
 # 7. Naming Convention
@@ -1362,13 +1291,17 @@ users/{uid}/wishlist/{productId}
 
 - 김지우
 - `PreferenceSurvey.jsx`
-- `PreferenceSurvey.module.scss`
+- `PreferenceSafetyIntro.jsx`
+- `PreferenceSafety.jsx`
+- `PreferenceQuestions.jsx`
+- `PreferenceComplete.jsx`
 - `constants/preferenceSurvey.js`
 - `users/{uid}.userPreference` 저장 구조 관리
 
 목적:
 
 - 회원가입 후 신규 회원의 평소 취향 저장
+- 알레르기 / 주의사항 및 기본 취향 정보 수집
 - AI 추천용 장기 취향 데이터 구성
 
 Route:
@@ -1377,22 +1310,26 @@ Route:
 /preference
 ```
 
-회원가입 연결:
+화면 흐름:
 
 ```text
-Signup 성공 (이영기)
+PreferenceSafetyIntro
 ↓
-/preference 이동
+PreferenceSafety
 ↓
-PreferenceSurvey 진행 (김지우)
+PreferenceQuestions
 ↓
-users/{uid}.userPreference 저장
+PreferenceComplete
 ```
 
 규칙:
 
-- 로그인 회원 중 기본 취향 설문 대상 사용자에게 제공
+- 위 4개 화면은 각각 별도 Route를 만들지 않는다.
+- `/preference` 하나 안에서 step을 전환한다.
+- 회원가입 성공 후 이영기가 `/preference`까지 연결한다.
+- `/preference` 진입 이후 설문 UI / 진행 / 저장은 김지우가 담당한다.
 - 설문 건너뛰기 가능
+- 완료된 결과는 `users/{uid}.userPreference`에 저장한다.
 - AI 추천 시 사용하는 `AiSurvey`와 목적이 다르다.
 
 ## AiSurvey
@@ -2095,19 +2032,24 @@ constants/orderStatus.js
 ## Access / Participation
 
 - 이벤트 목록은 전체 접근 가능
-- 룰렛 이벤트 참여는 로그인 회원만 가능
+- Roulette / CardGame / OX Quiz 참여는 로그인 회원만 가능
 - 동일 회원은 동일 이벤트에 1회 참여
 - 회원 식별 기준은 Firebase Auth `uid`
-- 참여 결과 / 경품 정보는 Firestore에 기록
+- 참여 결과 / 이벤트별 결과 정보는 Firestore에 기록
 - MyPage 이벤트 참여 내역에서 확인
 
-참여 기록 경로:
+공통 참여 기록 경로:
 
 ```text
 eventParticipations/{eventId}_{uid}
 ```
 
-이 문서 ID를 동일 회원의 동일 이벤트 중복 참여 확인 기준으로 사용한다.
+규칙:
+
+- Roulette / CardGame / OX Quiz 모두 동일한 참여 문서 경로 규칙을 사용한다.
+- 공통 식별 / 참여 정보는 동일 구조로 관리한다.
+- 이벤트마다 필요한 결과값이 다를 경우 document 내부 field만 이벤트 유형에 맞게 추가한다.
+- 새로운 이벤트 전용 Collection을 임의로 만들지 않는다.
 
 회원 포인트 저장 위치:
 
@@ -2138,6 +2080,18 @@ users/{uid}.points
 
 - 낙첨 없음
 - `미당첨` / `낙첨` 상태 사용하지 않음
+
+## Additional Events
+
+현재 참여형 이벤트:
+
+```text
+RouletteEvent
+CardGame
+OxQuizEvent
+```
+
+각 이벤트는 동일한 참여 기록 규칙을 사용하고 결과 field만 이벤트별로 구분한다.
 
 ## Reward Type
 
@@ -2203,11 +2157,10 @@ Brand 영역은 현재 `/brand`를 사용한다. `MakdongIntro`는 Brand 영역 
 
 규칙:
 
-- 로그인 사용자가 `/login` 접근 시 메인 또는 이전 페이지 이동
-- 로그인 사용자가 `/signup` 접근 시 메인 이동
 - Signup 성공 후 이영기가 `/preference` 연결까지 담당
-- `/preference` 진입 이후 김지우가 PreferenceSurvey 담당
-- PreferenceSurvey는 회원가입 후 평소 취향 저장용
+- Preference 세부 화면 4개는 `/preference` 내부 step으로 전환
+- `PreferenceSafetyIntro`, `PreferenceSafety`, `PreferenceQuestions`, `PreferenceComplete`에 별도 Route를 만들지 않는다.
+- `/preference` 진입 이후 김지우가 PreferenceSurvey 흐름을 담당
 - PreferenceSurvey 건너뛰기 가능
 
 ## AI
@@ -2221,10 +2174,8 @@ Brand 영역은 현재 `/brand`를 사용한다. `MakdongIntro`는 Brand 영역 
 규칙:
 
 - 로그인 / 비회원 AI URL을 분리하지 않는다.
-- `/ai/survey` 하나에서 로그인 여부에 따라 질문 구성 분기
 - 로그인 회원: `users/{uid}.userPreference` + 현재 상황 설문
 - 비회원: 간소화된 현재 설문만 사용
-- AiResult는 로그인 / 비회원 모두 접근 가능
 - 로그인 회원 결과는 Firestore 저장
 - 비회원 결과는 React 임시 상태
 - 추천 결과 없이 `/ai/result` 직접 접근 시 `/ai` 또는 `/ai/survey` 이동
@@ -2255,18 +2206,20 @@ Brand 영역은 현재 `/brand`를 사용한다. `MakdongIntro`는 Brand 영역 
 | AiHistory | `/mypage/ai-history` | 로그인 회원 |
 | EventHistory | `/mypage/events` | 로그인 회원 |
 
-규칙:
-
-- MyHome은 MyPage 공통 레이아웃 담당자가 구현한다.
-- 주문 상세는 본인 주문만 조회
-- AI 추천 기록은 본인 기록만 조회
-
 ## Event
 
 | Page | URL | Access |
 |---|---|---|
-| EventList | `/events` | 전체 |
-| RouletteEvent | `/events/roulette` | 로그인 회원 |
+| EventList | `/event` | 전체 |
+| RouletteEvent | `/event/roulette` | 로그인 회원 |
+| CardGame | `/event/card-game` | 로그인 회원 |
+| OxQuizEvent | `/event/ox-quiz` | 로그인 회원 |
+
+규칙:
+
+- 이벤트 Public Route는 `/event` 단수형으로 통일한다.
+- 기존 `/events` Route를 사용하지 않는다.
+- 세 참여형 이벤트 모두 `eventParticipations/{eventId}_{uid}`를 사용한다.
 
 ## Support
 
@@ -2274,13 +2227,14 @@ Brand 영역은 현재 `/brand`를 사용한다. `MakdongIntro`는 Brand 영역 
 |---|---|---|
 | NoticeList | `/support/notices` | 전체 |
 | NoticeDetail | `/support/notices/:noticeId` | 전체 |
-| InquiryQnA | `/support/inquiry` | FAQ 열람 전체 / 문의 작성 로그인 회원 |
+| FAQ | `/support/faq` | 전체 |
+| InquiryQnA | `/support/inquiry` | 페이지 접근 전체 / 문의 등록·내역 로그인 회원 |
 
 규칙:
 
-- 별도 FAQ Route를 만들지 않는다.
-- 배송 / 교환 / 환불 별도 Route를 만들지 않는다.
-- 자주 묻는 질문은 `InquiryQnA` 내부 영역에 포함한다.
+- FAQ는 별도 `/support/faq` Route를 사용한다.
+- Footer 고객센터 링크는 공지사항 / 자주 묻는 질문 / 1:1 문의하기를 제공한다.
+- 배송 / 교환 / 환불 내용은 고객센터 콘텐츠 범위에서 관리한다.
 
 ## Admin
 
@@ -2291,6 +2245,13 @@ Brand 영역은 현재 `/brand`를 사용한다. `MakdongIntro`는 Brand 영역 
 | ProductManage | `/admin/products` | 관리자 |
 | AiLogManage | `/admin/ai-logs` | 관리자 |
 | EventManage | `/admin/events` | 관리자 |
+| NoticeManage | `/admin/notices` | 관리자 |
+| ReviewManage | `/admin/reviews` | 관리자 |
+
+규칙:
+
+- NoticeManage / ReviewManage 구현 담당은 이유진
+- Routing 연결 확인은 김지우 공통 Routing 영역에서 담당
 
 관리자 기준:
 
@@ -2307,8 +2268,6 @@ src/pages/Admin/AdminErrorContent.jsx
 src/pages/MyPage/MyPageErrorContent.jsx
 ```
 
-- 각 파일은 해당 영역에서 발생한 에러 상태를 화면에 표시하기 위한 콘텐츠로 사용한다.
-- 스타일은 각각의 `*.module.scss`에서 관리한다.
 - 전체 Route 연결은 `src/App.jsx`에서 관리하므로 연결 방식 변경 시 팀장에게 공유한다.
 - 존재하지 않는 URL을 처리하는 `NotFound.jsx`와 역할을 혼동하지 않는다.
 
@@ -2321,7 +2280,7 @@ src/pages/MyPage/MyPageErrorContent.jsx
 ## Route Notes
 
 - `SplashIntro.jsx` 별도 URL 없음
-- `/` 진입 시 MainPage 전에 표시되는 인트로 컴포넌트
+- `ScrollToTop.jsx`는 공통 Routing 영역에서 라우트 이동 시 스크롤 위치를 초기화한다.
 - 동적 route의 `:productId`, `:orderId`, `:noticeId`에는 실제 데이터 ID 사용
 - 로그인 회원 전용 페이지는 `ProtectedRoute`
 - 관리자 페이지는 `AdminRoute`
@@ -2611,31 +2570,60 @@ Codex는 다음 순서와 규칙을 따른다.
 
 # 35. Current Status
 
-팀 전체 개발 시작에 필요한 공통 프론트엔드 아키텍처, 역할 분담, 주요 Route, 디자인 규칙, Runtime 데이터 기준 및 핵심 데이터 계약은 확정되었다.
+현재 저장소 구조와 팀 역할은 실제 개발 진행에 맞춰 확장되었으며, AGENTS는 실제 저장소 구조를 기준으로 유지한다.
 
-확정된 주요 기준:
+최근 확정된 추가 기준:
 
-- 실제 Runtime 상품 / 페어링 Source of Truth → Firestore
+- AdminHeader / AdminFooter → 김지우 공통 영역
+- MobileSearchModal → 김지우 Header / Search 공통 영역
+- ScrollToTop → 김지우 Routing 공통 영역
+- NoticeManage / ReviewManage → 이유진 구현, 김지우 Routing 연결 확인
+- Preference 세부 화면 → `/preference` 내부 step 전환
+- FAQ → `/support/faq` 별도 Route
+- Public Event Route → `/event` 단수형
+- 참여형 이벤트 → `/event/roulette`, `/event/card-game`, `/event/ox-quiz`
+- 이벤트 참여 저장 → `eventParticipations/{eventId}_{uid}` 공통 사용
+
+기존 핵심 데이터 계약:
+
+- Runtime 상품 / 페어링 Source of Truth → Firestore
 - 상품 JSON → Firestore 등록용 seed/reference
 - 회원 기본 취향 → `users/{uid}.userPreference`
 - Wishlist → `users/{uid}/wishlist/{productId}`
 - Cart → `jajak_cart` + `cartStorage.js`
-- 이벤트 참여 → `eventParticipations/{eventId}_{uid}`
 - 회원 포인트 → `users/{uid}.points`
 - 회원 status → `active` / `suspended`
 - 비밀번호 변경 / 회원탈퇴 → 구현 범위 제외
 
-구현 중 세부 필드가 추가로 필요하더라도 기존 확정 구조를 임의 확장하지 않고 관련 담당자와 협의 후 `AGENTS.md`에 반영한다.
+구현 중 구조 또는 계약 변경이 필요하면 관련 담당자와 협의 후 코드와 `AGENTS.md`를 함께 갱신한다.
 
 ---
 
 # 36. Version History
+
+## v1.7 — 2026-08-31
+
+- 주말 이후 실제 저장소 구조 확장분 반영
+- `src/components/admin/`에 AdminHeader / AdminFooter 추가
+- `MobileSearchModal.jsx`, `ScrollToTop.jsx` 추가
+- AdminHeader / AdminFooter / MobileSearchModal / ScrollToTop 담당을 김지우 공통 영역으로 확정
+- Admin `NoticeManage`, `ReviewManage` 추가 및 이유진 구현 담당 반영
+- PreferenceSurvey 세부 화면 4개 추가 및 `/preference` 내부 step 전환 방식 확정
+- `CardGame`, `OxQuizEvent` 추가
+- Public Event Route를 `/event` 단수형으로 통일
+- Roulette / CardGame / OX Quiz 참여 기록을 `eventParticipations/{eventId}_{uid}`로 통일
+- `FAQ.jsx` 추가 및 `/support/faq` 별도 Route 확정
+- Footer 고객센터 링크에 공지사항 / FAQ / 1:1 문의하기 반영
+- Main 전용 Section / Hook 구조 반영
+- assets는 실제 구조에 맞추되 주요 폴더 단위로만 간략 문서화
+- 페이지 전용 Component / Hook co-location 원칙을 Structure Rules에 추가
 
 ## v1.6 — 2026-08-24
 
 - Section 6 Project Folder Structure를 팀장이 전달한 파일별 역할 설명 포함 최종 구조로 갱신
 - `src/pages/Admin/AdminErrorContent.jsx` 및 `AdminErrorContent.module.scss` 추가 반영
 - `src/pages/MyPage/MyPageErrorContent.jsx` 및 `MyPageErrorContent.module.scss` 추가 반영
+- Team Ownership의 이유진 MyPage / Admin 담당 범위에 각 ErrorContent 파일 추가
 - Protected / Shared Files에 MyPage / Admin ErrorContent 파일 추가
 - Routes 설명에 Layout별 Error Content와 `NotFound.jsx`의 역할 구분 추가
 - `src/App.jsx`는 에러 콘텐츠 연결을 포함한 Route 공통 파일이므로 변경 시 팀장 공유 원칙 재확인

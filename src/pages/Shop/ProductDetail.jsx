@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { serverTimestamp } from 'firebase/firestore'
+import { collection, getDocs, query, serverTimestamp, where } from 'firebase/firestore'
 import ProductCard from '../../components/ui/ProductCard/ProductCard'
 import { foods, products } from '../../data/products'
 import pairings from '../../data/pairings.json'
 import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
-import { getCollection, setDocument, deleteDocument } from '../../firebase/firestore'
+import { addDocument, deleteDocument, getCollection, setDocument, updateDocument } from '../../firebase/firestore'
+import { db } from '../../firebase/firebase'
 import { getCart, saveCart } from '../../utils/cartStorage'
 import jajakLogo from '../../assets/logos/jajakLogo.png'
 import faqMakdong from '../../assets/characters/M007_Poses04.png'
@@ -121,6 +122,9 @@ const ProductDetail = () => {
   const [reviewRating, setReviewRating] = useState(0)
   const [reviewContent, setReviewContent] = useState('')
   const [editingReviewId, setEditingReviewId] = useState(null)
+  const [purchasedOrders, setPurchasedOrders] = useState([])
+  const [reviewOrderId, setReviewOrderId] = useState('')
+  const [isReviewSaving, setIsReviewSaving] = useState(false)
 
   useEffect(() => {
     const page = document.querySelector(`.${styles.page}`)
@@ -226,6 +230,58 @@ const ProductDetail = () => {
       isCancelled = true
     }
   }, [uid])
+
+  useEffect(() => {
+    if (!product) return undefined
+
+    let isCancelled = false
+
+    getDocs(query(
+      collection(db, 'reviews'),
+      where('productId', '==', product.productId),
+      where('status', '==', 'visible')
+    ))
+      .then((snapshot) => {
+        if (isCancelled) return
+        const nextReviews = snapshot.docs
+          .map((item) => ({ id: item.id, ...item.data() }))
+          .sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0))
+        setReviews(nextReviews)
+      })
+      .catch((error) => {
+        console.error('리뷰 목록 조회 실패:', error)
+        if (!isCancelled) setReviews([])
+      })
+
+    return () => { isCancelled = true }
+  }, [product])
+
+  useEffect(() => {
+    if (!uid || !product) {
+      setPurchasedOrders([])
+      setReviewOrderId('')
+      return undefined
+    }
+
+    let isCancelled = false
+
+    getDocs(query(collection(db, 'orders'), where('userId', '==', uid)))
+      .then((snapshot) => {
+        if (isCancelled) return
+        const nextOrders = snapshot.docs
+          .map((item) => ({ id: item.id, ...item.data() }))
+          .filter((order) => Array.isArray(order.productIds) && order.productIds.includes(product.productId))
+          .sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0))
+        setPurchasedOrders(nextOrders)
+        setReviewOrderId((current) => current || nextOrders[0]?.id || '')
+      })
+      .catch((error) => {
+        console.error('리뷰 작성 가능 주문 조회 실패:', error)
+        if (!isCancelled) setPurchasedOrders([])
+      })
+
+    return () => { isCancelled = true }
+  }, [product, uid])
 
   // 현재 상품이 이미 찜되어 있는지 Firestore에서 확인
   useEffect(() => {
@@ -509,10 +565,10 @@ const ProductDetail = () => {
   }
 
 
-  const handleReviewSubmit = (event) => {
+  const handleReviewSubmit = async (event) => {
     event.preventDefault()
 
-    if (!uid) return
+    if (!uid || isReviewSaving) return
 
     const nickname = memberNickname.trim()
     const content = reviewContent.trim()
@@ -520,47 +576,46 @@ const ProductDetail = () => {
     if (
       !nickname ||
       !content ||
-      reviewRating === 0
+      reviewRating === 0 ||
+      (!editingReviewId && !reviewOrderId)
     ) {
+      handleNotice('구매한 주문을 선택해주세요.')
       return
     }
 
-    if (editingReviewId) {
-      setReviews((current) =>
-        current.map((review) =>
-          review.id === editingReviewId
-            ? {
-                ...review,
-                nickname,
-                rating: reviewRating,
-                content,
-              }
-            : review
-        )
-      )
-    } else {
-      setReviews((current) => [
-        {
-          id:
-            globalThis.crypto?.randomUUID?.() ??
-            `${Date.now()}`,
-
+    setIsReviewSaving(true)
+    try {
+      if (editingReviewId) {
+        await updateDocument('reviews', editingReviewId, { nickname, rating: reviewRating, content })
+      } else {
+        await addDocument('reviews', {
+          orderId: reviewOrderId,
+          productId: product.productId,
           authorId: uid,
           nickname,
           rating: reviewRating,
           content,
-
-          createdAt:
-            new Date().toLocaleDateString('ko-KR'),
-        },
-
-        ...current,
-      ])
+          status: 'visible',
+          reportCount: 0,
+        })
+      }
+      const snapshot = await getDocs(query(
+        collection(db, 'reviews'),
+        where('productId', '==', product.productId),
+        where('status', '==', 'visible')
+      ))
+      setReviews(snapshot.docs.map((item) => ({ id: item.id, ...item.data() }))
+        .sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0)))
+      setEditingReviewId(null)
+      setReviewRating(0)
+      setReviewContent('')
+      handleNotice(editingReviewId ? '리뷰를 수정했어요.' : '리뷰를 등록했어요.')
+    } catch (error) {
+      console.error('리뷰 저장 실패:', error)
+      handleNotice('리뷰 저장에 실패했습니다. 구매 주문을 확인해주세요.')
+    } finally {
+      setIsReviewSaving(false)
     }
-
-    setEditingReviewId(null)
-    setReviewRating(0)
-    setReviewContent('')
   }
 
 
@@ -571,17 +626,19 @@ const ProductDetail = () => {
   }
 
 
-  const handleReviewDelete = (reviewId) => {
-    setReviews((current) =>
-      current.filter(
-        ({ id }) => id !== reviewId
-      )
-    )
-
-    if (editingReviewId === reviewId) {
-      setEditingReviewId(null)
-      setReviewRating(0)
-      setReviewContent('')
+  const handleReviewDelete = async (reviewId) => {
+    try {
+      await deleteDocument('reviews', reviewId)
+      setReviews((current) => current.filter(({ id }) => id !== reviewId))
+      if (editingReviewId === reviewId) {
+        setEditingReviewId(null)
+        setReviewRating(0)
+        setReviewContent('')
+      }
+      handleNotice('리뷰를 삭제했어요.')
+    } catch (error) {
+      console.error('리뷰 삭제 실패:', error)
+      handleNotice('리뷰 삭제에 실패했습니다.')
     }
   }
 
@@ -593,6 +650,13 @@ const ProductDetail = () => {
         0
       ) / reviews.length
     : 0
+
+  const formatReviewDate = (createdAt) => {
+    const date = createdAt?.toDate?.()
+    return date
+      ? new Intl.DateTimeFormat('ko-CA').format(date)
+      : createdAt || '-'
+  }
 
 
   return (
@@ -738,7 +802,7 @@ const ProductDetail = () => {
           ) : (
             <section className={styles.reviewSection}>
 
-              {isAuthReady && uid ? (
+              {isAuthReady && uid && (editingReviewId || purchasedOrders.length > 0) ? (
               <form
                 className={styles.reviewForm}
                 onSubmit={handleReviewSubmit}
@@ -761,6 +825,20 @@ const ProductDetail = () => {
                     readOnly
                   />
                 </label>
+
+                {!editingReviewId && (
+                  <label className={styles.nicknameField}>
+                    <span>구매 주문</span>
+                    <select value={reviewOrderId} onChange={(event) => setReviewOrderId(event.target.value)} required>
+                      <option value="">구매 주문을 선택해주세요.</option>
+                      {purchasedOrders.map((order) => (
+                        <option key={order.id} value={order.id}>
+                          {order.id} · {order.createdAt?.toDate?.().toLocaleDateString('ko-KR') || '주문'}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
 
                 <fieldset
                   className={styles.starField}
@@ -832,10 +910,14 @@ const ProductDetail = () => {
                     disabled={
                       !memberNickname.trim() ||
                       !reviewContent.trim() ||
-                      reviewRating === 0
+                      reviewRating === 0 ||
+                      (!editingReviewId && !reviewOrderId) ||
+                      isReviewSaving
                     }
                   >
-                    {editingReviewId
+                    {isReviewSaving
+                      ? '저장 중...'
+                      : editingReviewId
                       ? '수정 완료'
                       : '리뷰 등록'}
                   </button>
@@ -843,7 +925,9 @@ const ProductDetail = () => {
               </form>
               ) : (
                 <p className={styles.reviewLoginNotice}>
-                  {isAuthReady
+                  {isAuthReady && uid
+                    ? '구매 완료한 상품에만 리뷰를 작성할 수 있습니다.'
+                    : isAuthReady
                     ? '로그인 후 리뷰를 작성할 수 있습니다.'
                     : '로그인 정보를 확인하고 있습니다.'}
                 </p>
@@ -874,7 +958,7 @@ const ProductDetail = () => {
                         </span>
 
                         <time>
-                          {review.createdAt}
+                          {formatReviewDate(review.createdAt)}
                         </time>
                       </header>
 

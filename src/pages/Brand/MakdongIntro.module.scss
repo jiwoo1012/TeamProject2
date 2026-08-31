@@ -1,5 +1,68 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+:global(html.brand-header-sticky) :global(body > #root > div > header) { position: sticky; top: 0; }
+.page { overflow: hidden; background: #f4efe6; color: #29241f; }
+.intro { position: relative; display: grid; min-height: calc(100svh - 80px); grid-template-columns: .9fr 1.1fr; align-items: center; padding: 4rem max(5%, calc((100vw - 1440px)/2)); }
+.intro::before { position: absolute; inset: 8% 4%; border: 1px solid rgba(169,75,43,.25); border-radius: 50%; content: ''; transform: rotate(-7deg); }
+.introCopy { z-index: 1; padding-left: 3vw; }
+.intro h1 { margin: 0; font-size: clamp(5rem,10vw,11rem); letter-spacing: -.08em; line-height: .85; }
+.introCopy > p:last-child { margin: 2.5rem 0 0; color: #615950; font-size: clamp(1rem,1.25vw,1.25rem); line-height: 1.85; }
+.introVisual { position: relative; align-self: end; height: min(80vh,820px); }
+.introVisual img { position: absolute; right: -4%; bottom: -2%; width: min(100%,720px); height: 100%; object-fit: contain; object-position: bottom; }
+.introVisual span { position: absolute; top: 15%; right: 5%; z-index: 2; padding: 1rem 1.5rem; border-radius: 99px; background: #fff; font-weight: 700; transform: rotate(4deg); }
+
+.profile { display: grid; min-height: 100svh; grid-template-columns: .9fr 1.1fr; gap: clamp(4rem,8vw,9rem); align-items: center; padding: clamp(7rem,14vh,11rem) max(6%,calc((100vw - 1320px)/2)); background: #fff; }
+.profileVisual { overflow: hidden; height: min(70vh,720px); border-radius: 50% 50% .75rem .75rem; background: #e9dfd1; }
+.profileVisual img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
+.profile h2, .raccoon h2, .jobs h2, .outro h2 { margin: 0; font-size: clamp(2.5rem,4vw,4.75rem); letter-spacing: -.065em; line-height: 1.2; }
+.description { margin: 2.25rem 0 0; color: #675f57; font-size: clamp(1rem,1.15vw,1.15rem); line-height: 2; }
+.facts { display: grid; grid-template-columns: repeat(2,1fr); margin: 3rem 0 0; border-top: 1px solid #cfc8bf; }
+.facts div { display: grid; grid-template-columns: 5rem 1fr; padding: 1.15rem 0; border-bottom: 1px solid #cfc8bf; }
+.facts dt { color: #8a8178; font-size: .7rem; font-weight: 700; letter-spacing: .1em; }
+.facts dd { margin: 0; font-weight: 600; }
+
+.raccoon { display: grid; min-height: 100svh; grid-template-columns: 1fr 1fr; align-items: center; background: #2c241e; color: #f8f3eb; }
+.raccoonCopy { padding: 8vw; }
+.raccoonCopy > p:last-child { max-width: 34rem; margin: 2.5rem 0 0; color: #cfc4b7; font-size: 1.05rem; line-height: 1.9; }
+.raccoonVisual { overflow: hidden; height: 100svh; }
+.raccoonVisual img { width: 100%; height: 100%; object-fit: cover; object-position: 52% 30%; transform: scale(1.08); }
+
+.jobs { padding: clamp(7rem,14vh,11rem) 4%; background: #eee6da; }
+.jobs header { width: min(100%,1320px); margin: 0 auto clamp(5rem,10vh,8rem); text-align: center; }
+.jobs ol { display: grid; gap: 10rem; width: min(100%,1200px); margin: 0 auto; padding: 0; list-style: none; }
+.jobs li { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(4rem,9vw,10rem); align-items: center; }
+.jobs li:nth-child(even) .jobVisual { order: 2; }
+.jobVisual { display: grid; overflow: hidden; height: min(65vh,650px); border: 1px solid rgba(103,95,87,.14); border-radius: 50% 50% .75rem .75rem; background: #f8f3eb; place-items: end center; }
+.jobVisual img { width: 105%; height: 95%; object-fit: contain; object-position: bottom; }
+.jobCopy span { color: #a94b2b; font-size: .8rem; font-weight: 700; }
+.jobCopy h3 { margin: 1rem 0 0; font-size: clamp(2rem,3.2vw,3.5rem); letter-spacing: -.055em; }
+.jobCopy p { max-width: 28rem; margin: 1.5rem 0 0; color: #6e655c; line-height: 1.85; }
+
+.outro { display: grid; min-height: 100svh; grid-template-columns: 1fr 1fr; align-items: center; padding: 6rem max(6%,calc((100vw - 1320px)/2)); background: #fff; }
+.outroVisual { position: relative; display: grid; height: min(75vh,760px); place-items: end center; }
+.outroVisual img { position: relative; z-index: 1; width: 95%; height: 95%; object-fit: contain; object-position: bottom; }
+.outroVisual i { position: absolute; top: 8%; width: 70%; border-radius: 50%; aspect-ratio: 1; background: #d95d32; }
+.outroCopy { padding-left: 5vw; }
+.outroCopy > p { margin: 2rem 0 0; color: #675f57; font-size: 1.05rem; line-height: 1.9; }
+.outroCopy a { display: inline-flex; min-height: 3.5rem; margin-top: 2.5rem; padding: 0 1.75rem; border-radius: 99px; background: #24201c; color: #fff; align-items: center; gap: 1.25rem; font-weight: 700; text-decoration: none; transition: .18s ease; }
+.outroCopy a:hover, .outroCopy a:focus-visible { background: #a94b2b; transform: translateY(-2px); }
+.outroCopy a:focus-visible { outline: 2px solid #a94b2b; outline-offset: 4px; }
+
+@media (max-width: 1024px) { .intro h1 { font-size: clamp(4.5rem,11vw,7rem); } .profile, .jobs li { gap: 3rem; } .facts { grid-template-columns: 1fr; } .raccoonCopy { padding: 5vw; } }
+@media (max-width: 767px) {
+  .intro, .profile, .raccoon, .jobs li, .outro { grid-template-columns: 1fr; }
+  .intro { min-height: calc(100svh - 60px); padding: 5rem 1.25rem 0; text-align: center; }
+  .intro::before { inset: 5% -20% 12%; } .introCopy { padding: 0; } .intro h1 { font-size: clamp(4rem,22vw,6rem); }
+  .introCopy > p:last-child { margin-top: 1.5rem; font-size: .9rem; } .introVisual { width: 100%; height: 48vh; min-height: 360px; }
+  .introVisual img { right: 0; width: 100%; } .introVisual span { top: 10%; right: 0; padding: .75rem 1rem; font-size: .8rem; }
+  .profile { min-height: auto; gap: 3rem; padding: 6rem 1.25rem; } .profileVisual { height: 60vh; min-height: 460px; }
+  .profile h2, .raccoon h2, .jobs h2, .outro h2 { font-size: clamp(2.35rem,11vw,3.4rem); } .description { font-size: .92rem; }
+  .raccoon { min-height: auto; } .raccoonCopy { padding: 6rem 1.25rem 4rem; } .raccoonCopy > p:last-child { margin-top: 1.5rem; font-size: .92rem; }
+  .raccoonVisual { height: 65vh; min-height: 480px; } .jobs { padding: 6rem 1.25rem 7rem; } .jobs header { margin-bottom: 4rem; text-align: left; }
+  .jobs ol { gap: 6rem; } .jobs li { gap: 2rem; } .jobs li:nth-child(even) .jobVisual { order: 0; }
+  .jobVisual { height: 55vh; min-height: 420px; } .jobCopy h3 { font-size: 2rem; } .jobCopy p { margin-top: 1rem; font-size: .9rem; }
+  .outro { min-height: auto; padding: 6rem 1.25rem 7rem; } .outroVisual { height: 55vh; min-height: 440px; }
+  .outroCopy { padding: 3rem 0 0; text-align: center; } .outroCopy > p { font-size: .92rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .outroCopy a { transition: none; }
+}

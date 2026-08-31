@@ -146,10 +146,14 @@ const App = () => {
 
         {/* ========================================
             Header O / Footer X
-            로그인 / 회원가입 / 취향 안전 확인
+            로그인 / 회원가입 / 취향 안전 확인 / AI 추천
         ======================================== */}
 
         <Route element={<SiteLayout hideFooter />}>
+
+          {/* ========================================
+              Auth
+          ======================================== */}
 
           {/* 로그인 */}
           <Route
@@ -186,6 +190,30 @@ const App = () => {
             element={<PreferenceComplete />}
           />
 
+
+          {/* ========================================
+              AI 추천
+              Header O / Footer X
+          ======================================== */}
+
+          {/* AI 추천 인트로 */}
+          <Route
+            path="/ai"
+            element={<AiIntro />}
+          />
+
+          {/* AI 추천 설문 */}
+          <Route
+            path="/ai/survey"
+            element={<AiSurvey />}
+          />
+
+          {/* AI 추천 결과 */}
+          <Route
+            path="/ai/result"
+            element={<AiResult />}
+          />
+
         </Route>
 
 
@@ -203,7 +231,10 @@ const App = () => {
           />
 
 
-          {/* Brand */}
+          {/* ========================================
+              Brand
+          ======================================== */}
+
           <Route
             path="/brand"
             element={<BrandIntro />}
@@ -226,7 +257,10 @@ const App = () => {
           />
 
 
-          {/* Shop */}
+          {/* ========================================
+              Shop
+          ======================================== */}
+
           <Route
             path="/shop"
             element={<ProductList />}
@@ -238,24 +272,10 @@ const App = () => {
           />
 
 
-          {/* AI */}
-          <Route
-            path="/ai"
-            element={<AiIntro />}
-          />
+          {/* ========================================
+              Cart / Order
+          ======================================== */}
 
-          <Route
-            path="/ai/survey"
-            element={<AiSurvey />}
-          />
-
-          <Route
-            path="/ai/result"
-            element={<AiResult />}
-          />
-
-
-          {/* Cart / Order */}
           <Route
             path="/cart"
             element={<Cart />}

@@ -31,6 +31,12 @@ const useSectionReveals = ({
   useLayoutEffect(() => {
     const aiSection = aiIntroRef.current
     const featureSection = featureSectionRef.current
+    const aiHeading = aiSection.querySelector('h2')
+    const recommendCards = [...aiSection.querySelectorAll(`.${styles.recommendCard}`)]
+    const aiButton = aiSection.querySelector(`.${styles.aiButton}`)
+    const featureHeading = featureSection.querySelector(`.${styles.featureCopy} h2`)
+    const featureDescription = featureSection.querySelector(`.${styles.featureCopy} p`)
+    const featureButton = featureSection.querySelector(`.${styles.featureButton}`)
     const startMoodCycle = () => aiSection.classList.add(styles.aiMoodReady)
     const showAiActions = () => aiSection.classList.add(styles.aiActionsReady)
     const resetMoodCycle = () => {
@@ -41,8 +47,7 @@ const useSectionReveals = ({
     resetMoodCycle()
 
     gsap.set(
-      [aiIntroRef.current, featureSectionRef.current]
-        .flatMap((section) => [...section.querySelectorAll('*')]),
+      [aiHeading, ...recommendCards, aiButton, featureHeading, featureDescription, featureButton],
       { clearProps: 'opacity,visibility' },
     )
 
@@ -97,9 +102,6 @@ const useSectionReveals = ({
         },
       )
 
-    const featureHeading = featureSectionRef.current.querySelector(`.${styles.featureCopy} h2`)
-    const featureDescription = featureSectionRef.current.querySelector(`.${styles.featureCopy} p`)
-    const featureButton = featureSectionRef.current.querySelector(`.${styles.featureButton}`)
     const featureCup = featureCupRef.current
     const canFollowPointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
     const moveCupX = gsap.quickTo(featureCup, 'x', { duration: 0.32, ease: 'power3.out' })
