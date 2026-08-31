@@ -2874,25 +2874,6 @@
   }
 }
 
-.eventOne {
-  @media (min-width: 1200px) {
-    translate: 0 12px;
-  }
-}
-
-.eventThree {
-  @media (min-width: 1200px) {
-    translate: 0 24px;
-  }
-}
-
-.eventTwo,
-.eventFive {
-  @media (min-width: 1200px) {
-    translate: 0 -20px;
-  }
-}
-
 .skipTransition {
   position: fixed;
   inset: 0;

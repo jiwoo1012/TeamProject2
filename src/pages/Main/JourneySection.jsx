@@ -106,6 +106,8 @@ const JourneySection = ({ onSkip }) => {
     let scrollTween
     let isMoving = false
     let removeWheelHandler = () => {}
+    let removeTouchHandlers = () => {}
+    let removeKeyHandler = () => {}
     let removePointerHandlers = () => {}
     const root = document.documentElement
     const scrollbarClass = 'main-journey-active'
@@ -409,7 +411,6 @@ const JourneySection = ({ onSkip }) => {
         if (targetIndex === currentIndex) {
           if (direction > 0 && currentIndex === lastIndex) {
             event.preventDefault()
-            finishJourney()
           }
           return
         }
@@ -434,10 +435,43 @@ const JourneySection = ({ onSkip }) => {
         window.addEventListener('wheel', handleWheel, { passive: false })
         removeWheelHandler = () => window.removeEventListener('wheel', handleWheel)
       }
+
+      // 마지막 메시지는 버튼을 눌렀을 때만 종료합니다.
+      // 모바일 터치와 키보드의 아래 방향 스크롤도 마지막 장면에서 멈춥니다.
+      const isAtFinalScene = () => {
+        const section = sectionRef.current
+        const sectionEnd = section.offsetTop + section.offsetHeight - window.innerHeight
+        return window.scrollY >= sectionEnd - 2
+      }
+
+      let touchStartY = 0
+      const handleTouchStart = (event) => {
+        touchStartY = event.touches[0]?.clientY ?? 0
+      }
+      const handleTouchMove = (event) => {
+        const currentY = event.touches[0]?.clientY ?? touchStartY
+        const isScrollingDown = currentY < touchStartY
+        if (isScrollingDown && isAtFinalScene()) event.preventDefault()
+      }
+      const handleKeyDown = (event) => {
+        const scrollDownKeys = ['ArrowDown', 'PageDown', 'End', ' ']
+        if (scrollDownKeys.includes(event.key) && isAtFinalScene()) event.preventDefault()
+      }
+
+      window.addEventListener('touchstart', handleTouchStart, { passive: true })
+      window.addEventListener('touchmove', handleTouchMove, { passive: false })
+      window.addEventListener('keydown', handleKeyDown)
+      removeTouchHandlers = () => {
+        window.removeEventListener('touchstart', handleTouchStart)
+        window.removeEventListener('touchmove', handleTouchMove)
+      }
+      removeKeyHandler = () => window.removeEventListener('keydown', handleKeyDown)
     }, sectionRef)
 
     return () => {
       removeWheelHandler()
+      removeTouchHandlers()
+      removeKeyHandler()
       removePointerHandlers()
       scrollTween?.kill()
       stage?.classList.remove(styles.cursorHidden)

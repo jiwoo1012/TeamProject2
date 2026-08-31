@@ -31,30 +31,56 @@ const useHeroReveal = ({
   useLayoutEffect(() => {
     const root = document.documentElement
     const heroScrollGuide = heroCoverRef.current?.querySelector('div')
+    const isMobile = window.matchMedia('(max-width: 767px)').matches
 
     gsap.set(heroCoverRef.current, { autoAlpha: 1, scale: 1 })
     gsap.set(heroImageRef.current, { clearProps: 'transform', autoAlpha: 1 })
     gsap.set(heroPhotoRef.current, { clearProps: 'transform' })
     gsap.set(heroSunsetPhotoRef.current, { autoAlpha: 0 })
     const sunProgress = { angle: 0 }
-    const placeSunOnArch = (angle) => {
+    let sunPathMetrics = null
+    const updateSunPathMetrics = () => {
       const imageGroup = heroImageRef.current
-      const sun = heroSunRef.current
-      if (!imageGroup || !sun || window.innerWidth < 1200) return
+      const frame = imageGroup?.querySelector('figure')
+      if (!imageGroup || !frame || window.innerWidth < 1200) {
+        sunPathMetrics = null
+        return
+      }
 
       const groupStyles = window.getComputedStyle(imageGroup)
-      const frameStyles = window.getComputedStyle(imageGroup.querySelector('figure'))
-      const frameOffset = Number.parseFloat(groupStyles.getPropertyValue('--hero-frame-offset'))
+      const frameStyles = window.getComputedStyle(frame)
       const outlineGap = Number.parseFloat(groupStyles.getPropertyValue('--hero-arch-outline-gap'))
       const outlineStroke = Number.parseFloat(groupStyles.getPropertyValue('--hero-arch-stroke'))
-      const outlineTrim = Number.parseFloat(groupStyles.getPropertyValue('--hero-arch-trim'))
       const radiusValues = frameStyles.borderTopLeftRadius.split(' ')
       const archRadius = Number.parseFloat(radiusValues[1] || radiusValues[0])
-      const radiusX = imageGroup.offsetWidth / 2 + outlineGap + outlineStroke / 2
-      const radiusY = archRadius + outlineGap + outlineStroke / 2
+      const groupWidth = imageGroup.offsetWidth
+
+      sunPathMetrics = {
+        frameOffset: Number.parseFloat(groupStyles.getPropertyValue('--hero-frame-offset')),
+        outlineStroke,
+        outlineTrim: Number.parseFloat(groupStyles.getPropertyValue('--hero-arch-trim')),
+        archRadius,
+        groupHalfWidth: groupWidth / 2,
+        radiusX: groupWidth / 2 + outlineGap + outlineStroke / 2,
+        radiusY: archRadius + outlineGap + outlineStroke / 2,
+      }
+    }
+    const placeSunOnArch = (angle) => {
+      const sun = heroSunRef.current
+      if (!sun || !sunPathMetrics) return
+
+      const {
+        frameOffset,
+        outlineStroke,
+        outlineTrim,
+        archRadius,
+        groupHalfWidth,
+        radiusX,
+        radiusY,
+      } = sunPathMetrics
       const trimAngle = Math.acos(1 - (outlineTrim - outlineStroke / 2) / radiusX)
       const pathAngle = Math.PI - trimAngle - (angle / Math.PI) * (Math.PI - trimAngle * 2)
-      const x = imageGroup.offsetWidth / 2 + radiusX * Math.cos(pathAngle)
+      const x = groupHalfWidth + radiusX * Math.cos(pathAngle)
       const y = frameOffset + archRadius - radiusY * Math.sin(pathAngle)
 
       gsap.set(sun, {
@@ -64,6 +90,7 @@ const useHeroReveal = ({
       })
     }
 
+    updateSunPathMetrics()
     placeSunOnArch(sunProgress.angle)
     const originalRightTitleColor = window.getComputedStyle(rightHeroTitleRef.current).color
     const sunTimeline = gsap.timeline({
@@ -97,6 +124,8 @@ const useHeroReveal = ({
 
     heroSunPlayRef.current = () => {
       if (sunTimeline.isActive() || isHeroSunCompleteRef.current) return
+      updateSunPathMetrics()
+      placeSunOnArch(sunProgress.angle)
       sunTimeline.restart()
     }
     heroSunResetRef.current = () => {
@@ -125,7 +154,7 @@ const useHeroReveal = ({
       invalidateOnRefresh: true,
     })
 
-    const mobileScrollGuideTrigger = window.matchMedia('(max-width: 767px)').matches
+    const mobileScrollGuideTrigger = isMobile
       ? ScrollTrigger.create({
         trigger: mainContentRef.current,
         start: 'top top-=8',
@@ -150,7 +179,10 @@ const useHeroReveal = ({
         start: HERO_COVER_EXIT_START,
         toggleActions: 'play none none reverse',
         invalidateOnRefresh: true,
-        onRefresh: () => placeSunOnArch(sunProgress.angle),
+        onRefresh: () => {
+          updateSunPathMetrics()
+          placeSunOnArch(sunProgress.angle)
+        },
       },
     })
       .to(heroCoverRef.current, {
@@ -194,7 +226,10 @@ const useHeroReveal = ({
         start: () => `top top-=${window.innerHeight + 100}`,
         toggleActions: 'play none none reverse',
         invalidateOnRefresh: true,
-        onRefresh: () => placeSunOnArch(sunProgress.angle),
+        onRefresh: () => {
+          updateSunPathMetrics()
+          placeSunOnArch(sunProgress.angle)
+        },
       },
     })
       .to(heroImageRef.current, {
@@ -235,7 +270,7 @@ const useHeroReveal = ({
         'shopReveal',
       )
 
-    if (window.matchMedia('(max-width: 767px)').matches) {
+    if (isMobile) {
       timeline.to(heroSunsetPhotoRef.current, {
         autoAlpha: 1,
         duration: 0.7,
