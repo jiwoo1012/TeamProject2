@@ -1,82 +1,195 @@
+import { useLayoutEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import pour from '../../assets/characters/M007_Poses01.png'
-import choose from '../../assets/characters/M007_Poses02.png'
-import hello from '../../assets/characters/M007_Poses03.png'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import sitting from '../../assets/characters/M007_Poses04.png'
 import front from '../../assets/characters/M007_Poses05.png'
-import survey from '../../assets/characters/M007_Poses06.png'
-import listen from '../../assets/characters/M007_Poses07.png'
+import makdongLookUp from '../../assets/images/brand/makdong-look-up-hands-behind.png'
+import makdongSittingWave from '../../assets/images/brand/makdong-sitting-wave.png'
+import makdongSide from '../../assets/images/brand/mk_side.png'
+import makdongBack from '../../assets/images/brand/mk_back.png'
+import useMakdongSectionWheel from './useMakdongSectionWheel'
 import useStickyBrandHeader from './useStickyBrandHeader'
 import styles from './MakdongIntro.module.scss'
 
+gsap.registerPlugin(ScrollTrigger)
+
+const MAKDONG_GUIDE_IMAGES = {
+  turnaround: [
+    { label: 'FRONT', image: front, alt: '막동이 정면 모습' },
+    { label: 'SIDE', image: makdongSide, alt: '막동이 측면 모습' },
+    { label: 'BACK', image: makdongBack, alt: '막동이 후면 모습' },
+  ],
+}
+
 const jobs = [
-  { number: '01', title: '오늘은 어떤 하루였나요?', text: '먼저 오늘의 기분과 함께하고 싶은 순간을 가만히 들어요.', image: listen, alt: '이야기를 듣는 막동이' },
-  { number: '02', title: '취향을 살펴보고', text: '좋아하는 맛과 향, 원하는 분위기를 하나씩 함께 찾아봐요.', image: survey, alt: '취향 설문지를 든 막동이' },
-  { number: '03', title: '술과 안주를 골라', text: '당신의 하루와 취향에 잘 어울리는 조합을 정성껏 골라요.', image: choose, alt: '술병을 들고 추천하는 막동이' },
-  { number: '04', title: '오늘의 한 상을 준비해요.', text: '술과 안주, 잔이 조화로운 오늘만의 한 상을 완성해요.', image: pour, alt: '술을 따르는 막동이' },
+  { number: '01', title: '오늘은 어떤 하루였나요?', text: '먼저 오늘의 기분과 함께하고 싶은 순간을 가만히 들어요.' },
+  { number: '02', title: '취향을 살펴보고', text: '좋아하는 맛과 향, 원하는 분위기를 하나씩 함께 찾아봐요.' },
+  { number: '03', title: '술과 안주를 골라', text: '당신의 하루와 취향에 잘 어울리는 조합을 정성껏 골라요.' },
+  { number: '04', title: '오늘의 한 상을 준비해요.', text: '술과 안주, 잔이 조화로운 오늘만의 한 상을 완성해요.' },
 ]
 
 const MakdongIntro = () => {
+  const guideRef = useRef(null)
+  const storyRef = useRef(null)
+  const outroRef = useRef(null)
+
   useStickyBrandHeader()
+  useMakdongSectionWheel({ guideRef, storyRef, outroRef })
+
+  useLayoutEffect(() => {
+    const section = guideRef.current
+    if (!section) return undefined
+
+    const media = gsap.matchMedia()
+    const context = gsap.context(() => {
+      media.add('(prefers-reduced-motion: no-preference)', () => {
+        gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 72%',
+            once: true,
+          },
+        })
+          .from('[data-guide-title]', { autoAlpha: 0, y: 36, duration: 0.7, ease: 'power2.out' })
+          .from('[data-guide-view]', { autoAlpha: 0, y: 24, duration: 0.55, stagger: 0.12, ease: 'power2.out' }, '-=0.3')
+      })
+    }, section)
+
+    return () => {
+      media.revert()
+      context.revert()
+    }
+  }, [])
 
   return (
     <main className={styles.page}>
-      <section className={styles.intro} aria-labelledby="makdong-title">
-        <div className={styles.introCopy}>
-          <h1 id="makdong-title">MAKDONG</h1>
-          <p>오늘 당신의 한 잔을 함께 골라줄<br />자작의 작은 큐레이터, 막동이를 소개합니다.</p>
-        </div>
-        <div className={styles.introVisual}>
-          <span>안녕, 나는 막동이야!</span>
-          <img src={hello} alt="손을 흔들며 인사하는 막동이" />
-        </div>
+      <section className={styles.blankIntro} aria-label="막동이 소개 첫 화면">
+        <a className={styles.blankIntroLink} href="#makdong-intro" aria-label="막동이 소개 시작하기">
+          <img src={makdongLookUp} alt="두 손을 뒤로 하고 위를 바라보는 막동이" />
+        </a>
       </section>
 
-      <section className={styles.profile} aria-labelledby="profile-title">
-        <div className={styles.profileVisual}>
-          <img src={front} alt="정면으로 서 있는 막동이" />
-        </div>
-        <div className={styles.profileCopy}>
-          <h2 id="profile-title">자작에 사는 작은 너구리, 막동이</h2>
-          <p className={styles.description}>좋은 술과 맛있는 안주를 찾아다니는 걸 좋아해요.<br />오늘 하루가 어땠는지 가만히 듣고,<br />당신에게 어울리는 한 상을 준비해주는 다정한 친구예요.</p>
-          <dl className={styles.facts}>
-            <div><dt>NAME</dt><dd>막동이</dd></div>
-            <div><dt>SPECIES</dt><dd>너구리</dd></div>
-            <div><dt>ROLE</dt><dd>AI 큐레이터</dd></div>
-            <div><dt>LIKES</dt><dd>맛있는 한 상</dd></div>
-          </dl>
-        </div>
-      </section>
+      <section
+        ref={guideRef}
+        id="makdong-intro"
+        className={styles.characterGuide}
+        aria-labelledby="makdong-guide-title"
+      >
+        <div className={styles.characterGuideInner}>
+          <div className={styles.characterIntro}>
+            <div data-guide-title>
+              <h1 id="makdong-guide-title">MAKDONG</h1>
+              <p className={styles.characterName}>막동이</p>
+              <p className={styles.characterRole}>
+                오늘 당신의 한 잔을 함께 골라줄<br />
+                자작의 작은 큐레이터, 막동이를 소개합니다.
+              </p>
+              <p className={styles.characterSummary}>
+                오늘의 기분과 취향을 살피고,<br />
+                당신에게 어울리는 한 잔을 찾아주는<br />
+                다정하고 호기심 많은 친구예요.
+              </p>
+            </div>
 
-      <section className={styles.raccoon} aria-labelledby="raccoon-title">
-        <div className={styles.raccoonCopy}>
-          <h2 id="raccoon-title">정겹고, 호기심 많고,<br />먹는 것을 좋아하는 친구.</h2>
-          <p>막동이는 자작이 전하고 싶은 친근하고 다정한 분위기를 담아 탄생했습니다.</p>
-        </div>
-        <div className={styles.raccoonVisual}>
-          <img src={hello} alt="막동이의 밝고 호기심 많은 표정" />
-        </div>
-      </section>
+            <div className={styles.characterTaste}>
+              <h2>막동이의 취향</h2>
+              <dl>
+                <div>
+                  <dt>좋아하는 것</dt>
+                  <dd>맛있는 안주 냄새, 새로운 전통주 찾기</dd>
+                </div>
+                <div>
+                  <dt>특기</dt>
+                  <dd>오늘 기분에 딱 맞는 한 상 골라주기</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
 
-      <section className={styles.jobs} aria-labelledby="jobs-title">
-        <header>
-          <h2 id="jobs-title">막동이는 이렇게 한 상을 준비해요.</h2>
-        </header>
-        <ol>
-          {jobs.map(({ number, title, text, image, alt }) => (
-            <li key={number}>
-              <div className={styles.jobVisual}><img src={image} alt={alt} /></div>
-              <div className={styles.jobCopy}>
-                <span>{number}</span>
-                <h3>{title}</h3>
-                <p>{text}</p>
+          <aside className={styles.guideBoard} aria-label="막동이 캐릭터 가이드">
+            <header className={styles.guideBoardHeader}>
+              <h2>MAKDONG CHARACTER GUIDE</h2>
+              <span>JAJAK ARCHIVE · 01</span>
+            </header>
+
+            <div className={styles.turnaroundBoard}>
+              {MAKDONG_GUIDE_IMAGES.turnaround.map(({ label, image, alt }) => (
+                <figure key={label} data-guide-view>
+                  <div className={styles.turnaroundVisual}>
+                    {image ? (
+                      <img src={image} alt={alt} />
+                    ) : (
+                      <span className={styles.imagePlaceholder} aria-label={`${alt} 이미지 준비 중`}>
+                        IMAGE<br />TO COME
+                      </span>
+                    )}
+                  </div>
+                  <figcaption>{label}</figcaption>
+                </figure>
+              ))}
+            </div>
+
+            <dl className={styles.characterMeta}>
+              <div>
+                <dt><i aria-hidden="true">○</i>ROLE</dt>
+                <dd>
+                  <strong>AI CURATOR</strong>
+                  <span>당신의 기분과 취향을 이해하고 어울리는 전통주와 안주, 잔을 제안하는 큐레이터</span>
+                </dd>
               </div>
-            </li>
-          ))}
-        </ol>
+              <div>
+                <dt><i aria-hidden="true">☺</i>PERSONALITY</dt>
+                <dd>
+                  <strong>WARM · CURIOUS · PLAYFUL</strong>
+                  <span>다정하고 호기심이 많으며, 장난기가 가득한 성격</span>
+                </dd>
+              </div>
+              <div>
+                <dt><i aria-hidden="true">◇</i>FAVORITE</dt>
+                <dd>
+                  <strong>TRADITIONAL DRINK &amp; FOOD</strong>
+                  <span>전통주와 다양한 음식, 잔을 모으고 페어링하는 것을 좋아해요.</span>
+                </dd>
+              </div>
+            </dl>
+          </aside>
+        </div>
       </section>
 
-      <section className={styles.outro} aria-labelledby="outro-title">
+      <section ref={storyRef} className={styles.characterStory} aria-labelledby="character-story-title">
+        <div className={styles.characterStoryInner}>
+          <figure className={styles.characterStoryVisual}>
+            <img src={makdongSittingWave} alt="앉아서 손을 흔들며 인사하는 막동이" />
+          </figure>
+
+          <div className={styles.characterStoryCopy}>
+            <header className={styles.characterStoryHeader}>
+              <h2 id="character-story-title">
+                막동이와 함께하는
+                <br />
+                다정한 한 잔의 이야기
+              </h2>
+              <p>
+                막동이는 오늘의 마음을 천천히 들여다보고, 당신의 하루에 잘 어울리는
+                한 상을 함께 찾아갑니다. 이곳에는 막동이의 성격과 이야기를 담을 예정입니다.
+              </p>
+            </header>
+
+            <ol className={styles.characterStorySteps}>
+              {jobs.map(({ number, title, text }) => (
+                <li key={number}>
+                  <span>{number}</span>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section ref={outroRef} className={styles.outro} aria-labelledby="outro-title">
         <div className={styles.outroVisual}>
           <i aria-hidden="true" />
           <img src={sitting} alt="술병을 안고 앉은 막동이" />
