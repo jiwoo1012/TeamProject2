@@ -48,6 +48,7 @@ const Footer = () => {
             <div className={styles.brandArea}>
               <Link
                 to="/"
+                state={{ skipJourney: true }}
                 className={styles.logo}
               >
                 <img

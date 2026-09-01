@@ -108,6 +108,7 @@ const MobileHeader = () => {
 
         <Link
           to="/"
+          state={{ skipJourney: true }}
           className={
             styles.logo
           }
