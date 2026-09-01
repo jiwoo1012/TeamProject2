@@ -280,8 +280,17 @@
   text-align: center;
 }
 
+.discountValue {
+  color: v.$color-error;
+  font-weight: v.$font-weight-semibold;
+}
+
 .lineTotal {
   font-weight: v.$font-weight-semibold;
+}
+
+.priceLabel {
+  display: none;
 }
 
 .rowCheck {
@@ -316,10 +325,10 @@
   height: 46px;
   align-items: center;
   justify-content: center;
-  border: 1px solid v.$color-border;
+  border: 1px solid v.$color-primary;
   border-radius: 11px;
-  background: v.$color-white;
-  color: v.$color-text-secondary;
+  background: v.$color-primary;
+  color: v.$color-white;
   font-size: v.$font-size-md;
   font-weight: v.$font-weight-semibold;
 }
@@ -591,6 +600,18 @@
   color: v.$color-white;
   font-size: v.$font-size-xs;
   text-align: center;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.recommendationItem button:hover,
+.recommendationItem button:focus-visible {
+  background: v.$color-primary;
+  transform: translateY(-2px);
+}
+
+.recommendationItem button:focus-visible {
+  outline: 2px solid v.$color-primary;
+  outline-offset: 3px;
 }
 
 .emptyCard {
@@ -609,6 +630,39 @@
   place-items: center;
   border-radius: v.$radius-pill;
   background: color-mix(in srgb, v.$color-primary 52%, v.$color-white);
+}
+
+.loginGate {
+  display: flex;
+  min-height: 515px;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 24px;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
+  text-align: center;
+}
+
+.loginGate h2 {
+  margin: v.$space-10 0 0;
+  font-size: v.$font-size-3xl;
+  font-weight: v.$font-weight-bold;
+}
+
+.loginGate p {
+  margin: v.$space-3 0 0;
+  color: v.$color-text-secondary;
+}
+
+.loginGateBrowse {
+  margin-top: v.$space-3;
+  border: 0;
+  background: transparent;
+  color: v.$color-text-secondary;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .emptyCartIcon {
@@ -660,7 +714,7 @@
   font-size: v.$font-size-sm;
 }
 
-@media (max-width: v.$breakpoint-tablet-max) {
+@media (max-width: 1500px) {
   .page {
     width: calc(100% - 80px);
     padding-top: v.$space-12;
@@ -669,12 +723,86 @@
   .mainGrid {
     grid-template-columns: 1fr;
     gap: 40px;
+    margin-left: 0;
+  }
+
+  .pageHeader {
+    position: static;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: v.$space-4;
+    margin-left: 0;
+  }
+
+  .purchaseSteps {
+    position: static;
+    flex-wrap: wrap;
+    gap: v.$space-3;
+    font-size: v.$font-size-md;
+  }
+
+  .cartTableHead {
+    display: none;
+  }
+
+  .cartRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: v.$space-4;
+    padding: v.$space-5;
+  }
+
+  .itemInfo {
+    grid-column: 1 / -1;
+  }
+
+  .quantityControl {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+  }
+
+  .rowCheck {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+  }
+
+  .discountValue,
+  .lineTotal {
+    display: flex;
+    grid-row: 3;
+    align-items: center;
+    justify-content: space-between;
+    gap: v.$space-3;
+    text-align: left;
+  }
+
+  .discountValue {
+    grid-column: 1;
+  }
+
+  .lineTotal {
+    grid-column: 2;
+    color: v.$color-text-primary;
+  }
+
+  .priceLabel {
+    display: inline;
+    color: v.$color-text-secondary;
+    font-size: v.$font-size-sm;
+    font-weight: v.$font-weight-medium;
   }
 
   .summaryCard {
     position: relative;
     margin-top: 0;
-    min-height: 520px;
+    min-height: 0;
+    padding-bottom: 0;
+  }
+
+  .orderButton {
+    position: static;
+    width: 100%;
   }
 
   .recommendationList {
@@ -715,31 +843,60 @@
     font-size: v.$font-size-sm;
   }
 
-  .cartTableHead {
-    display: none;
+  .stepFlower {
+    width: 28px;
+    height: 18px;
+    flex-basis: 28px;
   }
 
-  .cartRow {
-    grid-template-columns: 1fr 80px;
+  .recommendationList {
+    grid-template-columns: 1fr;
+    justify-items: stretch;
     gap: v.$space-4;
-    padding: v.$space-5;
   }
 
-  .itemInfo {
-    grid-column: 1 / -1;
+  .cartActions {
+    align-items: stretch;
+    flex-direction: column;
+    gap: v.$space-3;
   }
 
-  .discountValue,
-  .lineTotal {
-    text-align: left;
+  .cartActionGroup {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: v.$space-2;
   }
 
-  .rowCheck {
-    grid-column: 2;
-    grid-row: 2;
+  .textButton,
+  .clearAllButton,
+  .outlineButton {
+    width: 100%;
+    min-width: 0;
   }
 
-  .recommendationList,
+  .clearAllButton {
+    color: v.$color-error;
+  }
+
+  .recommendationItem {
+    max-width: none;
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+    gap: v.$space-3;
+  }
+
+  .recommendationItem .productImage {
+    width: 72px;
+    height: 72px;
+  }
+
+  .recommendationItem button {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    margin-top: 0;
+  }
+
   .emptyRecommendations {
     grid-template-columns: 1fr;
   }
@@ -753,5 +910,25 @@
     bottom: v.$space-4;
     left: v.$space-4;
     justify-content: space-between;
+  }
+}
+
+@media (max-width: 360px) {
+  .cartRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .discountValue {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
+  .lineTotal {
+    grid-column: 1 / -1;
+    grid-row: 4;
+  }
+
+  .cartActionGroup {
+    grid-template-columns: 1fr;
   }
 }

@@ -33,9 +33,9 @@
 .ornamentArea {
   width: min(
     1480px,
-    calc(100% - #{v.$grid-gutter * 12 + v.$space-10 + v.$side-margin-desktop})
+    calc(100% - #{v.$grid-gutter * 14 + v.$space-10 + v.$side-margin-desktop})
   );
-  margin: 0 v.$side-margin-desktop v.$space-6 calc(v.$grid-gutter * 12 + v.$space-10);
+  margin: 0 v.$side-margin-desktop v.$space-6 calc(v.$grid-gutter * 14 + v.$space-10);
 }
 
 .topOrnament {
@@ -51,10 +51,10 @@
 .layout {
   display: grid;
   grid-template-columns:
-    calc(v.$grid-gutter * 12)
+    calc(v.$grid-gutter * 14)
     minmax(0, 1fr);
 
-  gap: v.$space-10;
+  gap: calc(v.$space-12 + v.$space-2);
   align-items: stretch;
 }
 
@@ -63,10 +63,14 @@
 ========================= */
 
 .sidebar {
+  position: sticky;
+  top: v.$space-6;
+  align-self: start;
   display: flex;
   min-height: 70vh;
   flex-direction: column;
   justify-content: space-between;
+  margin-top: calc(v.$space-16 * -1);
 }
 
 .navigation {
@@ -192,6 +196,8 @@
 ========================= */
 
 @media (max-width: v.$breakpoint-tablet-max) {
+  .sidebar { margin-top: 0; }
+
   .pageHeader {
     padding: 0 v.$side-margin-tablet;
   }
@@ -242,6 +248,9 @@
   }
 
   .sidebar {
+    position: static;
+    top: auto;
+    align-self: auto;
     min-height: auto;
     margin-bottom: v.$space-8;
     padding: 0 v.$side-margin-mobile;
