@@ -1,18 +1,23 @@
 rules_version = '2';
 
 service cloud.firestore {
+
   match /databases/{database}/documents {
+
     function signedIn() {
       return request.auth != null;
     }
 
     function isOwner(userId) {
-      return signedIn() && request.auth.uid == userId;
+      return signedIn()
+        && request.auth.uid == userId;
     }
 
     function isAdmin() {
       return signedIn()
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+        && get(
+          /databases/$(database)/documents/users/$(request.auth.uid)
+        ).data.role == 'admin';
     }
 
     function isValidMemberCreate(userId) {
@@ -36,13 +41,23 @@ service cloud.firestore {
       return request.resource.data.points is int
         && request.resource.data.points >= 0
         && request.resource.data.points <= resource.data.points
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['points', 'updatedAt']);
+        && request.resource.data.diff(resource.data)
+          .affectedKeys()
+          .hasOnly([
+            'points',
+            'updatedAt'
+          ]);
     }
 
     function isValidAddress() {
       return request.resource.data.keys().hasAll([
-          'label', 'recipient', 'phone', 'address', 'detailAddress', 'isDefault'
-        ])
+        'label',
+        'recipient',
+        'phone',
+        'address',
+        'detailAddress',
+        'isDefault'
+      ])
         && request.resource.data.label is string
         && request.resource.data.recipient is string
         && request.resource.data.phone is string
@@ -52,126 +67,370 @@ service cloud.firestore {
     }
 
     function isValidCartItem(productId) {
-      return request.resource.data.keys().hasOnly(['productId', 'quantity'])
+      return request.resource.data.keys().hasOnly([
+        'productId',
+        'quantity'
+      ])
         && request.resource.data.productId == productId
         && request.resource.data.quantity is int
         && request.resource.data.quantity > 0;
     }
 
+
+    /* ========================================
+       USERS
+    ======================================== */
+
     match /users/{userId} {
-      allow create: if isOwner(userId) && isValidMemberCreate(userId);
-      allow read: if isOwner(userId) || isAdmin();
-      allow update: if (isOwner(userId) && (keepsMemberAuthority() || canUsePoints())) || isAdmin();
-      allow delete: if isAdmin();
+
+      allow create:
+        if isOwner(userId)
+        && isValidMemberCreate(userId);
+
+      allow read:
+        if isOwner(userId)
+        || isAdmin();
+
+      allow update:
+        if (
+          isOwner(userId)
+          && (
+            keepsMemberAuthority()
+            || canUsePoints()
+          )
+        )
+        || isAdmin();
+
+      allow delete:
+        if isAdmin();
+
+
+      /* ========================================
+         WISHLIST
+      ======================================== */
 
       match /wishlist/{wishlistId} {
-        allow read, create, update, delete: if isOwner(userId);
+
+        allow read, create, update, delete:
+          if isOwner(userId);
       }
+
+
+      /* ========================================
+         ADDRESSES
+      ======================================== */
 
       match /addresses/{addressId} {
-        allow read: if isOwner(userId);
-        allow create, update: if isOwner(userId) && isValidAddress();
-        allow delete: if isOwner(userId);
+
+        allow read:
+          if isOwner(userId);
+
+        allow create, update:
+          if isOwner(userId)
+          && isValidAddress();
+
+        allow delete:
+          if isOwner(userId);
       }
+
+
+      /* ========================================
+         CART
+      ======================================== */
 
       match /cart/{productId} {
-        allow read: if isOwner(userId);
-        allow create, update: if isOwner(userId) && isValidCartItem(productId);
-        allow delete: if isOwner(userId);
+
+        allow read:
+          if isOwner(userId);
+
+        allow create, update:
+          if isOwner(userId)
+          && isValidCartItem(productId);
+
+        allow delete:
+          if isOwner(userId);
       }
     }
 
-    // 공지사항: 일반 사용자는 게시된 공지만, 관리자는 모든 상태를 관리한다.
-    // 예상 필드: title, content, status(draft|published), isPinned,
-    // authorId, authorName, createdAt, updatedAt
+
+    /* ========================================
+       NOTICES
+    ======================================== */
+
+    // 공지사항:
+    // 일반 사용자는 게시된 공지만,
+    // 관리자는 모든 상태를 관리한다.
+    //
+    // 예상 필드:
+    // title, content,
+    // status(draft|published),
+    // isPinned,
+    // authorId,
+    // authorName,
+    // createdAt,
+    // updatedAt
+
     match /notices/{noticeId} {
-      allow read: if resource.data.status == 'published' || isAdmin();
-      allow create, update, delete: if isAdmin();
+
+      allow read:
+        if resource.data.status == 'published'
+        || isAdmin();
+
+      allow create, update, delete:
+        if isAdmin();
     }
 
-    // 리뷰: 상품 상세에는 공개 리뷰를 표시하고, 작성자는 본인 리뷰만 수정·삭제한다.
-    // 예상 필드: orderId, productId, authorId, nickname, rating, content,
-    // status(visible|hidden), reportCount, createdAt, updatedAt
-    // orderId는 구매 상품(productIds)을 포함한 본인 주문이어야 한다.
-    function hasPurchasedProduct(orderId, productId) {
-      return get(/databases/$(database)/documents/orders/$(orderId)).data.userId
-          == request.auth.uid
-        && productId in get(/databases/$(database)/documents/orders/$(orderId))
-          .data.productIds;
+
+    /* ========================================
+       REVIEWS
+    ======================================== */
+
+    // 리뷰:
+    // 상품 상세에는 공개 리뷰를 표시하고,
+    // 작성자는 본인 리뷰만 수정·삭제한다.
+    //
+    // 예상 필드:
+    // orderId,
+    // productId,
+    // authorId,
+    // nickname,
+    // rating,
+    // content,
+    // status(visible|hidden),
+    // reportCount,
+    // createdAt,
+    // updatedAt
+    //
+    // orderId는 구매 상품(productIds)을
+    // 포함한 본인 주문이어야 한다.
+
+    function hasPurchasedProduct(
+      orderId,
+      productId
+    ) {
+      return get(
+        /databases/$(database)/documents/orders/$(orderId)
+      ).data.userId == request.auth.uid
+
+        && productId in get(
+          /databases/$(database)/documents/orders/$(orderId)
+        ).data.productIds;
     }
+
 
     function isValidReviewCreate() {
+
       return request.resource.data.keys().hasAll([
-          'orderId', 'productId', 'authorId', 'nickname', 'rating', 'content',
-          'status', 'reportCount', 'createdAt'
-        ])
+        'orderId',
+        'productId',
+        'authorId',
+        'nickname',
+        'rating',
+        'content',
+        'status',
+        'reportCount',
+        'createdAt'
+      ])
+
         && request.resource.data.orderId is string
+
         && request.resource.data.productId is string
+
         && request.resource.data.authorId == request.auth.uid
+
         && hasPurchasedProduct(
           request.resource.data.orderId,
           request.resource.data.productId
         )
+
         && request.resource.data.nickname is string
+
         && request.resource.data.nickname.size() > 0
+
         && request.resource.data.nickname.size() <= 30
+
         && request.resource.data.rating is int
+
         && request.resource.data.rating >= 1
+
         && request.resource.data.rating <= 5
+
         && request.resource.data.content is string
+
         && request.resource.data.content.size() > 0
+
         && request.resource.data.content.size() <= 500
+
         && request.resource.data.status == 'visible'
+
         && request.resource.data.reportCount == 0
+
         && request.resource.data.createdAt is timestamp;
     }
 
+
     function isValidReviewOwnerUpdate() {
+
       return request.auth.uid == resource.data.authorId
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['nickname', 'rating', 'content', 'updatedAt'])
+
+        && request.resource.data
+          .diff(resource.data)
+          .affectedKeys()
+          .hasOnly([
+            'nickname',
+            'rating',
+            'content',
+            'updatedAt'
+          ])
+
         && request.resource.data.nickname is string
+
         && request.resource.data.nickname.size() > 0
+
         && request.resource.data.nickname.size() <= 30
+
         && request.resource.data.rating is int
+
         && request.resource.data.rating >= 1
+
         && request.resource.data.rating <= 5
+
         && request.resource.data.content is string
+
         && request.resource.data.content.size() > 0
+
         && request.resource.data.content.size() <= 500;
     }
 
+
     match /reviews/{reviewId} {
-      allow read: if resource.data.status == 'visible'
+
+      allow read:
+        if resource.data.status == 'visible'
         || isAdmin()
-        || (signedIn() && request.auth.uid == resource.data.authorId);
-      allow create: if signedIn() && isValidReviewCreate();
-      allow update: if isAdmin() || (signedIn() && isValidReviewOwnerUpdate());
-      allow delete: if isAdmin()
-        || (signedIn() && request.auth.uid == resource.data.authorId);
-    }
-
-    match /products/{productId} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /orders/{orderId} {
-      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
-      allow read: if (signedIn() && resource.data.userId == request.auth.uid) || isAdmin();
-      allow update: if isAdmin()
         || (
           signedIn()
-          && resource.data.userId == request.auth.uid
-          && resource.data.status in ['paid', 'preparing']
-          && request.resource.data.status == 'cancelled'
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt'])
+          && request.auth.uid
+            == resource.data.authorId
         );
-      allow delete: if false;
+
+      allow create:
+        if signedIn()
+        && isValidReviewCreate();
+
+      allow update:
+        if isAdmin()
+        || (
+          signedIn()
+          && isValidReviewOwnerUpdate()
+        );
+
+      allow delete:
+        if isAdmin()
+        || (
+          signedIn()
+          && request.auth.uid
+            == resource.data.authorId
+        );
     }
 
+
+    /* ========================================
+       PRODUCTS
+    ======================================== */
+
+    match /products/{productId} {
+
+      allow read:
+        if true;
+
+      allow create, update, delete:
+        if isAdmin();
+    }
+
+
+    /* ========================================
+       ORDERS
+    ======================================== */
+
+    match /orders/{orderId} {
+
+      allow create:
+        if signedIn()
+        && request.resource.data.userId
+          == request.auth.uid;
+
+      allow read:
+        if (
+          signedIn()
+          && resource.data.userId
+            == request.auth.uid
+        )
+        || isAdmin();
+
+      allow update:
+        if isAdmin()
+        || (
+          signedIn()
+
+          && resource.data.userId
+            == request.auth.uid
+
+          && resource.data.status
+            in ['paid', 'preparing']
+
+          && request.resource.data.status
+            == 'cancelled'
+
+          && request.resource.data
+            .diff(resource.data)
+            .affectedKeys()
+            .hasOnly([
+              'status',
+              'updatedAt'
+            ])
+        );
+
+      allow delete:
+        if false;
+    }
+
+
+    /* ========================================
+       EVENT PARTICIPATIONS
+       ★ 이번에 추가한 부분
+    ======================================== */
+
+    // 이벤트 참여 내역
+    //
+    // 일반 사용자는 본인의 이벤트 참여 내역만 조회 가능
+    //
+    // 이벤트 결과 저장,
+    // 포인트 지급,
+    // 당첨 내역 수정은
+    // 클라이언트에서 직접 처리하지 않고
+    // Cloud Function에서 처리한다.
+
+    match /eventParticipations/{participationId} {
+
+      allow read:
+        if signedIn()
+        && resource.data.userId
+          == request.auth.uid;
+
+      allow create, update, delete:
+        if false;
+    }
+
+
+    /* ========================================
+       DEFAULT DENY
+    ======================================== */
+
     match /{document=**} {
-      allow read, write: if false;
+
+      allow read, write:
+        if false;
     }
   }
 }

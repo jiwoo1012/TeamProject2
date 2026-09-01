@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { onAuthStateChanged } from 'firebase/auth'
+import { Link, useNavigate } from 'react-router-dom'
+import { onAuthStateChanged, signOut } from 'firebase/auth'
+import { doc, getDoc } from 'firebase/firestore'
 
-import { auth } from '../../firebase/firebase'
+import { auth, db } from '../../firebase/firebase'
 
 // 상품 데이터
 import {
@@ -83,9 +84,12 @@ const recommendedProducts = liquors
 
 
 const DesktopHeader = () => {
+  const navigate = useNavigate()
+
   const [openMenu, setOpenMenu] = useState(null)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [user, setUser] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
 
 
   /* ========================================
@@ -95,13 +99,47 @@ const DesktopHeader = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
       auth,
-      (currentUser) => {
+      async (currentUser) => {
         setUser(currentUser)
+
+        if (!currentUser || currentUser.isAnonymous) {
+          setIsAdmin(false)
+          return
+        }
+
+        try {
+          const userRef = doc(db, 'users', currentUser.uid)
+          const userSnap = await getDoc(userRef)
+
+          setIsAdmin(
+            userSnap.exists() &&
+            userSnap.data()?.role === 'admin'
+          )
+        } catch (error) {
+          console.error('관리자 권한 확인 실패:', error)
+          setIsAdmin(false)
+        }
       }
     )
 
     return () => unsubscribe()
   }, [])
+
+
+  /* ========================================
+     로그아웃
+  ======================================== */
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth)
+      closeSearch()
+      closeMegaMenu()
+      navigate('/')
+    } catch (error) {
+      console.error('로그아웃 실패:', error)
+    }
+  }
 
 
   /* ========================================
@@ -251,6 +289,7 @@ const DesktopHeader = () => {
 
           <Link
             to="/"
+            state={{ skipJourney: true }}
             className={styles.logo}
             onMouseEnter={closeMegaMenu}
             onClick={closeSearch}
@@ -295,23 +334,55 @@ const DesktopHeader = () => {
             </button>
 
 
-            {/* 로그인 / 마이페이지 */}
+            {/* 로그인 / 마이페이지 / 관리자 메뉴 */}
 
-            <Link
-              to={user ? '/mypage' : '/login'}
-              className={styles.iconButton}
-              aria-label={
-                user
-                  ? '마이페이지'
-                  : '로그인'
-              }
-              onClick={closeSearch}
-            >
-              <img
-                src={loginIcon}
-                alt=""
-              />
-            </Link>
+            <div className={styles.accountMenu}>
+              <Link
+                to={user ? '/mypage' : '/login'}
+                className={styles.iconButton}
+                aria-label={
+                  user
+                    ? '마이페이지'
+                    : '로그인'
+                }
+                onClick={closeSearch}
+              >
+                <img
+                  src={loginIcon}
+                  alt=""
+                />
+              </Link>
+
+              {user && (
+                <div className={styles.accountDropdown}>
+                  <Link
+                    to="/mypage"
+                    className={styles.accountMenuItem}
+                    onClick={closeSearch}
+                  >
+                    마이페이지
+                  </Link>
+
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      className={styles.accountMenuItem}
+                      onClick={closeSearch}
+                    >
+                      관리자페이지
+                    </Link>
+                  )}
+
+                  <button
+                    type="button"
+                    className={styles.accountMenuItem}
+                    onClick={handleLogout}
+                  >
+                    로그아웃
+                  </button>
+                </div>
+              )}
+            </div>
 
 
             {/* 찜 */}
