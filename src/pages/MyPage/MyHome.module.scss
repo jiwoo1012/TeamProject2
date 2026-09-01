@@ -28,6 +28,7 @@
   width: 100%;
   grid-template-columns: minmax(0, 1.42fr) repeat(2, minmax(0, 1fr));
   column-gap: 21.645px;
+  row-gap: v.$space-5;
   min-height: 210px;
 }
 
@@ -275,7 +276,7 @@
 .welcomeDecor {
   display: block;
   width: 804px;
-  height: 101px;
+  height: auto;
   max-width: calc(100% - #{v.$space-8});
 }
 
@@ -491,6 +492,22 @@
    Tablet / Mobile
 ========================= */
 
+@media (max-width: 1500px) and (min-width: 1200px) {
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: v.$space-5;
+  }
+
+  .memberCard {
+    grid-column: 1 / -1;
+  }
+
+  .activityGrid {
+    grid-template-columns: 1fr;
+    gap: v.$space-8;
+  }
+}
+
 @media (max-width: v.$breakpoint-tablet-max) {
   .page {
     width: 100%;
@@ -512,12 +529,6 @@
 
   .welcomeBanner {
     padding: v.$space-5;
-  }
-
-  .welcomeLine,
-  .welcomeFlower,
-  .welcomeDots {
-    display: none;
   }
 
   .recentOrderList,
@@ -552,8 +563,15 @@
     font-size: v.$font-size-3xl;
   }
 
-  .welcomeBanner svg {
-    width: 72px;
+  .welcomeBanner {
+    min-height: 0;
+    padding: v.$space-4;
+  }
+
+  .welcomeDecor {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
   }
 
   .recentOrderItem {

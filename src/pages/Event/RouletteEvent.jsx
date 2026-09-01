@@ -87,6 +87,7 @@ const RouletteEvent = () => {
   const wheelRef = useRef(null)
   const stageRef = useRef(null)
   const currentRotationRef = useRef(0)
+  const loginNoticeTimerRef = useRef(null)
   const [user, setUser] = useState(null)
   const [products, setProducts] = useState([])
   const [hasParticipated, setHasParticipated] = useState(false)
@@ -94,15 +95,17 @@ const RouletteEvent = () => {
   const [isSaving, setIsSaving] = useState(false)
   const [result, setResult] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
+  const [loginNotice, setLoginNotice] = useState('')
 
   useEffect(() => {
     let active = true
 
     const unsubscribe = subscribeToAuthState(async (currentUser) => {
       if (!active) return
-      setUser(currentUser)
+      const member = currentUser && !currentUser.isAnonymous ? currentUser : null
+      setUser(member)
 
-      if (!currentUser) {
+      if (!member) {
         setHasParticipated(false)
         return
       }
@@ -110,7 +113,7 @@ const RouletteEvent = () => {
       try {
         const participation = await getDocument(
           'eventParticipations',
-          `${EVENT_ID}_${currentUser.uid}`
+          `${EVENT_ID}_${member.uid}`
         )
         if (active) setHasParticipated(Boolean(participation))
       } catch {
@@ -141,8 +144,20 @@ const RouletteEvent = () => {
   useEffect(() => {
     document.body.classList.add('jajak-roulette-page')
 
-    return () => document.body.classList.remove('jajak-roulette-page')
+    return () => {
+      document.body.classList.remove('jajak-roulette-page')
+      window.clearTimeout(loginNoticeTimerRef.current)
+    }
   }, [])
+
+  const showLoginNotice = (message) => {
+    window.clearTimeout(loginNoticeTimerRef.current)
+    setLoginNotice(message)
+    loginNoticeTimerRef.current = window.setTimeout(
+      () => setLoginNotice(''),
+      2600
+    )
+  }
 
   const prizesWithImages = useMemo(
     () => PRIZES.map((prize) => {
@@ -218,7 +233,7 @@ const RouletteEvent = () => {
   const spin = async () => {
     if (isSpinning || isSaving || hasParticipated) return
     if (!user) {
-      setErrorMessage('로그인 후 룰렛 이벤트에 참여할 수 있습니다.')
+      showLoginNotice('로그인 후 룰렛 이벤트에 참여할 수 있어요.')
       return
     }
 
@@ -309,7 +324,15 @@ const RouletteEvent = () => {
 
           {errorMessage && <p className={styles.errorMessage} role="alert">{errorMessage}</p>}
 
-          <Link className={styles.historyLink} to={`${PATHS.mypage}/events`}>
+          <Link
+            className={styles.historyLink}
+            to={`${PATHS.mypage}/events`}
+            onClick={(eventObject) => {
+              if (user) return
+              eventObject.preventDefault()
+              showLoginNotice('로그인 후 이벤트 참여 내역을 확인할 수 있어요.')
+            }}
+          >
             참여 내역 확인하기
           </Link>
         </aside>
@@ -334,6 +357,14 @@ const RouletteEvent = () => {
           ))}
         </div>
       </section>
+
+      {loginNotice && (
+        <div className={styles.loginNotice} role="alert">
+          <span aria-hidden="true">!</span>
+          <strong>{loginNotice}</strong>
+          <Link to={PATHS.login}>로그인하러 가기 <span aria-hidden="true">›</span></Link>
+        </div>
+      )}
 
       {result && (
         <div className={styles.modalBackdrop} role="presentation" onMouseDown={() => setResult(null)}>

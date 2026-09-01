@@ -683,9 +683,14 @@ const ProductList = () => {
     )
   }
 
-  const showWishToast = (message, linkTo = '/mypage/wishlist', linkText = '찜 목록 보기') => {
+  const showWishToast = (
+    message,
+    linkTo = '/mypage/wishlist',
+    linkText = '찜 목록 보기',
+    isLoginPrompt = false
+  ) => {
     setCartToast(null)
-    setWishToast({ message, linkTo, linkText })
+    setWishToast({ message, linkTo, linkText, isLoginPrompt })
 
     window.clearTimeout(wishToastTimerRef.current)
     wishToastTimerRef.current = window.setTimeout(
@@ -703,7 +708,8 @@ const ProductList = () => {
       showWishToast(
         '로그인 후 찜할 수 있어요.',
         PATHS.login,
-        '로그인'
+        '로그인하러 가기',
+        true
       )
       return
     }
@@ -1473,15 +1479,17 @@ const ProductList = () => {
 
       {wishToast && (
         <div
-          className={styles.cartToast}
-          role="status"
+          className={`${styles.cartToast} ${
+            wishToast.isLoginPrompt ? styles.loginToast : ''
+          }`}
+          role={wishToast.isLoginPrompt ? 'alert' : 'status'}
           aria-live="polite"
         >
           <span
             className={styles.toastCheck}
             aria-hidden="true"
           >
-            ✓
+            {wishToast.isLoginPrompt ? '!' : '✓'}
           </span>
 
           <p>

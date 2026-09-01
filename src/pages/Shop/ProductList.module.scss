@@ -73,14 +73,15 @@
 .modalDetails h3 { margin-bottom: $space-2; color: $color-text-muted; font-size: $font-size-sm; }
 .modalDetails p { font-size: $font-size-md; line-height: $line-height-base; }
 @keyframes modalOpen { from { opacity: 0; transform: translateY($space-5) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-.cartToast { position: fixed; z-index: $z-toast; bottom: $space-8; left: 50%; display: grid; grid-template-columns: auto 1fr auto; gap: $space-4; align-items: center; width: min(520px, calc(100% - (#{$side-margin-mobile} * 2))); padding: $space-4 $space-5; pointer-events: none; background: $color-white; border: 1px solid rgba($color-border, .7); border-radius: $radius-xl; box-shadow: 0 $space-3 $space-8 rgba($color-text-primary, .2); transform: translateX(-50%); animation: toastOpen $transition-base cubic-bezier(.22, 1, .36, 1) both; }
+.cartToast { position: fixed; z-index: $z-toast; bottom: $space-8; left: 50%; display: grid; grid-template-columns: auto 1fr auto; gap: $space-4; align-items: center; width: min(600px, calc(100% - (#{$side-margin-mobile} * 2))); padding: $space-4 $space-5; pointer-events: none; background: $color-white; border: 1px solid rgba($color-border, .7); border-radius: $radius-xl; box-shadow: 0 $space-3 $space-8 rgba($color-text-primary, .2); transform: translateX(-50%); animation: toastOpen 3.2s cubic-bezier(.22, 1, .36, 1) both; }
 .toastCheck { @include mixins.flex-center; width: 36px; height: 36px; color: $color-white; font-size: $font-size-xl; background: $color-success; border-radius: 50%; }
+.loginToast .toastCheck { background: $color-error; }
 .cartToast p { display: grid; gap: $space-1; min-width: 0; }
 .cartToast strong { font-size: $font-size-lg; font-weight: $font-weight-semibold; }
 .cartToast small { @include mixins.ellipsis; color: $color-text-muted; font-size: $font-size-xs; }
 .cartToast > a { display: flex; gap: $space-2; align-items: center; padding: $space-2; color: $color-primary-light; font-size: $font-size-lg; font-weight: $font-weight-semibold; pointer-events: auto; transition: color $transition-fast ease, transform $transition-fast ease; }
 .cartToast > a:hover { color: $color-primary; transform: translateX($space-1); }
-@keyframes toastOpen { from { opacity: 0; transform: translate(-50%, $space-5); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes toastOpen { 0% { opacity: 0; transform: translate(-50%, $space-5); } 10%, 78% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, $space-3); } }
 
 .stylingMarquee { overflow: hidden; background: transparent; }
 .marqueeTrack { display: flex; align-items: stretch; width: max-content; gap: $grid-gutter; line-height: 0; animation: marquee 90s linear infinite; padding: 100px 0 ;}

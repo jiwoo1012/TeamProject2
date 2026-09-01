@@ -466,14 +466,6 @@ const MainPage = () => {
               </Link>
             )
           })}
-          <div
-            className={`${styles.eventMock} ${styles.eventFive} ${styles.eventPlaceholder}`}
-            aria-hidden="true"
-          >
-            <span className={styles.eventCardInner}>
-              <span className={styles.eventCardFront} />
-            </span>
-          </div>
         </div>
       </section>
 

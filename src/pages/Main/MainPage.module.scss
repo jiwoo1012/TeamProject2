@@ -2078,18 +2078,6 @@
   }
 }
 
-.eventPlaceholder {
-  pointer-events: none;
-
-  .eventCardFront {
-    background: #7a5c42;
-  }
-
-  @media (max-width: 767px) {
-    display: none;
-  }
-}
-
 .eventCardInner {
   position: relative;
   display: grid;

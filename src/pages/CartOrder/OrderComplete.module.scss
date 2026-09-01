@@ -2,7 +2,7 @@
 
 .page {
   width: min(1320px, calc(100% - 80px));
-  min-height: 1030px;
+  min-height: 0;
   margin: 0 auto;
   padding: v.$space-12 0 v.$space-20;
   color: v.$color-text-primary;
@@ -33,36 +33,63 @@
 .stepFlower { width: 42px; height: 26px; flex: 0 0 42px; }
 
 .completeCard {
+  position: relative;
+  overflow: hidden;
   width: 940px;
-  min-height: 724px;
+  min-height: 0;
   margin: 0 auto;
   padding: 54px 122px 46px;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-lg;
-  background: v.$color-white;
+  border: 1px solid color-mix(in srgb, v.$color-taupe 48%, v.$color-border);
+  border-radius: v.$radius-sm;
+  background-color: v.$color-bg;
+  background-image:
+    linear-gradient(rgb(253 251 249 / 46%), rgb(253 251 249 / 46%)),
+    url('../../assets/images/mypage/orderCompleteHanji.png');
+  background-position: center;
+  background-size: auto, 680px;
+  box-shadow: v.$shadow-sm;
+}
+
+.celebrationCanvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.completeCard > :not(.celebrationCanvas) {
+  position: relative;
+  z-index: 1;
 }
 
 .checkIcon {
   width: 88px;
   height: 88px;
   margin: 0 auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 1px rgb(89 65 43 / 10%));
 }
-
-.checkIcon svg { width: 100%; height: 100%; stroke: v.$color-primary; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 .heroArea {
   width: 690px;
-  margin: 30px auto 0;
+  margin: v.$space-6 auto 0;
+  padding: v.$space-8 v.$space-6 v.$space-6;
+  border-top: 1px solid color-mix(in srgb, v.$color-taupe 58%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, v.$color-taupe 58%, transparent);
+  border-radius: 0;
+  background: transparent;
 }
 
 .completeCopy { text-align: center; }
 .completeCopy h1 {
   margin: 0;
-  font-size: v.$font-size-3xl;
+  font-size: v.$font-size-4xl;
+  font-family: v.$font-family-display;
   font-weight: v.$font-weight-bold;
   line-height: v.$line-height-tight;
 }
-.orderNumber { margin: v.$space-6 0 v.$space-4; font-size: v.$font-size-md; }
+.orderNumber { margin: v.$space-5 0 v.$space-4; color: v.$color-text-secondary; font-size: v.$font-size-md; }
+.orderNumber strong { color: v.$color-taupe; font-weight: v.$font-weight-bold; }
 .completeCopy > p:last-child { margin: 0; color: v.$color-text-secondary; font-size: v.$font-size-md; line-height: v.$line-height-relaxed; }
 
 .mascotPlaceholder {
@@ -80,8 +107,10 @@
   width: 690px;
   margin: 36px auto 0;
   padding: 28px 38px;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-lg;
+  border: 1px solid color-mix(in srgb, v.$color-taupe 46%, v.$color-border);
+  border-radius: v.$radius-sm;
+  background: rgb(255 253 250 / 48%);
+  box-shadow: inset 0 0 0 3px rgb(140 126 111 / 10%);
 }
 
 .orderInfo h2 { margin: 0 0 v.$space-5; font-size: v.$font-size-2xl; font-weight: v.$font-weight-bold; }
@@ -104,19 +133,15 @@
   height: 50px;
   align-items: center;
   justify-content: center;
-  border-radius: v.$radius-lg;
+  border-radius: v.$radius-sm;
   font-size: v.$font-size-md;
   font-weight: v.$font-weight-semibold;
   text-align: center;
 }
 
 .homeButton { border: 1px solid v.$color-border; background: v.$color-white; color: v.$color-text-secondary; }
-.historyButton { border: 1px solid v.$color-primary; background: v.$color-primary; color: v.$color-white; }
-
-.bottomOrnament {
-  margin-top: 110px;
-  transform: rotate(180deg);
-}
+.historyButton { border: 1px solid v.$color-taupe; background: v.$color-taupe; color: v.$color-white; transition: background v.$transition-fast ease, transform v.$transition-fast ease; }
+.historyButton:hover { background: v.$color-text-secondary; transform: translateY(-2px); }
 
 @media (max-width: v.$breakpoint-tablet-max) {
   .page { width: calc(100% - 80px); }
@@ -129,7 +154,8 @@
   .topOrnament { display: none; }
   .purchaseSteps { flex-wrap: wrap; justify-content: center; margin: 0 0 v.$space-8; font-size: v.$font-size-sm; }
   .completeCard { padding: v.$space-8 v.$space-5; }
-  .heroArea { width: 100%; grid-template-columns: 1fr; }
+  .heroArea { width: 100%; padding: v.$space-6 v.$space-4; }
+  .completeCopy h1 { font-size: v.$font-size-2xl; }
   .mascotPlaceholder { margin: 0 auto; }
   .orderInfo { width: 100%; padding: v.$space-5; }
   .orderInfo dl div { grid-template-columns: 110px 1fr; }
