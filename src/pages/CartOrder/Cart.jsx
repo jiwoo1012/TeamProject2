@@ -232,11 +232,6 @@ const getCartItems =
                 savedProductId
             )
 
-          /*
-            기존 장바구니 추천
-            mock 상품이 저장되어
-            있을 경우를 위한 fallback
-          */
           const mockProduct =
             mockRecommendations.find(
               (item) =>
@@ -272,13 +267,9 @@ const getCartItems =
             return null
           }
 
-          /*
-            실제 상품 데이터
-          */
           if (product) {
             return {
-              id:
-                product.productId,
+              id: product.productId,
 
               name:
                 product.productName,
@@ -307,17 +298,10 @@ const getCartItems =
             }
           }
 
-          /*
-            추천 mock 상품
-          */
           return {
             ...mockProduct,
-
-            option:
-              '추천 상품',
-
+            option: '추천 상품',
             discount: 0,
-
             quantity,
           }
         }
@@ -466,6 +450,9 @@ const Cart = () => {
   const [currentUser, setCurrentUser] =
     useState(null)
 
+  const [isAuthReady, setIsAuthReady] =
+    useState(false)
+
   const [availablePoints, setAvailablePoints] =
     useState(0)
 
@@ -493,10 +480,10 @@ const Cart = () => {
     다시 localStorage에
     productId + quantity 형태로 저장
   */
-  useEffect(
-    () => subscribeToAuthState(setCurrentUser),
-    []
-  )
+  useEffect(() => subscribeToAuthState((user) => {
+    setCurrentUser(user)
+    setIsAuthReady(true)
+  }), [])
 
   useEffect(() => {
     let isCancelled = false
@@ -620,16 +607,28 @@ const Cart = () => {
             )
         )
 
-      const itemTotal =
+      const productAmount =
         selectedItems.reduce(
           (
             sum,
             item
           ) =>
             sum +
-            (item.price -
-              item.discount) *
+            item.price *
               item.quantity,
+          0
+        )
+
+      const discountAmount =
+        selectedItems.reduce(
+          (sum, item) =>
+            sum + item.discount * item.quantity,
+          0
+        )
+
+      const itemTotal =
+        Math.max(
+          productAmount - discountAmount,
           0
         )
 
@@ -648,6 +647,8 @@ const Cart = () => {
         )
 
       return {
+        productAmount,
+        discountAmount,
         itemTotal,
         shippingFee,
         usedPoints,
@@ -723,12 +724,11 @@ const Cart = () => {
               ? {
                   ...item,
 
-                  quantity:
-                    Math.max(
-                      1,
-                      item.quantity +
-                        amount
-                    ),
+                   quantity:
+                     Math.max(
+                       1,
+                       item.quantity + amount
+                     ),
                 }
               : item
         )
@@ -827,9 +827,8 @@ const Cart = () => {
                   ? {
                       ...item,
 
-                      quantity:
-                        item.quantity +
-                        1,
+                       quantity:
+                         item.quantity + 1,
                     }
                   : item
             )
@@ -846,7 +845,7 @@ const Cart = () => {
 
               discount: 0,
 
-              quantity: 1,
+               quantity: 1,
             },
           ]
         }
@@ -919,6 +918,33 @@ const Cart = () => {
         }
       )
     }
+
+  if (isAuthReady && (!currentUser || currentUser.isAnonymous)) {
+    return (
+      <section className={styles.page} aria-labelledby="cart-title">
+        <img className={styles.topOrnament} src={cartTopOrnament} alt="" />
+
+        <header className={styles.pageHeader}>
+          <h1 id="cart-title">장바구니</h1>
+          <PurchaseSteps />
+        </header>
+
+        <section className={styles.loginGate} aria-labelledby="cart-login-title">
+          <div className={styles.emptyCircle} aria-hidden="true">
+            <EmptyCartIcon />
+          </div>
+          <h2 id="cart-login-title">로그인 후 장바구니를 이용할 수 있어요.</h2>
+          <p>마음에 드는 상품을 담고, 주문 내역도 편하게 확인해보세요.</p>
+          <button type="button" className={styles.browseButton} onClick={() => navigate(PATHS.login)}>
+            로그인하기
+          </button>
+          <button type="button" className={styles.loginGateBrowse} onClick={() => navigate(PATHS.shop)}>
+            상품 둘러보기
+          </button>
+        </section>
+      </section>
+    )
+  }
 
   return (
     <section
@@ -1128,12 +1154,22 @@ const Cart = () => {
                             styles.discountValue
                           }
                         >
-                          {item.discount >
-                          0
-                            ? `-${formatPrice(
-                                item.discount
-                              )}`
-                            : '0원'}
+                          <span
+                            className={
+                              styles.priceLabel
+                            }
+                          >
+                            할인 금액
+                          </span>
+
+                          <span>
+                            {item.discount >
+                            0
+                              ? `-${formatPrice(
+                                  item.discount
+                                )}`
+                              : '0원'}
+                          </span>
                         </span>
 
                         <strong
@@ -1141,9 +1177,19 @@ const Cart = () => {
                             styles.lineTotal
                           }
                         >
-                          {formatPrice(
-                            lineTotal
-                          )}
+                          <span
+                            className={
+                              styles.priceLabel
+                            }
+                          >
+                            할인 적용가
+                          </span>
+
+                          <span>
+                            {formatPrice(
+                              lineTotal
+                            )}
+                          </span>
                         </strong>
 
                         <div
@@ -1251,7 +1297,7 @@ const Cart = () => {
                 styles.recommendationList
               }
             >
-              {mockRecommendations.map(
+               {mockRecommendations.map(
                 (product) => (
                   <article
                     className={
@@ -1343,7 +1389,7 @@ const Cart = () => {
                 {isEmpty
                   ? ''
                   : formatPrice(
-                      totals.itemTotal
+                      totals.productAmount
                     )}
               </dd>
             </div>
@@ -1354,9 +1400,9 @@ const Cart = () => {
               <dd>
                 {isEmpty
                   ? ''
-                  : formatPrice(
-                      0
-                    )}
+                  : `-${formatPrice(
+                      totals.discountAmount
+                    )}`}
               </dd>
             </div>
 

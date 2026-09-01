@@ -141,6 +141,12 @@ const WishList = () => {
 
   return (
     <section className={styles.page}>
+      <header className={styles.pageIntro}>
+        <p className={styles.eyebrow}>MY WISHLIST</p>
+        <h2>찜 목록</h2>
+        <p>마음에 담아둔 자작의 상품을 한곳에서 확인해 보세요.</p>
+      </header>
+
       <div className={styles.banner}>
         <img src={makdongImage} alt="" className={styles.bannerCharacter} />
         <p className={styles.bannerText}>
@@ -198,13 +204,14 @@ const WishList = () => {
 
           <div className={styles.productGrid}>
             {visibleProducts.map((product) => (
-              <ProductCard
-                product={product}
-                isWished
-                onToggleWish={handleRemoveWish}
-                onAddToCart={handleAddToCart}
-                key={product.productId}
-              />
+              <div className={styles.wishItem} key={product.productId}>
+                <ProductCard
+                  product={product}
+                  isWished
+                  onToggleWish={handleRemoveWish}
+                  onAddToCart={handleAddToCart}
+                />
+              </div>
             ))}
           </div>
 

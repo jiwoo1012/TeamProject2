@@ -1,18 +1,20 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { updateProfile } from 'firebase/auth'
-import { collection, doc, serverTimestamp, writeBatch } from 'firebase/firestore'
+import { collection, doc, runTransaction, serverTimestamp } from 'firebase/firestore'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ORDER_STATUS } from '../../constants/orderStatus'
 import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
 import { auth, db } from '../../firebase/firebase'
-import { addDocument, getCollection, updateDocument } from '../../firebase/firestore'
+import { addDocument, getCollection, getDocument, updateDocument } from '../../firebase/firestore'
 import { PATHS } from '../../routes/paths'
-import { clearCart, clearRemoteCart } from '../../utils/cartStorage'
+import { getCart, saveCart, syncRemoteCart } from '../../utils/cartStorage'
+import { products as catalogProducts } from '../../data/products'
 import cartTopOrnament from '../../assets/images/mypage/cartTopOrnament.svg'
 import cartStepOrnament from '../../assets/images/mypage/cartStepOrnament.svg'
 import styles from './Checkout.module.scss'
 
 const formatPrice = (value) => `${value.toLocaleString('ko-KR')}원`
+const ADULT_VERIFIED_KEY = 'jajak_adult_verified'
 
 const PurchaseSteps = () => (
   <nav className={styles.purchaseSteps} aria-label="주문 진행 단계">
@@ -52,10 +54,71 @@ const RoundCheckbox = ({ checked, onChange, label, muted = false }) => (
 const deliveryMemoPresets = ['문 앞에 놓아주세요', '배송 전 연락주세요', '경비실에 맡겨주세요']
 const emptyAddressDraft = { label: '', recipient: '', phone: '', address: '', detailAddress: '' }
 
+const getDiscountAmount = (product) => {
+  const directDiscount = Number(product.discount ?? product.discountAmount)
+  if (Number.isFinite(directDiscount) && directDiscount > 0) return directDiscount
+
+  const discountRate = Number.parseFloat(String(product.discountRate ?? '').replace('%', ''))
+  const price = Number(product.price) || 0
+
+  if (!Number.isFinite(discountRate) || discountRate <= 0) return 0
+  return Math.round(price * (discountRate / 100))
+}
+
+const getCatalogProduct = (productId) => {
+  const normalizedId = String(productId ?? '').replace(/^liq-/, 'liq_')
+
+  return catalogProducts.find((product) => (
+    String(product.productId ?? '').replace(/^liq-/, 'liq_') === normalizedId
+  ))
+}
+
+const getValidatedOrderItems = async (items) => {
+  const firestoreProducts = await Promise.all(
+    items.map(async (item) => {
+      try {
+        return await getDocument('products', item.id)
+      } catch {
+        return null
+      }
+    }),
+  )
+
+  return firestoreProducts.map((firestoreProduct, index) => {
+    const requestedItem = items[index]
+    const product = firestoreProduct || getCatalogProduct(requestedItem.id)
+    const quantity = Math.floor(Number(requestedItem.quantity))
+
+    if (!product) throw new Error('상품 정보를 찾을 수 없습니다.')
+    if (product.status !== 'selling') throw new Error(`${product.productName || '선택한 상품'}은 현재 판매 중이 아닙니다.`)
+    if (!Number.isFinite(quantity) || quantity < 1) throw new Error('주문 수량을 다시 확인해주세요.')
+    if (Number(product.stock) < quantity) throw new Error(`${product.productName || '선택한 상품'}의 재고가 부족합니다.`)
+
+    const price = Number(product.price) || 0
+    const discount = getDiscountAmount(product)
+
+    return {
+      id: product.productId || product.id,
+      name: product.productName || '상품',
+      option: requestedItem.option || '',
+      price,
+      discount,
+      quantity,
+      imageUrl: requestedItem.imageUrl || product.imageUrl || '',
+    }
+  })
+}
+
 const Checkout = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const orderItems = Array.isArray(location.state?.items) ? location.state.items : []
+  const orderItems = useMemo(
+    () => (Array.isArray(location.state?.items) ? location.state.items : []),
+    [location.state],
+  )
+  const [displayItems, setDisplayItems] = useState(orderItems)
+  const [isCheckingProducts, setIsCheckingProducts] = useState(Boolean(orderItems.length))
+  const [productCheckError, setProductCheckError] = useState('')
   const [currentUser, setCurrentUser] = useState(auth.currentUser)
   const [memberData, setMemberData] = useState(null)
   const [ordererMode, setOrdererMode] = useState('member')
@@ -87,6 +150,37 @@ const Checkout = () => {
   useEffect(() => subscribeToAuthState(setCurrentUser), [])
 
   useEffect(() => {
+    let isCancelled = false
+
+    if (orderItems.length === 0) {
+      setDisplayItems([])
+      setIsCheckingProducts(false)
+      return undefined
+    }
+
+    setIsCheckingProducts(true)
+    setProductCheckError('')
+
+    getValidatedOrderItems(orderItems)
+      .then((items) => {
+        if (!isCancelled) setDisplayItems(items)
+      })
+      .catch((error) => {
+        if (!isCancelled) {
+          setDisplayItems([])
+          setProductCheckError(error.message || '상품 정보를 확인하지 못했습니다.')
+        }
+      })
+      .finally(() => {
+        if (!isCancelled) setIsCheckingProducts(false)
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [orderItems])
+
+  useEffect(() => {
     if (!currentUser) {
       setMemberData(null)
       setSavedAddresses([])
@@ -99,7 +193,14 @@ const Checkout = () => {
       getCurrentUserData(currentUser.uid),
       getCollection(`users/${currentUser.uid}/addresses`),
     ])
-      .then(([userData, addresses]) => {
+      .then(async ([userData, addresses]) => {
+        if (isCancelled) return
+
+        if (sessionStorage.getItem(ADULT_VERIFIED_KEY) === 'true' && !userData?.isAdultVerified) {
+          await updateDocument('users', currentUser.uid, { isAdultVerified: true })
+          userData = { ...userData, isAdultVerified: true }
+        }
+
         if (isCancelled) return
         setMemberData(userData)
         setSavedAddresses(addresses)
@@ -124,8 +225,11 @@ const Checkout = () => {
     return () => window.removeEventListener('keydown', closeOnEscape)
   }, [activeModal])
 
-  const itemTotal = orderItems.reduce((sum, item) => sum + (item.price - item.discount) * item.quantity, 0)
+  const productAmount = displayItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const discountAmount = displayItems.reduce((sum, item) => sum + item.discount * item.quantity, 0)
+  const itemTotal = Math.max(productAmount - discountAmount, 0)
   const availablePoints = Number(memberData?.points ?? 0)
+  const isAdultVerified = Boolean(memberData?.isAdultVerified)
   const usedPoints = Math.min(Number(pointInput) || 0, availablePoints, itemTotal)
   const totalPrice = Math.max(itemTotal - usedPoints, 0)
   const allUsablePoints = Math.min(availablePoints, itemTotal)
@@ -134,6 +238,12 @@ const Checkout = () => {
   useEffect(() => {
     setPointInput((current) => String(Math.min(Number(current) || 0, allUsablePoints)))
   }, [allUsablePoints])
+
+  useEffect(() => {
+    if (isAdultVerified) {
+      setSubmitError((current) => current === '성인인증 완료 후 주문할 수 있습니다.' ? '' : current)
+    }
+  }, [isAdultVerified])
 
   const member = {
     name: memberData?.nickname || currentUser?.displayName || '회원',
@@ -279,8 +389,23 @@ const Checkout = () => {
       return
     }
 
+    if (currentUser.isAnonymous || memberData?.status !== 'active') {
+      setSubmitError('정상 회원만 주문할 수 있습니다.')
+      return
+    }
+
+    if (!isAdultVerified) {
+      setSubmitError('성인인증 완료 후 주문할 수 있습니다.')
+      return
+    }
+
     if (orderItems.length === 0) {
       setSubmitError('주문할 상품이 없습니다. 장바구니에서 다시 진행해주세요.')
+      return
+    }
+
+    if (isCheckingProducts || productCheckError) {
+      setSubmitError(productCheckError || '상품 정보를 확인 중입니다. 잠시 후 다시 시도해주세요.')
       return
     }
 
@@ -304,47 +429,61 @@ const Checkout = () => {
     setIsSubmitting(true)
     setSubmitError('')
 
-    const orderRef = doc(collection(db, 'orders'))
-    const orderedAt = new Date().toISOString()
-    const orderSnapshot = {
-      orderId: orderRef.id,
-      userId: currentUser.uid,
-      customerName: member.name,
-      items: orderItems.map((item) => ({
-        productId: item.id,
-        productName: item.name,
-        price: item.price - item.discount,
-        quantity: item.quantity,
-        imageUrl: item.imageUrl || '',
-      })),
-      // 리뷰 작성 권한 확인에 사용한다. Firestore Rules에서 orderId와 함께 검증한다.
-      productIds: orderItems.map((item) => item.id),
-      shipping,
-      paymentMethod,
-      productAmount: itemTotal,
-      shippingFee: 0,
-      discountAmount: orderItems.reduce(
-        (sum, item) => sum + item.discount * item.quantity,
-        0,
-      ),
-      usedPoints,
-      totalAmount: totalPrice,
-      status: ORDER_STATUS.PAID,
-      createdAt: serverTimestamp(),
-    }
-
     try {
-      const batch = writeBatch(db)
-      batch.set(orderRef, orderSnapshot)
+      const validatedItems = await getValidatedOrderItems(displayItems)
+      const validatedProductAmount = validatedItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+      const validatedDiscountAmount = validatedItems.reduce((sum, item) => sum + item.discount * item.quantity, 0)
+      const validatedItemTotal = Math.max(validatedProductAmount - validatedDiscountAmount, 0)
+      const orderRef = doc(collection(db, 'orders'))
+      const orderedAt = new Date().toISOString()
+      const requestedPoints = Math.min(Number(pointInput) || 0, validatedItemTotal)
+      let orderSnapshot
 
-      if (usedPoints > 0) {
-        batch.update(doc(db, 'users', currentUser.uid), {
-          points: Math.max(availablePoints - usedPoints, 0),
-          updatedAt: serverTimestamp(),
-        })
-      }
+      await runTransaction(db, async (transaction) => {
+        const userRef = doc(db, 'users', currentUser.uid)
+        const userSnapshot = await transaction.get(userRef)
 
-      await batch.commit()
+        if (!userSnapshot.exists()) throw new Error('회원 정보를 찾을 수 없습니다.')
+
+        const latestMember = userSnapshot.data()
+        if (latestMember.status !== 'active') throw new Error('정상 회원만 주문할 수 있습니다.')
+        if (!latestMember.isAdultVerified) throw new Error('성인인증 완료 후 주문할 수 있습니다.')
+
+        const latestPoints = Math.max(0, Number(latestMember.points) || 0)
+        const appliedPoints = Math.min(requestedPoints, latestPoints, validatedItemTotal)
+        const finalTotalAmount = Math.max(validatedItemTotal - appliedPoints, 0)
+
+        orderSnapshot = {
+          orderId: orderRef.id,
+          userId: currentUser.uid,
+          customerName: latestMember.nickname || currentUser.displayName || '회원',
+          items: validatedItems.map((item) => ({
+            productId: item.id,
+            productName: item.name,
+            price: item.price - item.discount,
+            quantity: item.quantity,
+            imageUrl: item.imageUrl || '',
+          })),
+          productIds: validatedItems.map((item) => item.id),
+          shipping,
+          paymentMethod,
+          productAmount: validatedProductAmount,
+          shippingFee: 0,
+          discountAmount: validatedDiscountAmount,
+          usedPoints: appliedPoints,
+          totalAmount: finalTotalAmount,
+          status: ORDER_STATUS.PAID,
+          createdAt: serverTimestamp(),
+        }
+
+        transaction.set(orderRef, orderSnapshot)
+        if (appliedPoints > 0) {
+          transaction.update(userRef, {
+            points: latestPoints - appliedPoints,
+            updatedAt: serverTimestamp(),
+          })
+        }
+      })
       if (saveDelivery) {
         const hasSameAddress = savedAddresses.some((address) => (
           address.recipient === shipping.recipient
@@ -377,11 +516,13 @@ const Checkout = () => {
           }
         }
       }
-      clearCart()
+      const orderedProductIds = new Set(validatedItems.map((item) => item.id))
+      const remainingCartItems = getCart().filter((item) => !orderedProductIds.has(item.productId))
+      saveCart(remainingCartItems)
       try {
-        await clearRemoteCart(currentUser.uid)
+        await syncRemoteCart(currentUser.uid, remainingCartItems)
       } catch (cartError) {
-        console.error('주문 후 장바구니 초기화 실패:', cartError)
+        console.error('주문 후 장바구니 동기화 실패:', cartError)
       }
       navigate('/order-complete', {
         replace: true,
@@ -418,7 +559,9 @@ const Checkout = () => {
             {orderItems.length === 0 && (
               <p role="status">장바구니에서 주문할 상품을 선택해주세요.</p>
             )}
-            {orderItems.map((item) => (
+            {isCheckingProducts && <p role="status">주문 상품 정보를 확인하고 있습니다.</p>}
+            {productCheckError && <p role="alert">{productCheckError}</p>}
+            {displayItems.map((item) => (
               <article className={styles.productRow} key={item.id}>
                 <div className={styles.productInfo}>
                   <div className={styles.productImage}>
@@ -545,10 +688,10 @@ const Checkout = () => {
         </div>
 
         <aside className={styles.summaryCard} aria-label="주문 금액">
-          <h2><span>주문 금액</span><em>선택 {orderItems.length}개</em></h2>
+          <h2><span>주문 금액</span><em>선택 {displayItems.length}개</em></h2>
           <dl className={styles.summaryList}>
-            <div><dt>총 상품 금액</dt><dd>{formatPrice(itemTotal)}</dd></div>
-            <div><dt>상품 할인</dt><dd>{formatPrice(0)}</dd></div>
+            <div><dt>총 상품 금액</dt><dd>{formatPrice(productAmount)}</dd></div>
+            <div><dt>상품 할인</dt><dd>-{formatPrice(discountAmount)}</dd></div>
             <div><dt>배송비</dt><dd>{formatPrice(0)}</dd></div>
           </dl>
           <div className={styles.pointSection}>
@@ -566,7 +709,7 @@ const Checkout = () => {
           <button
             type="button"
             className={styles.payButton}
-            disabled={!agreed || isSubmitting || orderItems.length === 0}
+            disabled={!agreed || isSubmitting || isCheckingProducts || Boolean(productCheckError) || orderItems.length === 0}
             onClick={handlePayment}
           >
             {isSubmitting ? '주문 저장 중...' : '결제하기'}

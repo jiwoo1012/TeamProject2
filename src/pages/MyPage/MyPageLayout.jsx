@@ -12,7 +12,7 @@ const menuItems = [
     end: true,
   },
   {
-    label: '회원정보',
+    label: '회원 정보',
     to: 'profile',
   },
   {
@@ -20,7 +20,7 @@ const menuItems = [
     to: 'orders',
   },
   {
-    label: '찜 목록 · AI 추천',
+    label: '찜 목록',
     to: 'wishlist',
   },
   {
