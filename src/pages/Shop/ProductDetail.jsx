@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { collection, getDocs, query, serverTimestamp, where } from 'firebase/firestore'
 import ProductCard from '../../components/ui/ProductCard/ProductCard'
@@ -8,6 +8,7 @@ import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
 import { addDocument, deleteDocument, getCollection, setDocument, updateDocument } from '../../firebase/firestore'
 import { db } from '../../firebase/firebase'
 import { getCart, saveCart } from '../../utils/cartStorage'
+import { PATHS } from '../../routes/paths'
 import jajakLogo from '../../assets/logos/jajakLogo.png'
 import faqMakdong from '../../assets/characters/M007_Poses04.png'
 import pattern2 from '../../assets/images/eventPage/pattern2.png'
@@ -108,6 +109,7 @@ const MiniPairingCard = ({
 
 const ProductDetail = () => {
   const { productId } = useParams()
+  const noticeTimerRef = useRef(null)
 
   const [activeTab, setActiveTab] = useState('detail')
   const [openAccordion, setOpenAccordion] = useState(null)
@@ -116,7 +118,7 @@ const ProductDetail = () => {
   const [isWishLoading, setIsWishLoading] = useState(false)
   const [uid, setUid] = useState(null)
   const [isAuthReady, setIsAuthReady] = useState(false)
-  const [notice, setNotice] = useState('')
+  const [notice, setNotice] = useState(null)
   const [reviews, setReviews] = useState([])
   const [memberNickname, setMemberNickname] = useState('')
   const [reviewRating, setReviewRating] = useState(0)
@@ -125,6 +127,10 @@ const ProductDetail = () => {
   const [purchasedOrders, setPurchasedOrders] = useState([])
   const [reviewOrderId, setReviewOrderId] = useState('')
   const [isReviewSaving, setIsReviewSaving] = useState(false)
+
+  useEffect(() => () => {
+    window.clearTimeout(noticeTimerRef.current)
+  }, [])
 
   useEffect(() => {
     const page = document.querySelector(`.${styles.page}`)
@@ -455,12 +461,13 @@ const ProductDetail = () => {
   ].filter(Boolean)
 
 
-  const handleNotice = (message) => {
-    setNotice(message)
+  const handleNotice = (message, isLoginPrompt = false) => {
+    window.clearTimeout(noticeTimerRef.current)
+    setNotice({ message, isLoginPrompt })
 
-    window.setTimeout(
-      () => setNotice(''),
-      1800
+    noticeTimerRef.current = window.setTimeout(
+      () => setNotice(null),
+      2600
     )
   }
 
@@ -514,7 +521,7 @@ const ProductDetail = () => {
     }
 
     if (!uid) {
-      handleNotice('로그인 후 찜할 수 있어요.')
+      handleNotice('로그인 후 찜할 수 있어요.', true)
       return
     }
 
@@ -1097,12 +1104,20 @@ const ProductDetail = () => {
 
 
           {notice && (
-            <p
-              className={styles.notice}
-              role="status"
-            >
-              {notice}
-            </p>
+            <div className={styles.notice} role={notice.isLoginPrompt ? 'alert' : 'status'}>
+              <span
+                className={`${styles.noticeIcon} ${
+                  notice.isLoginPrompt ? styles.loginNoticeIcon : ''
+                }`}
+                aria-hidden="true"
+              >
+                {notice.isLoginPrompt ? '!' : '✓'}
+              </span>
+              <strong>{notice.message}</strong>
+              {notice.isLoginPrompt && (
+                <Link to={PATHS.login}>로그인하러 가기 <span aria-hidden="true">›</span></Link>
+              )}
+            </div>
           )}
 
 

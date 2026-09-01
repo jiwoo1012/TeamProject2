@@ -174,9 +174,9 @@ const EventList = () => {
             } else if (isRoulette) {
               destination = `${PATHS.events}/roulette`
             } else if (isOxQuiz) {
-              destination = `${PATHS.events}/ox-quiz`
+              destination = `${PATHS.eventReady}/ox-quiz`
             } else if (isCardGame) {
-              destination = `${PATHS.events}/card-game`
+              destination = `${PATHS.eventReady}/card-game`
             }
 
 

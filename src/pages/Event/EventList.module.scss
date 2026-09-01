@@ -41,11 +41,13 @@
 @include mixins.tablet {
   .page { padding-top: $space-20; }
   .container { width: calc(100% - (#{$side-margin-tablet} * 2)); }
-  .hero { min-height: 220px; padding-left: $space-10; }
-  .alcohol { width: 104px; margin-right: $space-6; }
+  .hero { justify-content: center; min-height: 210px; padding: $space-8 $space-10; }
+  .alcohol { width: 112px; margin-right: $space-8; }
+  .heroText { max-width: 620px; }
   .heroText > p { font-size: $font-size-4xl; }
   .heroText h1 { font-size: $font-size-2xl; }
-  .makdongCrop { right: 2%; width: 38%; height: 330px; }
+  .heroText span { line-height: $line-height-relaxed; }
+  .makdongCrop { display: none; }
   .eventGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
@@ -53,14 +55,13 @@
   .page { padding: $space-10 0 $space-20; }
   .page::before { background-size: 500px auto; opacity: .3; }
   .container { width: calc(100% - (#{$side-margin-mobile} * 2)); }
-  .hero { align-items: flex-start; min-height: 300px; padding: $space-8 $space-6; }
-  .alcohol { width: 72px; margin-right: $space-4; }
-  .heroText { padding-right: 0; }
+  .hero { align-items: center; flex-direction: column; justify-content: center; min-height: 0; padding: $space-8 $space-5; text-align: center; }
+  .alcohol { width: 80px; margin: 0 0 $space-4; }
+  .heroText { width: 100%; max-width: none; padding-right: 0; }
   .heroText > p { font-size: $font-size-3xl; }
-  .heroText h1 { font-size: $font-size-xl; }
+  .heroText h1 { max-width: 320px; margin: $space-2 auto 0; font-size: $font-size-xl; line-height: $line-height-relaxed; }
   .heroText span { margin-top: $space-4; font-size: $font-size-sm; }
-  .makdongCrop { right: 0; width: 58%; height: 190px; }
-  .makdong { width: 105%; }
+  .makdongCrop { display: none; }
   .eventGrid { grid-template-columns: 1fr; margin-top: $space-12; }
   .imageArea { aspect-ratio: 16 / 9; }
   .cardContent { min-height: 248px; padding: $space-8 $space-5 $space-6; }
