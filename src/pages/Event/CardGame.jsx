@@ -316,7 +316,7 @@ const CardGame = () => {
           <section className={styles.resultModal} role="dialog" aria-modal="true" aria-labelledby="result-title">
             <button className={styles.closeButton} type="button" aria-label="결과 닫기" onClick={() => navigate(PATHS.events)}>×</button>
             <h2 id="result-title">
-              {nickname ? `${nickname}나리가` : '나리가'} 맞추신 카드는 {result.pairCount}쌍 입니다!
+              {nickname ? `${nickname}나리가` : '나리가'} 맞추신 카드는 {result.pairCount}쌍입니다!
             </h2>
             <div className={styles.resultPoint}><span aria-hidden="true">P</span><strong>{result.score.toLocaleString('ko-KR')}P</strong></div>
             <dl>
