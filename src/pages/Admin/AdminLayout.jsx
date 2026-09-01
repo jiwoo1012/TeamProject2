@@ -186,13 +186,30 @@ const AdminLayout = () => {
 
         <div
           className={styles.ornamentArea}
-          aria-hidden="true"
         >
           <img
             className={styles.topOrnament}
             src={mypageTopOrnament}
             alt=""
           />
+
+          <button
+            className={styles.logoutButton}
+            type="button"
+            onClick={handleAccountAction}
+            aria-label={currentUser ? '로그아웃' : '로그인'}
+          >
+            <svg
+              className={`${styles.logoutIcon} ${!currentUser ? styles.loginIcon : ''}`}
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5" />
+              <path d="M14 8l4 4-4 4" />
+              <path d="M18 12H8" />
+            </svg>
+            <span>{currentUser ? '로그아웃' : '로그인'}</span>
+          </button>
         </div>
 
 
@@ -250,43 +267,6 @@ const AdminLayout = () => {
                 )
               )}
             </nav>
-
-
-            {/* 로그인 / 로그아웃 */}
-            <button
-              className={
-                styles.logoutButton
-              }
-              type="button"
-              onClick={
-                handleAccountAction
-              }
-              aria-label={
-                currentUser
-                  ? '로그아웃'
-                  : '로그인'
-              }
-            >
-              <svg
-                className={`${styles.logoutIcon} ${
-                  !currentUser
-                    ? styles.loginIcon
-                    : ''
-                }`}
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5" />
-                <path d="M14 8l4 4-4 4" />
-                <path d="M18 12H8" />
-              </svg>
-
-              <span>
-                {currentUser
-                  ? '로그아웃'
-                  : '로그인'}
-              </span>
-            </button>
 
           </aside>
 

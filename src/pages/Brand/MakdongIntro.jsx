@@ -101,6 +101,10 @@ const MakdongIntro = () => {
           aria-label="막동이 소개 시작하기"
           onClick={() => setHasStarted(true)}
         >
+          <span className={styles.blankIntroWord} aria-hidden="true">MAKDONG</span>
+          <span className={styles.introRiceBurst} aria-hidden="true">
+            {Array.from({ length: 14 }, (_, index) => <i key={index} />)}
+          </span>
           <img src={makdongLookUp} alt="두 손을 뒤로 하고 위를 바라보는 막동이" />
         </button>
       </section>

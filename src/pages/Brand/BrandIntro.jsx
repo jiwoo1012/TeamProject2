@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import brandStoryBackground from '../../assets/images/brand/brand-story-background.png'
 import brandBottle from '../../assets/images/brand/O-brand01.png'
 import brandStage from '../../assets/images/brand/O-brand02.png'
 import storyTable from '../../assets/images/main/hero/main-hero-table-sunset.webp'
@@ -15,22 +14,13 @@ import useSectionWheelSnap from './useSectionWheelSnap'
 import useStickyBrandHeader from './useStickyBrandHeader'
 import styles from './BrandIntro.module.scss'
 
-const brandValues = [
-  { number: '01', title: '우리의 술', text: '오랜 시간과 정성이 빚은\n우리 술의 깊은 맛을 지켜갑니다.' },
-  { number: '02', title: '지역의 재료', text: '좋은 술은 좋은 재료에서.\n전통이 살아있는 지역의 재료를 고집합니다.' },
-  { number: '03', title: '빚는 사람', text: '오늘도 묵묵히 우리 술을 빚는\n사람들의 땀과 마음을 담습니다.' },
-  { number: '04', title: '한 상의 경험', text: '전통주와 가장 잘 어울리는\n안주를 함께 구성해 더 풍성한 한 상을 제안합니다.' },
-  { number: '05', title: '나를 위한 시간', text: '단순한 쇼핑이 아닌, 오늘의 나를 위한\n특별한 시간을 선물합니다.' },
-]
-
 const BrandIntro = () => {
-  const heroSectionRef = useRef(null)
   const secondSectionRef = useRef(null)
   const bottleRef = useRef(null)
   const stageRef = useRef(null)
 
   useStickyBrandHeader()
-  useSectionWheelSnap([{ ref: heroSectionRef }, { ref: secondSectionRef }])
+  useSectionWheelSnap([{ ref: secondSectionRef }])
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger)
@@ -101,42 +91,6 @@ const BrandIntro = () => {
 
   return (
     <main className={styles.page}>
-      <section
-        ref={heroSectionRef}
-        className={styles.hero}
-        aria-labelledby="brand-story-title"
-        style={{ '--brand-story-background': `url(${brandStoryBackground})` }}
-      >
-        <div className={styles.heroShade} aria-hidden="true" />
-        <div className={styles.heroContent}>
-          <header className={styles.heroHeading}>
-            <p className={styles.heroEyebrow}>BRAND STORY</p>
-            <span className={styles.heroRule} aria-hidden="true" />
-            <h1 id="brand-story-title">자작</h1>
-            <p className={styles.heroRoman}>JAJAK</p>
-            <p className={styles.heroSlogan}>
-              “스스로에게 다정하게 따르는 잔,<br />
-              오롯한 나를 위한 자작의 시간.”
-            </p>
-            <p className={styles.heroIntroduction}>
-              자작은 전통주와 안주, 그리고 잔을 하나의 경험으로 연결해<br />
-              오늘의 당신이 가장 편안하고 따뜻한 시간을 보낼 수 있도록<br />
-              좋은 술 한 잔의 가치를 새롭게 제안합니다.
-            </p>
-          </header>
-
-          <ol className={styles.heroValues}>
-            {brandValues.map(({ number, title, text }) => (
-              <li key={number}>
-                <span className={styles.valueNumber}>{number}</span>
-                <strong>{title}</strong>
-                <p>{text}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
       <section
         ref={secondSectionRef}
         className={styles.storySequence}

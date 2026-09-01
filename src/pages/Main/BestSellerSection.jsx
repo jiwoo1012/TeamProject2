@@ -269,7 +269,7 @@ const BestSellerSection = ({
                     to={`/shop/${product.productId ?? product.id}`}
                     aria-label={`${product.productName} 상세 페이지로 이동`}
                   >
-                    <span>{product.brandManufacturer ?? 'BEST PICK'}</span>
+                    {product.brandManufacturer && <span>{product.brandManufacturer}</span>}
                     <img
                       src={product.imageSrc ?? resolveProductImage(product.imageUrl)}
                       alt={product.productName}

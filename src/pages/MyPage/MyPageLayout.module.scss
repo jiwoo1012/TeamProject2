@@ -13,20 +13,16 @@
 
 .pageHeader {
   display: flex;
+  width: calc(100% - #{v.$side-margin-desktop * 8});
   align-items: flex-start;
   justify-content: space-between;
-  margin: 0 0 v.$space-3;
-  padding: 0 v.$space-12;
+  margin: 0 auto v.$space-3;
 }
 
 .ornamentArea {
   position: relative;
-  width: min(
-    1161px,
-    calc(100% - #{v.$grid-gutter * 14 + v.$space-12 + v.$space-2 + v.$side-margin-desktop})
-  );
-  margin: 0 v.$side-margin-desktop v.$space-8
-    calc(v.$grid-gutter * 14 + v.$space-12 + v.$space-2);
+  width: calc(100% - #{v.$side-margin-desktop * 8});
+  margin: 0 auto v.$space-8;
 }
 
 .topOrnament {
@@ -39,7 +35,7 @@
 
 .title {
   margin: 0;
-  font-size: v.$font-size-4xl;
+  font-size: v.$font-size-2xl;
   font-weight: v.$font-weight-bold;
   line-height: v.$line-height-tight;
 }
@@ -47,7 +43,7 @@
 .description {
   margin: v.$space-2 0 0;
   color: v.$color-text-secondary;
-  font-size: v.$font-size-lg;
+  font-size: v.$font-size-sm;
   line-height: v.$line-height-base;
 }
 
@@ -57,10 +53,12 @@
 
 .layout {
   display: grid;
+  width: calc(100% - #{v.$side-margin-desktop * 8});
+  margin-inline: auto;
   grid-template-columns:
-    calc(v.$grid-gutter * 14) minmax(0, 1fr);
+    calc(v.$grid-gutter * 9) minmax(0, 1fr);
 
-  gap: calc(v.$space-12 + v.$space-2);
+  gap: v.$space-6;
   align-items: stretch;
 }
 
@@ -91,24 +89,23 @@
 
   width: 86%;
 
-  min-height: 60px;
-  padding: 0 v.$space-5;
+  min-height: 48px;
+  padding: 0 v.$space-3;
 
   border: 1px solid v.$color-border;
-  border-left: 0;
-  border-radius:
-    0 v.$radius-xl v.$radius-xl 0;
+  border-radius: v.$radius-xl;
 
   background: v.$color-white;
   color: v.$color-text-muted;
 
-  font-size: v.$font-size-sm;
+  font-size: v.$font-size-xs;
   text-decoration: none;
 
   box-shadow: v.$shadow-sm;
 
   transition:
     width v.$transition-fast,
+    transform v.$transition-fast,
     background-color v.$transition-fast,
     color v.$transition-fast,
     border-color v.$transition-fast,
@@ -118,7 +115,7 @@
 /* 활성 메뉴만 길게 */
 .active {
   width: 100%;
-  min-height: 60px;
+  min-height: 48px;
 
   border-color: v.$color-primary;
   background: v.$color-primary;
@@ -129,16 +126,33 @@
 }
 
 .menuDot {
-  width: v.$space-5;
-  height: v.$space-5;
+  width: v.$space-4;
+  height: v.$space-4;
   flex: 0 0 auto;
 
   border-radius: v.$radius-pill;
   background: v.$color-surface;
 }
 
-.menuItem:hover {
-  color: v.$color-text-primary;
+@media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+  .navigation:has(.menuItem:not(.active):hover) .active {
+    width: 86%;
+    transform: none;
+  }
+
+  .menuItem:hover {
+    width: 100%;
+    border-color: v.$color-primary;
+    background: v.$color-primary;
+    color: v.$color-white;
+    box-shadow: 0 4px 10px rgb(0 0 0 / 14%);
+    transform: scale(1.04);
+    transform-origin: left center;
+  }
+
+  .menuItem:hover .menuDot {
+    background: v.$color-white;
+  }
 }
 
 .menuItem:focus-visible,
@@ -206,11 +220,8 @@
 ========================= */
 
 .content {
-  padding: v.$space-4 0 0 v.$space-6;
-  width: min(
-    1161px,
-    calc(100vw - #{v.$grid-gutter * 14 + v.$space-12 + v.$space-2 + v.$side-margin-desktop})
-  );
+  padding: 0 0 0 v.$space-4;
+  width: 100%;
   max-width: none;
   min-width: 0;
 }
@@ -220,48 +231,62 @@
 ========================= */
 
 @media (max-width: 1500px) {
+  .title { font-size: v.$font-size-3xl; }
+  .description { font-size: v.$font-size-md; }
+
+  .pageHeader {
+    width: calc(100% - #{v.$side-margin-tablet * 6});
+  }
+
   .ornamentArea {
-    width: calc(100% - v.$side-margin-tablet * 2);
+    width: calc(100% - v.$side-margin-tablet * 6);
     margin: 0 auto v.$space-8;
   }
 
   .layout {
-    grid-template-columns: calc(v.$grid-gutter * 10) minmax(0, 1fr);
+    width: calc(100% - #{v.$side-margin-tablet * 6});
+    grid-template-columns: calc(v.$grid-gutter * 9) minmax(0, 1fr);
     gap: v.$space-8;
   }
 
   .content {
     width: 100%;
-    padding: v.$space-3 0 0 v.$space-4;
+    padding: 0 0 0 v.$space-4;
   }
 
   .menuItem,
   .active {
     width: 100%;
-    min-height: 60px;
+    min-height: 52px;
+  }
+
+  .menuItem {
+    padding-inline: v.$space-4;
+    font-size: v.$font-size-sm;
   }
 }
 
 @media (max-width: v.$breakpoint-tablet-max) {
   .pageHeader {
-    padding: 0 v.$side-margin-tablet;
+    width: calc(100% - #{v.$side-margin-tablet * 3});
   }
 
   .ornamentArea {
-    width: calc(100% - v.$side-margin-tablet * 2);
+    width: calc(100% - v.$side-margin-tablet * 3);
     margin: 0 auto v.$space-8;
   }
 
   .layout {
+    width: calc(100% - #{v.$side-margin-tablet * 3});
     grid-template-columns:
-      calc(v.$grid-gutter * 10) minmax(0, 1fr);
+      calc(v.$grid-gutter * 8) minmax(0, 1fr);
 
     gap: v.$space-8;
   }
 
   .content {
     width: 100%;
-    padding: v.$space-3 0 0 v.$space-4;
+    padding: 0 0 0 v.$space-4;
   }
 
 }
@@ -276,8 +301,9 @@
   }
 
   .pageHeader {
+    width: auto;
     margin-bottom: v.$space-6;
-    padding: 0 v.$side-margin-mobile;
+    margin-inline: v.$side-margin-mobile;
   }
 
   .ornamentArea {
@@ -301,6 +327,8 @@
 
   .layout {
     display: block;
+    width: 100%;
+    margin-inline: 0;
   }
 
   .content {
