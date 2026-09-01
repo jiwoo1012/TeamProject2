@@ -220,7 +220,7 @@ const EventList = () => {
 
                   <span className={styles.status}>
                     {event.isActive
-                      ? '진행중'
+                      ? '진행 중'
                       : '종료'}
                   </span>
 
