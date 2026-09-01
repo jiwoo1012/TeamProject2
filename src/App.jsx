@@ -55,6 +55,7 @@ import MyPageErrorContent from './pages/MyPage/MyPageErrorContent'
 
 // Event
 import EventList from './pages/Event/EventList'
+import EventReady from './pages/Event/EventReady'
 import RouletteEvent from './pages/Event/RouletteEvent'
 import OxQuizEvent from './pages/Event/OxQuizEvent'
 import CardGame from './pages/Event/CardGame'
@@ -403,6 +404,16 @@ const App = () => {
           />
 
 
+          {/* 이벤트 시작 안내 */}
+
+          <Route
+            path="/events/ready/:eventType"
+            element={
+              <EventReady />
+            }
+          />
+
+
           {/* 룰렛 이벤트 */}
 
           <Route
@@ -663,7 +674,7 @@ const App = () => {
       ======================================== */}
 
       <AdultModal
-        isOpen={ shouldShowAdultModal}
+        isOpen={shouldShowAdultModal}
         onVerify={
           handleAdultVerify
         }
