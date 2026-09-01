@@ -1,10 +1,11 @@
-import { useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import sitting from '../../assets/characters/M007_Poses04.png'
 import front from '../../assets/characters/M007_Poses05.png'
 import makdongLookUp from '../../assets/images/brand/makdong-look-up-hands-behind.png'
+import makdongTransition from '../../assets/images/brand/makdong01.png'
 import makdongSittingWave from '../../assets/images/brand/makdong-sitting-wave.png'
 import makdongSide from '../../assets/images/brand/mk_side.png'
 import makdongBack from '../../assets/images/brand/mk_back.png'
@@ -30,14 +31,29 @@ const jobs = [
 ]
 
 const MakdongIntro = () => {
+  const [hasStarted, setHasStarted] = useState(false)
   const guideRef = useRef(null)
+  const blankSectionRef = useRef(null)
   const storyRef = useRef(null)
   const outroRef = useRef(null)
 
   useStickyBrandHeader()
-  useMakdongSectionWheel({ guideRef, storyRef, outroRef })
+  useMakdongSectionWheel({ guideRef, blankSectionRef, storyRef, outroRef })
 
   useLayoutEffect(() => {
+    if (hasStarted) return undefined
+
+    const previousOverflowY = document.body.style.overflowY
+    document.body.style.overflowY = 'hidden'
+
+    return () => {
+      document.body.style.overflowY = previousOverflowY
+    }
+  }, [hasStarted])
+
+  useLayoutEffect(() => {
+    if (!hasStarted) return undefined
+
     const section = guideRef.current
     if (!section) return undefined
 
@@ -60,14 +76,61 @@ const MakdongIntro = () => {
       media.revert()
       context.revert()
     }
-  }, [])
+  }, [hasStarted])
+
+  useLayoutEffect(() => {
+    if (!hasStarted) return undefined
+
+    const frameId = window.requestAnimationFrame(() => {
+      ScrollTrigger.refresh()
+      blankSectionRef.current?.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'start',
+      })
+    })
+
+    return () => window.cancelAnimationFrame(frameId)
+  }, [hasStarted])
 
   return (
     <main className={styles.page}>
       <section className={styles.blankIntro} aria-label="막동이 소개 첫 화면">
-        <a className={styles.blankIntroLink} href="#makdong-intro" aria-label="막동이 소개 시작하기">
+        <button
+          className={styles.blankIntroLink}
+          type="button"
+          aria-label="막동이 소개 시작하기"
+          onClick={() => setHasStarted(true)}
+        >
           <img src={makdongLookUp} alt="두 손을 뒤로 하고 위를 바라보는 막동이" />
-        </a>
+        </button>
+      </section>
+
+      {hasStarted && (
+        <>
+      <section
+        ref={blankSectionRef}
+        className={styles.blankCharacterSection}
+        aria-labelledby="makdong-transition-title"
+      >
+        <h2 id="makdong-transition-title">MAKDONG</h2>
+        <div className={styles.flowRibbons} aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </div>
+        <div className={styles.ceramicStillLife} aria-hidden="true">
+          <i className={styles.ceramicBottle} />
+          <i className={styles.ceramicCup} />
+        </div>
+        <img
+          className={styles.transitionMakdong}
+          src={makdongTransition}
+          alt="잔을 머리에 올리고 손을 흔드는 막동이"
+        />
+        <div className={styles.riceGrains} aria-hidden="true">
+          <i /><i /><i /><i /><i /><i />
+        </div>
+        <div className={styles.transitionFloor} aria-hidden="true" />
       </section>
 
       <section
@@ -77,39 +140,23 @@ const MakdongIntro = () => {
         aria-labelledby="makdong-guide-title"
       >
         <div className={styles.characterGuideInner}>
-          <div className={styles.characterIntro}>
-            <div data-guide-title>
-              <h1 id="makdong-guide-title">MAKDONG</h1>
-              <p className={styles.characterName}>막동이</p>
-              <p className={styles.characterRole}>
-                오늘 당신의 한 잔을 함께 골라줄<br />
-                자작의 작은 큐레이터, 막동이를 소개합니다.
-              </p>
-              <p className={styles.characterSummary}>
-                오늘의 기분과 취향을 살피고,<br />
-                당신에게 어울리는 한 잔을 찾아주는<br />
-                다정하고 호기심 많은 친구예요.
-              </p>
-            </div>
-
-            <div className={styles.characterTaste}>
-              <h2>막동이의 취향</h2>
-              <dl>
-                <div>
-                  <dt>좋아하는 것</dt>
-                  <dd>맛있는 안주 냄새, 새로운 전통주 찾기</dd>
-                </div>
-                <div>
-                  <dt>특기</dt>
-                  <dd>오늘 기분에 딱 맞는 한 상 골라주기</dd>
-                </div>
-              </dl>
-            </div>
+          <div className={styles.characterIntro} data-guide-title>
+            <h2 className={styles.characterGuideTitle}>MAKDONG</h2>
+            <p className={styles.characterName}>막동이</p>
+            <p className={styles.characterRole}>
+              오늘 당신의 한 잔을 함께 골라줄<br />
+              자작의 작은 큐레이터, 막동이를 소개합니다.
+            </p>
+            <p className={styles.characterSummary}>
+              오늘의 기분과 취향을 살피고,<br />
+              당신에게 어울리는 한 잔을 찾아주는<br />
+              다정하고 호기심 많은 친구예요.
+            </p>
           </div>
 
           <aside className={styles.guideBoard} aria-label="막동이 캐릭터 가이드">
             <header className={styles.guideBoardHeader}>
-              <h2>MAKDONG CHARACTER GUIDE</h2>
+              <h2 id="makdong-guide-title">MAKDONG CHARACTER GUIDE</h2>
               <span>JAJAK ARCHIVE · 01</span>
             </header>
 
@@ -176,6 +223,26 @@ const MakdongIntro = () => {
               </p>
             </header>
 
+            <div className={styles.characterPurpose}>
+              <p className={styles.characterPurposeEyebrow}>WHY MAKDONG?</p>
+              <h3>
+                혼자여도, 함께여도
+                <br />
+                오늘의 시간이 조금 더 다정해질 수 있도록.
+              </h3>
+              <p>
+                막동이는 무엇을 마실지 고민되는 날, 오늘의 기분을 먼저 물어봐요.
+                어려운 술 이름보다 당신이 어떤 하루를 보냈는지, 지금 어떤 시간이
+                필요한지를 더 궁금해하는 친구예요.
+              </p>
+              <strong>술을 고르는 것보다, 오늘의 당신을 먼저 살펴보는 큐레이터.</strong>
+            </div>
+
+            <div className={styles.curationIntro}>
+              <p>MAKDONG&apos;S CURATION</p>
+              <h3>그래서 막동이가 뭘 해주는데?</h3>
+            </div>
+
             <ol className={styles.characterStorySteps}>
               {jobs.map(({ number, title, text }) => (
                 <li key={number}>
@@ -196,10 +263,16 @@ const MakdongIntro = () => {
         </div>
         <div className={styles.outroCopy}>
           <h2 id="outro-title">오늘은 어떤 한 잔이 필요하세요?</h2>
-          <p>막동이가 당신의 취향과 오늘의 기분을 살펴<br />어울리는 한 상을 준비해드릴게요.</p>
+          <p>
+            기분 좋은 날도, 조금 지친 날도.<br />
+            막동이가 오늘의 당신에게 어울리는<br />
+            한 상을 준비해드릴게요.
+          </p>
           <Link to="/ai">막동이에게 추천받기 <span aria-hidden="true">→</span></Link>
         </div>
       </section>
+        </>
+      )}
     </main>
   )
 }

@@ -1,63 +1,160 @@
+import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import brandStoryCup from '../../assets/images/main/brand-story/brand-story-cup.png'
-import brandStoryPour from '../../assets/images/main/brand-story/brand-story-pour-after.png'
-import brandStoryScene from '../../assets/images/main/brand-story/brand-story-pouring.webp'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import brandStoryBackground from '../../assets/images/brand/brand-story-background.png'
+import brandBottle from '../../assets/images/brand/O-brand01.png'
+import brandStage from '../../assets/images/brand/O-brand02.png'
 import storyTable from '../../assets/images/main/hero/main-hero-table-sunset.webp'
 import senseTaste from '../../assets/images/main/ai-recommendation/happy-day-black-liquor.png'
 import sensePairing from '../../assets/images/main/ai-recommendation/happy-day-grilled-pollock.png'
 import senseScent from '../../assets/images/main/ai-recommendation/sweet-craving-orange-liquor.png'
 import senseWarmth from '../../assets/images/main/hero/main-hero-table.webp'
 import makdong from '../../assets/characters/M007_Poses01.png'
+import useSectionWheelSnap from './useSectionWheelSnap'
 import useStickyBrandHeader from './useStickyBrandHeader'
 import styles from './BrandIntro.module.scss'
 
+const brandValues = [
+  { number: '01', title: '우리의 술', text: '오랜 시간과 정성이 빚은\n우리 술의 깊은 맛을 지켜갑니다.' },
+  { number: '02', title: '지역의 재료', text: '좋은 술은 좋은 재료에서.\n전통이 살아있는 지역의 재료를 고집합니다.' },
+  { number: '03', title: '빚는 사람', text: '오늘도 묵묵히 우리 술을 빚는\n사람들의 땀과 마음을 담습니다.' },
+  { number: '04', title: '한 상의 경험', text: '전통주와 가장 잘 어울리는\n안주를 함께 구성해 더 풍성한 한 상을 제안합니다.' },
+  { number: '05', title: '나를 위한 시간', text: '단순한 쇼핑이 아닌, 오늘의 나를 위한\n특별한 시간을 선물합니다.' },
+]
+
 const BrandIntro = () => {
+  const heroSectionRef = useRef(null)
+  const secondSectionRef = useRef(null)
+  const bottleRef = useRef(null)
+  const stageRef = useRef(null)
+
   useStickyBrandHeader()
+  useSectionWheelSnap([{ ref: heroSectionRef }, { ref: secondSectionRef }])
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger)
+
+    const section = secondSectionRef.current
+    const bottle = bottleRef.current
+    const stage = stageRef.current
+
+    if (!section || !bottle || !stage) return undefined
+
+    const media = gsap.matchMedia()
+
+    media.add({
+      desktop: '(min-width: 768px)',
+      reduce: '(prefers-reduced-motion: reduce)',
+    }, ({ conditions }) => {
+      const { desktop, reduce } = conditions
+      if (!desktop) return undefined
+
+      const landingScale = 1
+      const bottleLandingY = '4svh'
+      const stageLandingY = '12svh'
+
+      if (reduce) {
+        gsap.set(stage, { yPercent: 0, y: stageLandingY })
+        gsap.set(bottle, { x: 0, y: bottleLandingY, scale: landingScale })
+        return undefined
+      }
+
+      const context = gsap.context(() => {
+        gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 0.7,
+            invalidateOnRefresh: true,
+          },
+        })
+          .fromTo(
+            stage,
+            { yPercent: 115, y: 0 },
+            { yPercent: 0, y: stageLandingY, ease: 'none', duration: 1 },
+            0,
+          )
+          .fromTo(
+            bottle,
+            { x: 0, y: 0, scale: 1 },
+            {
+              x: 0,
+              y: bottleLandingY,
+              scale: landingScale,
+              ease: 'power1.inOut',
+              duration: 0.72,
+            },
+            0.28,
+          )
+      }, section)
+
+      return () => context.revert()
+    })
+
+    return () => {
+      media.revert()
+      gsap.set([bottle, stage], { clearProps: 'transform' })
+    }
+  }, [])
 
   return (
     <main className={styles.page}>
-      <section className={styles.hero} aria-labelledby="brand-story-title">
-        <div className={styles.copy}>
-          <h1 id="brand-story-title" className={styles.title}>
-            <span>좋은 술 한 잔에는</span>
-            <span>다정한 이야기가 있습니다</span>
-          </h1>
-          <p className={styles.description}>
-            자작은 우리 술이 어렵지 않도록,
-            <br />
-            오늘의 마음과 가장 잘 어울리는 한 잔을 건넵니다.
-          </p>
-        </div>
+      <section
+        ref={heroSectionRef}
+        className={styles.hero}
+        aria-labelledby="brand-story-title"
+        style={{ '--brand-story-background': `url(${brandStoryBackground})` }}
+      >
+        <div className={styles.heroShade} aria-hidden="true" />
+        <div className={styles.heroContent}>
+          <header className={styles.heroHeading}>
+            <p className={styles.heroEyebrow}>BRAND STORY</p>
+            <span className={styles.heroRule} aria-hidden="true" />
+            <h1 id="brand-story-title">자작</h1>
+            <p className={styles.heroRoman}>JAJAK</p>
+            <p className={styles.heroSlogan}>
+              “스스로에게 다정하게 따르는 잔,<br />
+              오롯한 나를 위한 자작의 시간.”
+            </p>
+            <p className={styles.heroIntroduction}>
+              자작은 전통주와 안주, 그리고 잔을 하나의 경험으로 연결해<br />
+              오늘의 당신이 가장 편안하고 따뜻한 시간을 보낼 수 있도록<br />
+              좋은 술 한 잔의 가치를 새롭게 제안합니다.
+            </p>
+          </header>
 
-        <div className={styles.visual} aria-hidden="true">
-          <img className={styles.scene} src={brandStoryScene} alt="" />
-          <img className={styles.pour} src={brandStoryPour} alt="" />
-          <img className={styles.cup} src={brandStoryCup} alt="" />
-          <span className={styles.sun} />
+          <ol className={styles.heroValues}>
+            {brandValues.map(({ number, title, text }) => (
+              <li key={number}>
+                <span className={styles.valueNumber}>{number}</span>
+                <strong>{title}</strong>
+                <p>{text}</p>
+              </li>
+            ))}
+          </ol>
         </div>
-
       </section>
 
-      <section className={styles.story} aria-labelledby="brand-alone-title">
-        <div className={styles.storyInner}>
-          <div className={styles.storyCopy}>
-            <h2 id="brand-alone-title">
-              혼자 보내는 저녁도
-              <br />
-              누군가 준비해준 한 상처럼
-              <br />
-              따뜻할 수 없을까?
-            </h2>
-            <p className={styles.storyDescription}>
-              하루를 마치고 돌아온 집에서 무엇을 먹고 마실지 결정하는 일조차
-              <br className={styles.desktopBreak} />
-              버겁게 느껴지는 날이 있습니다. 자작은 그 순간에서 시작했습니다.
-            </p>
-          </div>
-
-          <figure className={styles.storyImage}>
-            <img src={storyTable} alt="전통주와 안주가 놓인 따뜻한 저녁 주안상" />
-          </figure>
+      <section
+        ref={secondSectionRef}
+        className={styles.storySequence}
+        aria-label="전통주 병이 자작의 받침에 놓이는 브랜드 이야기"
+      >
+        <div className={styles.storyScene}>
+          <img
+            ref={stageRef}
+            className={styles.storyStage}
+            src={brandStage}
+            alt="덩굴 장식이 어우러진 자작의 돌 받침"
+          />
+          <img
+            ref={bottleRef}
+            className={styles.storyBottle}
+            src={brandBottle}
+            alt="자작 전통주 병"
+          />
         </div>
       </section>
 
