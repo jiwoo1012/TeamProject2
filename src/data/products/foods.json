@@ -16,7 +16,8 @@
     "snackType": "간편식",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product17.png"
+    "imageUrl": "product17.png",
+    "aiImageUrl": "ai17.png"
   },
   {
     "productId": "snk_002",
@@ -33,7 +34,8 @@
     "snackType": "간편식",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product18.png"
+    "imageUrl": "product18.png",
+    "aiImageUrl": "ai18.png"
   },
   {
     "productId": "snk_003",
@@ -54,7 +56,8 @@
     "snackType": "상온안주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product19.png"
+    "imageUrl": "product19.png",
+    "aiImageUrl": "ai19.png"
   },
   {
     "productId": "snk_004",
@@ -73,7 +76,8 @@
     "snackType": "상온안주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product20.png"
+    "imageUrl": "product20.png",
+    "aiImageUrl": "ai20.png"
   },
   {
     "productId": "snk_005",
@@ -92,7 +96,8 @@
     "snackType": "디저트",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product21.png"
+    "imageUrl": "product21.png",
+    "aiImageUrl": "ai21.png"
   },
   {
     "productId": "snk_006",
@@ -112,7 +117,8 @@
     "snackType": "디저트",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product22.png"
+    "imageUrl": "product22.png",
+    "aiImageUrl": "ai22.png"
   },
   {
     "productId": "snk_007",
@@ -134,7 +140,8 @@
     "snackType": "간편식",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product29.png"
+    "imageUrl": "product29.png",
+    "aiImageUrl": "ai29.png"
   },
   {
     "productId": "snk_008",
@@ -154,7 +161,8 @@
     "snackType": "상온안주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product30.png"
+    "imageUrl": "product30.png",
+    "aiImageUrl": "ai30.png"
   },
   {
     "productId": "snk_009",
@@ -175,7 +183,8 @@
     "snackType": "상온안주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product31.png"
+    "imageUrl": "product31.png",
+    "aiImageUrl": "ai31.png"
   },
   {
     "productId": "snk_010",
@@ -195,7 +204,8 @@
     "snackType": "간편식",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product35.png"
+    "imageUrl": "product35.png",
+    "aiImageUrl": "ai35.png"
   },
   {
     "productId": "snk_011",
@@ -214,6 +224,7 @@
     "snackType": "상온안주",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product36.png"
+    "imageUrl": "product36.png",
+    "aiImageUrl": "ai36.png"
   }
 ]

@@ -12,7 +12,8 @@
     "glassType": "술잔",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product16.png"
+    "imageUrl": "product16.png",
+    "aiImageUrl": "ai16.png"
   },
   {
     "productId": "gls_002",
@@ -27,7 +28,8 @@
     "glassType": "술잔",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product25.png"
+    "imageUrl": "product25.png",
+    "aiImageUrl": "ai25.png"
   },
   {
     "productId": "gls_003",
@@ -42,7 +44,8 @@
     "glassType": "술잔",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product26.png"
+    "imageUrl": "product26.png",
+    "aiImageUrl": "ai26.png"
   },
   {
     "productId": "gls_004",
@@ -57,7 +60,8 @@
     "glassType": "술잔",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product27.png"
+    "imageUrl": "product27.png",
+    "aiImageUrl": "ai27.png"
   },
   {
     "productId": "gls_005",
@@ -72,6 +76,7 @@
     "glassType": "술잔",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product28.png"
+    "imageUrl": "product28.png",
+    "aiImageUrl": "ai28.png"
   }
 ]
