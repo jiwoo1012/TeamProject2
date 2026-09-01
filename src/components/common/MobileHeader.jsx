@@ -9,6 +9,7 @@ import MobileSearchModal from './MobileSearchModal'
 
 import styles from './MobileHeader.module.scss'
 
+
 const MobileHeader = () => {
   const [isMenuOpen, setIsMenuOpen] =
     useState(false)
@@ -23,6 +24,7 @@ const MobileHeader = () => {
     setIsSearchOpen,
   ] = useState(false)
 
+
   // ========================================
   // 전체 메뉴 열기 / 닫기
   // ========================================
@@ -30,10 +32,13 @@ const MobileHeader = () => {
   const toggleMenu = () => {
     setIsSearchOpen(false)
 
-    setIsMenuOpen((prev) => !prev)
+    setIsMenuOpen(
+      (prev) => !prev
+    )
 
     setOpenAccordion(null)
   }
+
 
   // ========================================
   // 전체 메뉴 닫기
@@ -44,6 +49,7 @@ const MobileHeader = () => {
     setOpenAccordion(null)
   }
 
+
   // ========================================
   // 아코디언 열기 / 닫기
   // ========================================
@@ -51,10 +57,14 @@ const MobileHeader = () => {
   const toggleAccordion = (
     menu
   ) => {
-    setOpenAccordion((prev) =>
-      prev === menu ? null : menu
+    setOpenAccordion(
+      (prev) =>
+        prev === menu
+          ? null
+          : menu
     )
   }
+
 
   // ========================================
   // 검색창 열기
@@ -68,6 +78,7 @@ const MobileHeader = () => {
     setIsSearchOpen(true)
   }
 
+
   // ========================================
   // 검색창 닫기
   // ========================================
@@ -75,6 +86,7 @@ const MobileHeader = () => {
   const closeSearch = () => {
     setIsSearchOpen(false)
   }
+
 
   // ========================================
   // 검색 화면에서 햄버거 클릭
@@ -88,6 +100,7 @@ const MobileHeader = () => {
 
     setIsMenuOpen(true)
   }
+
 
   return (
     <div
@@ -108,7 +121,9 @@ const MobileHeader = () => {
 
         <Link
           to="/"
-          state={{ skipJourney: true }}
+          state={{
+            skipJourney: true,
+          }}
           className={
             styles.logo
           }
@@ -122,6 +137,7 @@ const MobileHeader = () => {
             alt="JAJAK"
           />
         </Link>
+
 
         {/* 오른쪽 아이콘 */}
 
@@ -151,6 +167,7 @@ const MobileHeader = () => {
             />
           </button>
 
+
           {/* 장바구니 */}
 
           <Link
@@ -169,6 +186,7 @@ const MobileHeader = () => {
               alt=""
             />
           </Link>
+
 
           {/* 햄버거 / 닫기 */}
 
@@ -200,6 +218,7 @@ const MobileHeader = () => {
         </div>
       </div>
 
+
       {/* ==============================
           모바일 전체 메뉴
       ============================== */}
@@ -219,6 +238,7 @@ const MobileHeader = () => {
             styles.gnb
           }
         >
+
           {/* =========================
               브랜드
           ========================= */}
@@ -258,6 +278,7 @@ const MobileHeader = () => {
               </span>
             </button>
 
+
             <div
               className={`
                 ${styles.subMenu}
@@ -294,6 +315,7 @@ const MobileHeader = () => {
               </div>
             </div>
           </div>
+
 
           {/* =========================
               상품
@@ -333,6 +355,7 @@ const MobileHeader = () => {
                 ˅
               </span>
             </button>
+
 
             <div
               className={`
@@ -389,6 +412,7 @@ const MobileHeader = () => {
             </div>
           </div>
 
+
           {/* =========================
               AI 추천
           ========================= */}
@@ -428,6 +452,7 @@ const MobileHeader = () => {
               </span>
             </button>
 
+
             <div
               className={`
                 ${styles.subMenu}
@@ -453,6 +478,19 @@ const MobileHeader = () => {
                   추천 받기
                 </Link>
 
+
+                {/* 내 취향 분석 */}
+
+                <Link
+                  to="/ai/preference"
+                  onClick={
+                    closeMenu
+                  }
+                >
+                  내 취향 분석
+                </Link>
+
+
                 <Link
                   to="/mypage/ai-history"
                   onClick={
@@ -464,6 +502,7 @@ const MobileHeader = () => {
               </div>
             </div>
           </div>
+
 
           {/* =========================
               이벤트
@@ -487,6 +526,7 @@ const MobileHeader = () => {
             </Link>
           </div>
         </nav>
+
 
         {/* ==============================
             로그인 영역
@@ -519,6 +559,7 @@ const MobileHeader = () => {
         </div>
       </div>
 
+
       {/* ==============================
           모바일 검색 화면
       ============================== */}
@@ -537,5 +578,6 @@ const MobileHeader = () => {
     </div>
   )
 }
+
 
 export default MobileHeader

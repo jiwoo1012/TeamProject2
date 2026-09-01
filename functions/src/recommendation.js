@@ -136,6 +136,933 @@ const filterAvailableGlasses = (
 
 
 // ========================================
+// Mock 모드 확인
+//
+// functions/.env.local
+// USE_MOCK_AI=true
+//
+// true:
+// 실제 OpenAI API 호출 없이
+// 후보 상품을 사용해 임시 추천 생성
+//
+// false:
+// 실제 OpenAI API 호출
+// ========================================
+
+const isMockAiEnabled = () => {
+  return (
+    String(
+      process.env.USE_MOCK_AI || ''
+    )
+      .trim()
+      .toLowerCase() === 'true'
+  )
+}
+
+
+// ========================================
+// Mock 추천용 텍스트 정규화
+// ========================================
+
+const normalizeText = (value) => {
+  if (Array.isArray(value)) {
+    return value
+      .join(' ')
+      .toLowerCase()
+  }
+
+  return String(value || '')
+    .toLowerCase()
+}
+
+
+// ========================================
+// 특정 키워드가 포함되어 있는지 확인
+// ========================================
+
+const includesAny = (
+  value,
+  keywords = []
+) => {
+  const text =
+    normalizeText(value)
+
+  return keywords.some(
+    (keyword) =>
+      text.includes(
+        String(keyword).toLowerCase()
+      )
+  )
+}
+
+
+// ========================================
+// 강도 값 숫자로 변환
+//
+// 상품 JSON이
+// 숫자 / low / medium / high 등
+// 어느 형태여도 최대한 대응
+// ========================================
+
+const getLevelScore = (value) => {
+  if (
+    typeof value === 'number'
+  ) {
+    return value
+  }
+
+  const normalized =
+    normalizeText(value)
+
+  if (
+    [
+      'high',
+      'strong',
+      '높음',
+      '강함',
+      '강',
+      '진함',
+    ].some(
+      (item) =>
+        normalized.includes(item)
+    )
+  ) {
+    return 3
+  }
+
+  if (
+    [
+      'medium',
+      'normal',
+      '중간',
+      '보통',
+      '적당',
+    ].some(
+      (item) =>
+        normalized.includes(item)
+    )
+  ) {
+    return 2
+  }
+
+  if (
+    [
+      'low',
+      'light',
+      '낮음',
+      '약함',
+      '약',
+      '가벼움',
+    ].some(
+      (item) =>
+        normalized.includes(item)
+    )
+  ) {
+    return 1
+  }
+
+  return 0
+}
+
+
+// ========================================
+// Mock 추천
+// 오늘 도수 조건 점수
+// ========================================
+
+const getAlcoholMockScore = (
+  liquor,
+  alcohol
+) => {
+  if (
+    typeof liquor?.abv !== 'number'
+  ) {
+    return 0
+  }
+
+  const abv = liquor.abv
+
+  switch (alcohol) {
+    case 'light':
+      return abv <= 10
+        ? 6
+        : 0
+
+    case 'medium':
+      return (
+        abv >= 11 &&
+        abv <= 16
+      )
+        ? 6
+        : 0
+
+    case 'strong':
+      return (
+        abv >= 17 &&
+        abv <= 25
+      )
+        ? 6
+        : 0
+
+    case 'veryStrong':
+      return abv >= 26
+        ? 6
+        : 0
+
+    case 'any':
+    case 'preference':
+    default:
+      return 0
+  }
+}
+
+
+// ========================================
+// Mock 추천
+// 오늘 맛 조건 점수
+// ========================================
+
+const getSingleTasteMockScore = (
+  liquor,
+  taste
+) => {
+  if (!liquor || !taste) {
+    return 0
+  }
+
+  const searchableText = [
+    ...(Array.isArray(
+      liquor.flavorKeywords
+    )
+      ? liquor.flavorKeywords
+      : []),
+
+    liquor.productDescription,
+    liquor.liquorType,
+  ]
+    .filter(Boolean)
+    .join(' ')
+
+  switch (taste) {
+    case 'sweet': {
+      let score = 0
+
+      if (
+        includesAny(
+          searchableText,
+          [
+            'sweet',
+            '달콤',
+            '단맛',
+            '부드러',
+          ]
+        )
+      ) {
+        score += 4
+      }
+
+      if (
+        getLevelScore(
+          liquor.sweetness
+        ) >= 2
+      ) {
+        score += 3
+      }
+
+      return score
+    }
+
+    case 'sour': {
+      let score = 0
+
+      if (
+        includesAny(
+          searchableText,
+          [
+            'sour',
+            'acid',
+            '새콤',
+            '산뜻',
+            '산미',
+          ]
+        )
+      ) {
+        score += 4
+      }
+
+      if (
+        getLevelScore(
+          liquor.acidity
+        ) >= 2
+      ) {
+        score += 3
+      }
+
+      return score
+    }
+
+    case 'clean': {
+      let score = 0
+
+      if (
+        includesAny(
+          searchableText,
+          [
+            'clean',
+            'light',
+            '깔끔',
+            '담백',
+            '산뜻',
+            '가벼',
+          ]
+        )
+      ) {
+        score += 5
+      }
+
+      if (
+        getLevelScore(
+          liquor.bodyWeight
+        ) === 1
+      ) {
+        score += 2
+      }
+
+      return score
+    }
+
+    case 'savory': {
+      if (
+        includesAny(
+          searchableText,
+          [
+            'savory',
+            'grain',
+            'nutty',
+            '고소',
+            '구수',
+            '곡물',
+            '담백',
+          ]
+        )
+      ) {
+        return 6
+      }
+
+      return 0
+    }
+
+    case 'rich': {
+      let score = 0
+
+      if (
+        includesAny(
+          searchableText,
+          [
+            'rich',
+            'deep',
+            '진한',
+            '묵직',
+            '풍부',
+            '깊은',
+          ]
+        )
+      ) {
+        score += 4
+      }
+
+      if (
+        getLevelScore(
+          liquor.bodyWeight
+        ) >= 3
+      ) {
+        score += 3
+      }
+
+      return score
+    }
+
+    case 'bitter':
+    case 'dry': {
+      if (
+        includesAny(
+          searchableText,
+          [
+            'bitter',
+            'dry',
+            '쌉싸름',
+            '드라이',
+          ]
+        )
+      ) {
+        return 6
+      }
+
+      return 0
+    }
+
+    case 'unknown':
+    case 'preference':
+    default:
+      return 0
+  }
+}
+
+
+// ========================================
+// Mock 추천
+// 회원: 단일 맛
+// 비회원: 최대 2개 맛
+// ========================================
+
+const getTasteMockScore = (
+  liquor,
+  taste
+) => {
+  if (
+    Array.isArray(taste)
+  ) {
+    return taste.reduce(
+      (total, item) =>
+        total +
+        getSingleTasteMockScore(
+          liquor,
+          item
+        ),
+      0
+    )
+  }
+
+  return getSingleTasteMockScore(
+    liquor,
+    taste
+  )
+}
+
+
+// ========================================
+// Mock 추천
+// 안주 유형 점수
+// ========================================
+
+const getFoodMockScore = (
+  food,
+  foodAnswer
+) => {
+  if (
+    !food ||
+    !foodAnswer ||
+    foodAnswer === 'recommend'
+  ) {
+    return 0
+  }
+
+  const snackType =
+    normalizeText(
+      food.snackType
+    )
+
+  switch (foodAnswer) {
+    case 'meal':
+      return includesAny(
+        snackType,
+        [
+          'meal',
+          '간편식',
+          '식사',
+        ]
+      )
+        ? 5
+        : 0
+
+    case 'snack':
+      return includesAny(
+        snackType,
+        [
+          'snack',
+          '상온',
+          '안주',
+        ]
+      )
+        ? 5
+        : 0
+
+    case 'dessert':
+      return includesAny(
+        snackType,
+        [
+          'dessert',
+          '디저트',
+        ]
+      )
+        ? 5
+        : 0
+
+    default:
+      return 0
+  }
+}
+
+
+// ========================================
+// Mock 추천
+// 오늘의 상황 점수
+// ========================================
+
+const getMoodMockScore = (
+  liquor,
+  mood
+) => {
+  if (
+    !liquor ||
+    !mood ||
+    mood === 'random'
+  ) {
+    return 0
+  }
+
+  const searchableText = [
+    liquor.recommendedSituation,
+    liquor.productDescription,
+    liquor.timeOfDay,
+  ]
+    .filter(Boolean)
+    .join(' ')
+
+  const keywordMap = {
+    refresh: [
+      'refresh',
+      '기분 전환',
+      '산뜻',
+      '가볍',
+      '상쾌',
+    ],
+
+    relax: [
+      'relax',
+      '휴식',
+      '편안',
+      '조용',
+      '마무리',
+    ],
+
+    food: [
+      'food',
+      '식사',
+      '안주',
+      '음식',
+    ],
+
+    special: [
+      'special',
+      '특별',
+      '기념',
+      '분위기',
+    ],
+
+    deep: [
+      'deep',
+      '깊',
+      '천천히',
+      '풍미',
+      '묵직',
+    ],
+  }
+
+  const keywords =
+    keywordMap[mood] || []
+
+  return includesAny(
+    searchableText,
+    keywords
+  )
+    ? 4
+    : 0
+}
+
+
+// ========================================
+// Mock 추천
+// 회원 평소 취향 간단 비교
+//
+// 정확한 AI 판단 대신,
+// 상품 데이터와 동일한 필드가 존재할 때만
+// 보조 점수로 사용
+// ========================================
+
+const getPreferenceMockScore = (
+  liquor,
+  userPreference
+) => {
+  if (
+    !liquor ||
+    !userPreference
+  ) {
+    return 0
+  }
+
+  let score = 0
+
+  const comparableFields = [
+    'sweetness',
+    'acidity',
+    'bodyWeight',
+    'scentIntensity',
+  ]
+
+  comparableFields.forEach(
+    (field) => {
+      const preferenceValue =
+        userPreference[field]
+
+      const liquorValue =
+        liquor[field]
+
+      if (
+        preferenceValue == null ||
+        liquorValue == null
+      ) {
+        return
+      }
+
+      if (
+        normalizeText(
+          preferenceValue
+        ) ===
+        normalizeText(
+          liquorValue
+        )
+      ) {
+        score += 1
+      }
+    }
+  )
+
+  return score
+}
+
+
+// ========================================
+// Mock 후보 하나 점수 계산
+// ========================================
+
+const getMockCandidateScore = ({
+  table,
+  todaySurvey,
+  userPreference,
+}) => {
+  if (!table) {
+    return 0
+  }
+
+  let score = 0
+
+  score +=
+    getAlcoholMockScore(
+      table.liquor,
+      todaySurvey.alcohol
+    )
+
+  score +=
+    getTasteMockScore(
+      table.liquor,
+      todaySurvey.taste
+    )
+
+  score +=
+    getFoodMockScore(
+      table.food,
+      todaySurvey.food
+    )
+
+  score +=
+    getMoodMockScore(
+      table.liquor,
+      todaySurvey.mood
+    )
+
+  // 회원이 "평소 취향대로"를 선택한 경우
+  // 또는 평소 취향 데이터가 있는 경우
+  // 아주 작은 보조 점수만 반영
+  if (userPreference) {
+    score +=
+      getPreferenceMockScore(
+        table.liquor,
+        userPreference
+      )
+  }
+
+  return score
+}
+
+
+// ========================================
+// 추천 시간 텍스트
+// ========================================
+
+const buildMockTimeText = (
+  liquor
+) => {
+  const timeRange =
+    liquor?.recommendedTimeRange
+
+  if (
+    typeof timeRange === 'string' &&
+    timeRange.trim()
+  ) {
+    return `${timeRange}에 즐기기 좋은 후보예요.`
+  }
+
+  if (
+    Array.isArray(timeRange) &&
+    timeRange.length > 0
+  ) {
+    return `${timeRange.join(
+      ' ~ '
+    )}에 즐기기 좋은 후보예요.`
+  }
+
+  if (
+    timeRange &&
+    typeof timeRange === 'object'
+  ) {
+    const start =
+      timeRange.start ||
+      timeRange.from
+
+    const end =
+      timeRange.end ||
+      timeRange.to
+
+    if (start && end) {
+      return `${start} ~ ${end}에 즐기기 좋은 후보예요.`
+    }
+  }
+
+  return '오늘의 조건을 기준으로 고른 주안상이에요.'
+}
+
+
+// ========================================
+// Mock 추천 이유
+// ========================================
+
+const buildMockReason = ({
+  todaySurvey,
+}) => {
+  const criteria = []
+
+  if (
+    todaySurvey.taste &&
+    todaySurvey.taste !==
+      'unknown'
+  ) {
+    criteria.push('맛 취향')
+  }
+
+  if (
+    todaySurvey.alcohol &&
+    todaySurvey.alcohol !==
+      'any'
+  ) {
+    criteria.push('도수')
+  }
+
+  if (
+    todaySurvey.food
+  ) {
+    criteria.push('안주 선택')
+  }
+
+  if (
+    todaySurvey.mood &&
+    todaySurvey.mood !==
+      'random'
+  ) {
+    criteria.push('오늘의 분위기')
+  }
+
+  if (
+    criteria.length === 0
+  ) {
+    return '안전 필터와 실제 상품 페어링 데이터를 기준으로 골라본 주안상이에요.'
+  }
+
+  return `${criteria.join(
+    ', '
+  )}을 반영해 실제 상품 후보 중 골라본 주안상이에요.`
+}
+
+
+// ========================================
+// Mock 추천 생성
+//
+// 실제 candidateTables 안에서만 선택.
+//
+// 1. 간단한 조건 점수 계산
+// 2. 점수 높은 순 정렬
+// 3. 가능하면 서로 다른 전통주 선택
+// 4. 부족하면 남은 후보로 채움
+// ========================================
+
+const buildMockAiRecommendations = ({
+  candidateTables,
+  todaySurvey,
+  userPreference,
+  recommendationCount,
+}) => {
+  const scoredCandidates =
+    candidateTables
+      .map(
+        (table, index) => ({
+          table,
+
+          index,
+
+          score:
+            getMockCandidateScore({
+              table,
+              todaySurvey,
+              userPreference,
+            }),
+        })
+      )
+      .sort(
+        (a, b) => {
+          if (
+            b.score !== a.score
+          ) {
+            return (
+              b.score - a.score
+            )
+          }
+
+          // 점수가 같으면
+          // 기존 pairings 순서 유지
+          return (
+            a.index - b.index
+          )
+        }
+      )
+
+
+  const selected = []
+
+  const selectedTableIds =
+    new Set()
+
+  const selectedLiquorIds =
+    new Set()
+
+
+  // ========================================
+  // 1차:
+  // 가능하면 서로 다른 술을 먼저 선택
+  // ========================================
+
+  scoredCandidates.forEach(
+    ({ table }) => {
+      if (
+        selected.length >=
+        recommendationCount
+      ) {
+        return
+      }
+
+      const liquorId =
+        table.liquor?.productId
+
+      if (
+        !liquorId ||
+        selectedLiquorIds.has(
+          liquorId
+        )
+      ) {
+        return
+      }
+
+      selected.push(table)
+
+      selectedTableIds.add(
+        table.tableId
+      )
+
+      selectedLiquorIds.add(
+        liquorId
+      )
+    }
+  )
+
+
+  // ========================================
+  // 2차:
+  // 서로 다른 술만으로 개수가 부족한 경우
+  // 남은 후보에서 채움
+  // ========================================
+
+  scoredCandidates.forEach(
+    ({ table }) => {
+      if (
+        selected.length >=
+        recommendationCount
+      ) {
+        return
+      }
+
+      if (
+        selectedTableIds.has(
+          table.tableId
+        )
+      ) {
+        return
+      }
+
+      selected.push(table)
+
+      selectedTableIds.add(
+        table.tableId
+      )
+    }
+  )
+
+
+  // ========================================
+  // OpenAI 응답과 같은 모양으로 만들어
+  // 기존 검증 로직 재사용
+  // ========================================
+
+  return selected.map(
+    (table) => ({
+      tableId:
+        table.tableId,
+
+      reason:
+        buildMockReason({
+          todaySurvey,
+        }),
+
+      liquorReason:
+        '오늘 선택한 조건과 실제 전통주 상품 데이터를 비교해 고른 후보예요.',
+
+      foodReason:
+        todaySurvey.food ===
+        'recommend'
+          ? 'pairings.json에서 이 전통주와 함께 연결된 안주 후보예요.'
+          : '오늘 선택한 안주 유형과 실제 페어링 데이터를 함께 확인한 후보예요.',
+
+      glassReason:
+        'pairings.json에서 이 전통주와 함께 연결된 술잔 후보예요.',
+
+      recommendedTimeText:
+        buildMockTimeText(
+          table.liquor
+        ),
+    })
+  )
+}
+
+
+// ========================================
 // OpenAI 프롬프트
 // ========================================
 
@@ -427,7 +1354,8 @@ const buildResponseSchema = (
 
 
 // ========================================
-// AI가 반환한 추천 검증 + 최종 형태 변환
+// AI 또는 Mock이 반환한 추천 검증
+// + 최종 형태 변환
 // ========================================
 
 const buildFinalRecommendations = ({
@@ -554,18 +1482,11 @@ const createRecommendation = async ({
 
 
   // ========================================
-  // 2. OpenAI API Key 확인
+  // 2. Mock 모드 확인
   // ========================================
 
-  const apiKey =
-    openaiApiKey ||
-    process.env.OPENAI_API_KEY
-
-  if (!apiKey) {
-    throw new Error(
-      'OPENAI_API_KEY_MISSING'
-    )
-  }
+  const useMockAi =
+    isMockAiEnabled()
 
 
   // ========================================
@@ -660,7 +1581,102 @@ const createRecommendation = async ({
 
 
   // ========================================
-  // 9. OpenAI Client
+  // 9. Mock 모드
+  //
+  // OpenAI API를 전혀 호출하지 않음
+  // 실제 candidateTables 안에서 추천
+  // ========================================
+
+  if (useMockAi) {
+    const mockAiRecommendations =
+      buildMockAiRecommendations({
+        candidateTables,
+
+        todaySurvey,
+
+        userPreference,
+
+        recommendationCount:
+          actualRecommendationCount,
+      })
+
+
+    const recommendations =
+      buildFinalRecommendations({
+        aiRecommendations:
+          mockAiRecommendations,
+
+        candidateTables,
+      })
+
+
+    if (
+      recommendations.length !==
+      actualRecommendationCount
+    ) {
+      console.error(
+        'Mock 추천 개수 불일치:',
+        {
+          expected:
+            actualRecommendationCount,
+
+          received:
+            recommendations.length,
+        }
+      )
+
+      throw new Error(
+        'INVALID_RECOMMENDATION_COUNT'
+      )
+    }
+
+
+    return {
+      recommendations,
+
+      meta: {
+        userType,
+
+        model:
+          'mock',
+
+        isMock:
+          true,
+
+        candidateCount:
+          totalCount,
+
+        recommendationCount:
+          recommendations.length,
+
+        excluded:
+          filtered.excluded,
+
+        invalidReferences,
+      },
+    }
+  }
+
+
+  // ========================================
+  // 10. 실제 OpenAI 모드
+  // API Key 확인
+  // ========================================
+
+  const apiKey =
+    openaiApiKey ||
+    process.env.OPENAI_API_KEY
+
+
+  if (!apiKey) {
+    throw new Error(
+      'OPENAI_API_KEY_MISSING'
+    )
+  }
+
+
+  // ========================================
+  // 11. OpenAI Client
   // ========================================
 
   const openai =
@@ -670,7 +1686,7 @@ const createRecommendation = async ({
 
 
   // ========================================
-  // 10. OpenAI에게 전달할 데이터
+  // 12. OpenAI에게 전달할 데이터
   // ========================================
 
   const inputData = {
@@ -691,7 +1707,7 @@ const createRecommendation = async ({
 
 
   // ========================================
-  // 11. OpenAI 호출
+  // 13. OpenAI 호출
   // ========================================
 
   const response =
@@ -730,7 +1746,7 @@ const createRecommendation = async ({
 
 
   // ========================================
-  // 12. AI 응답 텍스트 확인
+  // 14. AI 응답 텍스트 확인
   // ========================================
 
   if (!response.output_text) {
@@ -741,7 +1757,7 @@ const createRecommendation = async ({
 
 
   // ========================================
-  // 13. JSON 변환
+  // 15. JSON 변환
   // ========================================
 
   let parsedResult
@@ -764,7 +1780,7 @@ const createRecommendation = async ({
 
 
   // ========================================
-  // 14. 후보 검증 + 최종 결과 생성
+  // 16. 후보 검증 + 최종 결과 생성
   // ========================================
 
   const recommendations =
@@ -779,7 +1795,7 @@ const createRecommendation = async ({
 
 
   // ========================================
-  // 15. 추천 개수 검증
+  // 17. 추천 개수 검증
   // ========================================
 
   if (
@@ -807,7 +1823,7 @@ const createRecommendation = async ({
 
 
   // ========================================
-  // 16. 최종 반환
+  // 18. 최종 반환
   // ========================================
 
   return {
@@ -817,6 +1833,9 @@ const createRecommendation = async ({
       userType,
 
       model,
+
+      isMock:
+        false,
 
       candidateCount:
         totalCount,

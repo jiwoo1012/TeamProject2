@@ -108,15 +108,26 @@ const DesktopHeader = () => {
         }
 
         try {
-          const userRef = doc(db, 'users', currentUser.uid)
-          const userSnap = await getDoc(userRef)
+          const userRef = doc(
+            db,
+            'users',
+            currentUser.uid
+          )
+
+          const userSnap = await getDoc(
+            userRef
+          )
 
           setIsAdmin(
             userSnap.exists() &&
             userSnap.data()?.role === 'admin'
           )
         } catch (error) {
-          console.error('관리자 권한 확인 실패:', error)
+          console.error(
+            '관리자 권한 확인 실패:',
+            error
+          )
+
           setIsAdmin(false)
         }
       }
@@ -133,11 +144,16 @@ const DesktopHeader = () => {
   const handleLogout = async () => {
     try {
       await signOut(auth)
+
       closeSearch()
       closeMegaMenu()
+
       navigate('/')
     } catch (error) {
-      console.error('로그아웃 실패:', error)
+      console.error(
+        '로그아웃 실패:',
+        error
+      )
     }
   }
 
@@ -164,7 +180,9 @@ const DesktopHeader = () => {
   const toggleSearch = () => {
     closeMegaMenu()
 
-    setIsSearchOpen((prev) => !prev)
+    setIsSearchOpen(
+      (prev) => !prev
+    )
   }
 
 
@@ -192,13 +210,20 @@ const DesktopHeader = () => {
   ======================================== */
 
   const formatPrice = (price) => {
-    const numericPrice = Number(price)
+    const numericPrice =
+      Number(price)
 
-    if (Number.isNaN(numericPrice)) {
+    if (
+      Number.isNaN(
+        numericPrice
+      )
+    ) {
       return price
     }
 
-    return `${numericPrice.toLocaleString('ko-KR')}원`
+    return `${numericPrice.toLocaleString(
+      'ko-KR'
+    )}원`
   }
 
 
@@ -212,24 +237,44 @@ const DesktopHeader = () => {
           HEADER
       ======================================== */}
 
-      <div className={styles.headerInner}>
-        <div className={styles.headerContainer}>
+      <div
+        className={
+          styles.headerInner
+        }
+      >
+        <div
+          className={
+            styles.headerContainer
+          }
+        >
 
           {/* ========================================
               GNB
           ======================================== */}
 
-          <nav className={styles.gnb}>
+          <nav
+            className={
+              styles.gnb
+            }
+          >
 
             {/* BRAND */}
 
             <div
-              className={styles.gnbItem}
-              onMouseEnter={() => openMegaMenu('brand')}
+              className={
+                styles.gnbItem
+              }
+              onMouseEnter={() =>
+                openMegaMenu(
+                  'brand'
+                )
+              }
             >
               <Link
                 to="/brand"
-                className={styles.gnbLink}
+                className={
+                  styles.gnbLink
+                }
               >
                 브랜드 소개
               </Link>
@@ -239,12 +284,20 @@ const DesktopHeader = () => {
             {/* SHOP */}
 
             <div
-              className={styles.gnbItem}
-              onMouseEnter={() => openMegaMenu('shop')}
+              className={
+                styles.gnbItem
+              }
+              onMouseEnter={() =>
+                openMegaMenu(
+                  'shop'
+                )
+              }
             >
               <Link
                 to="/shop"
-                className={styles.gnbLink}
+                className={
+                  styles.gnbLink
+                }
               >
                 스토어
               </Link>
@@ -254,12 +307,20 @@ const DesktopHeader = () => {
             {/* AI 추천 */}
 
             <div
-              className={styles.gnbItem}
-              onMouseEnter={() => openMegaMenu('ai')}
+              className={
+                styles.gnbItem
+              }
+              onMouseEnter={() =>
+                openMegaMenu(
+                  'ai'
+                )
+              }
             >
               <Link
                 to="/ai"
-                className={styles.gnbLink}
+                className={
+                  styles.gnbLink
+                }
               >
                 AI 추천
               </Link>
@@ -269,12 +330,18 @@ const DesktopHeader = () => {
             {/* 이벤트 */}
 
             <div
-              className={styles.gnbItem}
-              onMouseEnter={closeMegaMenu}
+              className={
+                styles.gnbItem
+              }
+              onMouseEnter={
+                closeMegaMenu
+              }
             >
               <Link
                 to="/events"
-                className={styles.gnbLink}
+                className={
+                  styles.gnbLink
+                }
               >
                 이벤트
               </Link>
@@ -289,10 +356,18 @@ const DesktopHeader = () => {
 
           <Link
             to="/"
-            state={{ skipJourney: true }}
-            className={styles.logo}
-            onMouseEnter={closeMegaMenu}
-            onClick={closeSearch}
+            state={{
+              skipJourney: true,
+            }}
+            className={
+              styles.logo
+            }
+            onMouseEnter={
+              closeMegaMenu
+            }
+            onClick={
+              closeSearch
+            }
           >
             <img
               src={jajakLogo}
@@ -306,8 +381,12 @@ const DesktopHeader = () => {
           ======================================== */}
 
           <div
-            className={styles.headerActions}
-            onMouseEnter={closeMegaMenu}
+            className={
+              styles.headerActions
+            }
+            onMouseEnter={
+              closeMegaMenu
+            }
           >
 
             {/* 검색 */}
@@ -324,11 +403,17 @@ const DesktopHeader = () => {
                   ? '검색 닫기'
                   : '검색'
               }
-              aria-expanded={isSearchOpen}
-              onClick={toggleSearch}
+              aria-expanded={
+                isSearchOpen
+              }
+              onClick={
+                toggleSearch
+              }
             >
               <img
-                src={searchIcon}
+                src={
+                  searchIcon
+                }
                 alt=""
               />
             </button>
@@ -336,29 +421,51 @@ const DesktopHeader = () => {
 
             {/* 로그인 / 마이페이지 / 관리자 메뉴 */}
 
-            <div className={styles.accountMenu}>
+            <div
+              className={
+                styles.accountMenu
+              }
+            >
               <Link
-                to={user ? '/mypage' : '/login'}
-                className={styles.iconButton}
+                to={
+                  user
+                    ? '/mypage'
+                    : '/login'
+                }
+                className={
+                  styles.iconButton
+                }
                 aria-label={
                   user
                     ? '마이페이지'
                     : '로그인'
                 }
-                onClick={closeSearch}
+                onClick={
+                  closeSearch
+                }
               >
                 <img
-                  src={loginIcon}
+                  src={
+                    loginIcon
+                  }
                   alt=""
                 />
               </Link>
 
               {user && (
-                <div className={styles.accountDropdown}>
+                <div
+                  className={
+                    styles.accountDropdown
+                  }
+                >
                   <Link
                     to="/mypage"
-                    className={styles.accountMenuItem}
-                    onClick={closeSearch}
+                    className={
+                      styles.accountMenuItem
+                    }
+                    onClick={
+                      closeSearch
+                    }
                   >
                     마이페이지
                   </Link>
@@ -366,8 +473,12 @@ const DesktopHeader = () => {
                   {isAdmin && (
                     <Link
                       to="/admin"
-                      className={styles.accountMenuItem}
-                      onClick={closeSearch}
+                      className={
+                        styles.accountMenuItem
+                      }
+                      onClick={
+                        closeSearch
+                      }
                     >
                       관리자페이지
                     </Link>
@@ -375,8 +486,12 @@ const DesktopHeader = () => {
 
                   <button
                     type="button"
-                    className={styles.accountMenuItem}
-                    onClick={handleLogout}
+                    className={
+                      styles.accountMenuItem
+                    }
+                    onClick={
+                      handleLogout
+                    }
                   >
                     로그아웃
                   </button>
@@ -389,12 +504,18 @@ const DesktopHeader = () => {
 
             <Link
               to="/mypage/wishlist"
-              className={styles.iconButton}
+              className={
+                styles.iconButton
+              }
               aria-label="찜 목록"
-              onClick={closeSearch}
+              onClick={
+                closeSearch
+              }
             >
               <img
-                src={wishlistIcon}
+                src={
+                  wishlistIcon
+                }
                 alt=""
               />
             </Link>
@@ -404,12 +525,18 @@ const DesktopHeader = () => {
 
             <Link
               to="/cart"
-              className={styles.iconButton}
+              className={
+                styles.iconButton
+              }
               aria-label="장바구니"
-              onClick={closeSearch}
+              onClick={
+                closeSearch
+              }
             >
               <img
-                src={cartIcon}
+                src={
+                  cartIcon
+                }
                 alt=""
               />
             </Link>
@@ -425,9 +552,15 @@ const DesktopHeader = () => {
       ======================================== */}
 
       <SearchModal
-        isOpen={isSearchOpen}
-        onClose={closeSearch}
-        recommendedProducts={recommendedProducts}
+        isOpen={
+          isSearchOpen
+        }
+        onClose={
+          closeSearch
+        }
+        recommendedProducts={
+          recommendedProducts
+        }
       />
 
 
@@ -442,24 +575,40 @@ const DesktopHeader = () => {
             : ''
         }`}
       >
-        <div className={styles.megaContainer}>
+        <div
+          className={
+            styles.megaContainer
+          }
+        >
 
           {/* 브랜드 SNB */}
 
-          <div className={styles.brandSnb}>
+          <div
+            className={
+              styles.brandSnb
+            }
+          >
 
             <Link
               to="/brand"
-              className={styles.snbLink}
-              onClick={closeMegaMenu}
+              className={
+                styles.snbLink
+              }
+              onClick={
+                closeMegaMenu
+              }
             >
               브랜드 소개
             </Link>
 
             <Link
               to="/brand/makdong"
-              className={styles.snbLink}
-              onClick={closeMegaMenu}
+              className={
+                styles.snbLink
+              }
+              onClick={
+                closeMegaMenu
+              }
             >
               막둥이 소개
             </Link>
@@ -469,13 +618,25 @@ const DesktopHeader = () => {
 
           {/* 브랜드 오른쪽 영역 */}
 
-          <div className={styles.brandVisual}>
+          <div
+            className={
+              styles.brandVisual
+            }
+          >
 
-            <div className={styles.brandImage}>
+            <div
+              className={
+                styles.brandImage
+              }
+            >
               {/* 추후 브랜드 이미지 */}
             </div>
 
-            <div className={styles.brandText}>
+            <div
+              className={
+                styles.brandText
+              }
+            >
               <h2>
                 자작이 걸어온 길
               </h2>
@@ -504,22 +665,54 @@ const DesktopHeader = () => {
             : ''
         }`}
       >
-        <div className={styles.megaContainer}>
+        <div
+          className={
+            styles.megaContainer
+          }
+        >
 
-          <div className={styles.aiSnb}>
+          <div
+            className={
+              styles.aiSnb
+            }
+          >
 
             <Link
               to="/ai"
-              className={styles.snbLink}
-              onClick={closeMegaMenu}
+              className={
+                styles.snbLink
+              }
+              onClick={
+                closeMegaMenu
+              }
             >
               추천 받기
             </Link>
 
+
+            {/* 내 취향 분석 */}
+
+            <Link
+              to="/ai/preference"
+              className={
+                styles.snbLink
+              }
+              onClick={
+                closeMegaMenu
+              }
+            >
+              내 취향 분석
+            </Link>
+
+
             <Link
               to="/mypage/ai-history"
-              className={styles.snbLink}
-              onClick={closeMegaMenu}
+              className={
+                styles.snbLink
+              }
+              onClick={
+                closeMegaMenu
+              }
             >
               이전 추천 결과 보기
             </Link>
@@ -549,40 +742,64 @@ const DesktopHeader = () => {
               카테고리
           ======================================== */}
 
-          <div className={styles.shopColumn}>
+          <div
+            className={
+              styles.shopColumn
+            }
+          >
 
-            <span className={styles.columnTitle}>
+            <span
+              className={
+                styles.columnTitle
+              }
+            >
               카테고리
             </span>
 
             <Link
               to="/shop?category=liquor"
-              className={styles.snbLink}
-              onClick={closeMegaMenu}
+              className={
+                styles.snbLink
+              }
+              onClick={
+                closeMegaMenu
+              }
             >
               전통주
             </Link>
 
             <Link
               to="/shop?category=food"
-              className={styles.snbLink}
-              onClick={closeMegaMenu}
+              className={
+                styles.snbLink
+              }
+              onClick={
+                closeMegaMenu
+              }
             >
               안주
             </Link>
 
             <Link
               to="/shop?category=glass"
-              className={styles.snbLink}
-              onClick={closeMegaMenu}
+              className={
+                styles.snbLink
+              }
+              onClick={
+                closeMegaMenu
+              }
             >
               잔
             </Link>
 
             <Link
               to="/shop?category=gift"
-              className={styles.snbLink}
-              onClick={closeMegaMenu}
+              className={
+                styles.snbLink
+              }
+              onClick={
+                closeMegaMenu
+              }
             >
               선물 세트
             </Link>
@@ -594,48 +811,76 @@ const DesktopHeader = () => {
               전통주 종류
           ======================================== */}
 
-          <div className={styles.shopColumn}>
+          <div
+            className={
+              styles.shopColumn
+            }
+          >
 
-            <span className={styles.columnTitle}>
+            <span
+              className={
+                styles.columnTitle
+              }
+            >
               전통주 종류
             </span>
 
             <Link
               to="/shop?type=takju"
-              className={styles.snbLink}
-              onClick={closeMegaMenu}
+              className={
+                styles.snbLink
+              }
+              onClick={
+                closeMegaMenu
+              }
             >
               탁주
             </Link>
 
             <Link
               to="/shop?type=yakju"
-              className={styles.snbLink}
-              onClick={closeMegaMenu}
+              className={
+                styles.snbLink
+              }
+              onClick={
+                closeMegaMenu
+              }
             >
               약주 · 청주
             </Link>
 
             <Link
               to="/shop?type=fruit"
-              className={styles.snbLink}
-              onClick={closeMegaMenu}
+              className={
+                styles.snbLink
+              }
+              onClick={
+                closeMegaMenu
+              }
             >
               과실주
             </Link>
 
             <Link
               to="/shop?type=distilled"
-              className={styles.snbLink}
-              onClick={closeMegaMenu}
+              className={
+                styles.snbLink
+              }
+              onClick={
+                closeMegaMenu
+              }
             >
               증류주
             </Link>
 
             <Link
               to="/shop?type=liqueur"
-              className={styles.snbLink}
-              onClick={closeMegaMenu}
+              className={
+                styles.snbLink
+              }
+              onClick={
+                closeMegaMenu
+              }
             >
               리큐르 · 기타상품
             </Link>
@@ -647,9 +892,17 @@ const DesktopHeader = () => {
               인기 상품
           ======================================== */}
 
-          <div className={styles.popularProducts}>
+          <div
+            className={
+              styles.popularProducts
+            }
+          >
 
-            <div className={styles.popularTitle}>
+            <div
+              className={
+                styles.popularTitle
+              }
+            >
 
               <h2>
                 인기 상품
@@ -657,7 +910,9 @@ const DesktopHeader = () => {
 
               <Link
                 to="/shop?category=liquor"
-                onClick={closeMegaMenu}
+                onClick={
+                  closeMegaMenu
+                }
               >
                 전체보기
 
@@ -669,57 +924,98 @@ const DesktopHeader = () => {
             </div>
 
 
-            <div className={styles.productList}>
+            <div
+              className={
+                styles.productList
+              }
+            >
 
-              {popularProducts.map((product) => {
-                const imageSrc =
-                  resolveImage(product.imageUrl)
+              {popularProducts.map(
+                (product) => {
+                  const imageSrc =
+                    resolveImage(
+                      product.imageUrl
+                    )
 
-                const productName =
-                  getProductName(product)
+                  const productName =
+                    getProductName(
+                      product
+                    )
 
-                return (
-                  <Link
-                    key={product.productId}
-                    to={`/shop/${product.productId}`}
-                    className={styles.productCard}
-                    onClick={closeMegaMenu}
-                  >
+                  return (
+                    <Link
+                      key={
+                        product.productId
+                      }
+                      to={`/shop/${product.productId}`}
+                      className={
+                        styles.productCard
+                      }
+                      onClick={
+                        closeMegaMenu
+                      }
+                    >
 
-                    {/* 상품 이미지 */}
+                      {/* 상품 이미지 */}
 
-                    <div className={styles.productImage}>
-                      {imageSrc && (
-                        <img
-                          src={imageSrc}
-                          alt={productName}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            display: 'block',
-                            objectFit: 'cover',
-                          }}
-                        />
-                      )}
-                    </div>
+                      <div
+                        className={
+                          styles.productImage
+                        }
+                      >
+                        {imageSrc && (
+                          <img
+                            src={
+                              imageSrc
+                            }
+                            alt={
+                              productName
+                            }
+                            style={{
+                              width:
+                                '100%',
+
+                              height:
+                                '100%',
+
+                              display:
+                                'block',
+
+                              objectFit:
+                                'cover',
+                            }}
+                          />
+                        )}
+                      </div>
 
 
-                    {/* 상품명 */}
+                      {/* 상품명 */}
 
-                    <span className={styles.productName}>
-                      {productName}
-                    </span>
+                      <span
+                        className={
+                          styles.productName
+                        }
+                      >
+                        {
+                          productName
+                        }
+                      </span>
 
 
-                    {/* 가격 */}
+                      {/* 가격 */}
 
-                    <strong>
-                      {formatPrice(product.price)}
-                    </strong>
+                      <strong>
+                        {
+                          formatPrice(
+                            product.price
+                          )
+                        }
+                      </strong>
 
-                  </Link>
-                )
-              })}
+                    </Link>
+                  )
+                }
+              )}
 
             </div>
 

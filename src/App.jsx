@@ -35,6 +35,7 @@ import PreferenceComplete from './pages/Auth/PreferenceComplete'
 import AiIntro from './pages/AiCurator/AiIntro'
 import AiSurvey from './pages/AiCurator/AiSurvey'
 import AiResult from './pages/AiCurator/AiResult'
+import AiPreference from './pages/AiCurator/AiPreference'
 
 // Cart / Order
 import Cart from './pages/CartOrder/Cart'
@@ -79,18 +80,30 @@ import AdminErrorContent from './pages/Admin/AdminErrorContent'
 import NotFound from './pages/NotFound/NotFound'
 
 
-const ADULT_VERIFIED_KEY = 'jajak_adult_verified'
+const ADULT_VERIFIED_KEY =
+  'jajak_adult_verified'
 
 
 const App = () => {
-  const location = useLocation()
+  const location =
+    useLocation()
 
-  const [isAdultVerified, setIsAdultVerified] = useState(() => {
-    return sessionStorage.getItem(ADULT_VERIFIED_KEY) === 'true'
+  const [
+    isAdultVerified,
+    setIsAdultVerified,
+  ] = useState(() => {
+    return (
+      sessionStorage.getItem(
+        ADULT_VERIFIED_KEY
+      ) === 'true'
+    )
   })
 
 
+  // ========================================
   // 성인 확인 완료
+  // ========================================
+
   const handleAdultVerify = () => {
     sessionStorage.setItem(
       ADULT_VERIFIED_KEY,
@@ -101,16 +114,24 @@ const App = () => {
   }
 
 
-  // 스플래시 / 관리자 페이지에서는 성인 확인 팝업을 띄우지 않음
+  // ========================================
+  // 스플래시 / 관리자 페이지에서는
+  // 성인 확인 팝업을 띄우지 않음
+  // ========================================
+
   const shouldShowAdultModal =
     !isAdultVerified &&
-    location.pathname !== '/intro' &&
-    !location.pathname.startsWith('/admin')
+    location.pathname !==
+      '/intro' &&
+    !location.pathname.startsWith(
+      '/admin'
+    )
 
 
   return (
     <>
       {/* 페이지 이동 시 항상 스크롤 맨 위로 */}
+
       <ScrollToTop />
 
 
@@ -122,9 +143,12 @@ const App = () => {
         ======================================== */}
 
         {/* Splash */}
+
         <Route
           path="/intro"
-          element={<SplashIntro />}
+          element={
+            <SplashIntro />
+          }
         />
 
 
@@ -135,36 +159,54 @@ const App = () => {
 
         <Route
           path="/preference"
-          element={<PreferenceSurvey />}
+          element={
+            <PreferenceSurvey />
+          }
         />
 
         <Route
           path="/preference/questions"
-          element={<PreferenceQuestions />}
+          element={
+            <PreferenceQuestions />
+          }
         />
 
 
         {/* ========================================
             Header O / Footer X
-            로그인 / 회원가입 / 취향 안전 확인 / AI 추천
+            로그인 / 회원가입 / 취향 안전 확인
+            / AI 추천
         ======================================== */}
 
-        <Route element={<SiteLayout hideFooter />}>
+        <Route
+          element={
+            <SiteLayout
+              hideFooter
+            />
+          }
+        >
 
           {/* ========================================
               Auth
           ======================================== */}
 
           {/* 로그인 */}
+
           <Route
             path="/login"
-            element={<Login />}
+            element={
+              <Login />
+            }
           />
 
+
           {/* 회원가입 */}
+
           <Route
             path="/signup"
-            element={<Signup />}
+            element={
+              <Signup />
+            }
           />
 
 
@@ -173,21 +215,32 @@ const App = () => {
           ======================================== */}
 
           {/* 취향 질문 완료 → 안전 확인 안내 */}
+
           <Route
             path="/preference/safety-intro"
-            element={<PreferenceSafetyIntro />}
+            element={
+              <PreferenceSafetyIntro />
+            }
           />
+
 
           {/* 알레르기 / 피해야 할 재료 선택 */}
+
           <Route
             path="/preference/safety"
-            element={<PreferenceSafety />}
+            element={
+              <PreferenceSafety />
+            }
           />
 
+
           {/* 최종 취향 등록 완료 */}
+
           <Route
             path="/preference/complete"
-            element={<PreferenceComplete />}
+            element={
+              <PreferenceComplete />
+            }
           />
 
 
@@ -197,21 +250,42 @@ const App = () => {
           ======================================== */}
 
           {/* AI 추천 인트로 */}
+
           <Route
             path="/ai"
-            element={<AiIntro />}
+            element={
+              <AiIntro />
+            }
           />
+
 
           {/* AI 추천 설문 */}
+
           <Route
             path="/ai/survey"
-            element={<AiSurvey />}
+            element={
+              <AiSurvey />
+            }
           />
 
+
           {/* AI 추천 결과 */}
+
           <Route
             path="/ai/result"
-            element={<AiResult />}
+            element={
+              <AiResult />
+            }
+          />
+
+
+          {/* 내 취향 분석 */}
+
+          <Route
+            path="/ai/preference"
+            element={
+              <AiPreference />
+            }
           />
 
         </Route>
@@ -222,12 +296,19 @@ const App = () => {
             Header / Footer / MobileBottomNav 적용
         ======================================== */}
 
-        <Route element={<SiteLayout />}>
+        <Route
+          element={
+            <SiteLayout />
+          }
+        >
 
           {/* Main */}
+
           <Route
             path="/"
-            element={<MainPage />}
+            element={
+              <MainPage />
+            }
           />
 
 
@@ -237,15 +318,21 @@ const App = () => {
 
           <Route
             path="/brand"
-            element={<BrandIntro />}
+            element={
+              <BrandIntro />
+            }
           />
 
           <Route
             path="/brand/makdong"
-            element={<MakdongIntro />}
+            element={
+              <MakdongIntro />
+            }
           />
 
+
           {/* 기존 Header 링크 대응 */}
+
           <Route
             path="/brand/story"
             element={
@@ -263,12 +350,16 @@ const App = () => {
 
           <Route
             path="/shop"
-            element={<ProductList />}
+            element={
+              <ProductList />
+            }
           />
 
           <Route
             path="/shop/:productId"
-            element={<ProductDetail />}
+            element={
+              <ProductDetail />
+            }
           />
 
 
@@ -278,17 +369,23 @@ const App = () => {
 
           <Route
             path="/cart"
-            element={<Cart />}
+            element={
+              <Cart />
+            }
           />
 
           <Route
             path="/checkout"
-            element={<Checkout />}
+            element={
+              <Checkout />
+            }
           />
 
           <Route
             path="/order-complete"
-            element={<OrderComplete />}
+            element={
+              <OrderComplete />
+            }
           />
 
 
@@ -297,27 +394,42 @@ const App = () => {
           ======================================== */}
 
           {/* 이벤트 목록 */}
+
           <Route
             path="/events"
-            element={<EventList />}
+            element={
+              <EventList />
+            }
           />
+
 
           {/* 룰렛 이벤트 */}
+
           <Route
             path="/events/roulette"
-            element={<RouletteEvent />}
+            element={
+              <RouletteEvent />
+            }
           />
+
 
           {/* OX 퀴즈 이벤트 */}
+
           <Route
             path="/events/ox-quiz"
-            element={<OxQuizEvent />}
+            element={
+              <OxQuizEvent />
+            }
           />
 
+
           {/* 카드 게임 이벤트 */}
+
           <Route
             path="/events/card-game"
-            element={<CardGame />}
+            element={
+              <CardGame />
+            }
           />
 
 
@@ -326,27 +438,42 @@ const App = () => {
           ======================================== */}
 
           {/* 자주 묻는 질문 */}
+
           <Route
             path="/faq"
-            element={<FAQ />}
+            element={
+              <FAQ />
+            }
           />
+
 
           {/* 1:1 질문하기 */}
+
           <Route
             path="/inquiry"
-            element={<InquiryQnA />}
+            element={
+              <InquiryQnA />
+            }
           />
+
 
           {/* 공지사항 목록 */}
+
           <Route
             path="/notices"
-            element={<NoticeList />}
+            element={
+              <NoticeList />
+            }
           />
 
+
           {/* 공지사항 상세 */}
+
           <Route
             path="/notices/:noticeId"
-            element={<NoticeDetail />}
+            element={
+              <NoticeDetail />
+            }
           />
 
 
@@ -356,47 +483,65 @@ const App = () => {
 
           <Route
             path="/mypage"
-            element={<MyPageLayout />}
+            element={
+              <MyPageLayout />
+            }
           >
 
             <Route
               index
-              element={<MyHome />}
+              element={
+                <MyHome />
+              }
             />
 
             <Route
               path="profile"
-              element={<ProfileEdit />}
+              element={
+                <ProfileEdit />
+              }
             />
 
             <Route
               path="orders"
-              element={<OrderHistory />}
+              element={
+                <OrderHistory />
+              }
             />
 
             <Route
               path="orders/:orderId"
-              element={<OrderDetail />}
+              element={
+                <OrderDetail />
+              }
             />
 
             <Route
               path="wishlist"
-              element={<WishList />}
+              element={
+                <WishList />
+              }
             />
 
             <Route
               path="ai-history"
-              element={<AiHistory />}
+              element={
+                <AiHistory />
+              }
             />
 
             <Route
               path="events"
-              element={<EventHistory />}
+              element={
+                <EventHistory />
+              }
             />
 
             <Route
               path="error"
-              element={<MyPageErrorContent />}
+              element={
+                <MyPageErrorContent />
+              }
             />
 
           </Route>
@@ -408,7 +553,9 @@ const App = () => {
 
           <Route
             path="*"
-            element={<NotFound />}
+            element={
+              <NotFound />
+            }
           />
 
         </Route>
@@ -421,55 +568,88 @@ const App = () => {
 
         <Route
           path="/admin"
-          element={<AdminLayout />}
+          element={
+            <AdminLayout />
+          }
         >
 
           {/* 관리자 대시보드 */}
+
           <Route
             index
-            element={<Dashboard />}
+            element={
+              <Dashboard />
+            }
           />
+
 
           {/* 회원 관리 */}
+
           <Route
             path="users"
-            element={<UserManage />}
+            element={
+              <UserManage />
+            }
           />
+
 
           {/* 상품 관리 */}
+
           <Route
             path="products"
-            element={<ProductManage />}
+            element={
+              <ProductManage />
+            }
           />
+
 
           {/* 이벤트 관리 */}
+
           <Route
             path="events"
-            element={<EventManage />}
+            element={
+              <EventManage />
+            }
           />
+
 
           {/* AI 추천 기록 */}
+
           <Route
             path="ai-logs"
-            element={<AiLogManage />}
+            element={
+              <AiLogManage />
+            }
           />
+
 
           {/* 공지사항 관리 */}
+
           <Route
             path="notices"
-            element={<NoticeManage />}
+            element={
+              <NoticeManage />
+            }
           />
+
 
           {/* 리뷰 관리 */}
+
           <Route
             path="reviews"
-            element={<ReviewManage />}
+            element={
+              <ReviewManage />
+            }
           />
 
+
           {/* 관리자 에러 */}
+
           <Route
             path="error"
-            element={<AdminErrorContent />}
+            element={
+              <AdminErrorContent />
+            }
           />
 
         </Route>
@@ -483,8 +663,10 @@ const App = () => {
       ======================================== */}
 
       <AdultModal
-        isOpen={shouldShowAdultModal}
-        onVerify={handleAdultVerify}
+        isOpen={ shouldShowAdultModal}
+        onVerify={
+          handleAdultVerify
+        }
       />
     </>
   )

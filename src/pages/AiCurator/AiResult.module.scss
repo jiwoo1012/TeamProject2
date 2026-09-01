@@ -1,606 +1,374 @@
-.aiResult {
+.compositionSection {
+  position: relative;
   width: 100%;
-  height: calc(100vh - 70px);
-
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
-
-  background: #fffdf8;
-
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  min-height: calc(100vh - 72px);
+  overflow: hidden;
+  color: #2f261f;
+  background: #fbf8f1;
 }
 
-.section {
+.compositionInner {
   position: relative;
-
-  width: 100%;
-  height: calc(100vh - 70px);
-  min-height: 650px;
-
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  width: min(1080px, calc(100% - 96px));
+  min-height: calc(100vh - 72px);
+  margin: 0 auto;
+  padding: 56px 0 40px;
+  box-sizing: border-box;
 }
 
-/* =========================
-   첫 번째 화면
-========================= */
-
-.introSection {
-  align-items: flex-start;
-}
-
-.introInner {
+.compositionHeading {
   position: relative;
-
-  width: min(1160px, calc(100% - 80px));
-  height: 100%;
-
-  padding-top: 70px;
-
-  text-align: center;
-}
-
-.introText {
-  text-align: left;
-
-  h1 {
-    margin: 0;
-
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: -0.04em;
-
-    color: #222;
-  }
-
-  p {
-    margin: 10px 0 0;
-
-    font-size: 13px;
-    line-height: 1.7;
-
-    color: #777;
-  }
-}
-
-.tableArea {
-  position: relative;
-
+  z-index: 20;
   width: 100%;
-  height: 390px;
-
-  margin-top: 20px;
-
-  border: 1px solid #eee8dd;
-
-  background: #faf5e9;
 }
 
-.tableProduct {
-  position: absolute;
+.compositionHeading h1 {
+  margin: 0;
+  color: #201a16;
+  font-size: clamp(30px, 2.6vw, 40px);
+  font-weight: 800;
+  line-height: 1.28;
+  letter-spacing: -0.04em;
+}
 
+.compositionHeading p {
+  max-width: 640px;
+  margin: 12px 0 0;
+  color: #776a5f;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+// ========================================
+// 세 상품(안주 / 전통주 / 술잔)을
+// flex로 배치
+//
+// 예전에는 각 아이템을 position:absolute +
+// left/right %로 잡았는데,
+// 아이템 너비만큼 오차가 생겨서
+// 전통주가 중앙에서 벗어나 보였음.
+// flex 정렬로 바꿔서 항상 중앙에 오도록 함.
+// ========================================
+
+.compositionStage {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(28px, 5vw, 72px);
+  min-height: 420px;
+  margin-top: 40px;
+  padding-top: 130px;
+  box-sizing: border-box;
+}
+
+.compositionItem {
+  position: relative;
+  z-index: 5;
+  flex: 0 0 auto;
+  margin: 0;
+  will-change: transform, opacity;
+}
+
+.imageWrap {
+  position: relative;
+  width: 100%;
+}
+
+.imageWrap img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: contain;
+  filter:
+    drop-shadow(
+      0 20px 16px rgba(70, 52, 37, 0.16)
+    );
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+// 안주 - 왼쪽
+.foodItem {
+  order: 1;
+  width: clamp(220px, 25vw, 300px);
+}
+
+// 전통주 - 중앙, 가장 앞
+.liquorItem {
+  order: 2;
+  z-index: 8;
+  width: clamp(160px, 15vw, 200px);
+}
+
+// 술잔 - 오른쪽, 가장 작게
+.glassItem {
+  order: 3;
+  width: clamp(90px, 10vw, 130px);
+}
+
+// ========================================
+// 상품 설명 카드
+//
+// 각 상품 이미지 "바로 위 중앙"에
+// margin-left(고정 px)로 고정.
+// GSAP이 y(translateY)를 애니메이션하므로,
+// 가운데 정렬은 transform이 아니라
+// margin으로 처리해야 서로 충돌하지 않음.
+// ========================================
+
+.compositionCard {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  width: 190px;
+  margin-bottom: 16px;
+  margin-left: -95px; // width의 절반
+  padding: 14px 16px;
+  box-sizing: border-box;
+  border: 1px solid rgba(120, 94, 62, 0.14);
+  border-radius: 16px;
+  color: #3d322a;
+  background: rgba(255, 253, 248, 0.94);
+  box-shadow: 0 12px 26px rgba(79, 58, 38, 0.1);
+  backdrop-filter: blur(8px);
+  gap: 4px;
+}
+
+.compositionCard > span {
+  align-self: flex-start;
+  padding: 3px 9px;
+  border-radius: 999px;
+  color: #9a7445;
+  background: rgba(154, 116, 69, 0.1);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.compositionCard strong {
+  margin-top: 4px;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+}
+
+.cardMeta {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: #8a7c6f;
+  font-size: 12px;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2; // 표준 속성 추가 (경고 제거용)
+}
+
+.cardKeywords {
+  display: flex;
+  flex-direction: column;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  gap: 3px;
+}
+
+.cardKeywords li {
+  position: relative;
+  padding-left: 12px;
+  color: #6c5f53;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.cardKeywords li::before {
+  position: absolute;
+  left: 0;
+  color: #c9a76c;
+  content: '·';
+}
+
+.compositionFooter {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+
+.saveButton {
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 999px;
+  color: #3d322a;
+  background: #ecdfc8;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.saveButton:hover {
+  background: #e2d1b1;
+  transform: translateY(-1px);
+}
+
+// ========================================
+// 세로형 SCROLL 인디케이터
+// ========================================
+
+.scrollIndicator {
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  img {
-    display: block;
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: contain;
-  }
-
-  strong {
-    margin-top: 5px;
-
-    font-size: 11px;
-    font-weight: 500;
-
-    color: #333;
-  }
+  margin: 40px auto 0;
+  gap: 8px;
 }
 
-.tableLabel {
-  margin-bottom: 5px;
-
-  font-size: 11px;
-  font-weight: 600;
-
-  color: #665b4c;
+.scrollDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #a67d4d;
 }
 
-.tableFood {
-  left: 10%;
-  bottom: 38px;
-
-  width: 280px;
-  height: 190px;
+.scrollLine {
+  width: 1px;
+  height: 34px;
+  background: rgba(166, 125, 77, 0.4);
+  animation: compositionScrollLine 1.6s ease-in-out infinite;
 }
 
-.tableLiquor {
-  left: 50%;
-  bottom: 28px;
-
-  width: 160px;
-  height: 310px;
-
-  transform: translateX(-50%);
+.scrollLabel {
+  color: #a67d4d;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
 }
 
-.tableGlass {
-  right: 12%;
-  bottom: 45px;
-
-  width: 170px;
-  height: 180px;
-}
-
-.smallButton {
-  padding: 8px 18px;
-
-  border: 0;
-  border-radius: 100px;
-
-  background: #eeeeec;
-
-  font-size: 11px;
-
-  color: #555;
-
-  cursor: pointer;
-
-  transition: background 0.2s ease;
-
-  &:hover {
-    background: #e3e3e0;
-  }
-}
-
-.introInner > .smallButton {
-  margin-top: 18px;
-}
-
-.downArrow {
-  position: absolute;
-  left: 50%;
-  bottom: 18px;
-
-  transform: translateX(-50%);
-
-  font-size: 22px;
-
-  color: #bc8955;
-
-  animation: arrowMove 1.4s ease-in-out infinite;
-}
-
-@keyframes arrowMove {
+@keyframes compositionScrollLine {
   0%,
   100% {
-    transform: translate(-50%, 0);
+    transform: scaleY(1);
+    transform-origin: top;
   }
 
   50% {
-    transform: translate(-50%, 7px);
+    transform: scaleY(0.55);
+    transform-origin: top;
   }
 }
 
-/* =========================
-   상품 상세 영역
-========================= */
-
-.productSection {
-  background: #fffdf8;
-}
-
-.productInner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  width: min(1000px, calc(100% - 100px));
-  margin: 0 auto;
-}
-
-.productInfo {
-  width: 58%;
-}
-
-.productTitleLabel {
-  margin: 0 0 3px;
-
-  font-size: 23px;
-  font-weight: 600;
-  letter-spacing: -0.04em;
-
-  color: #222;
-}
-
-.productInfo {
-  h2 {
-    margin: 0;
-
-    font-size: 31px;
-    font-weight: 700;
-    letter-spacing: -0.05em;
-
-    color: #161616;
-  }
-}
-
-.productDescription {
-  max-width: 560px;
-
-  margin: 22px 0 0;
-
-  font-size: 13px;
-  line-height: 1.75;
-
-  color: #666;
-}
-
-.productImage {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 32%;
-  min-height: 330px;
-
-  img {
-    display: block;
-
-    max-width: 100%;
-    max-height: 330px;
-
-    object-fit: contain;
-  }
-}
-
-/* =========================
-   전통주 수치
-========================= */
-
-.liquorStats {
-  display: flex;
-  align-items: flex-start;
-  gap: 30px;
-
-  margin-top: 28px;
-
-  > div {
-    min-width: 55px;
-
-    text-align: center;
+@media (max-width: 1100px) {
+  .compositionInner {
+    width: min(100% - 56px, 960px);
   }
 
-  span {
-    display: block;
-
-    margin-bottom: 6px;
-
-    font-size: 10px;
-
-    color: #9b9b98;
+  .compositionStage {
+    gap: clamp(20px, 4vw, 48px);
+    padding-top: 110px;
   }
 
-  strong {
-    display: block;
+  .foodItem {
+    width: clamp(190px, 28vw, 250px);
+  }
 
-    font-size: 11px;
-    font-weight: 500;
-
-    color: #555;
+  .liquorItem {
+    width: clamp(140px, 16vw, 175px);
   }
 }
-
-.keywordList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-
-  margin: 25px 0 20px;
-
-  span {
-    padding: 6px 12px;
-
-    border: 1px solid #dadad7;
-    border-radius: 100px;
-
-    font-size: 10px;
-
-    color: #666;
-  }
-}
-
-/* =========================
-   다른 주안상
-========================= */
-
-.otherSection {
-  background: #fffdf8;
-}
-
-.otherInner {
-  width: min(900px, calc(100% - 80px));
-  margin: 0 auto;
-
-  text-align: center;
-}
-
-.otherHeading {
-  h2 {
-    margin: 0;
-
-    font-size: 25px;
-    font-weight: 700;
-    letter-spacing: -0.04em;
-
-    color: #222;
-  }
-
-  p {
-    margin: 10px 0 0;
-
-    font-size: 12px;
-
-    color: #777;
-  }
-}
-
-.otherList {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 22px;
-
-  width: 640px;
-  max-width: 100%;
-
-  margin: 35px auto 0;
-}
-
-.otherCard {
-  overflow: hidden;
-
-  border: 1px solid #e1e1de;
-  border-radius: 12px;
-
-  background: #fff;
-
-  text-align: left;
-}
-
-.otherCardImage {
-  width: 100%;
-  height: 145px;
-
-  background: #faf8f3;
-
-  img {
-    width: 100%;
-    height: 100%;
-
-    object-fit: contain;
-  }
-}
-
-.otherCardText {
-  padding: 14px 16px 17px;
-
-  > span {
-    font-size: 9px;
-
-    color: #999;
-  }
-
-  h3 {
-    margin: 5px 0 10px;
-
-    font-size: 14px;
-    font-weight: 600;
-
-    color: #222;
-  }
-
-  p {
-    margin: 3px 0;
-
-    font-size: 10px;
-
-    color: #777;
-  }
-
-  button {
-    margin-top: 12px;
-    padding: 6px 12px;
-
-    border: 0;
-    border-radius: 100px;
-
-    background: #eeeeec;
-
-    font-size: 9px;
-
-    color: #555;
-
-    cursor: pointer;
-  }
-}
-
-.bottomButtons {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-
-  margin-top: 28px;
-}
-
-/* =========================
-   TABLET
-========================= */
-
-@media (max-width: 1024px) {
-  .introInner {
-    width: calc(100% - 60px);
-  }
-
-  .productInner {
-    width: calc(100% - 70px);
-  }
-
-  .tableFood {
-    width: 230px;
-  }
-
-  .tableLiquor {
-    width: 140px;
-  }
-
-  .tableGlass {
-    width: 140px;
-  }
-}
-
-/* =========================
-   MOBILE
-========================= */
 
 @media (max-width: 768px) {
-  .aiResult {
-    height: auto;
-
-    overflow-y: visible;
-
-    scroll-snap-type: none;
+  .compositionSection {
+    min-height: auto;
+    overflow: visible;
   }
 
-  .section {
-    height: auto;
-    min-height: 100svh;
-
-    padding: 55px 0;
-
-    scroll-snap-align: none;
-  }
-
-  .introInner {
+  .compositionInner {
     width: calc(100% - 36px);
-    height: auto;
+    min-height: auto;
+    padding: 48px 0 56px;
+  }
 
+  .compositionHeading h1 {
+    font-size: 28px;
+  }
+
+  .compositionHeading p {
+    font-size: 13px;
+  }
+
+  .compositionStage {
+    display: grid;
+    min-height: auto;
+    margin-top: 28px;
     padding-top: 0;
-  }
-
-  .introText {
-    h1 {
-      font-size: 23px;
-    }
-
-    p {
-      font-size: 12px;
-    }
-  }
-
-  .tableArea {
-    height: 390px;
-  }
-
-  .tableFood {
-    left: 2%;
-    bottom: 40px;
-
-    width: 150px;
-    height: 140px;
-  }
-
-  .tableLiquor {
-    bottom: 35px;
-
-    width: 105px;
-    height: 240px;
-  }
-
-  .tableGlass {
-    right: 2%;
-    bottom: 40px;
-
-    width: 105px;
-    height: 135px;
-  }
-
-  .downArrow {
-    display: none;
-  }
-
-  .productInner {
-    flex-direction: column;
-
-    width: calc(100% - 40px);
-  }
-
-  .productInfo {
-    width: 100%;
-  }
-
-  .productTitleLabel {
-    font-size: 19px;
-  }
-
-  .productInfo {
-    h2 {
-      font-size: 26px;
-    }
-  }
-
-  .productDescription {
-    font-size: 12px;
-  }
-
-  .productImage {
-    order: -1;
-
-    width: 100%;
-    min-height: 250px;
-
-    margin-bottom: 35px;
-
-    img {
-      max-height: 250px;
-    }
-  }
-
-  .liquorStats {
-    justify-content: space-between;
-    gap: 5px;
-
-    > div {
-      min-width: auto;
-    }
-  }
-
-  .otherInner {
-    width: calc(100% - 40px);
-  }
-
-  .otherList {
     grid-template-columns: 1fr;
-
-    width: 100%;
+    gap: 30px;
   }
 
-  .bottomButtons {
-    flex-wrap: wrap;
+  .compositionItem {
+    display: grid;
+    width: 100%;
+    grid-template-columns: minmax(110px, 40%) 1fr;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .imageWrap img {
+    max-height: 190px;
+  }
+
+  .compositionCard {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    margin: 0;
+    opacity: 1;
+    transform: none;
+  }
+
+  .foodItem {
+    order: 2;
+  }
+
+  .liquorItem {
+    order: 1;
+  }
+
+  .glassItem {
+    order: 3;
+  }
+
+  .compositionFooter {
+    justify-content: center;
+    margin-top: 28px;
+  }
+
+  .saveButton {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrollLine {
+    animation: none;
+  }
+
+  .saveButton {
+    transition: none;
   }
 }
