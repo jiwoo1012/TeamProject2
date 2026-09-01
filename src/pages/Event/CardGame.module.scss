@@ -1,5 +1,108 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as mixins;
+
+:global(body.jajak-card-game) { overflow: hidden; }
+:global(body.jajak-card-game header), :global(body.jajak-card-game footer), :global(body.jajak-card-game nav[aria-label='모바일 하단 메뉴']) { display: none; }
+.page { position: fixed; z-index: $z-modal; inset: 0; overflow: hidden; color: $color-white; background-color: $color-text-primary; background-image: radial-gradient(circle at center, rgba($color-text-primary, .36) 0%, rgba($color-text-primary, .56) 58%, rgba($color-text-primary, .94) 100%), var(--card-game-background); background-repeat: no-repeat, repeat; background-position: center, top center; background-size: 100% 100%, 860px auto; font-family: $font-family-base; }
+.introMessage { @include mixins.flex-center; position: absolute; z-index: 1; inset: 0; font-family: $font-family-display; font-size: $font-size-5xl; line-height: $line-height-tight; text-align: center; animation: introMessage 2.2s ease both; }
+.gameShell { display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: $space-3; width: min(calc(100% - (#{$side-margin-desktop} * 2)), 1360px); height: 100dvh; margin-inline: auto; padding: $space-8 0; }
+.isIntro { opacity: 0; visibility: hidden; }
+.isDealing .topLine { animation: quickFadeIn $transition-fast ease both; }
+.isDealing .board { animation: cardsRise .7s linear both; }
+.topLine { position: relative; display: flex; align-items: center; justify-content: center; min-height: 80px; }
+.topLine > button { position: absolute; left: 0; color: $color-white; font-size: $font-size-md; font-weight: $font-weight-semibold; transition: color $transition-fast ease, transform $transition-fast ease; }
+.topLine > button:hover { color: $color-primary-light; transform: translateX(-$space-1); }
+.gameStatus { color: $color-primary-light; font-family: $font-family-display; font-size: $font-size-5xl; line-height: $line-height-tight; text-align: center; text-shadow: 0 $space-1 $space-3 rgba($color-text-primary, .35); }
+.countdownNumber { display: inline-block; transform: scale(2); animation: countdownBeat 1s cubic-bezier(.2, .8, .2, 1) both; }
+.timerArea { display: grid; grid-template-columns: 1fr 90px; gap: $space-6; align-items: center; }
+.timerArea, .scoreRibbon { opacity: 1; transition: opacity $transition-fast ease; }
+.isTimerHidden, .isScoreHidden { opacity: 0; visibility: hidden; }
+.isPlaying .timerArea, .isPlaying .scoreRibbon { animation: quickFadeIn $transition-base ease both; }
+.progressTrack { height: $space-3; overflow: hidden; background: $color-white; border-radius: $radius-pill; }
+.progressTrack span { display: block; width: 0; height: 100%; background: $color-primary-light; border-radius: inherit; transition: width .1s linear; }
+.timerArea time { font-size: $font-size-xl; font-weight: $font-weight-regular; }
+.board { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(2, auto); gap: $space-3; align-self: center; justify-self: center; width: min(100%, 1280px); min-height: 0; opacity: 1; transition: opacity $transition-base ease, transform $transition-base ease; }
+.isPaused .board { opacity: 0; transform: scale(.98); pointer-events: none; }
+.card { display: block; min-width: 0; min-height: 0; aspect-ratio: 843 / 1164; line-height: 0; perspective: 1000px; transition: transform $transition-fast ease; }
+.card:disabled { cursor: default; }
+.card:hover { z-index: 1; transform: translateY(-$space-1); }
+.cardInner { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .55s cubic-bezier(.2, .75, .25, 1); }
+.isFaceUp .cardInner { transform: rotateY(180deg); }
+.cardFront, .cardBack { position: absolute; inset: 0; display: block; overflow: hidden; border-radius: $radius-md; box-shadow: 0 $space-2 $space-4 rgba($color-text-primary, .3); transform: rotateY(0deg); backface-visibility: hidden; transition: box-shadow $transition-fast ease; }
+.card:hover .cardFront, .card:hover .cardBack { box-shadow: 0 $space-4 $space-6 rgba($color-text-primary, .48); }
+.cardFront { transform: rotateY(180deg); }
+.cardFront img, .cardBack img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.isMatched .cardFront { box-shadow: 0 0 0 $space-1 $color-primary-light, 0 $space-2 $space-5 rgba($color-primary-light, .35); }
+.isMatched:hover { transform: none; }
+.isMatched:hover .cardFront { box-shadow: 0 0 0 $space-1 $color-primary-light, 0 $space-2 $space-5 rgba($color-primary-light, .35); }
+.card.isMismatch, .card.isMismatch:hover { transform: none; }
+.card.isMismatch .cardFront, .card.isMismatch:hover .cardFront { box-shadow: 0 0 0 $space-1 $color-error, 0 0 $space-6 rgba($color-error, .72); }
+.scoreRibbon { align-self: center; justify-self: center; min-width: 320px; padding: $space-2 $space-16; color: $color-text-primary; font-size: $font-size-lg; line-height: $line-height-base; text-align: center; background: $color-bg; clip-path: polygon(5% 0, 95% 0, 89% 50%, 95% 100%, 5% 100%, 11% 50%); }
+.modalBackdrop { @include mixins.flex-center; position: fixed; z-index: $z-toast; inset: 0; padding: $space-5; background: rgba($color-text-primary, .58); animation: backdropIn $transition-base ease both; }
+.quitModal, .resultModal { width: min(100%, 570px); padding: $space-8; color: $color-text-primary; background: $color-bg; border-radius: $radius-xl; box-shadow: 0 $space-5 $space-16 rgba($color-text-primary, .3); animation: modalIn $transition-base cubic-bezier(.22, 1, .36, 1) both; }
+.quitModal h2, .resultModal h2 { font-size: $font-size-3xl; font-weight: $font-weight-bold; line-height: $line-height-tight; text-align: center; }
+.quitModal > p { margin-top: $space-2; color: $color-text-secondary; font-size: $font-size-md; line-height: $line-height-relaxed; text-align: center; }
+.quitModal > div { display: grid; grid-template-columns: repeat(2, 1fr); gap: $space-3; margin-top: $space-8; }
+.quitModal button { padding: $space-3 $space-5; color: $color-white; background: $color-primary; border-radius: $radius-md; text-align: center;}
+.quitModal button:last-child { color: $color-text-secondary; background: $color-surface; }
+.resultModal { position: relative; }
+.closeButton { position: absolute; top: $space-5; right: $space-5; color: $color-text-primary; font-size: $font-size-4xl; line-height: 1; }
+.resultPoint { @include mixins.flex-center; flex-direction: column; gap: $space-2; min-height: 170px; margin-top: $space-10; border: 1px solid $color-border; border-radius: $radius-lg; }
+.resultPoint span { @include mixins.flex-center; width: 58px; aspect-ratio: 1; color: $color-text-secondary; font-size: $font-size-3xl; border: 3px solid $color-text-secondary; border-radius: 50%; }
+.resultPoint strong { font-family: $font-family-display; font-size: $font-size-5xl; }
+.resultModal dl { display: grid; gap: $space-4; margin: $space-8 $space-3 0; }
+.resultModal dl > div { display: grid; grid-template-columns: 120px 1fr; gap: $space-4; }
+.resultModal dt { color: $color-text-muted; }
+.saveMessage { margin-top: $space-5; color: $color-primary; font-size: $font-size-sm; text-align: center; }
+.resultActions { display: grid; grid-template-columns: repeat(2, 1fr); gap: $space-3; margin-top: $space-8; }
+.resultActions a { @include mixins.flex-center; min-height: 58px; color: $color-text-secondary; font-size: $font-size-md; font-weight: $font-weight-semibold; background: $color-surface; border-radius: $radius-md; transition: color $transition-fast ease, background-color $transition-fast ease; }
+.resultActions a:last-child { color: $color-white; background: $color-primary; }
+.resultActions a:hover { color: $color-white; background: $color-primary-light; }
+@keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalIn { from { opacity: 0; transform: translateY($space-5) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes introMessage { 0% { opacity: 0; transform: scale(.96); } 12%, 78% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.02); } }
+@keyframes quickFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cardsRise { from { opacity: 0; transform: translateY($space-16); } to { opacity: 1; transform: translateY(0); } }
+@keyframes countdownBeat { 0% { transform: scale(2.35); } 38% { transform: scale(2); } 100% { transform: scale(1.8); } }
+
+@include mixins.tablet {
+  .gameShell { width: calc(100% - (#{$side-margin-tablet} * 2)); }
+  .gameStatus { font-size: $font-size-4xl; }
+  .board { gap: $space-2; }
+  .scoreRibbon { min-width: 280px; }
+}
+
+@include mixins.mobile {
+  .page { background-size: 100% 100%, 620px auto; }
+  .introMessage { padding-inline: $side-margin-mobile; font-size: $font-size-3xl; }
+  .gameShell { gap: $space-2; width: calc(100% - (#{$side-margin-mobile} * 2)); padding-block: $space-3; }
+  .topLine { min-height: 52px; }
+  .topLine > button { font-size: $font-size-sm; }
+  .gameStatus { font-size: $font-size-2xl; }
+  .timerArea { grid-template-columns: 1fr 52px; gap: $space-3; }
+  .timerArea time { font-size: $font-size-md; }
+  .progressTrack { height: $space-2; }
+  .board { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(3, auto); gap: $space-2; width: min(100%, calc((100dvh - (#{$space-20} + #{$space-16} + #{$space-12})) * .96)); }
+  .cardFront, .cardBack { border-radius: $radius-sm; }
+  .scoreRibbon { min-width: 200px; padding: $space-1 $space-8; font-size: $font-size-sm; }
+  .quitModal, .resultModal { padding: $space-10 $space-5 $space-8; }
+  .quitModal h2, .resultModal h2 { font-size: $font-size-2xl; }
+  .resultPoint { min-height: 140px; }
+  .resultPoint strong { font-size: $font-size-4xl; }
+  .resultModal dl > div { grid-template-columns: 90px 1fr; gap: $space-2; font-size: $font-size-sm; }
+  .resultActions { grid-template-columns: 1fr; }
+  .resultActions a { min-height: 48px; font-size: $font-size-sm; }
+}
+
+@media (max-width: $breakpoint-mobile-max) and (orientation: landscape) {
+  .gameShell { gap: $space-1; padding-block: $space-2; }
+  .topLine { min-height: 40px; }
+  .gameStatus { font-size: $font-size-xl; }
+  .board { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(2, auto); gap: $space-2; width: min(100%, calc((100dvh - (#{$space-20} + #{$space-16})) * 2)); }
+  .scoreRibbon { padding-block: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .introMessage, .isDealing .topLine, .isDealing .board, .countdownNumber, .isPlaying .timerArea, .isPlaying .scoreRibbon { animation-duration: .01ms; }
+  .card, .cardInner, .cardFront, .cardBack, .board, .progressTrack span { transition-duration: .01ms; }
+}
