@@ -205,7 +205,9 @@ const useHeroReveal = ({
         duration: 0.92,
         ease: 'power3.inOut',
       })
-      .addLabel('heroReady', '-=0.16')
+      // 커버의 크기와 위치가 아치 프레임에 완전히 맞은 뒤 실제 히어로를 교체한다.
+      // 축소 도중 교차 노출하면 두 이미지의 object-fit 크롭이 달라 순간적으로 어긋나 보인다.
+      .addLabel('heroReady')
       .set(rightHeroTitleRef.current, { color: HERO_SUN_COLOR }, 'heroReady')
       .to(
         heroImageRef.current.parentElement,

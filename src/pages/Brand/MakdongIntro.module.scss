@@ -29,6 +29,11 @@
 
 .blankIntroLink {
   display: block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
   line-height: 0;
   transform: translateY(50px);
 }
@@ -55,7 +60,7 @@
   min-height: calc(100svh - 80px);
   padding-block: $space-12;
   scroll-margin-top: 80px;
-  background: #f9f7f4;
+  background: $color-bg;
 }
 
 .characterGuideInner {
@@ -64,18 +69,26 @@
   min-height: calc(100svh - 176px);
   grid-template-columns: minmax(360px, 0.75fr) minmax(650px, 1fr);
   gap: clamp($space-8, 4vw, $space-16);
-  align-items: stretch;
+  align-items: center;
 }
 
 .characterIntro {
   position: relative;
   display: grid;
-  min-height: 700px;
-  grid-template-rows: auto 1fr auto;
+  min-height: clamp(600px, 72vh, 680px);
+  align-content: center;
   padding-block: $space-5 $space-3;
 }
 
 .characterIntro h1 {
+  margin: 0;
+  font-family: $font-family-display;
+  font-size: clamp(4.3rem, 6.2vw, 6.8rem);
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+}
+
+.characterGuideTitle {
   margin: 0;
   font-family: $font-family-display;
   font-size: clamp(4.3rem, 6.2vw, 6.8rem);
@@ -104,48 +117,11 @@
   line-height: 1.8;
 }
 
-.characterTaste {
-  position: relative;
-  z-index: 2;
-  padding: $space-5 0 0;
-  border-top: 1px solid $color-border;
-}
-
-.characterTaste h2 {
-  margin: 0 0 $space-4;
-  font-size: 1.05rem;
-}
-
-.characterTaste dl {
-  display: grid;
-  gap: $space-3;
-  margin: 0;
-}
-
-.characterTaste dl div {
-  display: grid;
-  grid-template-columns: 6.5rem 1fr;
-  gap: $space-3;
-}
-
-.characterTaste dt,
-.characterTaste dd {
-  margin: 0;
-  color: $color-text-secondary;
-  font-size: 0.78rem;
-  line-height: 1.65;
-}
-
-.characterTaste dt {
-  color: $color-primary;
-  font-weight: $font-weight-bold;
-}
-
 .guideBoard {
   position: relative;
   display: grid;
   overflow: hidden;
-  min-height: 700px;
+  min-height: clamp(600px, 72vh, 680px);
   grid-template-rows: auto 1fr auto;
   padding: clamp($space-5, 2.3vw, $space-8);
   border: 1px solid rgba($color-text-primary, 0.3);
@@ -217,8 +193,12 @@
   object-position: bottom;
 }
 
+.turnaroundBoard figure:nth-child(1) img {
+  transform: translateY(-#{$space-3});
+}
+
 .turnaroundBoard figure:nth-child(2) img {
-  transform: scaleX(-1);
+  transform: translateY(-#{$space-3}) scaleX(-1);
 }
 
 .imagePlaceholder {
@@ -303,6 +283,143 @@
   line-height: 1.5;
 }
 
+.blankCharacterSection {
+  position: relative;
+  overflow: hidden;
+  min-height: calc(100svh - 80px);
+  padding: clamp($space-8, 5vw, $space-20);
+  scroll-margin-top: 80px;
+  background: $color-surface;
+  isolation: isolate;
+}
+
+.blankCharacterSection h2 {
+  position: relative;
+  z-index: 3;
+  margin: 0;
+  color: rgba($color-white, 0.9);
+  font-family: $font-family-base;
+  font-size: clamp(5rem, 13vw, 12rem);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 0.85;
+  text-align: center;
+  transform: translateY(-#{$space-3});
+}
+
+.flowRibbons i {
+  position: absolute;
+  z-index: 1;
+  width: clamp(420px, 70vw, 1050px);
+  height: clamp(180px, 30vw, 430px);
+  border: clamp(28px, 4vw, 62px) solid rgba($color-white, 0.62);
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  transform: rotate(25deg);
+}
+
+.flowRibbons i:nth-child(1) { top: 20%; left: 17%; }
+.flowRibbons i:nth-child(2) { top: 42%; left: 37%; transform: rotate(205deg); }
+.flowRibbons i:nth-child(3) { right: -10%; bottom: -4%; transform: rotate(14deg); }
+
+.ceramicStillLife {
+  position: absolute;
+  bottom: 12%;
+  left: clamp($space-8, 7vw, $space-24);
+  z-index: 3;
+  width: clamp(240px, 29vw, 440px);
+  height: clamp(280px, 38vw, 570px);
+}
+
+.ceramicStillLife i {
+  position: absolute;
+  display: block;
+  background: linear-gradient(110deg, $color-white 10%, $color-bg 58%, $color-surface 100%);
+  box-shadow: 0 18px 35px rgba($color-text-primary, 0.14), inset -14px -8px 24px rgba($color-surface, 0.45);
+}
+
+.transitionMakdong {
+  position: absolute;
+  right: clamp($space-6, 6vw, $space-24);
+  bottom: -2.4%;
+  z-index: 4;
+  width: clamp(300px, 35vw, 540px);
+  max-height: 72%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 18px 24px rgba($color-text-primary, 0.18));
+}
+
+.ceramicBottle {
+  bottom: 0;
+  left: 0;
+  width: 66%;
+  height: 82%;
+  border-radius: 42% 42% 30% 30% / 24% 24% 12% 12%;
+  clip-path: polygon(36% 0, 64% 0, 67% 17%, 92% 43%, 100% 74%, 93% 94%, 76% 100%, 24% 100%, 7% 94%, 0 74%, 8% 43%, 33% 17%);
+}
+
+.ceramicBottle::after {
+  position: absolute;
+  top: 0;
+  left: 36%;
+  width: 28%;
+  height: 5%;
+  border: 4px solid rgba($color-surface, 0.75);
+  border-radius: 50%;
+  background: $color-bg;
+  content: '';
+}
+
+.ceramicCup {
+  right: 0;
+  bottom: 0;
+  width: 42%;
+  height: 29%;
+  border-radius: 18% 18% 42% 42% / 15% 15% 30% 30%;
+}
+
+.ceramicCup::before {
+  position: absolute;
+  top: -4%;
+  left: 5%;
+  width: 90%;
+  height: 18%;
+  border: 3px solid rgba($color-surface, 0.7);
+  border-radius: 50%;
+  background: $color-bg;
+  content: '';
+}
+
+.riceGrains i {
+  position: absolute;
+  z-index: 2;
+  width: clamp(9px, 1vw, 15px);
+  border-radius: 60% 20% 60% 20%;
+  aspect-ratio: 0.48 / 1;
+  background: rgba($color-white, 0.86);
+  box-shadow: 0 3px 7px rgba($color-text-primary, 0.12);
+  transform: rotate(48deg);
+}
+
+.riceGrains i:nth-child(1) { top: 28%; left: 9%; }
+.riceGrains i:nth-child(2) { top: 49%; left: 35%; }
+.riceGrains i:nth-child(3) { top: 31%; left: 63%; }
+.riceGrains i:nth-child(4) { top: 47%; right: 13%; }
+.riceGrains i:nth-child(5) { right: 7%; bottom: 24%; }
+.riceGrains i:nth-child(6) { left: 47%; bottom: 25%; }
+
+.transitionFloor {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  height: 12%;
+  background: $color-bg;
+}
+
 // ---------------------------------------------------------------------
 // Character story — 추후 왼쪽 이미지를 sticky로 확장할 영역
 // ---------------------------------------------------------------------
@@ -322,12 +439,18 @@
 
 .characterStoryVisual {
   position: sticky;
-  top: calc(80px + #{$space-6});
+  top: -16px;
   display: grid;
   height: calc(100svh - 80px - (#{$space-6} * 2));
   min-height: 580px;
   margin: 0;
-  background: $color-bg;
+  background: linear-gradient(
+    180deg,
+    $color-white 0%,
+    $color-white 48%,
+    rgba($color-primary-light, 0.72) 72%,
+    $color-primary 100%
+  );
   place-items: end center;
 }
 
@@ -337,6 +460,7 @@
   max-height: 660px;
   object-fit: contain;
   object-position: bottom;
+  transform: translateX(-#{$space-30});
 }
 
 .characterStoryCopy {
@@ -347,7 +471,7 @@
 
 .characterStoryHeader h2 {
   margin: 0;
-  font-size: clamp(2.4rem, 4vw, 4.5rem);
+  font-size: clamp(2.1rem, 3.2vw, 3.6rem);
   line-height: 1.35;
 }
 
@@ -358,9 +482,56 @@
   line-height: 2;
 }
 
+.characterPurpose {
+  margin-top: clamp($space-16, 12vh, $space-24);
+  padding: clamp($space-8, 5vw, $space-12);
+  border-left: 3px solid $color-primary;
+  background: $color-bg;
+}
+
+.characterPurposeEyebrow,
+.curationIntro > p {
+  margin: 0;
+  color: $color-primary;
+  font-size: 0.72rem;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.14em;
+}
+
+.characterPurpose h3 {
+  margin: $space-5 0 0;
+  font-size: clamp(1.65rem, 2.6vw, 2.5rem);
+  line-height: 1.5;
+}
+
+.characterPurpose > p:not(.characterPurposeEyebrow) {
+  margin: $space-6 0 0;
+  color: $color-text-secondary;
+  font-size: clamp(0.95rem, 1.05vw, 1.05rem);
+  line-height: 2;
+}
+
+.characterPurpose strong {
+  display: block;
+  margin-top: $space-8;
+  color: $color-primary;
+  font-size: clamp(1rem, 1.3vw, 1.2rem);
+  line-height: 1.7;
+}
+
+.curationIntro {
+  margin-top: clamp($space-20, 15vh, $space-30);
+}
+
+.curationIntro h3 {
+  margin: $space-4 0 0;
+  font-size: clamp(2rem, 3.5vw, 3.5rem);
+  line-height: 1.35;
+}
+
 .characterStorySteps {
   display: grid;
-  margin: clamp($space-16, 10vh, $space-24) 0 0;
+  margin: clamp($space-10, 7vh, $space-16) 0 0;
   padding: 0;
   list-style: none;
 }
@@ -426,7 +597,7 @@
 .outroVisual {
   position: absolute;
   bottom: -$space-10;
-  left: max(2%, calc((100vw - 1280px) / 2));
+  right: max(2%, calc((100vw - 1280px) / 2));
   width: min(25vw, 330px);
 }
 
@@ -478,12 +649,12 @@
 
 .outroCopy a:hover,
 .outroCopy a:focus-visible {
-  background: $color-text-primary;
+  background: $color-primary-light;
   transform: translateY(-2px);
 }
 
 .outroCopy a:focus-visible {
-  outline: 2px solid $color-primary;
+  outline: 2px solid $color-primary-light;
   outline-offset: 4px;
 }
 
@@ -498,10 +669,14 @@
 
   .characterIntro,
   .guideBoard {
-    min-height: 650px;
+    min-height: clamp(560px, 70vh, 650px);
   }
 
   .characterIntro h1 {
+    font-size: clamp(3.7rem, 7vw, 5.2rem);
+  }
+
+  .characterGuideTitle {
     font-size: clamp(3.7rem, 7vw, 5.2rem);
   }
 
@@ -557,6 +732,7 @@
   .characterStoryVisual img {
     width: min(100%, 430px);
     max-height: 520px;
+    transform: translateX(-#{$space-2});
   }
 
   .characterStoryCopy {
@@ -565,7 +741,51 @@
   }
 
   .characterStoryHeader h2 {
-    font-size: clamp(2rem, 9vw, 3rem);
+    font-size: clamp(1.8rem, 8vw, 2.5rem);
+  }
+
+  .blankCharacterSection {
+    min-height: calc(100svh - 60px);
+    padding: $space-10 $space-5;
+    scroll-margin-top: 60px;
+  }
+
+  .blankCharacterSection h2 {
+    font-size: clamp(3.4rem, 18vw, 6rem);
+    letter-spacing: 0;
+  }
+
+  .ceramicStillLife {
+    bottom: 13%;
+    left: $space-5;
+    width: min(68vw, 300px);
+    height: min(82vw, 370px);
+  }
+
+  .transitionMakdong {
+    right: -$space-10;
+    bottom: -1%;
+    width: min(76vw, 380px);
+    max-height: 58%;
+  }
+
+  .flowRibbons i {
+    width: 115vw;
+    height: 48vw;
+    border-width: 7vw;
+  }
+
+  .flowRibbons i:nth-child(1) { top: 23%; left: 5%; }
+  .flowRibbons i:nth-child(2) { top: 48%; left: 28%; }
+  .flowRibbons i:nth-child(3) { right: -45%; bottom: 4%; }
+
+  .characterPurpose {
+    margin-top: $space-16;
+    padding: $space-8 $space-6;
+  }
+
+  .curationIntro {
+    margin-top: $space-20;
   }
 
   .characterStorySteps {
@@ -589,7 +809,7 @@
 
   .characterIntro {
     min-height: auto;
-    grid-template-rows: auto auto auto;
+    align-content: start;
     padding: 0;
   }
 
@@ -597,9 +817,8 @@
     font-size: clamp(4rem, 20vw, 5.7rem);
   }
 
-  .characterTaste dl div {
-    grid-template-columns: 1fr;
-    gap: $space-1;
+  .characterGuideTitle {
+    font-size: clamp(4rem, 20vw, 5.7rem);
   }
 
   .guideBoard {
@@ -671,6 +890,7 @@
   }
 
   .outroVisual {
+    right: auto;
     bottom: -$space-8;
     left: 50%;
     width: min(55vw, 240px);

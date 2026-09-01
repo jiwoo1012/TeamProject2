@@ -14,7 +14,8 @@
 }
 
 .page {
-  overflow: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
   background: $color-bg;
   color: $color-text-primary;
   font-family: $font-family-base;
@@ -32,150 +33,131 @@
 // ---------------------------------------------------------------------
 .hero {
   position: relative;
-  min-height: calc(100svh - 80px);
+  display: grid;
+  overflow: hidden;
+  min-height: calc(100svh - 72px);
+  padding: clamp($space-8, 4vh, $space-12) max($space-5, calc((100vw - 1500px) / 2));
+  box-sizing: border-box;
+  background: $color-surface var(--brand-story-background) center / cover no-repeat;
+  color: $color-text-primary;
   isolation: isolate;
+  place-items: center;
+  text-align: center;
 }
 
-.copy {
-  @include container;
-  position: relative;
-  z-index: 3;
-  padding-top: clamp($space-24, 16vh, $space-30);
-}
-
-.title {
-  max-width: min(56vw, 900px);
-  font-family: $font-family-display;
-  font-size: clamp(3rem, 4.1vw, 4.65rem);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.32;
-}
-
-.title span {
-  display: block;
-  opacity: 0;
-  transform: translateY(0.5em);
-  animation: riseIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.title span:first-child {
-  animation-delay: 0.1s;
-}
-
-.title span:last-child {
-  margin: $space-1 0 0 0.45em;
-  animation-delay: 0.32s;
-}
-
-.description {
-  margin: $space-8 0 0 8.5%;
-  color: $color-text-secondary;
-  font-size: clamp(1rem, 1.18vw, 1.2rem);
-  line-height: 1.9;
-  opacity: 0;
-  animation: riseIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.54s forwards;
-}
-
-@keyframes riseIn {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.visual {
+.heroShade {
   position: absolute;
-  right: -3vw;
-  bottom: -5%;
-  z-index: 1;
-  width: min(54vw, 920px);
-  aspect-ratio: 1 / 1;
-}
-
-.scene,
-.pour,
-.cup {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.scene {
   inset: 0;
-  object-fit: cover;
-  clip-path: ellipse(47% 49% at 53% 51%);
-}
-
-.pour {
-  inset: -2% -1% 0 0;
-  z-index: 2;
-}
-
-.cup {
-  inset: 0;
-  z-index: 3;
-}
-
-.sun {
-  position: absolute;
-  top: 0;
-  right: 4%;
   z-index: -1;
-  width: 38%;
-  aspect-ratio: 1;
-  border-radius: $radius-pill;
-  background: radial-gradient(
-    circle at 40% 35%,
-    rgba($color-primary-light, 0.85),
-    rgba($color-primary, 0.55) 65%,
-    rgba($color-primary, 0) 80%
-  );
+  background:
+    linear-gradient(180deg, rgba($color-bg, 0.08) 0%, rgba($color-bg, 0.18) 46%, rgba($color-surface, 0.88) 100%),
+    radial-gradient(circle at 48% 30%, rgba($color-bg, 0.72), rgba($color-bg, 0.18) 58%, transparent 78%);
 }
+
+.heroContent {
+  display: grid;
+  width: 100%;
+  min-height: calc(100svh - 72px - clamp($space-16, 8vh, $space-24));
+  grid-template-rows: 1fr auto;
+  align-items: center;
+}
+
+.heroHeading {
+  align-self: center;
+  padding-top: clamp($space-4, 3vh, $space-8);
+}
+
+.heroEyebrow,
+.heroRoman {
+  margin: 0;
+  font-family: $font-family-display;
+  letter-spacing: 0.42em;
+}
+
+.heroEyebrow { font-size: clamp(0.7rem, 0.9vw, 1rem); }
+.heroRule { display: block; width: 7rem; height: 1px; margin: $space-5 auto; background: rgba($color-text-secondary, 0.55); }
+.heroHeading h1 { font-family: $font-family-display; font-size: clamp(3.6rem, 5vw, 6rem); line-height: 1; }
+.heroRoman { margin-top: $space-2; font-size: 0.72rem; }
+
+.heroSlogan {
+  margin: clamp($space-6, 3vh, $space-8) 0 0;
+  font-family: $font-family-display;
+  font-size: clamp(1.35rem, 1.8vw, 2rem);
+  line-height: 1.55;
+}
+
+.heroIntroduction {
+  margin: clamp($space-5, 2.5vh, $space-6) 0 0;
+  color: rgba($color-text-primary, 0.82);
+  font-size: clamp(0.78rem, 0.9vw, 0.96rem);
+  line-height: 1.9;
+}
+
+.heroValues {
+  display: grid;
+  margin: clamp($space-6, 3vh, $space-10) 0 0;
+  padding: 0;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  list-style: none;
+}
+
+.heroValues li {
+  position: relative;
+  min-width: 0;
+  padding: 0 clamp($space-3, 1.8vw, $space-6);
+}
+
+.heroValues li + li { border-left: 1px solid rgba($color-text-secondary, 0.24); }
+.valueNumber { color: $color-primary; font-family: $font-family-display; font-size: clamp(1.6rem, 2.2vw, 2.4rem); }
+.heroValues strong { display: block; margin-top: $space-1; color: $color-text-primary; font-size: clamp(0.88rem, 1vw, 1.08rem); font-weight: 600; }
+.heroValues p { margin: $space-3 0 0; color: rgba($color-text-primary, 0.76); font-size: clamp(0.68rem, 0.75vw, 0.78rem); line-height: 1.65; white-space: pre-line; }
 
 // ---------------------------------------------------------------------
 // Story
 // ---------------------------------------------------------------------
-.story {
+.storySequence {
+  position: relative;
+  height: 300svh;
+  background: rgba($color-surface, 0.85);
+}
+
+.storyScene {
+  position: sticky;
+  top: 72px;
   display: grid;
-  padding-block: clamp($space-24, 14vh, $space-30);
-  background: $color-white;
-  place-items: center;
-}
-
-.storyInner {
-  @include container;
-  display: grid;
-  grid-template-columns: minmax(300px, 0.85fr) minmax(420px, 1.15fr);
-  gap: clamp($space-16, 9vw, $space-24);
-  align-items: center;
-}
-
-.storyCopy h2 {
-  font-size: clamp(1.9rem, 2.5vw, 2.9rem);
-  line-height: 1.55;
-}
-
-.storyDescription {
-  margin: $space-10 0 0;
-  color: $color-text-secondary;
-  font-size: clamp(0.9rem, 0.95vw, 1.05rem);
-  line-height: 2;
-}
-
-.storyImage {
   overflow: hidden;
-  margin: 0;
-  border-radius: $radius-md;
-  aspect-ratio: 1.42 / 1;
-  background: $color-surface;
+  height: calc(100svh - 72px);
+  box-sizing: border-box;
+  place-items: center;
+  isolation: isolate;
 }
 
-.storyImage img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.storyBottle {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  width: auto;
+  max-width: min(82vw, 720px);
+  height: min(82svh, 920px);
+  transform-origin: 50% 50%;
+  object-fit: contain;
+  will-change: transform;
+}
+
+.storyStage {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  width: min(86vw, 1600px);
+  max-height: 78svh;
+  object-fit: contain;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .storySequence {
+    height: calc(100svh - 72px);
+  }
 }
 
 // ---------------------------------------------------------------------
@@ -508,14 +490,7 @@
 // ---------------------------------------------------------------------
 @include tablet {
   .hero { min-height: 860px; }
-  .copy { padding-top: $space-24; }
-  .title {
-    max-width: 62vw;
-    font-size: clamp(2.7rem, 5.2vw, 3.7rem);
-  }
-  .visual { right: -10vw; width: min(68vw, 680px); }
-  .storyInner { grid-template-columns: 0.9fr 1.1fr; gap: $space-12; }
-  .storyCopy h2 { font-size: clamp(1.65rem, 3.2vw, 2.2rem); }
+  .heroContent { min-height: calc(860px - #{$space-16}); }
   .desktopBreak { display: none; }
   .curationSteps { gap: $space-4; }
   .curationSteps li:not(:last-child)::after { right: -0.75rem; }
@@ -524,22 +499,39 @@
 }
 
 @include mobile {
-  .hero { min-height: calc(100svh - 60px); }
-  .copy { padding-top: clamp($space-20, 12vh, $space-24); }
-  .title {
-    max-width: none;
-    font-size: clamp(2.4rem, 11vw, 3.6rem);
-    line-height: 1.4;
+  .hero {
+    min-height: auto;
+    padding: $space-16 $space-5 $space-12;
+    background-position: 62% center;
   }
-  .title span:last-child { margin-left: 0; }
-  .description { margin: $space-6 0 0; font-size: 0.9rem; line-height: 1.75; }
-  .visual { right: -21vw; bottom: -2%; width: min(112vw, 570px); }
-  .sun { top: 2%; right: 6%; width: 46%; }
-  .story { padding-block: $space-24; }
-  .storyInner { grid-template-columns: 1fr; gap: $space-10; }
-  .storyCopy h2 { font-size: clamp(1.65rem, 7.5vw, 2.2rem); line-height: 1.5; }
-  .storyDescription { margin-top: $space-6; font-size: 0.9rem; line-height: 1.8; }
-  .storyImage { aspect-ratio: 4 / 3; border-radius: $radius-sm; }
+  .heroContent { min-height: 0; grid-template-rows: auto auto; }
+  .heroHeading { padding-top: 0; }
+  .heroHeading h1 { font-size: clamp(3.6rem, 18vw, 5rem); }
+  .heroSlogan { font-size: clamp(1.2rem, 6vw, 1.55rem); }
+  .heroIntroduction br { display: none; }
+  .heroValues { grid-template-columns: 1fr; gap: 0; margin-top: $space-12; }
+  .heroValues li { padding: $space-6 $space-2; }
+  .heroValues li + li { border-top: 1px solid rgba($color-primary-light, 0.28); border-left: 0; }
+  .heroValues p { font-size: 0.8rem; }
+  .storySequence { height: auto; }
+  .storyScene {
+    position: static;
+    display: flex;
+    height: auto;
+    padding-block: clamp($space-16, 10vh, $space-24);
+    flex-direction: column;
+    align-items: center;
+  }
+  .storyStage,
+  .storyBottle {
+    position: relative;
+    inset: auto;
+    width: auto;
+    max-width: 88vw;
+    height: auto;
+  }
+  .storyStage { order: 1; }
+  .storyBottle { order: 2; margin-top: -18%; max-height: 62svh; }
 
   .reason { padding-block: $space-24 $space-30; }
   .desktopBreak { display: none; }
@@ -584,13 +576,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .title span,
-  .description {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-
   .shopLink {
     transition: none;
   }
