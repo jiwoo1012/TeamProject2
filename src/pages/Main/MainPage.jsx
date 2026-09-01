@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import JourneySection from './JourneySection'
 import BestSellerSection from './BestSellerSection'
@@ -90,7 +90,13 @@ const moodRecommendations = [
 ]
 
 const MainPage = () => {
-  const [isIntroSkipped, setIsIntroSkipped] = useState(!IS_JOURNEY_ENABLED)
+  const location = useLocation()
+  const navigate = useNavigate()
+  const shouldSkipJourney = location.state?.skipJourney === true
+
+  const [isIntroSkipped, setIsIntroSkipped] = useState(
+    !IS_JOURNEY_ENABLED || shouldSkipJourney
+  )
   const [bestSellerProducts, setBestSellerProducts] = useState([])
   const mainContentRef = useRef(null)
   const transitionRef = useRef(null)
@@ -165,13 +171,35 @@ const MainPage = () => {
   })
 
   useEffect(() => {
-    if (IS_JOURNEY_ENABLED) return undefined
+    if (!shouldSkipJourney) return
+
+    setIsIntroSkipped(true)
+
+    const root = document.documentElement
+    const previousScrollBehavior = root.style.scrollBehavior
+
+    root.style.scrollBehavior = 'auto'
+    window.scrollTo(0, 0)
+    ScrollTrigger.refresh()
+    root.style.scrollBehavior = previousScrollBehavior
+
+    // 로고 클릭으로 전달된 skipJourney는 한 번만 사용하고 제거
+    // 새로고침/직접 진입 시에는 다시 인트로가 나타나도록 함
+    navigate(location.pathname, {
+      replace: true,
+      state: null,
+    })
+  }, [shouldSkipJourney, navigate, location.pathname])
+
+
+  useEffect(() => {
+    if (IS_JOURNEY_ENABLED && !isIntroSkipped) return undefined
 
     const root = document.documentElement
     root.classList.add('main-header-visible')
 
     return () => root.classList.remove('main-header-visible')
-  }, [])
+  }, [isIntroSkipped])
 
   useEffect(() => {
     let isMounted = true

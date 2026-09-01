@@ -224,6 +224,125 @@
 }
 
 
+/* ========================================
+   ACCOUNT MENU
+======================================== */
+
+.accountMenu {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+}
+
+
+.accountDropdown {
+  position: absolute;
+
+  top: calc(100% + 14px);
+  right: -18px;
+  z-index: $z-dropdown + 3;
+
+  display: flex;
+  flex-direction: column;
+
+  width: 140px;
+
+  padding: $space-2 0;
+
+  background: rgba($color-white, 0.98);
+
+  border:
+    1px
+    solid
+    rgba($color-text-primary, 0.1);
+
+  border-radius: $radius-lg;
+
+  box-shadow:
+    0
+    10px
+    28px
+    rgba($color-text-primary, 0.12);
+
+  opacity: 0;
+  visibility: hidden;
+
+  transform: translateY(-6px);
+
+  pointer-events: none;
+
+  transition:
+    opacity $transition-fast ease,
+    visibility $transition-fast ease,
+    transform $transition-fast ease;
+
+
+  &::before {
+    content: '';
+
+    position: absolute;
+
+    top: -14px;
+    right: 0;
+
+    width: 100%;
+    height: 14px;
+  }
+}
+
+
+.accountMenu:hover .accountDropdown,
+.accountMenu:focus-within .accountDropdown {
+  opacity: 1;
+  visibility: visible;
+
+  transform: translateY(0);
+
+  pointer-events: auto;
+}
+
+
+.accountMenuItem {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  min-height: 38px;
+
+  padding: 0 $space-4;
+
+  color: $color-text-primary;
+
+  font-family: $font-family-base;
+  font-size: 12px;
+  font-weight: $font-weight-medium;
+
+  text-align: left;
+  text-decoration: none;
+
+  background: transparent;
+
+  border: 0;
+
+  cursor: pointer;
+
+  transition:
+    color $transition-fast ease,
+    background $transition-fast ease;
+
+
+  &:hover,
+  &:focus-visible {
+    color: $color-primary;
+
+    background: rgba($color-primary, 0.06);
+
+    outline: none;
+  }
+}
+
+
 /* 검색이 열렸을 때 작은 표시 */
 
 .searchActive {
