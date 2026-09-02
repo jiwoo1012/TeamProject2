@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+
 import { PATHS } from '../../routes/paths'
-import { logout, subscribeToAuthState } from '../../firebase/auth'
+import {
+  logout,
+  subscribeToAuthState,
+} from '../../firebase/auth'
+
 import mypageTopOrnament from '../../assets/images/mypage/mypageTopOrnament.svg'
+
 import styles from './MyPageLayout.module.scss'
+
 
 const menuItems = [
   {
@@ -33,20 +40,37 @@ const menuItems = [
   },
 ]
 
+
 const MyPageLayout = () => {
   const navigate = useNavigate()
+
   const [currentUser, setCurrentUser] = useState(null)
 
-  useEffect(() => subscribeToAuthState(setCurrentUser), [])
+
+  useEffect(
+    () => subscribeToAuthState(setCurrentUser),
+    []
+  )
+
 
   const handleLogout = async () => {
     try {
       await logout()
-      navigate(PATHS.home)
+
+      navigate(PATHS.home, {
+        replace: true,
+        state: {
+          skipJourney: true,
+        },
+      })
     } catch (error) {
-      console.error('로그아웃 실패:', error)
+      console.error(
+        '로그아웃 실패:',
+        error
+      )
     }
   }
+
 
   const handleAccountAction = () => {
     if (!currentUser) {
@@ -57,27 +81,45 @@ const MyPageLayout = () => {
     handleLogout()
   }
 
+
   return (
     <section className={styles.page}>
+
       <header className={styles.pageHeader}>
         <div>
-          <h1 className={styles.title}>마이페이지</h1>
+          <h1 className={styles.title}>
+            마이페이지
+          </h1>
+
           <p className={styles.description}>
             나의 자작 시간을 확인해보세요.
           </p>
         </div>
       </header>
 
+
       <div className={styles.ornamentArea}>
-        <img className={styles.topOrnament} src={mypageTopOrnament} alt="" />
+
+        <img
+          className={styles.topOrnament}
+          src={mypageTopOrnament}
+          alt=""
+        />
+
         <button
           className={styles.logoutButton}
           type="button"
           onClick={handleAccountAction}
-          aria-label={currentUser ? '로그아웃' : '로그인'}
+          aria-label={
+            currentUser
+              ? '로그아웃'
+              : '로그인'
+          }
         >
           <svg
-            className={`${styles.logoutIcon} ${!currentUser ? styles.loginIcon : ''}`}
+            className={`${styles.logoutIcon} ${
+              !currentUser ? styles.loginIcon : ''
+            }`}
             viewBox="0 0 24 24"
             aria-hidden="true"
           >
@@ -85,43 +127,70 @@ const MyPageLayout = () => {
             <path d="M14 8l4 4-4 4" />
             <path d="M18 12H8" />
           </svg>
-          <span>{currentUser ? '로그아웃' : '로그인'}</span>
+
+          <span>
+            {currentUser
+              ? '로그아웃'
+              : '로그인'}
+          </span>
         </button>
+
       </div>
 
+
       <div className={styles.layout}>
+
         <aside className={styles.sidebar}>
+
           <nav
             className={styles.navigation}
             aria-label="마이페이지 메뉴"
           >
-            {menuItems.map(({ label, to, end }) => (
-              <NavLink
-                key={label}
-                to={to}
-                end={end}
-                className={({ isActive }) =>
-                  `${styles.menuItem} ${
-                    isActive ? styles.active : ''
-                  }`
-                }
-              >
-                <span
-                  className={styles.menuDot}
-                  aria-hidden="true"
-                />
-                <span>{label}</span>
-              </NavLink>
-            ))}
+            {menuItems.map(
+              ({
+                label,
+                to,
+                end,
+              }) => (
+                <NavLink
+                  key={label}
+                  to={to}
+                  end={end}
+                  className={({
+                    isActive,
+                  }) =>
+                    `${styles.menuItem} ${
+                      isActive
+                        ? styles.active
+                        : ''
+                    }`
+                  }
+                >
+                  <span
+                    className={styles.menuDot}
+                    aria-hidden="true"
+                  />
+
+                  <span>
+                    {label}
+                  </span>
+                </NavLink>
+              )
+            )}
           </nav>
+
         </aside>
+
 
         <main className={styles.content}>
           <Outlet />
         </main>
+
       </div>
+
     </section>
   )
 }
+
 
 export default MyPageLayout

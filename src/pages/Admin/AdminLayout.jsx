@@ -148,7 +148,13 @@ const AdminLayout = () => {
 
     try {
       await logout()
-      navigate(PATHS.home)
+
+      navigate(PATHS.home, {
+        replace: true,
+        state: {
+          skipJourney: true,
+        },
+      })
     } catch (error) {
       console.error(
         '로그아웃 실패:',
@@ -208,7 +214,10 @@ const AdminLayout = () => {
               <path d="M14 8l4 4-4 4" />
               <path d="M18 12H8" />
             </svg>
-            <span>{currentUser ? '로그아웃' : '로그인'}</span>
+
+            <span>
+              {currentUser ? '로그아웃' : '로그인'}
+            </span>
           </button>
         </div>
 
