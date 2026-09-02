@@ -1,5 +1,193 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as v;
+
+.page {
+  position: relative;
+  min-height: 55vh;
+  padding: v.$space-16 5%;
+}
+
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.content h1 {
+  margin: 0 0 v.$space-8;
+  font-size: v.$font-size-3xl;
+  color: v.$color-text-primary;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: v.$space-3;
+  margin-bottom: v.$space-8;
+  padding-bottom: v.$space-3;
+  border-bottom: 1px solid v.$color-text-primary;
+
+  input {
+    flex: 1;
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: v.$font-size-md;
+    color: v.$color-text-primary;
+
+    &::placeholder {
+      color: v.$color-text-muted;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+.searchIcon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.categoryTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: v.$space-2;
+  margin-bottom: v.$space-6;
+
+  button {
+    padding: v.$space-2 v.$space-4;
+    border: 1px solid v.$color-border;
+    border-radius: v.$radius-pill;
+    background: v.$color-white;
+    color: v.$color-text-muted;
+    font-size: v.$font-size-sm;
+    transition: all v.$transition-fast ease;
+
+    &:hover {
+    border-color: v.$color-taupe;
+    color: v.$color-taupe;
+    }
+  }
+}
+
+.activeTab {
+  border-color: v.$color-taupe !important;
+  background: v.$color-taupe !important;
+  color: v.$color-white !important;
+  font-weight: v.$font-weight-semibold;
+}
+
+.faqList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-3;
+}
+
+.faqItem {
+  border-bottom: 1px solid v.$color-border;
+}
+
+.faqQuestion {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: v.$space-4;
+  padding: v.$space-4 0;
+  background: none;
+  text-align: left;
+  font-size: v.$font-size-sm;
+}
+
+.faqQMark {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: v.$radius-pill;
+  background: color-mix(in srgb, v.$color-taupe 12%, v.$color-white);
+  color: v.$color-taupe;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-bold;
+}
+
+.faqQuestionText {
+  flex: 1;
+  color: v.$color-text-primary;
+  font-weight: v.$font-weight-medium;
+  font-size: v.$font-size-lg;
+}
+
+.faqAnswer {
+  padding: 0 0 v.$space-5 v.$space-10;
+  background: none;
+
+  p {
+    margin: 0;
+    color: v.$color-text-secondary;
+    font-size: v.$font-size-sm;
+    line-height: v.$line-height-relaxed;
+    white-space: pre-wrap;
+  }
+}
+
+.emptyState {
+  padding: v.$space-10 0;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+  text-align: center;
+  list-style: none;
+}
+
+.faqToggleIcon {
+  flex-shrink: 0;
+  font-size: v.$font-size-xl;
+  font-weight: v.$font-weight-medium;
+  color: v.$color-text-muted;
+}
+
+// 우측 하단 플로팅 1:1 문의하기 버튼
+.floatingButton {
+  position: fixed;
+  right: v.$space-8;
+  bottom: v.$space-8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: v.$radius-pill;
+  background: v.$color-warning;
+  color: v.$color-white;
+  font-size: v.$font-size-2xl;
+  font-weight: v.$font-weight-bold;
+  box-shadow: v.$shadow-sm;
+  transition: transform v.$transition-fast ease;
+
+  em {
+    position: absolute;
+    bottom: -28px;
+    white-space: nowrap;
+    font-size: v.$font-size-xs;
+    font-style: normal;
+    font-weight: v.$font-weight-medium;
+    color: v.$color-text-secondary;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}

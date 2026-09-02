@@ -2,12 +2,32 @@
 
 .page { min-height: 70vh; padding: v.$space-12 0 v.$space-20; background: v.$color-bg; }
 .content { width: min(900px, calc(100% - 40px)); margin: 0 auto; }
-.backLink { display: inline-flex; margin-bottom: v.$space-5; color: v.$color-text-secondary; font-size: v.$font-size-sm; text-decoration: none; }
-.noticeArticle { border-top: 2px solid v.$color-text-primary; background: v.$color-white; }
-.noticeArticle header { padding: v.$space-8; border-bottom: 1px solid v.$color-border; }
-.noticeArticle h1 { margin: v.$space-3 0 v.$space-5; font-size: v.$font-size-3xl; line-height: v.$line-height-tight; }
-.noticeArticle header > div { display: flex; gap: v.$space-4; color: v.$color-text-muted; font-size: v.$font-size-sm; }
-.pinBadge { display: inline-flex; min-height: 24px; align-items: center; padding: 0 v.$space-3; border-radius: v.$radius-pill; background: color-mix(in srgb, v.$color-warning 14%, v.$color-white); color: v.$color-warning; font-size: v.$font-size-xs; font-weight: v.$font-weight-bold; }
+
+.pageTitle { margin: 0 0 v.$space-6; font-size: v.$font-size-4xl; color: v.$color-text-primary; }
+
+.noticeArticle { background: v.$color-white; }
+.noticeArticle header { padding: v.$space-8 v.$space-8 v.$space-4; border-bottom: 2px solid v.$color-border; }
+.noticeArticle h2 { margin: 0 0 v.$space-5; font-size: v.$font-size-3xl; line-height: v.$line-height-tight; }
+.noticeArticle header > div { display: flex; align-items: center; color: v.$color-text-muted; font-size: v.$font-size-sm; }
+
+.pinBadge { display: inline-flex; min-height: 36px; align-items: center; margin-right: v.$space-4; padding: 0 v.$space-4; border-radius: v.$radius-pill; background: color-mix(in srgb, v.$color-warning 14%, v.$color-white); color: v.$color-warning; font-size: v.$font-size-sm; font-weight: v.$font-weight-bold; }
+.divider { margin-right: v.$space-2; color: v.$color-border; }
+
 .body { min-height: 280px; padding: v.$space-8; color: v.$color-text-secondary; line-height: v.$line-height-relaxed; white-space: pre-wrap; }
 .emptyState { min-height: 280px; display: grid; place-items: center; border-top: 2px solid v.$color-text-primary; color: v.$color-text-muted; }
-@media (max-width: v.$breakpoint-mobile-max) { .page { padding-top: v.$space-8; } .noticeArticle header, .body { padding: v.$space-5; } .noticeArticle h1 { font-size: v.$font-size-2xl; } }
+
+.bottomBar { display: flex; align-items: center; justify-content: space-between; margin-top: v.$space-6; }
+.listButton { display: inline-flex; align-items: center; gap: v.$space-2; padding: v.$space-2 0; border: none; background: none; color: v.$color-text-secondary; font-size: v.$font-size-sm; }
+.postNav { display: flex; gap: v.$space-3; }
+.postNav button { min-height: 33px; padding: 0 v.$space-5; border: 2px solid v.$color-border; border-radius: v.$radius-pill; background: v.$color-white; color: v.$color-text-primary; font-size: v.$font-size-sm; transition: all v.$transition-fast; }
+.postNav button:not(:disabled):hover { border-color: v.$color-taupe; color: v.$color-taupe; }
+.postNav button:not(:disabled):active { background: v.$color-taupe; border-color: v.$color-taupe; color: v.$color-white; }
+.postNav button:disabled { opacity: .4; cursor: not-allowed; }
+
+@media (max-width: v.$breakpoint-mobile-max) {
+  .page { padding-top: v.$space-8; }
+  .noticeArticle header, .body { padding: v.$space-5; }
+  .noticeArticle h2 { font-size: v.$font-size-2xl; }
+  .bottomBar { flex-direction: column; align-items: stretch; gap: v.$space-3; }
+  .postNav { justify-content: space-between; }
+}
