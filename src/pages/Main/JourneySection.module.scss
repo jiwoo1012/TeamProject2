@@ -23,6 +23,44 @@
 .cursorHidden * {
   cursor: none !important;
 }
+.customCursorActive,
+.customCursorActive * {
+  cursor: none !important;
+}
+.sceneScrollCursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  width: 24px;
+  height: 38px;
+  box-sizing: border-box;
+  border: 2px solid #fffaf2;
+  border-radius: 14px;
+  opacity: 0;
+  pointer-events: none;
+  translate: -50% -25%;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.55));
+}
+.sceneScrollCursor i {
+  position: absolute;
+  top: 7px;
+  left: 50%;
+  width: 3px;
+  height: 8px;
+  border-radius: 999px;
+  background: #fffaf2;
+  translate: -50% 0;
+  animation: cursorWheel 1.25s ease-in-out infinite;
+}
+:global(body.adult-modal-open) .sceneScrollCursor {
+  display: none;
+}
+@keyframes cursorWheel {
+  0% { opacity: 0; transform: translateY(0); }
+  25%, 65% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(9px); }
+}
 .scene {
   position: absolute;
   inset: 0;
@@ -419,18 +457,9 @@
   background: linear-gradient(#fffaf2, transparent);
   animation: scrollPulse 1.4s ease-in-out infinite;
 }
-
 @keyframes scrollPulse {
-  0%, 100% {
-    opacity: 0.35;
-    transform: scaleY(0.65);
-    transform-origin: top;
-  }
-  50% {
-    opacity: 1;
-    transform: scaleY(1);
-    transform-origin: top;
-  }
+  0%, 100% { opacity: .35; transform: scaleY(.65); transform-origin: top; }
+  50% { opacity: 1; transform: scaleY(1); transform-origin: top; }
 }
 
 @media (max-width: 767px) {

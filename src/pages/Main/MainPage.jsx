@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -39,6 +39,7 @@ import styles from './MainPage.module.scss'
 gsap.registerPlugin(ScrollTrigger)
 
 const IS_JOURNEY_ENABLED = true
+const HERO_DISMISSED_KEY = 'jajak_main_hero_dismissed'
 const eventBannerImages = import.meta.glob('../../assets/images/banner/eventBanner*.png', {
   eager: true,
   import: 'default',
@@ -98,6 +99,9 @@ const MainPage = () => {
     !IS_JOURNEY_ENABLED || shouldSkipJourney
   )
   const [bestSellerProducts, setBestSellerProducts] = useState([])
+  const [isHeroDismissed, setIsHeroDismissed] = useState(
+    () => sessionStorage.getItem(HERO_DISMISSED_KEY) === 'true'
+  )
   const mainContentRef = useRef(null)
   const transitionRef = useRef(null)
   const isTransitioningRef = useRef(false)
@@ -123,6 +127,16 @@ const MainPage = () => {
   const heroSunResetRef = useRef(null)
   const isHeroSunCompleteRef = useRef(false)
 
+  const handleHeroExit = useCallback(() => {
+    if (sessionStorage.getItem(HERO_DISMISSED_KEY) === 'true') return
+
+    sessionStorage.setItem(HERO_DISMISSED_KEY, 'true')
+    flushSync(() => setIsHeroDismissed(true))
+    document.documentElement.classList.add('main-header-visible')
+    window.scrollTo(0, aiIntroRef.current?.offsetTop ?? 0)
+    ScrollTrigger.refresh()
+  }, [])
+
   useMainSectionWheel({
     mainContentRef,
     aiIntroRef,
@@ -135,6 +149,8 @@ const MainPage = () => {
     heroSunPlayRef,
     heroSunResetRef,
     isHeroSunCompleteRef,
+    isHeroDismissed,
+    onHeroExit: handleHeroExit,
   })
 
   useHeroReveal({
@@ -160,6 +176,7 @@ const MainPage = () => {
     transitionRef,
     canMovePastHeroRef,
     heroRevealRef,
+    resetTargetRef: isHeroDismissed ? aiIntroRef : mainContentRef,
   })
 
   useSectionReveals({
@@ -200,6 +217,20 @@ const MainPage = () => {
 
     return () => root.classList.remove('main-header-visible')
   }, [isIntroSkipped])
+
+  useEffect(() => {
+    if (!isIntroSkipped || !isHeroDismissed) return undefined
+
+    const frame = window.requestAnimationFrame(() => {
+      const aiTop = aiIntroRef.current?.offsetTop
+      if (typeof aiTop === 'number' && window.scrollY < aiTop - 2) {
+        window.scrollTo(0, aiTop)
+        ScrollTrigger.update()
+      }
+    })
+
+    return () => window.cancelAnimationFrame(frame)
+  }, [isHeroDismissed, isIntroSkipped])
 
   useEffect(() => {
     let isMounted = true
@@ -262,7 +293,7 @@ const MainPage = () => {
       {!isIntroSkipped && <JourneySection onSkip={handleSkipIntro} />}
 
       {/* 메인 히어로 섹션 */}
-      <section ref={mainContentRef} className={styles.mainContent} aria-labelledby="main-content-title">
+      <section ref={mainContentRef} className={`${styles.mainContent} ${isHeroDismissed ? styles.mainContentDismissed : ''}`} aria-labelledby="main-content-title">
         <div className={styles.heroInner}>
           <div ref={heroCoverRef} className={styles.heroCover} aria-hidden="true">
             <img src={heroImage} alt="" />

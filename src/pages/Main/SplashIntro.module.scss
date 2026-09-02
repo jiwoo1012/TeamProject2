@@ -1,5 +1,121 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+.splash { position: relative; min-height: 100svh; overflow: hidden; isolation: isolate; background: #b9d9f2 var(--splash-paper) center / cover no-repeat; }
+.leaving { pointer-events: none; animation: splashExit .8s cubic-bezier(.4,0,.2,1) forwards; }
+.splash::after { position: absolute; z-index: -1; inset: 0; background: radial-gradient(circle at 50% 42%, rgba(255,255,255,.2), transparent 42%); content: ''; pointer-events: none; }
+.scene { position: relative; width: min(100%, 1536px); min-height: 100svh; margin: 0 auto; }
+.scene img { display: block; user-select: none; -webkit-user-drag: none; }
+.sticker, .cup, .laughShell, .foodShell, .bottleButton, .pointingHand { position: absolute; }
+.sticker { z-index: 3; object-fit: contain; filter: drop-shadow(0 5px 8px rgba(68,98,124,.12)); animation: float 4.8s ease-in-out infinite; }
+.rain { bottom: 8%; left: -2%; width: clamp(100px,12vw,185px); transform: rotate(-8deg); }
+.sun { bottom: 1%; left: 24%; width: clamp(90px,10vw,150px); animation-delay: -1.7s; }
+.laughShell { z-index: 3; top: 5%; right: 14%; width: clamp(68px,6vw,94px); }
+.laughShell .laugh { position: static; width: 100%; }
+.cup { z-index: 2; top: 4%; left: -3%; width: clamp(165px,18vw,275px); transform: rotate(-5deg); filter: drop-shadow(0 17px 15px rgba(57,83,104,.15)); }
+.foodShell { z-index: 2; top: 25%; right: 2%; width: clamp(230px,25vw,390px); }
+.food { width: 100%; clip-path: ellipse(49% 43% at 50% 51%); filter: drop-shadow(0 18px 15px rgba(57,83,104,.18)); transform: rotate(3deg); }
+.bottleButton { z-index: 6; top: 29%; left: 62%; width: clamp(180px,20vw,300px); padding: 0; border: 0; background: transparent; cursor: pointer; transform: translateX(-50%); transition: transform .35s cubic-bezier(.2,.9,.25,1.25); }
+.bottleButton img { width: 100%; filter: drop-shadow(0 20px 18px rgba(57,83,104,.16)); transition: transform .35s ease; }
+.bottleButton:hover { transform: translateX(-50%) translateY(-8px) rotate(2deg); }
+.bottleButton:focus-visible { outline: 3px dashed #fff; outline-offset: 10px; }
+.pressed img { animation: bottleShake .55s ease-in-out; }
+.pointingHand { z-index: 7; top: 48%; left: 58%; width: clamp(520px,58vw,890px); max-width: none; pointer-events: none; filter: drop-shadow(-10px 13px 16px rgba(57,83,104,.16)); transform: rotate(2deg); transform-origin: 8% 7%; }
+.bubble { position: absolute; z-index: 4; aspect-ratio: 3 / 1; color: #24411e; font-size: clamp(18px,1.74vw,28px); font-weight: 800; line-height: 1.1; text-align: center; filter: drop-shadow(0 8px 10px rgba(57,83,104,.12)); }
+.bubble > img { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); }
+.bubble > span { position: absolute; z-index: 1; top: 45%; left: 50%; width: 78%; transform: translate(-50%,-50%); }
+/*
+ * 말풍선 위치 조절 안내
+ * top: 위에서부터 위치 (값이 커지면 아래로 이동)
+ * left: 왼쪽에서부터 위치 (값이 커지면 오른쪽으로 이동)
+ * width: 말풍선 전체 크기
+ * rotate: 말풍선 기울기 (+ 시계 방향 / - 반시계 방향)
+ */
+
+/* 1. "달달한 게 좋아!" — 상단 왼쪽의 짧은 말풍선 */
+.bubbleOne { top: 4%; left: 29%; width: 276px; aspect-ratio: 2 / 1; transform: rotate(4deg); }
+.bubbleOne > span { top: 47%; width: 68%; font-size: .78em; }
+
+/* 2. "이런 날 상 괜찮아?" — 상단 오른쪽 말풍선 */
+.bubbleTwo { top: 5%; left: 51%; width: 372px; transform: rotate(-2deg); }
+
+/* 3. "기분이 어때 :-)" — 가운데 말풍선 */
+.bubbleThree { top: 20%; left: 35%; width: 396px; transform: rotate(1deg); }
+
+/* 4. "오늘 하루 고생했어" — 가운데 왼쪽의 긴 말풍선 */
+.bubbleFour { top: 36%; left: 12%; width: 516px; transform: rotate(3deg); }
+
+/* 5. "오늘은 어떤 술이 땡겨?" — 하단의 긴 말풍선 */
+.bubbleFive { top: 55%; left: 25%; width: 552px; transform: rotate(-5deg); }
+
+/* Every collage layer floats on its own rhythm. */
+.cup { animation: floatSoft 5.8s ease-in-out -1.2s infinite; }
+.food { animation: floatWide 6.4s ease-in-out -3.1s infinite; }
+.bottleButton { animation: floatSoft 5.2s ease-in-out -.6s infinite; }
+.pointingHand { animation: handChoose 6s cubic-bezier(.65,0,.35,1) infinite; }
+.bubble { animation: floatSoft 5.5s ease-in-out infinite; }
+.rain { animation: enterFromLeft 1.25s .1s cubic-bezier(.2,.8,.25,1) both, float 4.8s 1.35s ease-in-out infinite; }
+.cup { animation: enterFromLeft 1.25s .25s cubic-bezier(.2,.8,.25,1) both, floatSoft 5.8s 1.5s ease-in-out infinite; }
+.sun { animation: enterFromLeft 1.25s .4s cubic-bezier(.2,.8,.25,1) both, float 4.8s 1.65s ease-in-out infinite; }
+.laughShell, .foodShell { animation: enterShellFromRight 1.25s .1s cubic-bezier(.2,.8,.25,1) both; }
+.laugh { animation: float 4.8s 1.35s ease-in-out infinite; }
+.food { animation: floatWide 6.4s 1.35s ease-in-out infinite; }
+.bottleButton { animation: enterFromRight 1.25s .4s cubic-bezier(.2,.8,.25,1) both, floatSoft 5.2s 1.65s ease-in-out infinite; }
+.bubbleOne { animation-delay: -.4s; }
+.bubbleTwo { animation-delay: -2.6s; animation-duration: 6.1s; }
+.bubbleThree { animation-delay: -1.5s; animation-duration: 5.8s; }
+.bubbleFour { animation-delay: -3.7s; animation-duration: 6.6s; }
+.bubbleFive { animation-delay: -2.1s; animation-duration: 6.3s; }
+.bubbleFive > img, .bubbleFive > span { animation: bubbleRise .9s 1.9s cubic-bezier(.2,.85,.3,1.15) both; }
+.bubbleFour > img, .bubbleFour > span { animation: bubbleRise .9s 2.8s cubic-bezier(.2,.85,.3,1.15) both; }
+.bubbleThree > img, .bubbleThree > span { animation: bubbleRise .9s 3.7s cubic-bezier(.2,.85,.3,1.15) both; }
+.bubbleTwo > img, .bubbleTwo > span { animation: bubbleRise .9s 4.6s cubic-bezier(.2,.85,.3,1.15) both; }
+.bubbleOne > img, .bubbleOne > span { animation: bubbleRise .9s 5.5s cubic-bezier(.2,.85,.3,1.15) both; }
+.loading { position: absolute; z-index: 8; bottom: 16%; left: 50%; width: clamp(210px,22vw,330px); color: #24411e; transform: translateX(-50%) rotate(-1deg); }
+.loadingLabel { display: flex; align-items: center; justify-content: space-between; margin: 0 8px 7px; font-size: clamp(12px,1vw,15px); font-weight: 900; letter-spacing: .16em; }
+.loadingDots { color: #65a833; font-size: 17px; letter-spacing: .08em; animation: loadingDots 1.2s steps(4,end) infinite; }
+.loadingTrack { height: 18px; padding: 3px; overflow: hidden; border: 3px solid #fff; border-radius: 999px; background: rgba(255,255,255,.48); box-shadow: 0 5px 0 rgba(78,143,190,.45), 0 8px 16px rgba(57,83,104,.14); }
+.loadingFill { display: block; width: 100%; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#79dc45 0%,#b7f66d 58%,#e5ffae 100%); box-shadow: inset 0 2px 2px rgba(255,255,255,.7); transform: scaleX(0); transform-origin: left center; animation: loadingFill 8s ease-in-out forwards; }
+
+@keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
+@keyframes splashExit { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.025); } }
+@keyframes floatSoft { 0%, 100% { translate: 0 0; } 50% { translate: 0 -9px; } }
+@keyframes floatWide { 0%, 100% { translate: 0 0; } 50% { translate: -5px -11px; } }
+@keyframes handChoose {
+  0%, 38%, 100% { translate: 0 0; transform: rotate(2deg); }
+  50%, 88% { translate: 20vw -7vh; transform: rotate(-7deg); }
+}
+@keyframes bottleShake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-6deg); } 50% { transform: rotate(6deg) scale(1.03); } 75% { transform: rotate(-3deg); } }
+@keyframes enterFromLeft { 0% { opacity: 0; margin-left: -65vw; } 100% { opacity: 1; margin-left: 0; } }
+@keyframes enterFromRight { 0% { opacity: 0; margin-left: 65vw; } 100% { opacity: 1; margin-left: 0; } }
+@keyframes enterShellFromRight { 0% { opacity: 0; transform: translateX(calc(100vw + 100%)); } 100% { opacity: 1; transform: translateX(0); } }
+@keyframes bubbleRise { 0% { opacity: 0; translate: 0 38px; } 70% { opacity: 1; translate: 0 -4px; } 100% { opacity: 1; translate: 0 0; } }
+@keyframes loadingFill { 0% { transform: scaleX(0); } 82%, 100% { transform: scaleX(1); } }
+@keyframes loadingDots { 0% { opacity: .3; } 50% { opacity: 1; } 100% { opacity: .3; } }
+
+@media (max-width: 760px) {
+  .scene { min-height: 780px; }
+  .rain { bottom: 8%; left: -8%; }
+  .laughShell { top: 5%; right: 3%; }
+  .sun { bottom: 4%; left: 20%; }
+  .cup { top: 3%; left: -10%; width: 155px; }
+  .foodShell { top: 26%; right: -12%; width: 230px; }
+  .bottleButton { top: 34%; left: 67%; width: 190px; }
+  .pointingHand { top: 49%; left: 59%; width: 640px; transform: rotate(1deg); }
+  .bubble { font-size: 16px; }
+  /* 모바일 말풍선 위치 — 조절 방법은 데스크톱과 동일 */
+  /* 1. 달달한 게 좋아! */
+  .bubbleOne { top: 8%; left: 22%; width: 204px; }
+  /* 2. 이런 날 상 괜찮아? */
+  .bubbleTwo { top: 16%; left: 43%; width: 258px; }
+  /* 3. 기분이 어때 :-) */
+  .bubbleThree { top: 27%; left: 18%; width: 276px; }
+  /* 4. 오늘 하루 고생했어 */
+  .bubbleFour { top: 45%; left: 2%; width: 324px; }
+  /* 5. 오늘은 어떤 술이 땡겨? */
+  .bubbleFive { top: 65%; left: 10%; width: 360px; }
+  .loading { bottom: 14%; width: 230px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticker, .cup, .laughShell, .foodShell, .food, .bubble, .bottleButton, .pointingHand, .pressed img, .loadingFill, .loadingDots { animation: none; }
+  .bubbleOne > img, .bubbleOne > span, .bubbleTwo > img, .bubbleTwo > span, .bubbleThree > img, .bubbleThree > span, .bubbleFour > img, .bubbleFour > span, .bubbleFive > img, .bubbleFive > span { animation: none; }
+  .bottleButton { transition: none; }
+}

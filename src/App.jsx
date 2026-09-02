@@ -84,10 +84,21 @@ import NotFound from './pages/NotFound/NotFound'
 const ADULT_VERIFIED_KEY =
   'jajak_adult_verified'
 
+const SPLASH_SEEN_KEY =
+  'jajak_splash_seen'
+
 
 const App = () => {
   const location =
     useLocation()
+
+  const [showSplash, setShowSplash] =
+    useState(() => {
+      return (
+        window.location.pathname === '/' &&
+        sessionStorage.getItem(SPLASH_SEEN_KEY) !== 'true'
+      )
+    })
 
   const [
     isAdultVerified,
@@ -99,6 +110,11 @@ const App = () => {
       ) === 'true'
     )
   })
+
+  const handleSplashComplete = () => {
+    sessionStorage.setItem(SPLASH_SEEN_KEY, 'true')
+    setShowSplash(false)
+  }
 
 
   // ========================================
@@ -127,6 +143,10 @@ const App = () => {
     !location.pathname.startsWith(
       '/admin'
     )
+
+  if (showSplash) {
+    return <SplashIntro onComplete={handleSplashComplete} />
+  }
 
 
   return (

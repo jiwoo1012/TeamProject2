@@ -13,6 +13,7 @@ const useLogoScrollReset = ({
   transitionRef,
   canMovePastHeroRef,
   heroRevealRef,
+  resetTargetRef,
 }) => {
   useLayoutEffect(() => {
     const root = document.documentElement
@@ -23,7 +24,7 @@ const useLogoScrollReset = ({
       if (!logoLink || !mainContentRef.current) return
 
       event.preventDefault()
-      const targetTop = mainContentRef.current.offsetTop
+      const targetTop = (resetTargetRef?.current || mainContentRef.current).offsetTop
       if (Math.abs(window.scrollY - targetTop) < 2) return
 
       const transition = transitionRef.current
@@ -57,7 +58,7 @@ const useLogoScrollReset = ({
 
     document.addEventListener('click', handleLogoClick)
     return () => document.removeEventListener('click', handleLogoClick)
-  }, [canMovePastHeroRef, heroRevealRef, mainContentRef, transitionRef])
+  }, [canMovePastHeroRef, heroRevealRef, mainContentRef, resetTargetRef, transitionRef])
 }
 
 export default useLogoScrollReset

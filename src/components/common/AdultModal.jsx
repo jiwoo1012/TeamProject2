@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styles from './AdultModal.module.scss'
 
 import makdongImg from '../../assets/characters/M007_Poses05.png'
@@ -9,6 +9,12 @@ const AdultModal = ({
   onVerify,
   onExit,
 }) => {
+  useEffect(() => {
+    document.body.classList.toggle('adult-modal-open', isOpen)
+
+    return () => document.body.classList.remove('adult-modal-open')
+  }, [isOpen])
+
   if (!isOpen) return null
 
   const handleVerify = () => {
