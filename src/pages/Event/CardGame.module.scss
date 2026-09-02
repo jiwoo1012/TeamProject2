@@ -8,7 +8,7 @@
 .gameShell { display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: $space-3; width: min(calc(100% - (#{$side-margin-desktop} * 2)), 1360px); height: 100dvh; margin-inline: auto; padding: $space-8 0; }
 .isIntro { opacity: 0; visibility: hidden; }
 .isDealing .topLine { animation: quickFadeIn $transition-fast ease both; }
-.isDealing .board { animation: cardsRise .7s linear both; }
+.isDealing .board { animation: cardsRise .45s cubic-bezier(.22, .72, .28, 1) both; }
 .topLine { position: relative; display: flex; align-items: center; justify-content: center; min-height: 80px; }
 .topLine > button { position: absolute; left: 0; color: $color-white; font-size: $font-size-md; font-weight: $font-weight-semibold; transition: color $transition-fast ease, transform $transition-fast ease; }
 .topLine > button:hover { color: $color-primary-light; transform: translateX(-$space-1); }
@@ -39,17 +39,17 @@
 .card.isMismatch .cardFront, .card.isMismatch:hover .cardFront { box-shadow: 0 0 0 $space-1 $color-error, 0 0 $space-6 rgba($color-error, .72); }
 .scoreRibbon { align-self: center; justify-self: center; min-width: 320px; padding: $space-2 $space-16; color: $color-text-primary; font-size: $font-size-lg; line-height: $line-height-base; text-align: center; background: $color-bg; clip-path: polygon(5% 0, 95% 0, 89% 50%, 95% 100%, 5% 100%, 11% 50%); }
 .modalBackdrop { @include mixins.flex-center; position: fixed; z-index: $z-toast; inset: 0; padding: $space-5; background: rgba($color-text-primary, .58); animation: backdropIn $transition-base ease both; }
-.quitModal, .resultModal { width: min(100%, 570px); padding: $space-8; color: $color-text-primary; background: $color-bg; border-radius: $radius-xl; box-shadow: 0 $space-5 $space-16 rgba($color-text-primary, .3); animation: modalIn $transition-base cubic-bezier(.22, 1, .36, 1) both; }
+.quitModal, .resultModal { width: min(100%, 570px); color: $color-text-primary; background: $color-bg; border-radius: $radius-xl; box-shadow: 0 $space-5 $space-16 rgba($color-text-primary, .3); animation: modalIn $transition-base cubic-bezier(.22, 1, .36, 1) both; }
+.quitModal { padding: $space-8; }
 .quitModal h2, .resultModal h2 { font-size: $font-size-3xl; font-weight: $font-weight-bold; line-height: $line-height-tight; text-align: center; }
 .quitModal > p { margin-top: $space-2; color: $color-text-secondary; font-size: $font-size-md; line-height: $line-height-relaxed; text-align: center; }
 .quitModal > div { display: grid; grid-template-columns: repeat(2, 1fr); gap: $space-3; margin-top: $space-8; }
 .quitModal button { padding: $space-3 $space-5; color: $color-white; background: $color-primary; border-radius: $radius-md; text-align: center;}
 .quitModal button:last-child { color: $color-text-secondary; background: $color-surface; }
-.resultModal { position: relative; }
+.resultModal { position: relative; padding: $space-12; }
 .closeButton { position: absolute; top: $space-5; right: $space-5; color: $color-text-primary; font-size: $font-size-4xl; line-height: 1; }
-.resultPoint { @include mixins.flex-center; flex-direction: column; gap: $space-2; min-height: 170px; margin-top: $space-10; border: 1px solid $color-border; border-radius: $radius-lg; }
-.resultPoint span { @include mixins.flex-center; width: 58px; aspect-ratio: 1; color: $color-text-secondary; font-size: $font-size-3xl; border: 3px solid $color-text-secondary; border-radius: 50%; }
-.resultPoint strong { font-family: $font-family-display; font-size: $font-size-5xl; }
+.resultPoint { @include mixins.flex-center; min-height: 120px; margin-top: $space-10; border: 1px solid $color-border; border-radius: $radius-lg; }
+.resultPoint strong { color: $color-primary; font-family: $font-family-display; font-size: $font-size-5xl; }
 .resultModal dl { display: grid; gap: $space-4; margin: $space-8 $space-3 0; }
 .resultModal dl > div { display: grid; grid-template-columns: 120px 1fr; gap: $space-4; }
 .resultModal dt { color: $color-text-muted; }
@@ -82,7 +82,7 @@
   .timerArea { grid-template-columns: 1fr 52px; gap: $space-3; }
   .timerArea time { font-size: $font-size-md; }
   .progressTrack { height: $space-2; }
-  .board { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(3, auto); gap: $space-2; width: min(100%, calc((100dvh - (#{$space-20} + #{$space-16} + #{$space-12})) * .96)); }
+  .board { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(3, auto); gap: $space-4; width: min(100%, calc((100dvh - (#{$space-20} + #{$space-16} + #{$space-12})) * .96)); }
   .cardFront, .cardBack { border-radius: $radius-sm; }
   .scoreRibbon { min-width: 200px; padding: $space-1 $space-8; font-size: $font-size-sm; }
   .quitModal, .resultModal { padding: $space-10 $space-5 $space-8; }

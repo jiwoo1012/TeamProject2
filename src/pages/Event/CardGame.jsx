@@ -318,7 +318,7 @@ const CardGame = () => {
             <h2 id="result-title">
               {nickname ? `${nickname}나리가` : '나리가'} 맞추신 카드는 {result.pairCount}쌍입니다!
             </h2>
-            <div className={styles.resultPoint}><span aria-hidden="true">P</span><strong>{result.score.toLocaleString('ko-KR')}P</strong></div>
+            <div className={styles.resultPoint}><strong>{result.score.toLocaleString('ko-KR')}P 증정</strong></div>
             <dl>
               <div><dt>응모 이벤트</dt><dd>{EVENT_TITLE}</dd></div>
               <div><dt>응모 날짜</dt><dd>{formatDate()}</dd></div>
