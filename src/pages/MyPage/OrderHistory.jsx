@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom'
 import { getOrderStatusLabel, ORDER_STATUS } from '../../constants/orderStatus'
 import { subscribeToAuthState, getCurrentUserData } from '../../firebase/auth'
 import { db } from '../../firebase/firebase'
-import { getCollection } from '../../firebase/firestore'
-import makdongPose from '../../assets/characters/M007_Poses03.png'
+import orderHistoryMakdong from '../../assets/images/mypage/orderHistory-makdong-wave.png'
 import profileAvatarMakdongDefault from '../../assets/images/mypage/profileAvatar-makdong-default.png'
 import profileAvatarMakdongCheers from '../../assets/images/mypage/profileAvatar-makdong-cheers.png'
 import profileAvatarMakdongJeon from '../../assets/images/mypage/profileAvatar-makdong-jeon.png'
@@ -36,14 +35,14 @@ const filterItems = [
   { label: '전체', value: 'all' },
   { label: '배송 중', value: 'shipping' },
   { label: '배송 완료', value: 'completed' },
-  { label: '취소 / 교환 / 반품', value: 'claim' },
+  { label: '주문 취소', value: 'claim' },
 ]
 
 const summaryStats = [
-  { type: 'order', label: '주문 내역', value: 0, unit: '건', caption: '이번 달 기준' },
-  { type: 'wish', label: '찜 목록', value: 0, unit: '개', caption: '이번 달 기준' },
-  { type: 'ai', label: 'AI 추천 기록', value: 0, unit: '회', caption: '최근 이용 기준' },
-  { type: 'event', label: '이벤트 참여', value: 0, unit: '회', caption: '당첨 및 참여' },
+  { type: 'order', label: '전체 주문', value: 'all', caption: '누적 주문 건수' },
+  { type: 'shipping', label: '배송 진행', value: 'shipping', caption: '결제·준비·배송 중' },
+  { type: 'completed', label: '배송 완료', value: 'completed', caption: '배송이 완료된 주문' },
+  { type: 'cancelled', label: '주문 취소', value: 'claim', caption: '취소 처리된 주문' },
 ]
 
 
@@ -57,26 +56,28 @@ const SummaryIcon = ({ type }) => {
     )
   }
 
-  if (type === 'wish') {
+  if (type === 'shipping') {
     return (
       <svg viewBox="0 0 48 48" aria-hidden="true">
-        <path d="M24 39S7 29 7 17.5C7 12.3 10.8 9 15.3 9c3.8 0 6.4 2.2 8.7 5 2.3-2.8 4.9-5 8.7-5C37.2 9 41 12.3 41 17.5 41 29 24 39 24 39Z" />
+        <path d="M7 14h23v20H7zM30 21h6l5 6v7H30z" />
+        <path d="M13 38a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM35 38a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />
       </svg>
     )
   }
 
-  if (type === 'ai') {
+  if (type === 'completed') {
     return (
       <svg viewBox="0 0 48 48" aria-hidden="true">
-        <path d="M24 7c1.7 8.2 6.1 12.6 14.3 14.3C30.1 23 25.7 27.4 24 35.6 22.3 27.4 17.9 23 9.7 21.3 17.9 19.6 22.3 15.2 24 7Z" />
+        <circle cx="24" cy="24" r="17" />
+        <path d="m15 24 6 6 12-13" />
       </svg>
     )
   }
 
   return (
     <svg viewBox="0 0 48 48" aria-hidden="true">
-      <path d="M9 13h30v22H9z" />
-      <path d="M15 13v22M33 13v22" strokeDasharray="2 4" />
+      <circle cx="24" cy="24" r="17" />
+      <path d="m18 18 12 12M30 18 18 30" />
     </svg>
   )
 }
@@ -85,10 +86,12 @@ const OrderHistory = () => {
   const [orders, setOrders] = useState([])
   const [firebaseUser, setFirebaseUser] = useState(null)
   const [userData, setUserData] = useState(null)
-  const [wishlistCount, setWishlistCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
+  const [loadAttempt, setLoadAttempt] = useState(0)
   const [activeFilter, setActiveFilter] = useState('all')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [periodMonths, setPeriodMonths] = useState('all')
   const [sortOrder, setSortOrder] = useState('latest')
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -101,7 +104,6 @@ const OrderHistory = () => {
       if (!user) {
         if (isActive) {
           setUserData(null)
-          setWishlistCount(0)
           setOrders([])
           setLoadError('로그인 후 주문 내역을 확인할 수 있습니다.')
           setIsLoading(false)
@@ -113,12 +115,8 @@ const OrderHistory = () => {
       setLoadError('')
 
       try {
-        const [memberData, wishlist] = await Promise.all([
-          getCurrentUserData(user.uid),
-          getCollection(`users/${user.uid}/wishlist`),
-        ])
+        const memberData = await getCurrentUserData(user.uid)
         if (isActive) setUserData(memberData)
-        if (isActive) setWishlistCount(wishlist.length)
       } catch (error) {
         console.error('회원정보 조회 실패:', error)
         if (isActive) setUserData(null)
@@ -183,11 +181,23 @@ const OrderHistory = () => {
       isActive = false
       unsubscribe()
     }
-  }, [])
+  }, [loadAttempt])
 
   const filteredOrders = orders.filter((order) => {
-    if (activeFilter === 'all') return true
-    return order.filterGroup === activeFilter
+    const matchesStatus = activeFilter === 'all' || order.filterGroup === activeFilter
+    const normalizedSearchTerm = searchTerm.trim().toLocaleLowerCase('ko-KR')
+    const matchesSearch = !normalizedSearchTerm || [
+      order.id,
+      ...order.items.map((item) => item.name),
+    ].some((value) => String(value).toLocaleLowerCase('ko-KR').includes(normalizedSearchTerm))
+
+    if (!matchesStatus || !matchesSearch) return false
+    if (periodMonths === 'all') return true
+
+    const periodStart = new Date()
+    periodStart.setHours(0, 0, 0, 0)
+    periodStart.setMonth(periodStart.getMonth() - Number(periodMonths))
+    return order.createdAtMs >= periodStart.getTime()
   })
 
   const sortedOrders = [...filteredOrders].sort((a, b) => {
@@ -210,18 +220,39 @@ const OrderHistory = () => {
     setCurrentPage(1)
   }
 
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value)
+    setCurrentPage(1)
+  }
+
+  const handlePeriodChange = (event) => {
+    setPeriodMonths(event.target.value)
+    setCurrentPage(1)
+  }
+
+  const handleResetFilters = () => {
+    setActiveFilter('all')
+    setSearchTerm('')
+    setPeriodMonths('all')
+    setSortOrder('latest')
+    setCurrentPage(1)
+  }
+
   const getProductTitle = (items) => {
     if (items.length <= 1) return items[0]?.name || ''
     return `${items[0].name} 외 ${items.length - 1}개`
   }
 
-  const displaySummaryStats = summaryStats.map((stat) =>
-    stat.type === 'order'
-      ? { ...stat, value: orders.length }
-      : stat.type === 'wish'
-        ? { ...stat, value: wishlistCount }
-        : stat,
+  const getOrderNumber = (orderId) => (
+    orderId.length > 18 ? `${orderId.slice(0, 15)}…` : orderId
   )
+
+  const displaySummaryStats = summaryStats.map((stat) => ({
+    ...stat,
+    count: stat.value === 'all'
+      ? orders.length
+      : orders.filter((order) => order.filterGroup === stat.value).length,
+  }))
 
   const memberName =
     userData?.nickname ||
@@ -281,8 +312,8 @@ const OrderHistory = () => {
               </div>
               <p className={styles.statLabel}>{stat.label}</p>
               <p className={styles.statValue}>
-                <strong>{stat.value}</strong>
-                <span>{stat.unit}</span>
+                <strong>{stat.count}</strong>
+                <span>건</span>
               </p>
               <p className={styles.statCaption}>{stat.caption}</p>
             </div>
@@ -290,7 +321,7 @@ const OrderHistory = () => {
         </div>
 
         <div className={styles.mascotPlaceholder} aria-hidden="true">
-          <img className={styles.mascotImage} src={makdongPose} alt="" />
+          <img className={styles.mascotImage} src={orderHistoryMakdong} alt="" />
         </div>
       </section>
 
@@ -310,28 +341,70 @@ const OrderHistory = () => {
           ))}
         </div>
 
-        <label className={styles.sortBox}>
-          <span className={styles.srOnly}>주문 정렬</span>
-          <select value={sortOrder} onChange={handleSortChange}>
-            <option value="latest">최신순</option>
-            <option value="oldest">오래된순</option>
-          </select>
-          <span className={styles.sortArrow} aria-hidden="true" />
-        </label>
+        <div className={styles.orderTools}>
+          <label className={styles.searchBox}>
+            <span className={styles.srOnly}>주문번호 또는 상품명 검색</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m16 16 5 5" />
+            </svg>
+            <input
+              type="search"
+              value={searchTerm}
+              placeholder="주문번호·상품명 검색"
+              onChange={handleSearchChange}
+            />
+          </label>
+
+          <label className={`${styles.selectBox} ${styles.periodBox}`}>
+            <span className={styles.srOnly}>주문 조회 기간</span>
+            <select value={periodMonths} onChange={handlePeriodChange}>
+              <option value="all">전체 기간</option>
+              <option value="3">최근 3개월</option>
+              <option value="6">최근 6개월</option>
+              <option value="12">최근 1년</option>
+            </select>
+            <span className={styles.sortArrow} aria-hidden="true" />
+          </label>
+
+          <label className={`${styles.selectBox} ${styles.sortBox}`}>
+            <span className={styles.srOnly}>주문 정렬</span>
+            <select value={sortOrder} onChange={handleSortChange}>
+              <option value="latest">최신순</option>
+              <option value="oldest">오래된순</option>
+            </select>
+            <span className={styles.sortArrow} aria-hidden="true" />
+          </label>
+        </div>
       </div>
 
       {isLoading ? (
-        <p role="status">주문 내역을 불러오는 중입니다.</p>
+        <div className={styles.feedbackState} role="status">
+          <span className={styles.loadingSpinner} aria-hidden="true" />
+          <strong>주문 내역을 불러오고 있습니다.</strong>
+          <p>잠시만 기다려 주세요.</p>
+        </div>
       ) : loadError ? (
-        <p role="alert">{loadError}</p>
+        <div className={styles.feedbackState} role="alert">
+          <strong>{loadError}</strong>
+          {firebaseUser && (
+            <button type="button" onClick={() => setLoadAttempt((attempt) => attempt + 1)}>
+              다시 불러오기
+            </button>
+          )}
+        </div>
       ) : visibleOrders.length > 0 ? (
         <div className={styles.orderList}>
           {visibleOrders.map((order) => (
             <article key={order.id} className={styles.orderItem}>
               <div className={styles.orderMeta}>
-                <span>주문번호 {order.id}</span>
-                <span className={styles.metaDivider} aria-hidden="true">|</span>
-                <span>{order.createdAt.replaceAll('-', '.')} 주문</span>
+                <div className={styles.metaPrimary}>
+                  <span>{order.createdAt.replaceAll('-', '.')} 주문</span>
+                  <span className={styles.metaDivider} aria-hidden="true">|</span>
+                  <span className={styles.orderNumber} title={`주문번호 ${order.id}`}>
+                    주문번호 {getOrderNumber(order.id)}
+                  </span>
+                </div>
                 <span className={`${styles.statusBadge} ${styles[order.statusTone]}`}>
                   {order.statusLabel}
                 </span>
@@ -339,7 +412,7 @@ const OrderHistory = () => {
 
               <div className={styles.orderBody}>
                 <div className={styles.productImage}>
-                  {order.items[0].imageUrl ? (
+                  {order.items[0]?.imageUrl ? (
                     <img src={order.items[0].imageUrl} alt={order.items[0].name} />
                   ) : (
                     <span>IMG</span>
@@ -347,8 +420,13 @@ const OrderHistory = () => {
                 </div>
 
                 <div className={styles.productInfo}>
-                  <strong className={styles.productName}>{getProductTitle(order.items)}</strong>
-                  <p className={styles.productPrice}>{order.totalPrice.toLocaleString('ko-KR')}원</p>
+                  <strong className={styles.productName} title={getProductTitle(order.items)}>
+                    {getProductTitle(order.items) || '상품 정보를 확인할 수 없습니다.'}
+                  </strong>
+                  <p className={styles.productPrice}>
+                    <span>결제 금액</span>
+                    {order.totalPrice.toLocaleString('ko-KR')}원
+                  </p>
                 </div>
 
                 <Link className={styles.detailButton} to={order.id}>
@@ -367,9 +445,19 @@ const OrderHistory = () => {
               <path d="M24 34h16M24 41h11" />
             </svg>
           </div>
-          <h3>주문 내역이 없습니다.</h3>
-          <p>자작의 다양한 상품을 만나보세요.</p>
-          <Link className={styles.emptyButton} to="/shop">상품 보러가기</Link>
+          <h3>{orders.length > 0 ? '조건에 맞는 주문이 없습니다.' : '주문 내역이 없습니다.'}</h3>
+          <p>
+            {orders.length > 0
+              ? '검색어나 조회 조건을 변경해 보세요.'
+              : '자작의 다양한 상품을 만나보세요.'}
+          </p>
+          {orders.length > 0 ? (
+            <button className={styles.emptyButton} type="button" onClick={handleResetFilters}>
+              조회 조건 초기화
+            </button>
+          ) : (
+            <Link className={styles.emptyButton} to="/shop">상품 보러가기</Link>
+          )}
         </section>
       )}
 

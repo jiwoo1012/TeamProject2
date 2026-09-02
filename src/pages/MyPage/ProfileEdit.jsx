@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { updatePassword, updateProfile } from 'firebase/auth'
 import { subscribeToAuthState, getCurrentUserData } from '../../firebase/auth'
 import { addDocument, deleteDocument, getCollection, updateDocument } from '../../firebase/firestore'
-import makdongPose from '../../assets/characters/M007_Poses03.png'
+import orderHistoryMakdong from '../../assets/images/mypage/orderHistory-makdong-wave.png'
 import profileAvatarMakdongDefault from '../../assets/images/mypage/profileAvatar-makdong-default.png'
 import profileAvatarMakdongCheers from '../../assets/images/mypage/profileAvatar-makdong-cheers.png'
 import profileAvatarMakdongJeon from '../../assets/images/mypage/profileAvatar-makdong-jeon.png'
@@ -228,20 +228,27 @@ const ProfileEdit = () => {
     setViewMode('addressForm')
   }
 
+  const handleEditCancel = () => {
+    setSaveError('')
+    setPasswordError('')
+    setAddressError('')
+    setEditingAddressId(null)
+    setViewMode('summary')
+  }
+
   const handleAddressComplete = async (event) => {
     event.preventDefault()
     if (!firebaseUser) return
 
     const formData = new FormData(event.currentTarget)
+    const isDefault = formData.get('isDefault') === 'on'
     const address = {
       label: String(formData.get('label') || '').trim(),
       recipient: String(formData.get('recipient') || '').trim(),
       phone: String(formData.get('phone') || '').trim(),
       address: String(formData.get('address') || '').trim(),
       detailAddress: String(formData.get('detailAddress') || '').trim(),
-      isDefault: editingAddressId
-        ? Boolean(addresses.find((item) => item.id === editingAddressId)?.isDefault)
-        : addresses.length === 0,
+      isDefault,
     }
 
     if (!address.label || !address.recipient || !address.phone || !address.address) {
@@ -249,25 +256,51 @@ const ProfileEdit = () => {
       return
     }
 
+    setIsSaving(true)
+
     try {
       if (editingAddressId) {
         await updateDocument(`users/${firebaseUser.uid}/addresses`, editingAddressId, address)
+        if (isDefault) {
+          await Promise.all(
+            addresses
+              .filter((item) => item.id !== editingAddressId && item.isDefault)
+              .map((item) => updateDocument(`users/${firebaseUser.uid}/addresses`, item.id, { isDefault: false })),
+          )
+        }
         setAddresses((current) => current.map((item) => (
-          item.id === editingAddressId ? { ...item, ...address } : item
+          item.id === editingAddressId
+            ? { ...item, ...address }
+            : isDefault
+              ? { ...item, isDefault: false }
+              : item
         )))
       } else {
         const id = await addDocument(`users/${firebaseUser.uid}/addresses`, address)
-        setAddresses((current) => [...current, { id, ...address }])
+        if (isDefault) {
+          await Promise.all(
+            addresses
+              .filter((item) => item.isDefault)
+              .map((item) => updateDocument(`users/${firebaseUser.uid}/addresses`, item.id, { isDefault: false })),
+          )
+        }
+        setAddresses((current) => [
+          ...current.map((item) => (isDefault ? { ...item, isDefault: false } : item)),
+          { id, ...address },
+        ])
       }
       setViewMode('summary')
     } catch (error) {
       console.error('배송지 저장 실패:', error)
       setAddressError('배송지를 저장하지 못했습니다. 잠시 후 다시 시도해주세요.')
+    } finally {
+      setIsSaving(false)
     }
   }
 
   const handleAddressDelete = async (addressId) => {
     if (!firebaseUser) return
+    if (!window.confirm('이 배송지를 삭제하시겠습니까?')) return
 
     try {
       await deleteDocument(`users/${firebaseUser.uid}/addresses`, addressId)
@@ -337,9 +370,12 @@ const ProfileEdit = () => {
             })}
           </div>
           {saveError && <p role="alert">{saveError}</p>}
-          <button type="submit" className={styles.completeButton} disabled={isSaving}>
-            {isSaving ? '저장 중...' : '수정 완료'}
-          </button>
+          <div className={styles.formActions}>
+            <button type="button" className={styles.cancelButton} onClick={handleEditCancel}>취소</button>
+            <button type="submit" className={styles.completeButton} disabled={isSaving}>
+              {isSaving ? '저장 중...' : '수정 완료'}
+            </button>
+          </div>
         </form>
       )
     }
@@ -368,9 +404,12 @@ const ProfileEdit = () => {
             </label>
           </div>
           {passwordError && <p role="alert">{passwordError}</p>}
-          <button type="submit" className={styles.completeButton} disabled={isSaving}>
-            {isSaving ? '변경 중...' : '수정 완료'}
-          </button>
+          <div className={styles.formActions}>
+            <button type="button" className={styles.cancelButton} onClick={handleEditCancel}>취소</button>
+            <button type="submit" className={styles.completeButton} disabled={isSaving}>
+              {isSaving ? '변경 중...' : '변경 완료'}
+            </button>
+          </div>
         </form>
       )
     }
@@ -383,7 +422,12 @@ const ProfileEdit = () => {
           {profileDetails.map(({ label, value }) => (
             <div key={label} className={styles.detailRow}>
               <dt>{label}</dt>
-              <dd className={value === '등록되지 않음' ? styles.unregisteredValue : ''}>{value}</dd>
+              <dd
+                className={value === '등록되지 않음' ? styles.unregisteredValue : ''}
+                title={value}
+              >
+                {value}
+              </dd>
             </div>
           ))}
         </dl>
@@ -415,10 +459,24 @@ const ProfileEdit = () => {
             <label className={styles.formRow}><span>받으실 분</span><input name="recipient" aria-label="받으실 분" defaultValue={editingAddress?.recipient || ''} placeholder="성함을 입력해주세요" /></label>
             <label className={styles.formRow}><span>주소</span><input name="address" aria-label="주소" defaultValue={editingAddress?.address || ''} placeholder="주소를 입력해주세요" /></label>
             <label className={styles.formRow}><span>상세 주소</span><input name="detailAddress" aria-label="상세 주소" defaultValue={editingAddress?.detailAddress || ''} placeholder="상세 주소를 입력해주세요" /></label>
-            <label className={styles.formRow}><span>휴대폰</span><input name="phone" aria-label="휴대폰" defaultValue={editingAddress?.phone || ''} placeholder="휴대폰 번호를 입력해주세요" /></label>
+            <label className={styles.formRow}><span>휴대폰</span><input name="phone" aria-label="휴대폰" inputMode="tel" defaultValue={editingAddress?.phone || ''} placeholder="휴대폰 번호를 입력해주세요" /></label>
           </div>
+          <label className={styles.defaultCheck}>
+            <input
+              type="checkbox"
+              name="isDefault"
+              defaultChecked={editingAddress ? Boolean(editingAddress.isDefault) : addresses.length === 0}
+            />
+            <span className={styles.checkMark} aria-hidden="true">✓</span>
+            기본 배송지로 지정
+          </label>
           {addressError && <p role="alert">{addressError}</p>}
-          <button type="submit" className={styles.completeButton}>저장</button>
+          <div className={styles.formActions}>
+            <button type="button" className={styles.cancelButton} onClick={handleEditCancel}>취소</button>
+            <button type="submit" className={styles.completeButton} disabled={isSaving}>
+              {isSaving ? '저장 중...' : '배송지 저장'}
+            </button>
+          </div>
         </form>
       )
     }
@@ -426,12 +484,18 @@ const ProfileEdit = () => {
     return (
       <article className={`${styles.infoCard} ${styles.deliveryCard}`}>
         <h2>배송지 관리</h2>
+        <p className={styles.infoDescription}>주문에 사용할 배송지를 확인하고 관리할 수 있습니다.</p>
         <div className={styles.addressList}>
           {addresses.map((address) => (
-            <section key={address.label} className={styles.addressItem}>
+            <section key={address.id} className={styles.addressItem}>
               <div className={styles.addressCopy}>
-                <div className={styles.addressHeading}>{address.isDefault && <span className={styles.defaultBadge}>기본 배송지</span>}<strong>{address.recipient}</strong></div>
-                <p>{address.phone}</p><p>{address.address} {address.detailAddress}</p>
+                <div className={styles.addressHeading}>
+                  {address.isDefault && <span className={styles.defaultBadge}>기본 배송지</span>}
+                  <strong>{address.label}</strong>
+                </div>
+                <p><span>받는 분</span>{address.recipient}</p>
+                <p><span>연락처</span>{address.phone}</p>
+                <p title={`${address.address} ${address.detailAddress}`}><span>주소</span>{address.address} {address.detailAddress}</p>
               </div>
               <div className={styles.addressActions}>
                 <button type="button" className={address.isDefault ? styles.smallOutlineButton : styles.smallPrimaryButton} onClick={() => openAddressForm(address)}>수정</button>
@@ -503,7 +567,7 @@ const ProfileEdit = () => {
           </button>
         </div>
         <div className={styles.mascotPlaceholder} aria-hidden="true">
-          <img className={styles.mascotImage} src={makdongPose} alt="" />
+          <img className={styles.mascotImage} src={orderHistoryMakdong} alt="" />
         </div>
       </div>
       <div className={styles.infoGrid}>{renderProfileCard()}{renderDeliveryCard()}</div>

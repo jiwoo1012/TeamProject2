@@ -13,7 +13,8 @@
 
 .pageHeader {
   display: flex;
-  width: calc(100% - #{v.$side-margin-desktop * 8});
+  width: calc(100% - #{v.$side-margin-desktop * 2});
+  max-width: v.$container-max;
   align-items: flex-start;
   justify-content: space-between;
   margin: 0 auto v.$space-3;
@@ -21,7 +22,8 @@
 
 .ornamentArea {
   position: relative;
-  width: calc(100% - #{v.$side-margin-desktop * 8});
+  width: calc(100% - #{v.$side-margin-desktop * 2});
+  max-width: v.$container-max;
   margin: 0 auto v.$space-8;
 }
 
@@ -53,7 +55,8 @@
 
 .layout {
   display: grid;
-  width: calc(100% - #{v.$side-margin-desktop * 8});
+  width: calc(100% - #{v.$side-margin-desktop * 2});
+  max-width: v.$container-max;
   margin-inline: auto;
   grid-template-columns:
     calc(v.$grid-gutter * 9) minmax(0, 1fr);
@@ -73,6 +76,15 @@
   display: flex;
   min-height: 62vh;
   flex-direction: column;
+}
+
+@media (min-width: v.$breakpoint-desktop-min) {
+  .sidebar {
+    width: calc(v.$grid-gutter * 11);
+    transform: translateX(
+      min(0px, calc((#{v.$container-max + (v.$side-margin-desktop * 6)} - 100vw) / 2))
+    );
+  }
 }
 
 .navigation {
@@ -98,7 +110,7 @@
   background: v.$color-white;
   color: v.$color-text-muted;
 
-  font-size: v.$font-size-xs;
+  font-size: v.$font-size-sm;
   text-decoration: none;
 
   box-shadow: v.$shadow-sm;
@@ -135,23 +147,8 @@
 }
 
 @media (hover: hover) and (pointer: fine) and (min-width: 768px) {
-  .navigation:has(.menuItem:not(.active):hover) .active {
-    width: 86%;
-    transform: none;
-  }
-
-  .menuItem:hover {
-    width: 100%;
-    border-color: v.$color-primary;
-    background: v.$color-primary;
-    color: v.$color-white;
-    box-shadow: 0 4px 10px rgb(0 0 0 / 14%);
-    transform: scale(1.04);
-    transform-origin: left center;
-  }
-
-  .menuItem:hover .menuDot {
-    background: v.$color-white;
+  .menuItem:not(.active):hover {
+    color: v.$color-primary;
   }
 }
 
@@ -234,17 +231,7 @@
   .title { font-size: v.$font-size-3xl; }
   .description { font-size: v.$font-size-md; }
 
-  .pageHeader {
-    width: calc(100% - #{v.$side-margin-tablet * 6});
-  }
-
-  .ornamentArea {
-    width: calc(100% - v.$side-margin-tablet * 6);
-    margin: 0 auto v.$space-8;
-  }
-
   .layout {
-    width: calc(100% - #{v.$side-margin-tablet * 6});
     grid-template-columns: calc(v.$grid-gutter * 9) minmax(0, 1fr);
     gap: v.$space-8;
   }
@@ -268,16 +255,16 @@
 
 @media (max-width: v.$breakpoint-tablet-max) {
   .pageHeader {
-    width: calc(100% - #{v.$side-margin-tablet * 3});
+    width: calc(100% - #{v.$side-margin-tablet * 2});
   }
 
   .ornamentArea {
-    width: calc(100% - v.$side-margin-tablet * 3);
+    width: calc(100% - v.$side-margin-tablet * 2);
     margin: 0 auto v.$space-8;
   }
 
   .layout {
-    width: calc(100% - #{v.$side-margin-tablet * 3});
+    width: calc(100% - #{v.$side-margin-tablet * 2});
     grid-template-columns:
       calc(v.$grid-gutter * 8) minmax(0, 1fr);
 
@@ -357,7 +344,7 @@
     border-left: 1px solid v.$color-border;
     border-radius: v.$radius-md;
 
-    font-size: v.$font-size-xs;
+    font-size: v.$font-size-sm;
   }
 
   .menuDot {
