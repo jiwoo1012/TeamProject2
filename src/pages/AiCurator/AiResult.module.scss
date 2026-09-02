@@ -170,7 +170,7 @@
   line-height: 1.55;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  line-clamp: 2; // 표준 속성 추가 (경고 제거용)
+  line-clamp: 2;
 }
 
 .cardKeywords {
@@ -195,6 +195,32 @@
   left: 0;
   color: #c9a76c;
   content: '·';
+}
+
+// ========================================
+// 와이어프레임 기준 카드별 위치 조정
+//
+// 안주 카드 → 접시 위, 왼쪽으로 치우침
+// 전통주 카드 → 병 위, 오른쪽으로 치우침
+// 술잔 카드 → 잔 "위"가 아니라 잔 옆(오른쪽,
+// 같은 높이)에 배치
+// ========================================
+
+.foodCard {
+  margin-left: -150px;
+}
+
+.liquorCard {
+  margin-left: 20px;
+}
+
+.glassCard {
+  top: 0;
+  bottom: auto;
+  left: 100%;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 16px;
 }
 
 .compositionFooter {
