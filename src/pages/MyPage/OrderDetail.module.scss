@@ -22,7 +22,7 @@
 .orderSummary {
   position: relative;
   width: 100%;
-  height: 269px;
+  min-height: 252px;
   padding: v.$space-8 v.$space-12 v.$space-6;
   border: 1px solid v.$color-border;
   border-radius: v.$radius-lg;
@@ -33,12 +33,13 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding-right: 116px;
+  padding-right: 112px;
 }
 
 .orderMetaList {
   display: grid;
-  width: 650px;
+  width: min(100%, 650px);
+  flex: 1 1 auto;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: v.$space-10;
   margin: 0;
@@ -57,11 +58,13 @@
 }
 
 .orderMetaItem dd {
+  overflow: hidden;
   margin: 0;
   color: v.$color-text-primary;
   font-size: v.$font-size-lg;
   font-weight: v.$font-weight-bold;
   line-height: v.$line-height-tight;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -83,10 +86,19 @@
   cursor: pointer;
 }
 
+.cancelGuide {
+  max-width: 210px;
+  margin: v.$space-2 0 0 auto;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+  line-height: v.$line-height-base;
+  text-align: right;
+}
+
 .stepper {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   margin-top: v.$space-10;
   padding: 0 v.$space-6;
 }
@@ -94,15 +106,10 @@
 .stepper::before {
   position: absolute;
   top: 12px;
-  right: calc(10% + v.$space-6);
-  left: calc(10% + v.$space-6);
+  right: calc(12.5% + v.$space-6);
+  left: calc(12.5% + v.$space-6);
   height: 2px;
-  background: linear-gradient(
-    to right,
-    v.$color-primary 0 25%,
-    color-mix(in srgb, v.$color-taupe 72%, v.$color-white) 25% 50%,
-    v.$color-border 50% 100%
-  );
+  background: v.$color-border;
   content: '';
 }
 
@@ -141,6 +148,17 @@
   color: v.$color-white;
 }
 
+.complete + .step::before {
+  position: absolute;
+  top: 12px;
+  right: 50%;
+  left: -50%;
+  z-index: -1;
+  height: 2px;
+  background: v.$color-primary;
+  content: '';
+}
+
 .stepLabel {
   margin-top: v.$space-3;
   color: v.$color-text-primary;
@@ -161,14 +179,55 @@
 
 .mascotPlaceholder {
   position: absolute;
-  top: -67px;
+  top: auto;
   right: v.$space-8;
+  bottom: -2px;
   display: grid;
-  width: 112px;
-  height: 112px;
+  width: 94px;
+  height: 142px;
   place-items: center;
   line-height: 1;
   pointer-events: none;
+}
+
+.cancelledNotice {
+  display: flex;
+  align-items: center;
+  gap: v.$space-3;
+  margin: v.$space-10 v.$space-6 0;
+  padding: v.$space-4 v.$space-5;
+  border: 1px solid color-mix(in srgb, v.$color-error 35%, v.$color-border);
+  border-radius: v.$radius-lg;
+  background: color-mix(in srgb, v.$color-error 5%, v.$color-white);
+}
+
+.cancelledNotice > span {
+  display: grid;
+  width: v.$space-6;
+  height: v.$space-6;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: v.$radius-pill;
+  background: v.$color-error;
+  color: v.$color-white;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-bold;
+}
+
+.cancelledNotice strong,
+.cancelledNotice p {
+  margin: 0;
+}
+
+.cancelledNotice strong {
+  color: v.$color-text-primary;
+  font-size: v.$font-size-md;
+}
+
+.cancelledNotice p {
+  margin-top: v.$space-1;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
 }
 
 .mascotImage {
@@ -194,12 +253,12 @@
 
 .productSection {
   width: 100%;
-  margin-top: v.$space-5;
+  margin-top: v.$space-6;
 }
 
 .sectionTitle {
   margin: 0;
-  padding-bottom: v.$space-3;
+  padding-bottom: v.$space-4;
   border-bottom: 1px solid v.$color-taupe;
   font-size: v.$font-size-lg;
   font-weight: v.$font-weight-bold;
@@ -210,11 +269,11 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) 150px 170px;
   align-items: center;
-  min-height: v.$space-10;
-  padding: 0 v.$space-5;
+  min-height: 56px;
+  padding: v.$space-3 v.$space-5 v.$space-2;
   color: v.$color-text-secondary;
   font-size: v.$font-size-sm;
-  font-weight: v.$font-weight-medium;
+  font-weight: v.$font-weight-semibold;
 }
 
 .productColumns span:nth-child(2),
@@ -231,7 +290,7 @@
 
 .productRow {
   display: grid;
-  min-height: 96px;
+  min-height: 104px;
   grid-template-columns: minmax(0, 1fr) 150px 170px;
   align-items: center;
   padding: v.$space-3 v.$space-5;
@@ -331,7 +390,30 @@
 
 .quantity,
 .linePrice {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  border-radius: v.$radius-pill;
   text-align: center;
+}
+
+.quantity {
+  min-width: 44px;
+  padding: 0 v.$space-3;
+  background: color-mix(in srgb, v.$color-primary 10%, v.$color-white);
+  color: v.$color-primary;
+  font-weight: v.$font-weight-bold;
+}
+
+.linePrice {
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  color: v.$color-primary;
+  font-size: v.$font-size-md;
+  font-weight: v.$font-weight-bold;
 }
 
 /* =========================
@@ -341,8 +423,8 @@
 .infoGrid {
   display: grid;
   width: 100%;
-  grid-template-columns: 342px 320px 380px;
-  gap: 18px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: v.$space-5;
   margin-top: v.$space-4;
 }
 
@@ -355,15 +437,15 @@
 }
 
 .addressCard {
-  width: 342px;
+  width: auto;
 }
 
 .paymentCard {
-  width: 320px;
+  width: auto;
 }
 
 .shippingCard {
-  width: 380px;
+  width: auto;
 }
 
 .infoCard h3 {
@@ -426,6 +508,12 @@
   margin: 0;
   font-size: v.$font-size-sm;
   line-height: v.$line-height-base;
+}
+
+.infoPending {
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-regular;
 }
 
 .infoList dt {
@@ -510,10 +598,78 @@
   cursor: pointer;
 }
 
+.feedbackState {
+  display: flex;
+  min-height: 340px;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: v.$space-2;
+  padding: v.$space-10 v.$space-5;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+  background: v.$color-white;
+  text-align: center;
+}
+
+.feedbackState strong {
+  color: v.$color-text-primary;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-semibold;
+}
+
+.feedbackState p {
+  margin: 0;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+}
+
+.feedbackActions {
+  display: flex;
+  gap: v.$space-3;
+  margin-top: v.$space-4;
+}
+
+.feedbackActions .backButton,
+.retryButton {
+  width: 144px;
+  height: 44px;
+  margin: 0;
+  border-radius: v.$radius-lg;
+  font-size: v.$font-size-sm;
+}
+
+.retryButton {
+  border: 1px solid v.$color-primary;
+  background: v.$color-white;
+  color: v.$color-primary;
+  font-weight: v.$font-weight-semibold;
+}
+
+.loadingSpinner {
+  width: v.$space-8;
+  height: v.$space-8;
+  margin-bottom: v.$space-2;
+  border: 3px solid color-mix(in srgb, v.$color-primary 22%, v.$color-white);
+  border-top-color: v.$color-primary;
+  border-radius: v.$radius-pill;
+  animation: order-detail-spin 0.8s linear infinite;
+}
+
+@keyframes order-detail-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .cancelButton:hover,
 .addressButton:hover {
   border-color: v.$color-primary;
   color: v.$color-primary;
+}
+
+.retryButton:hover {
+  background: color-mix(in srgb, v.$color-primary 8%, v.$color-white);
 }
 
 .cancelButton:disabled {
@@ -529,7 +685,8 @@
 
 .cancelButton:focus-visible,
 .addressButton:focus-visible,
-.backButton:focus-visible {
+.backButton:focus-visible,
+.retryButton:focus-visible {
   outline: 2px solid v.$color-primary-light;
   outline-offset: 2px;
 }
@@ -559,18 +716,26 @@
     gap: v.$space-5;
   }
 
+  .cancelGuide {
+    max-width: 180px;
+  }
+
   .mascotPlaceholder {
     display: none;
   }
 
   .infoGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .addressCard,
-  .paymentCard,
+  .paymentCard {
+    width: 100%;
+  }
+
   .shippingCard {
     width: 100%;
+    grid-column: 1 / -1;
   }
 }
 
@@ -590,6 +755,7 @@
 
   .orderTopRow {
     display: block;
+    padding-right: 0;
   }
 
   .orderMetaList {
@@ -601,11 +767,23 @@
     margin-top: v.$space-4;
   }
 
+  .cancelGuide {
+    max-width: none;
+    margin: v.$space-4 0 0;
+    text-align: left;
+  }
+
   .stepper {
     grid-template-columns: 1fr;
     gap: v.$space-4;
     margin-top: v.$space-8;
     padding: 0;
+  }
+
+  .cancelledNotice {
+    align-items: flex-start;
+    margin: v.$space-8 0 0;
+    padding: v.$space-4;
   }
 
   .stepper::before {
@@ -633,13 +811,22 @@
   }
 
   .productRow {
-    grid-template-columns: 1fr;
-    gap: v.$space-3;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: v.$space-3 v.$space-4;
   }
 
-  .quantity,
-  .linePrice {
+  .productInfo {
+    grid-column: 1 / -1;
+  }
+
+  .quantity {
+    justify-self: start;
     text-align: left;
+  }
+
+  .linePrice {
+    justify-self: end;
+    text-align: right;
   }
 
   .quantity::before {
@@ -654,8 +841,35 @@
     content: '상품 금액';
   }
 
+  .linePrice::before {
+    display: inline-block;
+  }
+
+  .infoGrid {
+    grid-template-columns: 1fr;
+    gap: v.$space-4;
+  }
+
   .infoCard {
     min-height: auto;
+  }
+
+  .shippingCard {
+    grid-column: auto;
+  }
+
+  .feedbackState {
+    min-height: 300px;
+  }
+
+  .feedbackActions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .feedbackActions .backButton,
+  .retryButton {
+    width: 100%;
   }
 
   .backButton {

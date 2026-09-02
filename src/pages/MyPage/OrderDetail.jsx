@@ -5,7 +5,7 @@ import { getOrderStatusLabel, ORDER_STATUS } from '../../constants/orderStatus'
 import { subscribeToAuthState } from '../../firebase/auth'
 import { db } from '../../firebase/firebase'
 import { updateDocument } from '../../firebase/firestore'
-import orderDetailMakdongDelivering from '../../assets/images/mypage/orderDetail-makdong-delivering.png'
+import orderHistoryMakdong from '../../assets/images/mypage/orderHistory-makdong-wave.png'
 import styles from './OrderDetail.module.scss'
 
 const orderStepItems = [
@@ -16,6 +16,10 @@ const orderStepItems = [
 ]
 
 const formatPrice = (price) => `${price.toLocaleString('ko-KR')}원`
+
+const formatOrderNumber = (orderId) => (
+  orderId.length > 20 ? `${orderId.slice(0, 17)}…` : orderId
+)
 
 const formatDateTime = (value) => {
   const date = value?.toDate?.() || new Date(value || 0)
@@ -61,6 +65,7 @@ const OrderDetail = () => {
   const [loadError, setLoadError] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
   const [actionError, setActionError] = useState('')
+  const [loadAttempt, setLoadAttempt] = useState(0)
 
   useEffect(() => {
     let isActive = true
@@ -148,7 +153,7 @@ const OrderDetail = () => {
       isActive = false
       unsubscribe()
     }
-  }, [orderId])
+  }, [orderId, loadAttempt])
 
   const canCancel = order?.status === ORDER_STATUS.PAID || order?.status === ORDER_STATUS.PREPARING
 
@@ -178,27 +183,37 @@ const OrderDetail = () => {
     return (
       <section className={styles.page} aria-labelledby="order-detail-title">
         <h2 id="order-detail-title" className={styles.title}>주문 상세</h2>
-        <p role={loadError ? 'alert' : 'status'}>
-          {loadError || '주문 정보를 불러오는 중입니다.'}
-        </p>
-        <button type="button" className={styles.backButton} onClick={() => navigate('/mypage/orders')}>
-          목록으로
-        </button>
+        <div className={styles.feedbackState} role={loadError ? 'alert' : 'status'}>
+          {!loadError && <span className={styles.loadingSpinner} aria-hidden="true" />}
+          <strong>{loadError || '주문 정보를 불러오고 있습니다.'}</strong>
+          <p>{loadError ? '잠시 후 다시 시도해 주세요.' : '잠시만 기다려 주세요.'}</p>
+          <div className={styles.feedbackActions}>
+            {loadError && (
+              <button type="button" className={styles.retryButton} onClick={() => setLoadAttempt((attempt) => attempt + 1)}>
+                다시 불러오기
+              </button>
+            )}
+            <button type="button" className={styles.backButton} onClick={() => navigate('/mypage/orders')}>
+              주문 목록으로
+            </button>
+          </div>
+        </div>
       </section>
     )
   }
 
   const currentStepIndex = orderStepItems.findIndex((step) => step.key === order.status)
+  const isCancelled = order.status === ORDER_STATUS.CANCELLED
   const orderSteps = orderStepItems.map((step, index) => ({
     ...step,
-    state: order.status === ORDER_STATUS.CANCELLED
+    state: isCancelled
       ? 'pending'
       : index < currentStepIndex
         ? 'complete'
         : index === currentStepIndex
           ? 'current'
           : 'pending',
-    date: index <= currentStepIndex ? order.orderedAt : '',
+    date: step.key === ORDER_STATUS.PAID && !isCancelled ? order.orderedAt : '',
   }))
 
   return (
@@ -210,7 +225,7 @@ const OrderDetail = () => {
           <dl className={styles.orderMetaList}>
             <div className={styles.orderMetaItem}>
               <dt>주문 번호</dt>
-              <dd>{order.id}</dd>
+              <dd title={order.id}>{formatOrderNumber(order.id)}</dd>
             </div>
             <div className={styles.orderMetaItem}>
               <dt>주문 일</dt>
@@ -222,28 +237,48 @@ const OrderDetail = () => {
             </div>
           </dl>
 
-          <button
-            type="button"
-            className={styles.cancelButton}
-            disabled={!canCancel || isUpdating}
-            onClick={handleCancelOrder}
-          >
-            {isUpdating ? '취소 처리 중...' : canCancel ? '주문 취소' : '취소 불가'}
-          </button>
+          {canCancel ? (
+            <button
+              type="button"
+              className={styles.cancelButton}
+              disabled={isUpdating}
+              onClick={handleCancelOrder}
+            >
+              {isUpdating ? '취소 처리 중...' : '주문 취소'}
+            </button>
+          ) : (
+            <p className={styles.cancelGuide}>
+              {isCancelled ? '취소된 주문입니다.' : '배송 준비 이후에는 주문 취소가 어렵습니다.'}
+            </p>
+          )}
         </div>
 
-        <div className={styles.stepper} aria-label="주문 진행 상태">
-          {orderSteps.map((step) => (
-            <div key={step.key} className={`${styles.step} ${styles[step.state]}`}>
-              <span className={styles.stepDot} aria-hidden="true">✓</span>
-              <strong className={styles.stepLabel}>{step.label}</strong>
-              {step.date && <span className={styles.stepDate}>{step.date}</span>}
+        {isCancelled ? (
+          <div className={styles.cancelledNotice} role="status">
+            <span aria-hidden="true">!</span>
+            <div>
+              <strong>주문이 취소되었습니다.</strong>
+              <p>결제 취소 및 환불 처리 상태는 결제 수단에서 확인할 수 있습니다.</p>
             </div>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <div className={styles.stepper} aria-label="주문 진행 상태">
+            {orderSteps.map((step) => (
+              <div
+                key={step.key}
+                className={`${styles.step} ${styles[step.state]}`}
+                aria-current={step.state === 'current' ? 'step' : undefined}
+              >
+                <span className={styles.stepDot} aria-hidden="true">✓</span>
+                <strong className={styles.stepLabel}>{step.label}</strong>
+                {step.date && <span className={styles.stepDate}>{step.date}</span>}
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className={styles.mascotPlaceholder} aria-hidden="true">
-          <img className={styles.mascotImage} src={orderDetailMakdongDelivering} alt="" />
+          <img className={styles.mascotImage} src={orderHistoryMakdong} alt="" />
         </div>
       </section>
 
@@ -316,8 +351,14 @@ const OrderDetail = () => {
               <dd><span className={styles.shippingBadge}>{order.shipping.status}</span></dd>
             </div>
             <div><dt>택배사</dt><dd>{order.shipping.carrier}</dd></div>
-            <div><dt>송장 번호</dt><dd>{order.shipping.trackingNumber}</dd></div>
-            <div><dt>예상 배송일</dt><dd>{order.shipping.expectedDate}</dd></div>
+            <div>
+              <dt>송장 번호</dt>
+              <dd>{order.shipping.trackingNumber === '-' ? <span className={styles.infoPending}>배송 시작 후 확인 가능</span> : order.shipping.trackingNumber}</dd>
+            </div>
+            <div>
+              <dt>예상 배송일</dt>
+              <dd>{order.shipping.expectedDate === '-' ? <span className={styles.infoPending}>배송 시작 후 확인 가능</span> : order.shipping.expectedDate}</dd>
+            </div>
           </dl>
         </section>
       </div>

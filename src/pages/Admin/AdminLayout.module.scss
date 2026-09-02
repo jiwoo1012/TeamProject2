@@ -1,13 +1,10 @@
 @use '../../styles/variables' as v;
 
+$admin-container-max: 1440px;
+
 .page {
-  display: flex;
-  height: calc(100svh - 72px);
   min-height: 55vh;
   padding: v.$space-16 0 v.$space-16;
-  box-sizing: border-box;
-  flex-direction: column;
-  overflow: hidden;
   background: v.$color-bg;
   color: v.$color-text-primary;
 }
@@ -17,7 +14,8 @@
 ========================= */
 
 .pageHeader {
-  width: calc(100% - #{v.$side-margin-desktop * 8});
+  width: calc(100% - #{v.$side-margin-desktop * 2});
+  max-width: $admin-container-max;
   margin: 0 auto v.$space-3;
 }
 
@@ -37,7 +35,8 @@
 
 .ornamentArea {
   position: relative;
-  width: calc(100% - #{v.$side-margin-desktop * 8});
+  width: calc(100% - #{v.$side-margin-desktop * 2});
+  max-width: $admin-container-max;
   margin: 0 auto v.$space-8;
 }
 
@@ -55,7 +54,8 @@
 
 .layout {
   display: grid;
-  width: calc(100% - #{v.$side-margin-desktop * 8});
+  width: calc(100% - #{v.$side-margin-desktop * 2});
+  max-width: $admin-container-max;
   min-height: 0;
   flex: 1;
   margin-inline: auto;
@@ -82,6 +82,15 @@
   margin-top: calc(v.$space-16 * -1);
 }
 
+@media (min-width: v.$breakpoint-desktop-min) {
+  .sidebar {
+    width: calc(v.$grid-gutter * 10);
+    transform: translateX(
+      min(0px, calc((#{$admin-container-max + (v.$side-margin-desktop * 6)} - 100vw) / 2))
+    );
+  }
+}
+
 .navigation {
   display: flex;
   flex-direction: column;
@@ -104,7 +113,7 @@
   background: v.$color-white;
   color: v.$color-text-muted;
 
-  font-size: v.$font-size-xs;
+  font-size: v.$font-size-sm;
   text-decoration: none;
 
   box-shadow: v.$shadow-sm;
@@ -128,23 +137,8 @@
 }
 
 @media (hover: hover) and (pointer: fine) and (min-width: 768px) {
-  .navigation:has(.menuItem:not(.active):hover) .active {
-    width: 86%;
-    transform: none;
-  }
-
-  .menuItem:hover {
-    width: 100%;
-    border-color: v.$color-primary;
-    background: v.$color-primary;
-    color: v.$color-white;
-    box-shadow: 0 4px 10px rgb(0 0 0 / 14%);
-    transform: scale(1.04);
-    transform-origin: left center;
-  }
-
-  .menuItem:hover .menuDot {
-    background: v.$color-white;
+  .menuItem:not(.active):hover {
+    color: v.$color-primary;
   }
 }
 
@@ -208,15 +202,11 @@
 ========================= */
 
 .content {
-  height: 100%;
   width: 100%;
   max-width: none;
   min-width: 0;
   box-sizing: border-box;
   padding: 0 v.$space-2 0 v.$space-4;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-gutter: stable;
 }
 
 /* =========================
@@ -226,12 +216,6 @@
 @media (max-width: 1500px) {
   .title { font-size: v.$font-size-3xl; }
   .description { font-size: v.$font-size-md; }
-
-  .pageHeader,
-  .ornamentArea,
-  .layout {
-    width: calc(100% - #{v.$side-margin-tablet * 6});
-  }
 
   .layout {
     grid-template-columns: calc(v.$grid-gutter * 9) minmax(0, 1fr);
@@ -249,16 +233,16 @@
   .sidebar { margin-top: 0; }
 
   .pageHeader {
-    width: calc(100% - #{v.$side-margin-tablet * 3});
+    width: calc(100% - #{v.$side-margin-tablet * 2});
   }
 
   .ornamentArea {
-    width: calc(100% - #{v.$side-margin-tablet * 3});
+    width: calc(100% - #{v.$side-margin-tablet * 2});
     margin: 0 auto v.$space-6;
   }
 
   .layout {
-    width: calc(100% - #{v.$side-margin-tablet * 3});
+    width: calc(100% - #{v.$side-margin-tablet * 2});
     grid-template-columns:
       calc(v.$grid-gutter * 8)
       minmax(0, 1fr);

@@ -15,518 +15,292 @@
   white-space: nowrap;
 }
 
-.introCard,
-.summaryGrid,
-.filterBar,
-.managementGrid {
-  width: 100%;
-}
-
-.introCard h3,
-.introCard p,
-.sectionHeading h3,
-.detailPanel h3,
-.modalHeader h3,
-.modalHeader p,
-.activitySummary h4,
-.memberControls h4,
-.memberControls p {
-  margin: 0;
-}
-
-.controlStack {
-  display: grid;
-  gap: v.$space-3;
-  min-width: 0;
-}
-
-.introActions button,
-.statusBadge,
-.roleBadge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: v.$radius-pill;
-  white-space: nowrap;
-}
-
-.introCard {
+.pageToolbar {
   display: flex;
-  min-height: 126px;
   align-items: center;
   justify-content: space-between;
-  gap: v.$space-8;
-  margin-bottom: v.$space-4;
-  padding: v.$space-6 v.$space-8;
-  border: 1px solid color-mix(in srgb, v.$color-primary 34%, v.$color-border);
-  border-radius: v.$radius-xl;
-  background: color-mix(in srgb, v.$color-primary 40%, v.$color-bg);
+  gap: v.$space-6;
+  margin-bottom: v.$space-8;
 }
 
-.introCard h3 {
-  font-size: v.$font-size-2xl;
+.pageToolbar h2 {
+  margin: 0;
+  font-size: v.$font-size-3xl;
   font-weight: v.$font-weight-bold;
 }
 
-.introCard p {
-  margin-top: v.$space-2;
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-md;
-}
-
-.introActions {
-  display: flex;
-  gap: v.$space-3;
-}
-
-.introActions button {
+.pageToolbar button,
+.resetButton,
+.viewButton,
+.detailHeader button,
+.detailFooter button,
+.suspensionConfirm button,
+.pagination button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 34px;
-  padding: 0 v.$space-4;
   border: 1px solid v.$color-border;
   background: v.$color-white;
   color: v.$color-text-secondary;
   font: inherit;
-  font-size: v.$font-size-xs;
   cursor: pointer;
+  transition: border-color v.$transition-fast, background-color v.$transition-fast, color v.$transition-fast;
 }
 
-.introActions button:first-child {
+.pageToolbar button {
+  min-height: 40px;
+  gap: v.$space-2;
+  padding: 0 v.$space-4;
+  border-radius: v.$radius-pill;
+  font-size: v.$font-size-sm;
+}
+
+.pageToolbar button svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.pageToolbar button:disabled,
+.detailFooter button:disabled,
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.pageToolbar button:hover,
+.resetButton:hover,
+.viewButton:hover {
   border-color: v.$color-primary;
-  background: v.$color-primary;
-  color: v.$color-white;
+  color: v.$color-primary;
 }
 
-.introActions button:hover,
-.introActions button:focus-visible {
-  border-color: v.$color-primary;
-}
-
-.introActions button:focus-visible {
-  outline: 2px solid v.$color-primary-light;
-  outline-offset: 2px;
-}
-
-.overviewGrid,
 .summaryGrid {
   display: grid;
-}
-
-.overviewGrid {
-  align-items: stretch;
-  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.85fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: v.$space-4;
-  margin-bottom: v.$space-4;
-}
-
-.summaryGrid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-content: stretch;
-  height: 200px;
-  gap: 0;
-  overflow: hidden;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-xl;
-  background: color-mix(in srgb, v.$color-surface 74%, v.$color-white);
+  margin-bottom: v.$space-8;
 }
 
 .summaryCard {
   position: relative;
-  display: flex;
-  min-height: 0;
-  align-items: center;
-  justify-content: space-between;
-  gap: v.$space-3;
-  padding: v.$space-2 v.$space-5;
+  display: grid;
+  min-width: 0;
+  min-height: 148px;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: v.$space-5;
+  padding: v.$space-5 v.$space-6;
   overflow: hidden;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+  background: v.$color-white;
   color: v.$color-text-primary;
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: transform v.$transition-fast, border-color v.$transition-fast, background-color v.$transition-fast;
-}
-
-.summaryCardCopy {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
+  transition: border-color v.$transition-fast, background-color v.$transition-fast, box-shadow v.$transition-fast;
 }
 
 .summaryCard:hover,
-.summaryCard:focus-visible {
-  transform: translateY(-2px);
-  border-color: v.$color-primary;
+.summaryCard:focus-visible,
+.summaryCardActive {
+  border-color: color-mix(in srgb, v.$color-primary 58%, v.$color-border);
+  background: color-mix(in srgb, v.$color-primary 4%, v.$color-white);
+  box-shadow: 0 8px 18px color-mix(in srgb, v.$color-primary 8%, transparent);
 }
 
 .summaryCard:focus-visible {
   outline: 2px solid v.$color-primary-light;
-  outline-offset: 3px;
-}
-
-.summaryCard:nth-child(odd) {
-  border-right: 1px solid color-mix(in srgb, v.$color-border 78%, transparent);
-}
-
-.summaryCard:nth-child(1),
-.summaryCard:nth-child(2) {
-  border-bottom: 1px solid color-mix(in srgb, v.$color-border 78%, transparent);
-}
-
-.summaryCard:nth-child(1) {
-  background: color-mix(in srgb, v.$color-primary 3%, v.$color-white);
-}
-
-.summaryCard:nth-child(2) {
-  background: color-mix(in srgb, v.$color-primary-light 4%, v.$color-white);
-}
-
-.summaryCard:nth-child(3) {
-  background: color-mix(in srgb, v.$color-error 3%, v.$color-white);
-}
-
-.summaryCard:nth-child(4) {
-  background: color-mix(in srgb, v.$color-warning 4%, v.$color-white);
-}
-
-.summaryCard:hover,
-.summaryCard:focus-visible {
-  background: color-mix(in srgb, v.$color-white 42%, transparent);
-}
-
-.summaryCard:hover,
-.summaryCard:focus-visible {
-  transform: none;
+  outline-offset: 2px;
 }
 
 .summaryCard::before {
   position: absolute;
-  top: v.$space-3;
-  right: v.$space-4;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: v.$color-primary;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: color-mix(in srgb, v.$color-primary 72%, v.$color-primary-light);
   content: '';
 }
 
-.summaryCard:nth-child(2)::before {
+.summaryCardtoday::before {
   background: v.$color-primary-light;
 }
 
-.summaryCard:nth-child(3)::before {
+.summaryCardsuspended::before {
   background: v.$color-error;
 }
 
-.summaryCard:nth-child(4)::before {
+.summaryCardadmin::before {
   background: v.$color-warning;
 }
 
-.summaryCard span {
-  color: v.$color-text-muted;
-  font-size: v.$font-size-sm;
-  line-height: 1.2;
-}
-
-.summaryCard strong {
-  flex: 0 0 auto;
-  font-size: v.$font-size-xl;
-  line-height: 1;
-  text-align: right;
-}
-
-.summaryCard em {
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-xs;
-  font-style: normal;
-  line-height: 1.2;
-}
-
-.summaryCard small {
-  margin-top: 2px;
-  color: v.$color-primary;
-  font-size: v.$font-size-xs;
-  font-weight: v.$font-weight-semibold;
-  line-height: 1.2;
-}
-
-.statusChartCard {
-  display: grid;
-  min-width: 0;
-  height: 200px;
-  box-sizing: border-box;
-  align-content: center;
-  justify-items: center;
-  gap: v.$space-2;
-  padding: v.$space-3 v.$space-5;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-xl;
-  background: color-mix(in srgb, v.$color-primary 5%, v.$color-white);
-}
-
-.statusChartHeading {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  gap: v.$space-3;
-  padding: 0 v.$space-1 v.$space-2;
-  border-bottom: 1px solid color-mix(in srgb, v.$color-primary 18%, v.$color-border);
-}
-
-.statusChartHeading h3,
-.statusChartHeading p {
-  margin: 0;
-}
-
-.statusChartHeading h3 {
-  font-size: v.$font-size-lg;
-}
-
-.statusChartHeading p {
-  margin-top: v.$space-1;
-  color: v.$color-text-muted;
-  font-size: v.$font-size-xs;
-}
-
-.statusChartHeading > span {
-  flex: 0 0 auto;
-  align-self: center;
-  padding: v.$space-1 v.$space-2;
-  border-radius: v.$radius-pill;
-  background: color-mix(in srgb, v.$color-primary 10%, v.$color-white);
-  color: v.$color-primary;
-  font-size: v.$font-size-sm;
-  font-weight: v.$font-weight-bold;
-}
-
-.statusDonut {
-  position: relative;
-  display: grid;
-  width: 148px;
-  height: 148px;
+.summaryIcon {
+  display: inline-grid;
+  width: 44px;
+  height: 44px;
   place-items: center;
   border-radius: 50%;
-  background: conic-gradient(v.$color-primary 0 var(--active-rate), v.$color-error var(--active-rate) 100%);
-  color: v.$color-text-primary;
-  text-align: center;
+  background: color-mix(in srgb, v.$color-success 10%, v.$color-white);
+  color: v.$color-success;
 }
 
-.statusDonut::before {
-  position: absolute;
-  width: 104px;
-  height: 104px;
-  border-radius: 50%;
-  background: v.$color-white;
-  content: '';
+.summaryIcon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
 }
 
-.statusDonut strong,
-.statusDonut span {
-  position: relative;
-  z-index: 1;
+.summaryCardtoday .summaryIcon {
+  background: color-mix(in srgb, v.$color-primary-light 10%, v.$color-white);
+  color: v.$color-primary-light;
 }
 
-.statusDonut strong {
-  margin-top: v.$space-4;
-  font-size: v.$font-size-2xl;
-  line-height: 1;
-}
-
-.statusDonut span {
-  margin-top: calc(v.$space-3 * -1);
-  color: v.$color-text-muted;
-  font-size: v.$font-size-xs;
-}
-
-.statusLegend {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: v.$space-2 v.$space-4;
-}
-
-.statusLegend button {
-  display: inline-flex;
-  align-items: center;
-  gap: v.$space-1;
-  border: 0;
-  background: transparent;
-  color: v.$color-text-secondary;
-  font: inherit;
-  font-size: v.$font-size-xs;
-  cursor: pointer;
-}
-
-.statusLegend button:hover,
-.statusLegend button:focus-visible {
-  color: v.$color-primary;
-}
-
-.statusLegend button:focus-visible {
-  outline: 2px solid v.$color-primary-light;
-  outline-offset: 3px;
-}
-
-.statusLegend button strong {
-  color: v.$color-text-primary;
-}
-
-.activeLegendDot,
-.suspendedLegendDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-.activeLegendDot {
-  background: v.$color-primary;
-}
-
-.suspendedLegendDot {
-  background: v.$color-error;
-}
-
-.statusBarList {
-  display: grid;
-  width: 100%;
-  gap: v.$space-1;
-}
-
-.statusBarItem {
-  display: inline-flex;
-  align-items: center;
-  gap: v.$space-2;
-  width: 100%;
-  padding: v.$space-1;
-  border-radius: v.$radius-sm;
-  border: 0;
-  background: transparent;
-  color: v.$color-text-secondary;
-  font: inherit;
-  font-size: v.$font-size-xs;
-  text-align: left;
-  cursor: pointer;
-}
-
-.statusBarItem:hover,
-.statusBarItem:focus-visible {
-  background: color-mix(in srgb, v.$color-primary 7%, transparent);
-  color: v.$color-primary;
-}
-
-.statusBarItem:focus-visible {
-  outline: 2px solid v.$color-primary-light;
-  outline-offset: 3px;
-}
-
-.statusBarLabel {
-  width: 76px;
-  flex: 0 0 76px;
-}
-
-.statusBarTrack {
-  display: block;
-  height: 7px;
-  flex: 1;
-  overflow: hidden;
-  border-radius: v.$radius-pill;
-  background: color-mix(in srgb, v.$color-border 70%, v.$color-white);
-}
-
-.statusBarValue {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-}
-
-.statusBarprimary {
-  background: v.$color-primary;
-}
-
-.statusBarlight {
-  background: v.$color-primary-light;
-}
-
-.statusBarwarning {
-  background: v.$color-warning;
-}
-
-.statusBarerror {
-  background: v.$color-error;
-}
-
-.statusBarItem strong {
-  display: inline-flex;
-  width: 72px;
-  align-items: baseline;
-  justify-content: flex-end;
-  gap: 4px;
-  color: v.$color-text-primary;
-  font-size: v.$font-size-xs;
-  text-align: right;
-}
-
-.statusBarItem strong small {
-  color: v.$color-text-muted;
-  font-size: 10px;
-  font-weight: v.$font-weight-regular;
-}
-
-.summaryCardsuspended small {
+.summaryCardsuspended .summaryIcon {
+  background: color-mix(in srgb, v.$color-error 9%, v.$color-white);
   color: v.$color-error;
 }
 
-.summaryCardadmin small {
+.summaryCardadmin .summaryIcon {
+  background: color-mix(in srgb, v.$color-warning 9%, v.$color-white);
   color: v.$color-warning;
+}
+
+.summaryCard h3,
+.summaryCard p,
+.summaryCard small {
+  margin: 0;
+}
+
+.summaryCard h3 {
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-medium;
+}
+
+.summaryCard p {
+  display: flex;
+  align-items: baseline;
+  gap: v.$space-2;
+  margin-top: v.$space-2;
+}
+
+.summaryCard p strong {
+  color: v.$color-primary;
+  letter-spacing: -0.03em;
+  font-size: v.$font-size-3xl;
+  line-height: 1;
+}
+
+.summaryCard p span {
+  font-size: v.$font-size-md;
+}
+
+.summaryCardtoday p strong {
+  color: v.$color-primary-light;
+}
+
+.summaryCardsuspended p strong {
+  color: v.$color-error;
+}
+
+.summaryCardadmin p strong {
+  color: v.$color-warning;
+}
+
+.summaryCard small {
+  display: block;
+  margin-top: v.$space-5;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
+
+.summaryAction {
+  display: inline-flex;
+  align-items: center;
+  gap: v.$space-2;
+  margin-top: v.$space-3;
+  color: v.$color-primary;
+  font-size: 11px;
+  font-weight: v.$font-weight-semibold;
+}
+
+.summaryAction > span {
+  transition: transform v.$transition-fast;
+}
+
+.summaryCard:hover .summaryAction > span {
+  transform: translateX(3px);
+}
+
+.managementGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  align-items: start;
+  gap: v.$space-4;
+}
+
+.memberSection,
+.analyticsCard,
+.detailPanel {
+  min-width: 0;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
+}
+
+.memberSection {
+  overflow: hidden;
 }
 
 .filterBar {
   display: grid;
-  grid-template-columns: minmax(220px, 1.5fr) repeat(3, minmax(108px, 0.62fr)) auto;
-  gap: v.$space-3;
-  margin-bottom: v.$space-6;
+  grid-template-columns: minmax(220px, 1.5fr) repeat(3, minmax(104px, 0.62fr)) auto;
+  gap: v.$space-2;
   padding: v.$space-4;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-xl;
-  background: color-mix(in srgb, v.$color-primary 4%, v.$color-white);
+  border-bottom: 1px solid v.$color-border;
+  background: color-mix(in srgb, v.$color-surface 20%, v.$color-white);
 }
 
 .searchField,
 .selectField {
   display: flex;
   min-width: 0;
-  height: 42px;
+  height: 44px;
+  box-sizing: border-box;
   align-items: center;
   border: 1px solid v.$color-border;
-  border-radius: v.$radius-pill;
-  background: v.$color-bg;
+  border-radius: v.$radius-md;
+  background: v.$color-white;
 }
 
 .searchField {
   gap: v.$space-2;
-  padding: 0 v.$space-4;
+  padding: 0 v.$space-3;
 }
 
 .searchField svg {
-  width: v.$space-5;
-  height: v.$space-5;
+  width: v.$space-6;
+  height: v.$space-6;
   flex: 0 0 auto;
   fill: none;
-  stroke: v.$color-text-muted;
+  stroke: v.$color-text-primary;
   stroke-linecap: round;
-  stroke-width: 1.5;
+  stroke-width: 2;
 }
 
 .searchField input,
 .selectField select,
-.controlFields select {
+.accountFields select {
   width: 100%;
   border: 0;
   outline: 0;
@@ -535,120 +309,58 @@
   font: inherit;
 }
 
-.searchField input {
+.searchField input,
+.selectField select {
   min-width: 0;
   font-size: v.$font-size-sm;
-}
-
-.searchField input::placeholder {
-  color: v.$color-text-muted;
 }
 
 .selectField {
   padding: 0 v.$space-3;
 }
 
-.selectField select {
-  cursor: pointer;
-  font-size: v.$font-size-sm;
-}
-
-.resetButton,
-.viewButton,
-.detailButton,
-.emptyState button,
-.modalFooter button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid v.$color-border;
-  background: v.$color-white;
-  color: v.$color-text-secondary;
-  font: inherit;
-  line-height: 1;
-  text-align: center;
-  cursor: pointer;
-}
-
 .resetButton {
-  min-width: 72px;
-  border-radius: v.$radius-pill;
+  min-width: 64px;
+  border-radius: v.$radius-md;
   font-size: v.$font-size-xs;
 }
 
 .searchField:focus-within,
-.selectField:focus-within {
-  border-color: v.$color-primary;
-  box-shadow: 0 0 0 2px color-mix(in srgb, v.$color-primary 14%, transparent);
-}
-
-.managementGrid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
-  align-items: start;
-  gap: v.$space-4;
-}
-
-.memberSection,
-.detailPanel {
-  min-width: 0;
+.selectField:focus-within,
+.pageToolbar button:focus-visible,
+.resetButton:focus-visible,
+.viewButton:focus-visible,
+.detailHeader button:focus-visible,
+.detailFooter button:focus-visible,
+.pagination button:focus-visible {
+  outline: 2px solid v.$color-primary-light;
+  outline-offset: 2px;
 }
 
 .sectionHeading {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: v.$space-3;
-  padding: 0 v.$space-2 0 v.$space-1;
+  align-items: baseline;
+  gap: v.$space-5;
+  padding: v.$space-5 v.$space-8 v.$space-6;
 }
 
-.sectionTitle {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: v.$space-3;
+.sectionHeading h3 {
+  margin: 0;
+  font-size: v.$font-size-2xl;
 }
 
-.sectionTitle > span {
-  width: 48px;
-  height: 1px;
-  background: v.$color-border;
-}
-
-.sectionHeading h3,
-.detailPanel h3 {
-  font-size: v.$font-size-xl;
-  font-weight: v.$font-weight-bold;
-}
-
-.memberCount {
-  display: inline-flex;
-  min-width: 48px;
-  min-height: 28px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-pill;
-  background: color-mix(in srgb, v.$color-surface 26%, v.$color-white);
-  color: v.$color-primary;
+.sectionHeading span {
+  color: v.$color-text-secondary;
   font-size: v.$font-size-sm;
-  font-weight: v.$font-weight-semibold;
-}
-
-.tableWrap,
-.detailPanel {
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-xl;
-  background: v.$color-white;
 }
 
 .tableWrap {
-  overflow: auto;
+  overflow-x: auto;
 }
 
 .memberTable {
   width: 100%;
-  min-width: 680px;
+  min-width: 720px;
   border-collapse: collapse;
 }
 
@@ -657,28 +369,9 @@
   padding: v.$space-4 v.$space-3;
   border-bottom: 1px solid color-mix(in srgb, v.$color-border 72%, transparent);
   font-size: v.$font-size-sm;
-  text-align: left;
-  vertical-align: middle;
-}
-
-.controlFields input {
-  width: 150px;
-  height: 38px;
-  box-sizing: border-box;
-  padding: 0 v.$space-3;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-pill;
-  background: v.$color-white;
-  color: v.$color-text-primary;
-  font: inherit;
-  font-size: v.$font-size-sm;
   text-align: center;
-}
-
-.controlFields input:focus-visible,
-.controlFields select:focus-visible {
-  outline: 2px solid v.$color-primary-light;
-  outline-offset: 2px;
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
 .memberTable th {
@@ -687,117 +380,25 @@
   font-weight: v.$font-weight-medium;
 }
 
-.memberTable tbody tr:nth-child(even) {
-  background: color-mix(in srgb, v.$color-bg 62%, v.$color-white);
-}
-
 .memberTable tbody tr {
-  cursor: pointer;
-  transition: background-color v.$transition-fast, box-shadow v.$transition-fast;
+  transition: background-color v.$transition-fast;
 }
 
 .memberTable tbody tr:hover,
 .memberTable .selectedRow {
-  background: color-mix(in srgb, v.$color-primary 7%, v.$color-white);
-}
-
-.memberTable tbody tr:hover {
+  background: color-mix(in srgb, v.$color-primary 9%, v.$color-white);
   box-shadow: inset 3px 0 0 v.$color-primary;
-}
-
-.memberTable tbody tr:last-child td {
-  border-bottom: 0;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: v.$space-2;
-  padding: v.$space-4;
-  border-top: 1px solid v.$color-border;
-}
-
-.pagination button {
-  display: inline-flex;
-  width: 32px;
-  height: 32px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid v.$color-border;
-  border-radius: 50%;
-  background: v.$color-white;
-  color: v.$color-text-secondary;
-  font: inherit;
-  font-size: v.$font-size-sm;
-  cursor: pointer;
-}
-
-.pagination button:disabled {
-  border-color: v.$color-border;
-  background: v.$color-bg;
-  color: v.$color-text-muted;
-  cursor: not-allowed;
-}
-
-.paginationStatus {
-  display: inline-flex;
-  min-width: 58px;
-  height: 32px;
-  align-items: center;
-  justify-content: center;
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-sm;
-  font-weight: v.$font-weight-semibold;
-}
-
-.pagination .activePage {
-  border-color: v.$color-primary;
-  background: v.$color-primary;
-  color: v.$color-white;
-}
-
-.memberIdentity,
-.previewProfile,
-.modalProfile {
-  display: flex;
-  align-items: center;
-}
-
-.memberIdentity {
-  gap: v.$space-3;
-  white-space: nowrap;
-}
-
-.avatar {
-  display: inline-flex;
-  width: v.$space-8;
-  height: v.$space-8;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: color-mix(in srgb, v.$color-surface 76%, v.$color-white);
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-xs;
-  font-weight: v.$font-weight-bold;
-}
-
-.largeAvatar {
-  width: 64px;
-  height: 64px;
-  font-size: v.$font-size-xl;
 }
 
 .statusBadge,
 .roleBadge {
+  display: inline-flex;
   min-height: 24px;
-  padding: 0 v.$space-3;
-  font-size: v.$font-size-xs;
-}
-
-.statusBadge.active {
-  background: color-mix(in srgb, v.$color-success 16%, v.$color-white);
-  color: v.$color-success;
+  align-items: center;
+  justify-content: center;
+  padding: 0 v.$space-2;
+  border-radius: v.$radius-pill;
+  font-size: 11px;
 }
 
 .statusBadge::before {
@@ -809,477 +410,377 @@
   content: '';
 }
 
-.statusBadge.suspended::before {
-  width: 7px;
-  height: 2px;
-  border-radius: v.$radius-pill;
+.statusBadge.active {
+  background: color-mix(in srgb, v.$color-success 15%, v.$color-white);
+  color: v.$color-success;
 }
 
 .statusBadge.suspended {
-  background: color-mix(in srgb, v.$color-error 14%, v.$color-white);
+  background: color-mix(in srgb, v.$color-error 13%, v.$color-white);
   color: v.$color-error;
 }
 
 .roleBadge {
-  background: color-mix(in srgb, v.$color-surface 62%, v.$color-white);
-  color: v.$color-text-secondary;
+  background: color-mix(in srgb, v.$color-taupe 15%, v.$color-white);
+  color: v.$color-taupe;
 }
 
 .viewButton {
-  min-width: 52px;
-  min-height: 28px;
+  min-height: 26px;
+  padding: 0 v.$space-2;
   border-radius: v.$radius-pill;
+  font-size: 11px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: v.$space-3;
+  padding: v.$space-4;
+}
+
+.pagination button {
+  min-width: 28px;
+  height: 28px;
+  border-color: v.$color-border;
+  border-radius: 50%;
   font-size: v.$font-size-xs;
 }
 
-.viewButton:hover,
-.detailButton:hover,
-.emptyState button:hover,
-.resetButton:hover {
+.pagination .activePage {
   border-color: v.$color-primary;
-  color: v.$color-primary;
+  background: v.$color-primary;
+  color: v.$color-white;
+  font-weight: v.$font-weight-bold;
 }
 
-.detailPanel {
-  padding: v.$space-5;
+.emptyState {
+  display: grid;
+  min-height: 300px;
+  place-items: center;
+  padding: v.$space-8;
+  color: v.$color-text-muted;
+  text-align: center;
 }
 
-.detailPanel > h3 {
-  margin-bottom: v.$space-5;
+.analyticsColumn {
+  display: grid;
+  gap: v.$space-8;
 }
 
-.previewProfile,
-.modalProfile {
+.analyticsCard {
+  padding: v.$space-6;
+  background: v.$color-white;
+}
+
+.analyticsCard h3 {
+  margin: 0 0 v.$space-6;
+  font-size: v.$font-size-xl;
+}
+
+.statusOverview {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  align-items: center;
   gap: v.$space-4;
 }
 
-.previewProfile > div,
-.modalProfile > div {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: v.$space-1;
+.statusDonut {
+  position: relative;
+  display: grid;
+  width: 112px;
+  height: 112px;
+  place-content: center;
+  border-radius: 50%;
+  background: conic-gradient(
+    v.$color-primary 0 var(--active-rate),
+    color-mix(in srgb, v.$color-error 82%, v.$color-white) var(--active-rate) 100%
+  );
+  text-align: center;
 }
 
-.previewProfile strong,
-.modalProfile strong {
+.statusDonut::before {
+  position: absolute;
+  inset: 17px;
+  border-radius: 50%;
+  background: v.$color-white;
+  content: '';
+}
+
+.statusDonut span,
+.statusDonut strong {
+  position: relative;
+  z-index: 1;
+}
+
+.statusDonut span {
+  font-size: 11px;
+}
+
+.statusDonut strong {
+  margin-top: v.$space-1;
+  font-size: v.$font-size-sm;
+}
+
+.statusOverview ul {
+  display: grid;
+  gap: v.$space-3;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.statusOverview li {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: v.$space-2;
+  font-size: 11px;
+}
+
+.statusOverview li small {
+  color: v.$color-text-muted;
+}
+
+.activeDot,
+.suspendedDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.activeDot {
+  background: v.$color-primary;
+}
+
+.suspendedDot {
+  background: v.$color-error;
+}
+
+.activityBars {
+  display: grid;
+  gap: v.$space-4;
+}
+
+.activityBars > div {
+  display: grid;
+  grid-template-columns: 90px minmax(50px, 1fr) auto;
+  align-items: center;
+  gap: v.$space-2;
+  font-size: 11px;
+}
+
+.activityBars i {
+  display: block;
+  height: 6px;
+  overflow: hidden;
+  border-radius: v.$radius-pill;
+  background: color-mix(in srgb, v.$color-border 72%, v.$color-white);
+}
+
+.activityBars b {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, v.$color-primary, v.$color-primary-light);
+}
+
+.analyticsCard > p {
+  margin: v.$space-6 0 0;
+  color: v.$color-text-muted;
+  font-size: 11px;
+}
+
+.detailPanel {
+  overflow: hidden;
+}
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: v.$space-5 v.$space-6;
+  border-bottom: 1px solid v.$color-border;
+}
+
+.detailHeader h3 {
+  margin: 0;
+  font-size: v.$font-size-xl;
+}
+
+.detailHeader button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-color: transparent;
   font-size: v.$font-size-lg;
 }
 
-.previewProfile > div > span,
-.modalProfile > div > span {
+.profileSummary {
+  display: flex;
+  align-items: center;
+  gap: v.$space-4;
+  padding: v.$space-6;
+  border-bottom: 1px solid v.$color-border;
+}
+
+.avatar {
+  display: inline-grid;
+  width: 56px;
+  height: 56px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: v.$color-text-muted;
+  color: v.$color-white;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-bold;
+}
+
+.profileSummary > div {
+  display: grid;
+  min-width: 0;
+  gap: v.$space-1;
+}
+
+.profileSummary strong {
+  font-size: v.$font-size-lg;
+}
+
+.profileSummary span,
+.profileSummary small {
   overflow: hidden;
-  color: v.$color-text-muted;
   font-size: v.$font-size-xs;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.badgeRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: v.$space-2;
-  margin-top: v.$space-2;
-}
-
-.previewList,
-.infoCard {
-  margin: 0;
-}
-
-.previewList {
-  display: grid;
-  gap: v.$space-3;
-  margin-top: v.$space-6;
-}
-
-.previewList div,
-.infoCard div {
-  display: grid;
-  grid-template-columns: 82px minmax(0, 1fr);
-  gap: v.$space-3;
-}
-
-.previewList dt,
-.previewList dd,
-.infoCard dt,
-.infoCard dd {
-  margin: 0;
-  font-size: v.$font-size-sm;
-}
-
-.previewList dt,
-.infoCard dt {
-  color: v.$color-text-muted;
-}
-
-.previewList dd,
-.infoCard dd {
-  overflow-wrap: anywhere;
-  font-weight: v.$font-weight-semibold;
-}
-
-.detailButton {
-  width: 100%;
-  min-height: 40px;
-  margin-top: v.$space-6;
-  border-color: v.$color-primary;
-  border-radius: v.$radius-lg;
-  background: v.$color-primary;
-  color: v.$color-white;
-  font-size: v.$font-size-sm;
-  font-weight: v.$font-weight-semibold;
-}
-
-.detailButton:hover {
-  background: color-mix(in srgb, v.$color-primary 90%, v.$color-text-primary);
-  color: v.$color-white;
-}
-
-.emptyState {
-  display: grid;
-  min-height: 280px;
-  place-items: center;
-  align-content: center;
-  gap: v.$space-2;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-xl;
-  background: v.$color-white;
-  text-align: center;
-}
-
-.emptyState p,
-.noSelection {
-  margin: 0;
-  color: v.$color-text-muted;
-  font-size: v.$font-size-sm;
-}
-
-.emptyState button {
-  min-height: 36px;
-  margin-top: v.$space-3;
-  padding: 0 v.$space-4;
-  border-radius: v.$radius-pill;
-  font-size: v.$font-size-xs;
-}
-
-.modalBackdrop {
-  position: fixed;
-  z-index: v.$z-modal;
-  inset: 0;
-  display: grid;
-  overflow-y: auto;
-  place-items: center;
+.detailBlock {
   padding: v.$space-6;
-  background: color-mix(in srgb, v.$color-text-primary 42%, transparent);
+  border-bottom: 1px solid v.$color-border;
 }
 
-.modal {
-  width: min(760px, 100%);
-  max-height: calc(100vh - #{v.$space-12});
-  overflow-y: auto;
-  border: 1px solid color-mix(in srgb, v.$color-primary 24%, v.$color-border);
-  border-radius: v.$radius-lg;
-  background: v.$color-white;
+.detailBlock:nth-of-type(even) {
+  background: color-mix(in srgb, v.$color-surface 20%, v.$color-white);
 }
 
-.modalHeader {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: v.$space-5;
-  padding: v.$space-6 v.$space-8 v.$space-5;
-  border-bottom: 1px solid color-mix(in srgb, v.$color-primary 26%, v.$color-border);
-  background: color-mix(in srgb, v.$color-primary 16%, v.$color-white);
-}
-
-.modalHeader h3 {
-  letter-spacing: -0.02em;
-  font-size: v.$font-size-2xl;
-}
-
-.modalHeader p {
-  margin-top: v.$space-2;
-  color: v.$color-text-secondary;
+.detailBlock h4 {
+  margin: 0 0 v.$space-4;
+  padding-left: v.$space-3;
+  border-left: 2px solid v.$color-primary-light;
   font-size: v.$font-size-md;
 }
 
-.closeButton {
-  display: inline-flex;
-  width: v.$space-8;
-  height: v.$space-8;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: 0;
-  border-radius: v.$radius-md;
-  background: color-mix(in srgb, v.$color-white 76%, v.$color-primary-light);
-  color: v.$color-primary;
-  font-size: v.$font-size-xl;
-  line-height: 1;
-  cursor: pointer;
+.detailBlock dl {
+  display: grid;
+  gap: v.$space-3;
+  margin: 0;
 }
 
-.memberIdRow {
-  display: inline-flex;
-  min-height: 36px;
+.detailBlock dl div {
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr);
+  gap: v.$space-3;
+}
+
+.detailBlock dt,
+.detailBlock dd {
+  margin: 0;
+  font-size: v.$font-size-sm;
+}
+
+.detailBlock dd {
+  overflow-wrap: anywhere;
+}
+
+.accountFields {
+  display: grid;
+  gap: v.$space-3;
+}
+
+.accountFields label {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px;
   align-items: center;
   gap: v.$space-3;
-  margin: v.$space-5 v.$space-8 0;
-  padding: 0 v.$space-4;
-  border: 1px solid color-mix(in srgb, v.$color-primary 24%, v.$color-border);
+  font-size: v.$font-size-sm;
+}
+
+.accountFields select {
+  height: 36px;
+  box-sizing: border-box;
+  padding: 0 v.$space-2;
+  border: 1px solid v.$color-border;
   border-radius: v.$radius-md;
-  background: color-mix(in srgb, v.$color-primary 10%, v.$color-white);
-}
-
-.memberIdRow span {
-  color: v.$color-text-muted;
+  background: v.$color-white;
   font-size: v.$font-size-sm;
 }
 
-.memberIdRow strong {
-  color: v.$color-primary;
-  font-size: v.$font-size-sm;
-  font-weight: v.$font-weight-semibold;
-}
-
-.modalBody {
-  display: grid;
-  gap: v.$space-6;
-  padding: v.$space-6 v.$space-8;
-}
-
-.modalProfile {
-  align-items: center;
-  padding: v.$space-4 v.$space-5;
-  border: 1px solid color-mix(in srgb, v.$color-primary 18%, v.$color-border);
-  border-radius: v.$radius-lg;
-  background: color-mix(in srgb, v.$color-bg 68%, v.$color-white);
-}
-
-.modalProfile strong {
-  font-size: v.$font-size-xl;
-}
-
-.modalProfile > div > span {
-  font-size: v.$font-size-sm;
-}
-
-.infoGrid {
+.activityCards {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: v.$space-4;
+  gap: v.$space-2;
 }
 
-.infoCard {
+.activityCards article {
   display: grid;
-  gap: v.$space-4;
-  padding: v.$space-5;
+  min-height: 64px;
+  align-content: center;
+  gap: v.$space-2;
+  padding: v.$space-3;
   border: 1px solid v.$color-border;
-  border-radius: v.$radius-lg;
+  border-radius: v.$radius-md;
   background: v.$color-white;
 }
 
-.infoCard:first-child {
-  border-top: 3px solid color-mix(in srgb, v.$color-primary 60%, v.$color-border);
-}
-
-.infoCard:last-child {
-  border-top: 3px solid color-mix(in srgb, v.$color-primary-light 70%, v.$color-border);
-}
-
-.infoCard div {
-  grid-template-columns: 76px minmax(0, 1fr);
-}
-
-.modal .infoCard dt,
-.modal .infoCard dd {
-  font-size: v.$font-size-md;
-}
-
-.activitySummary h4,
-.memberControls h4 {
-  font-size: v.$font-size-lg;
-}
-
-.activitySummary > div {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: v.$space-3;
-  margin-top: v.$space-3;
-}
-
-.activitySummary article {
-  display: flex;
-  min-height: 76px;
-  flex-direction: column;
-  justify-content: center;
-  gap: v.$space-2;
-  padding: v.$space-4;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-md;
-  background: color-mix(in srgb, v.$color-bg 55%, v.$color-white);
-}
-
-.activitySummary span {
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-sm;
-  font-weight: v.$font-weight-medium;
-}
-
-.activitySummary strong {
-  letter-spacing: -0.02em;
-  font-size: v.$font-size-xl;
-}
-
-.memberControls {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  align-items: start;
-  gap: v.$space-5;
-  padding: v.$space-5;
-  border: 1px solid color-mix(in srgb, v.$color-primary 24%, v.$color-border);
-  border-radius: v.$radius-lg;
-  background: color-mix(in srgb, v.$color-primary 7%, v.$color-white);
-}
-
-.memberControls > div,
-.controlStack {
-  width: 100%;
-}
-
-.memberControls p {
-  margin-top: v.$space-2;
-  color: v.$color-text-muted;
-  font-size: v.$font-size-sm;
-}
-
-.controlFields {
-  display: flex;
-  flex-wrap: wrap;
-  gap: v.$space-3;
-}
-
-.controlFields label {
-  display: grid;
-  gap: v.$space-1;
-}
-
-.controlFields label > span {
-  color: v.$color-text-muted;
+.activityCards span {
   font-size: v.$font-size-xs;
 }
 
-.controlFields select {
-  min-width: 116px;
-  height: 38px;
-  box-sizing: border-box;
-  padding: 0 v.$space-4;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-md;
-  background: v.$color-white;
-  color: v.$color-text-primary;
-  font-size: v.$font-size-sm;
-  line-height: 38px;
-  text-align: center;
-  text-align-last: center;
-  vertical-align: middle;
-}
-
-.modalFooter {
-  display: flex;
-  justify-content: flex-end;
-  gap: v.$space-3;
-  padding: v.$space-5 v.$space-8 v.$space-6;
-  border-top: 1px solid v.$color-border;
-}
-
-.modalFooter button {
-  min-width: 88px;
-  min-height: 40px;
-  border-radius: v.$radius-md;
-  font-size: v.$font-size-xs;
-  font-weight: v.$font-weight-semibold;
-}
-
-.modalFooter .saveButton {
-  border-color: v.$color-primary;
-  background: v.$color-primary;
-  color: v.$color-white;
-}
-
-.summaryModal {
-  max-width: 520px;
-}
-
-.summaryModalBody {
-  display: grid;
-  gap: v.$space-2;
-  padding: v.$space-8;
-  text-align: center;
-}
-
-.summaryModalBody strong {
-  color: v.$color-primary;
-  font-size: v.$font-size-4xl;
-  line-height: 1;
-}
-
-.summaryModalBody span {
-  color: v.$color-text-secondary;
+.activityCards strong {
   font-size: v.$font-size-md;
-  font-weight: v.$font-weight-semibold;
-}
-
-.summaryModalBody p {
-  margin: v.$space-4 0 0;
-  color: v.$color-text-muted;
-  font-size: v.$font-size-sm;
 }
 
 .suspensionConfirm {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  flex-wrap: wrap;
-  gap: v.$space-2 v.$space-4;
-  margin-top: v.$space-4;
-  padding: v.$space-4;
-  border: 1px solid color-mix(in srgb, v.$color-error 34%, v.$color-border);
-  border-radius: v.$radius-lg;
-  background: color-mix(in srgb, v.$color-error 7%, v.$color-white);
-  color: v.$color-text-primary;
-}
-
-.suspensionConfirm strong {
-  font-size: v.$font-size-sm;
-}
-
-.suspensionConfirm p {
-  margin: 0;
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-xs;
-}
-
-.suspensionConfirm div {
-  display: flex;
   gap: v.$space-2;
-  margin-left: auto;
+  padding: v.$space-3 v.$space-5;
+  background: color-mix(in srgb, v.$color-error 8%, v.$color-white);
+  color: v.$color-error;
+  font-size: 11px;
 }
 
 .suspensionConfirm button {
-  min-width: 68px;
-  min-height: 34px;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-pill;
-  background: v.$color-white;
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-xs;
+  min-height: 28px;
+  border-radius: v.$radius-sm;
+  font-size: 10px;
 }
 
-.suspensionConfirm button:last-child {
+.detailFooter {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: v.$space-2;
+  padding: v.$space-5 v.$space-6;
+  background: color-mix(in srgb, v.$color-surface 24%, v.$color-white);
+}
+
+.detailFooter button {
+  min-height: 40px;
+  border-radius: v.$radius-pill;
+  font-size: v.$font-size-sm;
+}
+
+.detailFooter .suspendButton {
   border-color: v.$color-error;
-  background: v.$color-error;
+  color: v.$color-error;
+}
+
+.detailFooter .saveButton {
+  border-color: v.$color-primary;
+  background: v.$color-primary;
   color: v.$color-white;
 }
 
@@ -1308,24 +809,38 @@
   cursor: pointer;
 }
 
-.resetButton:focus-visible,
-.viewButton:focus-visible,
-.detailButton:focus-visible,
-.emptyState button:focus-visible,
-.closeButton:focus-visible,
-.modalFooter button:focus-visible {
-  outline: 2px solid v.$color-primary-light;
-  outline-offset: 2px;
+@media (max-width: 1500px) {
+  .summaryGrid {
+    gap: v.$space-3;
+  }
+
+  .summaryCard {
+    gap: v.$space-3;
+    padding-inline: v.$space-4;
+  }
+
+  .managementGrid {
+    grid-template-columns: minmax(0, 1fr) 280px;
+  }
+
+  .filterBar {
+    grid-template-columns: minmax(210px, 1fr) repeat(3, minmax(96px, 0.55fr)) auto;
+    padding-inline: v.$space-4;
+  }
 }
 
 @media (max-width: v.$breakpoint-tablet-max) {
-  .overviewGrid {
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .managementGrid {
     grid-template-columns: 1fr;
   }
 
-  .summaryGrid {
-    height: 200px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .analyticsColumn,
+  .detailPanel {
+    order: -1;
   }
 
   .filterBar {
@@ -1335,102 +850,47 @@
   .searchField {
     grid-column: 1 / -1;
   }
-
-  .managementGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .detailPanel {
-    order: -1;
-  }
 }
 
 @media (max-width: v.$breakpoint-mobile-max) {
-  .introCard,
-  .memberControls {
-    align-items: flex-start;
-    flex-direction: column;
+  .pageToolbar {
+    margin-bottom: v.$space-6;
   }
 
-  .introActions {
-    display: none;
-  }
-
-  .introCard {
-    min-height: auto;
-    padding: v.$space-5;
+  .pageToolbar h2 {
+    font-size: v.$font-size-2xl;
   }
 
   .summaryGrid,
-  .filterBar,
-  .infoGrid,
-  .activitySummary > div {
+  .filterBar {
     grid-template-columns: 1fr;
   }
 
-  .summaryGrid,
-  .statusChartCard {
-    height: auto;
+  .summaryCard {
+    min-height: 132px;
   }
 
-  .summaryCard {
-    min-height: 88px;
+  .filterBar {
+    padding: v.$space-4;
   }
 
   .searchField {
     grid-column: auto;
   }
 
-  .filterBar {
-    padding: v.$space-3;
-  }
-
   .resetButton {
-    min-height: 40px;
+    min-height: 42px;
   }
 
-  .detailPanel {
-    padding: v.$space-4;
+  .sectionHeading {
+    padding-inline: v.$space-5;
   }
 
-  .modalBackdrop {
-    align-items: end;
-    padding: 0;
+  .analyticsColumn {
+    gap: v.$space-4;
   }
 
-  .modal {
-    width: 100%;
-    max-height: 92vh;
-    border-radius: v.$radius-xl v.$radius-xl 0 0;
-  }
-
-  .modalHeader,
-  .modalBody,
-  .modalFooter {
-    padding-right: v.$space-5;
-    padding-left: v.$space-5;
-  }
-
-  .memberIdRow {
-    margin-right: v.$space-5;
-    margin-left: v.$space-5;
-  }
-
-  .controlFields {
-    width: 100%;
-    flex-direction: column;
-  }
-
-  .controlFields select {
-    width: 100%;
-  }
-
-  .suspensionConfirm div {
-    width: 100%;
-    margin-left: 0;
-  }
-
-  .suspensionConfirm button {
-    flex: 1;
+  .statusOverview {
+    grid-template-columns: 112px minmax(0, 1fr);
   }
 }
