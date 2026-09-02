@@ -1,5 +1,101 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as mixins;
+
+$quiz-motion-duration: 0.3s;
+$quiz-slide-duration: 0.8s;
+$quiz-copy-delay: 0.35s;
+
+:global(body.jajak-ox-quiz) { overflow: hidden; }
+:global(body.jajak-ox-quiz header), :global(body.jajak-ox-quiz footer), :global(body.jajak-ox-quiz nav[aria-label='모바일 하단 메뉴']) { display: none; }
+
+.page { position: fixed; z-index: $z-modal; inset: 0; overflow: hidden; color: $color-text-primary; background-color: $color-primary-light; background-image: var(--quiz-background); background-repeat: repeat; background-position: top center; background-size: 860px auto; font-family: $font-family-base; }
+.quizShell { display: grid; grid-template-rows: auto minmax(0, 1fr) minmax(250px, 46vh); height: 100dvh; opacity: 1; transition: opacity $quiz-motion-duration ease, transform $quiz-motion-duration ease; }
+.progressHeader { display: flex; align-items: center; justify-content: space-between; min-height: 132px; padding-inline: $side-margin-desktop; font-size: $font-size-xl; }
+.questionPanel { --quiz-image-width: 52vw; --quiz-image-overflow: 10vw; position: relative; min-height: 0; overflow: hidden; background: rgba($color-bg, 0.7); animation: panelReveal $quiz-motion-duration ease both; }
+.visualArea { position: absolute; top: 0; bottom: 0; left: calc(-1 * var(--quiz-image-overflow)); width: var(--quiz-image-width); overflow: hidden; border-radius: $radius-pill; transition: transform $quiz-slide-duration cubic-bezier(.22, 1, .36, 1); will-change: transform; }
+.visualArea img { width: 100%; height: 100%; object-fit: cover; }
+.copyArea { display: flex; justify-content: center; flex-direction: column; width: calc(100% - var(--quiz-image-width) + var(--quiz-image-overflow)); height: 100%; margin-left: calc(var(--quiz-image-width) - var(--quiz-image-overflow)); padding: $space-10 $space-20; opacity: 1; transform: translateX(0); transition: opacity $quiz-motion-duration ease, transform $quiz-motion-duration ease; }
+.questionNumber, .answerTitle { font-size: $font-size-5xl; font-weight: $font-weight-bold; line-height: $line-height-tight; }
+.copyArea h1, .explanation { max-width: 850px; margin-top: $space-6; font-size: $font-size-2xl; font-weight: $font-weight-bold; line-height: $line-height-relaxed; }
+.isAnswered .visualArea { transform: translateX(calc(100vw - var(--quiz-image-width) + var(--quiz-image-overflow) + var(--quiz-image-overflow))); }
+.isAnswered .copyArea { margin-left: 0; animation: copyReveal $quiz-motion-duration ease $quiz-copy-delay both; }
+.answerArea { position: relative; display: grid; grid-template-columns: repeat(2, 1fr); align-items: center; min-height: 0; }
+.answerButton { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: $space-8; height: 100%; color: $color-white; transition: color $quiz-motion-duration ease, transform $quiz-motion-duration ease; }
+.answerButton > span { @include mixins.flex-center; width: min(140px, 20vh); aspect-ratio: 1; font-family: $font-family-display; font-size: 80px; border-radius: 50%; transition: color $quiz-motion-duration ease, background-color $quiz-motion-duration ease, transform $quiz-motion-duration ease, box-shadow $quiz-motion-duration ease; transform: scale(2); }
+.answerButton strong { font-size: $font-size-2xl; }
+.answerButton.isX { color: $color-error; }
+.answerButton:hover:not(:disabled) { transform: translateY(-$space-2); }
+.answerButton.isSelected { color: $color-primary-light; transform: scale(1.04); }
+.answerButton.isSelected > span { background: rgba($color-white, .7); box-shadow: 0 $space-3 $space-8 rgba($color-text-primary, .16); transform: scale(2.15); }
+.answerButton:disabled { cursor: default; }
+.continueButton { position: absolute; right: $side-margin-desktop; bottom: $space-8; display: flex; align-items: center; justify-content: center; gap: $space-5; min-width: 220px; padding: $space-3 $space-8; color: $color-white; font-size: $font-size-md; font-weight: $font-weight-semibold; background: $color-primary; border-radius: $radius-md; animation: copyReveal $quiz-motion-duration ease $quiz-copy-delay both; transition: background-color $quiz-motion-duration ease, transform $quiz-motion-duration ease; }
+.continueButton:hover { background: $color-primary-light; transform: translateY(-$space-1); }
+.quitButton { position: fixed; z-index: $z-dropdown; bottom: $space-8; left: $side-margin-desktop; color: $color-white; font-size: $font-size-md; font-weight: $font-weight-semibold; transition: color $quiz-motion-duration ease, opacity $quiz-motion-duration ease, transform $quiz-motion-duration ease; }
+.quitButton:hover { color: $color-text-primary; transform: translateX(-$space-1); }
+
+.modalBackdrop { @include mixins.flex-center; position: fixed; z-index: $z-toast; inset: 0; padding: $space-5; background: rgba($color-text-primary, .58); animation: backdropIn $quiz-motion-duration ease both; }
+.quitModal, .resultModal { width: min(100%, 570px); color: $color-text-primary; background: $color-bg; border-radius: $radius-xl; box-shadow: 0 $space-5 $space-16 rgba($color-text-primary, .3); animation: modalIn $quiz-motion-duration cubic-bezier(.22, 1, .36, 1) both; }
+.quitModal { padding: $space-8; }
+.quitModal h2, .resultModal h2 { font-size: $font-size-3xl; font-weight: $font-weight-bold; line-height: $line-height-tight; text-align: center; }
+.quitModal > p { margin-top: $space-2; color: $color-text-secondary; font-size: $font-size-md; line-height: $line-height-relaxed; text-align: center; }
+.quitModal > div { display: grid; grid-template-columns: repeat(2, 1fr); gap: $space-3; margin-top: $space-8; }
+.quitModal button { padding: $space-3 $space-5; color: $color-white; text-align: center; background: $color-primary; border-radius: $radius-md; }
+.quitModal button:last-child { color: $color-text-secondary; background: $color-surface; }
+.resultModal { position: relative; padding: $space-12; }
+.closeButton { position: absolute; top: $space-5; right: $space-5; color: $color-text-primary; font-size: $font-size-4xl; line-height: 1; }
+.resultPoint { @include mixins.flex-center; min-height: 120px; margin-top: $space-10; border: 1px solid $color-border; border-radius: $radius-lg;  }
+.resultPoint strong { font-family: $font-family-display; font-size: $font-size-5xl; color: $color-primary;}
+.resultModal dl { display: grid; gap: $space-4; margin: $space-8 $space-3 0; }
+.resultModal dl > div { display: grid; grid-template-columns: 120px 1fr; gap: $space-4; }
+.resultModal dt { color: $color-text-muted; }
+.saveMessage { margin-top: $space-5; color: $color-primary; font-size: $font-size-sm; text-align: center; }
+.resultActions { display: grid; grid-template-columns: repeat(2, 1fr); gap: $space-3; margin-top: $space-8; }
+.resultActions a { @include mixins.flex-center; min-height: 58px; color: $color-text-secondary; font-size: $font-size-md; font-weight: $font-weight-semibold; background: $color-surface; border-radius: $radius-md; transition: color $transition-fast ease, background-color $transition-fast ease; }
+.resultActions a:last-child { color: $color-white; background: $color-primary; }
+.resultActions a:hover { color: $color-white; background: $color-primary-light; }
+
+@keyframes copyReveal { from { opacity: 0; transform: translateY($space-4); } to { opacity: 1; transform: translateY(0); } }
+@keyframes panelReveal { from { opacity: 0; transform: translateY($space-3); } to { opacity: 1; transform: translateY(0); } }
+@keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalIn { from { opacity: 0; transform: translateY($space-5) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+@include mixins.tablet {
+  .progressHeader { min-height: 96px; padding-inline: $side-margin-tablet; }
+  .quizShell { grid-template-rows: auto minmax(0, 1fr) minmax(230px, 44vh); }
+  .copyArea { padding: $space-8 $space-10; }
+  .questionPanel { --quiz-image-width: 62vw; --quiz-image-overflow: 22vw; }
+  .copyArea h1, .explanation { font-size: $font-size-xl; }
+  .answerButton > span { width: min(108px, 18vh); transform: scale(1.8); }
+  .answerButton.isSelected > span { transform: scale(1.95); }
+  .continueButton { right: $side-margin-tablet; }
+  .quitButton { left: $side-margin-tablet; }
+}
+
+@include mixins.mobile {
+  .page { background-size: 100% 100%, 620px auto; }
+  .quizShell { grid-template-rows: auto minmax(0, 1fr) minmax(190px, 40vh); }
+  .progressHeader { min-height: 64px; padding-inline: $side-margin-mobile; font-size: $font-size-sm; }
+  .questionPanel { display: grid; grid-template-rows: minmax(0, 1.1fr) minmax(0, .9fr); padding: $space-6; }
+  .visualArea, .isAnswered .visualArea { position: static; width: 100%; height: 100%; border-radius: 200px; transform: none; transition: none; }
+  .copyArea, .isAnswered .copyArea { width: 100%; height: 100%; margin-left: 0; padding:  $space-6; }
+  .isAnswered .copyArea { animation-delay: 0s; }
+  .questionNumber, .answerTitle { font-size: $font-size-4xl; }
+  .copyArea h1, .explanation { margin-top: $space-3; font-size: $font-size-lg; line-height: $line-height-relaxed; }
+  .answerButton { gap: $space-2; }
+  .answerButton > span { width: min(200px, 14vh); font-size: 80px; transform: scale(1.45); }
+  .answerButton.isSelected > span { transform: scale(1.6); }
+  .answerButton strong { font-size: $font-size-md; }
+  .continueButton { right: $side-margin-mobile; bottom: $space-4; min-width: 150px; padding: $space-2 $space-4; font-size: $font-size-sm; }
+  .quitButton { bottom: $space-4; left: $side-margin-mobile; font-size: $font-size-sm; }
+  .quitModal, .resultModal { padding: $space-10 $space-5 $space-8; }
+  .quitModal h2, .resultModal h2 { font-size: $font-size-2xl; }
+  .resultPoint { min-height: 140px; }
+  .resultPoint strong { font-size: $font-size-4xl; }
+  .resultModal dl > div { grid-template-columns: 90px 1fr; gap: $space-2; font-size: $font-size-sm; }
+  .resultActions { grid-template-columns: 1fr; }
+  .resultActions a { min-height: 48px; font-size: $font-size-sm; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .questionPanel, .visualArea, .copyArea, .answerButton, .answerButton > span, .continueButton { transition-duration: .01ms; animation-duration: .01ms; }
+}
