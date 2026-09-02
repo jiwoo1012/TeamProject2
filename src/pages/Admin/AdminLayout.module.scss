@@ -1,8 +1,13 @@
 @use '../../styles/variables' as v;
 
 .page {
-  min-height: 100vh;
-  padding: v.$space-10 0 v.$space-16;
+  display: flex;
+  height: calc(100svh - 72px);
+  min-height: 55vh;
+  padding: v.$space-16 0 v.$space-16;
+  box-sizing: border-box;
+  flex-direction: column;
+  overflow: hidden;
   background: v.$color-bg;
   color: v.$color-text-primary;
 }
@@ -12,13 +17,13 @@
 ========================= */
 
 .pageHeader {
-  margin: 0 0 v.$space-10;
-  padding: 0 v.$side-margin-desktop;
+  width: calc(100% - #{v.$side-margin-desktop * 8});
+  margin: 0 auto v.$space-3;
 }
 
 .title {
   margin: 0;
-  font-size: v.$font-size-4xl;
+  font-size: v.$font-size-2xl;
   font-weight: v.$font-weight-bold;
   line-height: v.$line-height-tight;
 }
@@ -26,22 +31,22 @@
 .description {
   margin: v.$space-2 0 0;
   color: v.$color-text-secondary;
-  font-size: v.$font-size-lg;
+  font-size: v.$font-size-sm;
   line-height: v.$line-height-base;
 }
 
 .ornamentArea {
-  width: min(
-    1480px,
-    calc(100% - #{v.$grid-gutter * 14 + v.$space-10 + v.$side-margin-desktop})
-  );
-  margin: 0 v.$side-margin-desktop v.$space-6 calc(v.$grid-gutter * 14 + v.$space-10);
+  position: relative;
+  width: calc(100% - #{v.$side-margin-desktop * 8});
+  margin: 0 auto v.$space-8;
 }
 
 .topOrnament {
   display: block;
   width: 100%;
   height: auto;
+  transform: scaleX(1.05);
+  transform-origin: left center;
 }
 
 /* =========================
@@ -50,11 +55,15 @@
 
 .layout {
   display: grid;
+  width: calc(100% - #{v.$side-margin-desktop * 8});
+  min-height: 0;
+  flex: 1;
+  margin-inline: auto;
   grid-template-columns:
-    calc(v.$grid-gutter * 14)
+    calc(v.$grid-gutter * 9)
     minmax(0, 1fr);
 
-  gap: calc(v.$space-12 + v.$space-2);
+  gap: v.$space-6;
   align-items: stretch;
 }
 
@@ -67,7 +76,7 @@
   top: v.$space-6;
   align-self: start;
   display: flex;
-  min-height: 70vh;
+  min-height: 62vh;
   flex-direction: column;
   justify-content: space-between;
   margin-top: calc(v.$space-16 * -1);
@@ -86,27 +95,23 @@
   gap: v.$space-4;
 
   width: 86%;
-  min-height: calc(v.$space-6 + v.$space-8);
-  padding: 0 v.$space-5;
+  min-height: 48px;
+  padding: 0 v.$space-3;
 
   border: 1px solid v.$color-border;
-  border-left: 0;
-  border-radius:
-    0
-    v.$radius-xl
-    v.$radius-xl
-    0;
+  border-radius: v.$radius-xl;
 
   background: v.$color-white;
   color: v.$color-text-muted;
 
-  font-size: v.$font-size-sm;
+  font-size: v.$font-size-xs;
   text-decoration: none;
 
   box-shadow: v.$shadow-sm;
 
   transition:
     width v.$transition-fast,
+    transform v.$transition-fast,
     background-color v.$transition-fast,
     color v.$transition-fast,
     border-color v.$transition-fast,
@@ -114,16 +119,33 @@
 }
 
 .menuDot {
-  width: v.$space-5;
-  height: v.$space-5;
+  width: v.$space-3;
+  height: v.$space-3;
   flex: 0 0 auto;
 
   border-radius: v.$radius-pill;
   background: v.$color-surface;
 }
 
-.menuItem:hover {
-  color: v.$color-text-primary;
+@media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+  .navigation:has(.menuItem:not(.active):hover) .active {
+    width: 86%;
+    transform: none;
+  }
+
+  .menuItem:hover {
+    width: 100%;
+    border-color: v.$color-primary;
+    background: v.$color-primary;
+    color: v.$color-white;
+    box-shadow: 0 4px 10px rgb(0 0 0 / 14%);
+    transform: scale(1.04);
+    transform-origin: left center;
+  }
+
+  .menuItem:hover .menuDot {
+    background: v.$color-white;
+  }
 }
 
 .menuItem:focus-visible,
@@ -151,13 +173,15 @@
 ========================= */
 
 .logoutButton {
-  display: inline-flex;
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + v.$space-3);
+  display: flex;
+  height: 36px;
   align-items: center;
   gap: v.$space-3;
-
-  align-self: flex-start;
-  margin-left: v.$grid-gutter;
-  padding: v.$space-2 0;
+  justify-content: center;
+  padding: 0 v.$space-2;
 
   border: 0;
   background: transparent;
@@ -184,39 +208,66 @@
 ========================= */
 
 .content {
-  width: calc(100% - v.$side-margin-desktop);
-  max-width: 1360px;
+  height: 100%;
+  width: 100%;
+  max-width: none;
   min-width: 0;
   box-sizing: border-box;
-  padding-left: v.$space-6;
+  padding: 0 v.$space-2 0 v.$space-4;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 /* =========================
    Tablet
 ========================= */
 
+@media (max-width: 1500px) {
+  .title { font-size: v.$font-size-3xl; }
+  .description { font-size: v.$font-size-md; }
+
+  .pageHeader,
+  .ornamentArea,
+  .layout {
+    width: calc(100% - #{v.$side-margin-tablet * 6});
+  }
+
+  .layout {
+    grid-template-columns: calc(v.$grid-gutter * 9) minmax(0, 1fr);
+    gap: v.$space-8;
+  }
+
+  .menuItem {
+    min-height: 52px;
+    padding-inline: v.$space-4;
+    font-size: v.$font-size-sm;
+  }
+}
+
 @media (max-width: v.$breakpoint-tablet-max) {
   .sidebar { margin-top: 0; }
 
   .pageHeader {
-    padding: 0 v.$side-margin-tablet;
+    width: calc(100% - #{v.$side-margin-tablet * 3});
   }
 
   .ornamentArea {
-    width: calc(100% - #{v.$grid-gutter * 10 + v.$space-8 + v.$side-margin-tablet});
-    margin: 0 v.$side-margin-tablet v.$space-6 calc(v.$grid-gutter * 10 + v.$space-8);
+    width: calc(100% - #{v.$side-margin-tablet * 3});
+    margin: 0 auto v.$space-6;
   }
 
   .layout {
+    width: calc(100% - #{v.$side-margin-tablet * 3});
     grid-template-columns:
-      calc(v.$grid-gutter * 10)
+      calc(v.$grid-gutter * 8)
       minmax(0, 1fr);
 
     gap: v.$space-8;
   }
 
   .content {
-    width: calc(100% - v.$side-margin-tablet);
+    width: 100%;
     padding-left: v.$space-4;
   }
 }
@@ -227,15 +278,26 @@
 
 @media (max-width: v.$breakpoint-mobile-max) {
   .page {
+    display: block;
+    height: auto;
     padding: v.$space-8 0 v.$space-12;
+    overflow: visible;
   }
 
   .pageHeader {
+    width: auto;
     margin-bottom: v.$space-6;
-    padding: 0 v.$side-margin-mobile;
+    margin-inline: v.$side-margin-mobile;
   }
 
   .ornamentArea {
+    display: flex;
+    width: auto;
+    justify-content: flex-end;
+    margin: 0 v.$side-margin-mobile v.$space-5;
+  }
+
+  .topOrnament {
     display: none;
   }
 
@@ -245,6 +307,8 @@
 
   .layout {
     display: block;
+    width: 100%;
+    margin-inline: 0;
   }
 
   .sidebar {
@@ -299,15 +363,16 @@
   }
 
   .logoutButton {
-    margin-top: v.$space-4;
-    margin-left: 0;
+    position: static;
   }
 
   .content {
+    height: auto;
     width: auto;
     max-width: none;
     margin: 0 v.$side-margin-mobile;
     padding-left: 0;
+    overflow: visible;
   }
 }
 

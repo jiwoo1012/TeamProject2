@@ -29,90 +29,6 @@
 }
 
 // ---------------------------------------------------------------------
-// Hero
-// ---------------------------------------------------------------------
-.hero {
-  position: relative;
-  display: grid;
-  overflow: hidden;
-  min-height: calc(100svh - 72px);
-  padding: clamp($space-8, 4vh, $space-12) max($space-5, calc((100vw - 1500px) / 2));
-  box-sizing: border-box;
-  background: $color-surface var(--brand-story-background) center / cover no-repeat;
-  color: $color-text-primary;
-  isolation: isolate;
-  place-items: center;
-  text-align: center;
-}
-
-.heroShade {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background:
-    linear-gradient(180deg, rgba($color-bg, 0.08) 0%, rgba($color-bg, 0.18) 46%, rgba($color-surface, 0.88) 100%),
-    radial-gradient(circle at 48% 30%, rgba($color-bg, 0.72), rgba($color-bg, 0.18) 58%, transparent 78%);
-}
-
-.heroContent {
-  display: grid;
-  width: 100%;
-  min-height: calc(100svh - 72px - clamp($space-16, 8vh, $space-24));
-  grid-template-rows: 1fr auto;
-  align-items: center;
-}
-
-.heroHeading {
-  align-self: center;
-  padding-top: clamp($space-4, 3vh, $space-8);
-}
-
-.heroEyebrow,
-.heroRoman {
-  margin: 0;
-  font-family: $font-family-display;
-  letter-spacing: 0.42em;
-}
-
-.heroEyebrow { font-size: clamp(0.7rem, 0.9vw, 1rem); }
-.heroRule { display: block; width: 7rem; height: 1px; margin: $space-5 auto; background: rgba($color-text-secondary, 0.55); }
-.heroHeading h1 { font-family: $font-family-display; font-size: clamp(3.6rem, 5vw, 6rem); line-height: 1; }
-.heroRoman { margin-top: $space-2; font-size: 0.72rem; }
-
-.heroSlogan {
-  margin: clamp($space-6, 3vh, $space-8) 0 0;
-  font-family: $font-family-display;
-  font-size: clamp(1.35rem, 1.8vw, 2rem);
-  line-height: 1.55;
-}
-
-.heroIntroduction {
-  margin: clamp($space-5, 2.5vh, $space-6) 0 0;
-  color: rgba($color-text-primary, 0.82);
-  font-size: clamp(0.78rem, 0.9vw, 0.96rem);
-  line-height: 1.9;
-}
-
-.heroValues {
-  display: grid;
-  margin: clamp($space-6, 3vh, $space-10) 0 0;
-  padding: 0;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  list-style: none;
-}
-
-.heroValues li {
-  position: relative;
-  min-width: 0;
-  padding: 0 clamp($space-3, 1.8vw, $space-6);
-}
-
-.heroValues li + li { border-left: 1px solid rgba($color-text-secondary, 0.24); }
-.valueNumber { color: $color-primary; font-family: $font-family-display; font-size: clamp(1.6rem, 2.2vw, 2.4rem); }
-.heroValues strong { display: block; margin-top: $space-1; color: $color-text-primary; font-size: clamp(0.88rem, 1vw, 1.08rem); font-weight: 600; }
-.heroValues p { margin: $space-3 0 0; color: rgba($color-text-primary, 0.76); font-size: clamp(0.68rem, 0.75vw, 0.78rem); line-height: 1.65; white-space: pre-line; }
-
-// ---------------------------------------------------------------------
 // Story
 // ---------------------------------------------------------------------
 .storySequence {
@@ -489,8 +405,6 @@
 // desktop이 기본값이므로 별도 블록 없음
 // ---------------------------------------------------------------------
 @include tablet {
-  .hero { min-height: 860px; }
-  .heroContent { min-height: calc(860px - #{$space-16}); }
   .desktopBreak { display: none; }
   .curationSteps { gap: $space-4; }
   .curationSteps li:not(:last-child)::after { right: -0.75rem; }
@@ -499,20 +413,6 @@
 }
 
 @include mobile {
-  .hero {
-    min-height: auto;
-    padding: $space-16 $space-5 $space-12;
-    background-position: 62% center;
-  }
-  .heroContent { min-height: 0; grid-template-rows: auto auto; }
-  .heroHeading { padding-top: 0; }
-  .heroHeading h1 { font-size: clamp(3.6rem, 18vw, 5rem); }
-  .heroSlogan { font-size: clamp(1.2rem, 6vw, 1.55rem); }
-  .heroIntroduction br { display: none; }
-  .heroValues { grid-template-columns: 1fr; gap: 0; margin-top: $space-12; }
-  .heroValues li { padding: $space-6 $space-2; }
-  .heroValues li + li { border-top: 1px solid rgba($color-primary-light, 0.28); border-left: 0; }
-  .heroValues p { font-size: 0.8rem; }
   .storySequence { height: auto; }
   .storyScene {
     position: static;
