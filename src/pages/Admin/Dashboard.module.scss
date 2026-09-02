@@ -8,7 +8,16 @@
   justify-content: space-between;
 }
 
-.pageHeader { gap: v.$space-8; margin-bottom: v.$space-8; }
+.pageHeader {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  align-items: flex-start;
+  gap: v.$space-8;
+  margin-bottom: v.$space-6;
+  padding: 0 0 v.$space-3;
+  background: v.$color-bg;
+}
 
 .pageHeader h1, .pageHeader p, .sectionHeading h2, .sectionHeading p, .panelHeader h2,
 .panelHeader p, .summaryCard h3, .summaryCard p, .aiEmpty p { margin: 0; }
@@ -21,8 +30,10 @@
 }
 
 .pageHeader h1 {
-  margin-top: v.$space-1;
-  font-size: clamp(v.$font-size-3xl, 3vw, v.$font-size-5xl);
+  margin-top: 0;
+  font-family: v.$font-family-base;
+  font-size: v.$font-size-2xl;
+  font-weight: v.$font-weight-bold;
   letter-spacing: -0.04em;
   line-height: v.$line-height-tight;
 }
@@ -69,7 +80,7 @@
   background: v.$color-white;
 }
 
-.summaryCard { position: relative; min-width: 0; padding: v.$space-5; overflow: hidden; }
+.summaryCard { position: relative; min-width: 0; padding: v.$space-4; overflow: hidden; }
 
 .summaryCard::after {
   position: absolute;
@@ -85,7 +96,7 @@
 
 .summaryCard h3 { color: v.$color-text-secondary; font-size: v.$font-size-sm; font-weight: v.$font-weight-medium; }
 .cardTopline i { width: 9px; border-radius: 50%; aspect-ratio: 1; background: v.$color-primary; }
-.metricValue { display: flex; align-items: baseline; gap: v.$space-2; margin-top: v.$space-6 !important; }
+.metricValue { display: flex; align-items: baseline; gap: v.$space-2; margin-top: v.$space-5 !important; }
 .metricValue strong { font-size: v.$font-size-3xl; line-height: 1; }
 .metricValue span, .metricCaption { color: v.$color-text-muted; font-size: v.$font-size-xs; }
 .metricCaption { margin-top: v.$space-3 !important; }
@@ -101,7 +112,7 @@
 
 .analyticsGrid, .bottomGrid { display: grid; gap: v.$space-4; margin-bottom: v.$space-4; }
 .analyticsGrid, .bottomGrid { grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.75fr); }
-.panel { min-width: 0; padding: v.$space-6; }
+.panel { min-width: 0; padding: v.$space-5; }
 .panelHeader { gap: v.$space-4; margin-bottom: v.$space-6; }
 
 .periodLabel, .statusMarker, .aiBadge {
@@ -229,7 +240,7 @@
 }
 
 @media (max-width: v.$breakpoint-mobile-max) {
-  .pageHeader { align-items: flex-start; flex-direction: column; gap: v.$space-4; }
+  .pageHeader { position: static; align-items: flex-start; flex-direction: column; gap: v.$space-4; padding: 0; }
   .pageHeader h1 { font-size: v.$font-size-3xl; }
   .summaryGrid { grid-template-columns: 1fr; }
   .summaryCard, .panel { padding: v.$space-5; border-radius: v.$radius-lg; }

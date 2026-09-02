@@ -28,6 +28,7 @@
 }
 
 .blankIntroLink {
+  position: relative;
   display: block;
   padding: 0;
   border: 0;
@@ -38,7 +39,66 @@
   transform: translateY(50px);
 }
 
+.blankIntroWord {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 0;
+  color: rgba($color-primary, 0.2);
+  font-family: $font-family-display;
+  font-size: clamp(5rem, 14vw, 13rem);
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.08em;
+  line-height: 0.8;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.82);
+  transition: opacity 280ms ease, transform 420ms ease;
+  white-space: nowrap;
+}
+
+.introRiceBurst {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  z-index: 2;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.introRiceBurst i {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: clamp(7px, 0.7vw, 11px);
+  height: clamp(16px, 1.45vw, 24px);
+  border: 1px solid rgba($color-primary, 0.18);
+  border-radius: 70% 30% 68% 32%;
+  background: rgba($color-bg, 0.96);
+  box-shadow: 0 2px 8px rgba($color-text-primary, 0.12);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.2) rotate(var(--rice-rotate));
+}
+
+.introRiceBurst i:nth-child(1)  { --rice-x: -310px; --rice-y: -82px;  --rice-rotate: -74deg; --rice-spin: -230deg; --rice-delay: 0ms; }
+.introRiceBurst i:nth-child(2)  { --rice-x: -145px; --rice-y: -265px; --rice-rotate: 18deg;  --rice-spin: 310deg;  --rice-delay: 25ms; }
+.introRiceBurst i:nth-child(3)  { --rice-x: -238px; --rice-y: -188px; --rice-rotate: 67deg;  --rice-spin: 145deg;  --rice-delay: 55ms; }
+.introRiceBurst i:nth-child(4)  { --rice-x: 34px;   --rice-y: -330px; --rice-rotate: -28deg; --rice-spin: -320deg; --rice-delay: 15ms; }
+.introRiceBurst i:nth-child(5)  { --rice-x: 205px;  --rice-y: -178px; --rice-rotate: 112deg; --rice-spin: 240deg;  --rice-delay: 70ms; }
+.introRiceBurst i:nth-child(6)  { --rice-x: 335px;  --rice-y: -55px;  --rice-rotate: 35deg;  --rice-spin: -185deg; --rice-delay: 35ms; }
+.introRiceBurst i:nth-child(7)  { --rice-x: 176px;  --rice-y: 36px;   --rice-rotate: -96deg; --rice-spin: 380deg;  --rice-delay: 80ms; }
+.introRiceBurst i:nth-child(8)  { --rice-x: 282px;  --rice-y: 192px;  --rice-rotate: 154deg; --rice-spin: -275deg; --rice-delay: 20ms; }
+.introRiceBurst i:nth-child(9)  { --rice-x: 92px;   --rice-y: 285px;  --rice-rotate: 8deg;   --rice-spin: 215deg;  --rice-delay: 60ms; }
+.introRiceBurst i:nth-child(10) { --rice-x: -42px;  --rice-y: 198px;  --rice-rotate: 126deg; --rice-spin: -360deg; --rice-delay: 40ms; }
+.introRiceBurst i:nth-child(11) { --rice-x: -185px; --rice-y: 315px;  --rice-rotate: -42deg; --rice-spin: 285deg;  --rice-delay: 75ms; }
+.introRiceBurst i:nth-child(12) { --rice-x: -342px; --rice-y: 126px;  --rice-rotate: 82deg;  --rice-spin: -205deg; --rice-delay: 30ms; }
+.introRiceBurst i:nth-child(13) { --rice-x: -198px; --rice-y: 42px;   --rice-rotate: 171deg; --rice-spin: 335deg;  --rice-delay: 65ms; }
+.introRiceBurst i:nth-child(14) { --rice-x: 318px;  --rice-y: 105px;  --rice-rotate: -15deg; --rice-spin: -295deg; --rice-delay: 5ms; }
+
 .blankIntro img {
+  position: relative;
+  z-index: 1;
   display: block;
   width: clamp(220px, 25vw, 460px);
   max-height: 72vh;
@@ -48,9 +108,35 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .blankIntro img:hover {
+  .blankIntroLink:hover img {
     transform: scale(1.2);
   }
+
+  .blankIntroLink:hover .blankIntroWord {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .blankIntroLink:hover .introRiceBurst i {
+    animation: intro-rice-firework 720ms cubic-bezier(0.18, 0.72, 0.3, 1) var(--rice-delay) both;
+  }
+}
+
+@keyframes intro-rice-firework {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.2) rotate(var(--rice-rotate));
+  }
+  18% { opacity: 1; }
+  72% { opacity: 0.95; }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--rice-x)), calc(-50% + var(--rice-y))) scale(1) rotate(calc(var(--rice-rotate) + var(--rice-spin)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blankIntroLink:hover .introRiceBurst i { animation: none; }
 }
 
 // ---------------------------------------------------------------------
