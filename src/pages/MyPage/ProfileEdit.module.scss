@@ -25,13 +25,15 @@
 
 .profileBanner {
   position: relative;
-  display: flex;
+  display: grid;
   /* 주문내역 요약 패널과 동일한 민트 배경 폭 */
   width: 100%;
   height: 201px;
+  grid-template-columns: 118px minmax(0, 1fr) auto 132px;
   align-items: center;
+  gap: v.$space-6;
   overflow: visible;
-  padding: 0 38px;
+  padding: 0 v.$space-6 0 38px;
   border: 1px solid v.$color-border;
   border-radius: 27px;
   background: rgb(77 126 123 / 40%);
@@ -81,7 +83,8 @@
 .bannerCopy {
   position: relative;
   z-index: 2;
-  margin-left: 34px;
+  min-width: 0;
+  margin-left: 0;
 }
 
 .bannerCopy h2 {
@@ -158,12 +161,10 @@
 }
 
 .bannerActions {
-  position: absolute;
-  right: 126px;
-  bottom: 34px;
+  position: relative;
   z-index: 3;
   display: flex;
-  gap: 19px;
+  gap: v.$space-3;
 }
 
 /* reset.scss의 button { text-align: inherit; } 때문에 반드시 컴포넌트에서 중앙 정렬 */
@@ -217,11 +218,12 @@
 }
 
 .mascotPlaceholder {
-  position: absolute;
-  right: -73px;
-  bottom: -10px;
-  width: 174px;
-  height: 157px;
+  position: relative;
+  z-index: 2;
+  width: 132px;
+  height: 190px;
+  align-self: end;
+  justify-self: end;
   pointer-events: none;
 }
 
@@ -230,6 +232,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+  object-position: right bottom;
 }
 
 .mascotFace,
@@ -302,14 +305,15 @@
 .infoGrid {
   display: grid;
   width: 100%;
-  grid-template-columns: minmax(0, 0.6fr) minmax(0, 1fr);
-  align-items: start;
-  gap: 38px;
-  margin-top: 43px;
+  grid-template-columns: minmax(320px, 0.85fr) minmax(0, 1.15fr);
+  align-items: stretch;
+  gap: v.$space-6;
+  margin-top: v.$space-10;
 }
 
 .infoCard {
   display: flex;
+  min-height: 520px;
   min-width: 0;
   flex-direction: column;
   padding: v.$space-6 v.$space-8 v.$space-8;
@@ -319,7 +323,7 @@
 }
 
 .infoCard:first-child {
-  min-height: 0;
+  min-height: 520px;
 }
 
 .avatarPicker {
@@ -406,7 +410,7 @@
 }
 
 .infoDescription {
-  margin: 0 0 v.$space-4;
+  margin: v.$space-3 0 v.$space-2;
   color: v.$color-text-secondary;
   font-size: v.$font-size-sm;
   line-height: v.$line-height-base;
@@ -438,13 +442,25 @@
 }
 
 .detailRow dd {
+  min-width: 0;
+  overflow: hidden;
   margin: 0;
   color: v.$color-text-primary;
   font-weight: v.$font-weight-semibold;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .detailRow .unregisteredValue {
+  display: inline-flex;
+  width: max-content;
+  min-height: 24px;
+  align-items: center;
+  padding: 0 v.$space-2;
+  border-radius: v.$radius-pill;
+  background: color-mix(in srgb, v.$color-surface 55%, v.$color-white);
   color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
   font-weight: v.$font-weight-regular;
 }
 
@@ -452,7 +468,7 @@
   min-width: 136px;
   height: 44px;
   align-self: flex-end;
-  margin-top: v.$space-6;
+  margin-top: auto;
   border-radius: v.$radius-lg;
   background: v.$color-primary;
   color: v.$color-white;
@@ -461,31 +477,9 @@
 
 .deliveryCard {
   position: relative;
-  height: 717px;
-  padding: 28px 57px 46px 38px;
-}
-
-/* 피그마의 우측 스크롤 표시 장식 */
-.deliveryCard::before,
-.deliveryCard::after {
-  position: absolute;
-  right: 28px;
-  width: 6px;
-  border-radius: v.$radius-pill;
-  content: '';
-}
-
-.deliveryCard::before {
-  top: 94px;
-  z-index: 2;
-  height: 91px;
-  background: v.$color-primary;
-}
-
-.deliveryCard::after {
-  top: 94px;
-  height: 205px;
-  background: #d8d8d8;
+  height: auto;
+  min-height: 520px;
+  padding: v.$space-6 v.$space-8 v.$space-8;
 }
 
 .addressList {
@@ -521,7 +515,7 @@
 
 .addressHeading strong {
   color: v.$color-text-primary;
-  font-size: 20px;
+  font-size: v.$font-size-md;
   font-weight: v.$font-weight-semibold;
   line-height: v.$line-height-tight;
 }
@@ -541,15 +535,25 @@
 }
 
 .addressCopy p {
-  max-width: 385px;
+  display: flex;
+  max-width: 420px;
+  align-items: baseline;
+  gap: v.$space-2;
   margin: v.$space-1 0 0;
   overflow: hidden;
   color: v.$color-text-muted;
-  font-size: 17px;
+  font-size: v.$font-size-sm;
   font-weight: v.$font-weight-regular;
   line-height: v.$line-height-base;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.addressCopy p span {
+  width: 48px;
+  flex: 0 0 48px;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-xs;
 }
 
 .addressActions {
@@ -585,7 +589,7 @@
   height: 50px;
   align-self: center;
   margin-top: auto;
-  margin-right: 22px;
+  margin-right: 0;
   border-radius: v.$radius-lg;
   background: v.$color-primary;
   color: v.$color-white;
@@ -627,12 +631,37 @@
   }
 
   .profileBanner {
-    min-height: 190px;
+    min-height: 220px;
     height: auto;
+    grid-template-columns: 96px minmax(0, 1fr) 104px;
+    grid-template-rows: auto auto;
+    gap: v.$space-3 v.$space-5;
+    padding: v.$space-6;
+  }
+
+  .avatar {
+    width: 96px;
+    height: 96px;
+    grid-row: 1 / 3;
+  }
+
+  .bannerCopy {
+    grid-column: 2;
+    grid-row: 1;
   }
 
   .bannerActions {
-    right: 100px;
+    right: auto;
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
+  }
+
+  .mascotPlaceholder {
+    width: 104px;
+    height: 184px;
+    grid-column: 3;
+    grid-row: 1 / 3;
   }
 
   .mascot {
@@ -642,14 +671,14 @@
   }
 
   .infoGrid {
-    grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.28fr);
-    gap: v.$space-6;
+    grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.15fr);
+    gap: v.$space-5;
   }
 
   .infoCard:first-child,
   .deliveryCard {
     height: auto;
-    min-height: 530px;
+    min-height: 480px;
   }
 }
 
@@ -666,6 +695,7 @@
     display: grid;
     min-height: 0;
     grid-template-columns: 64px minmax(0, 1fr);
+    grid-template-rows: auto auto;
     gap: v.$space-4;
     padding: v.$space-5;
     border-radius: v.$radius-xl;
@@ -675,6 +705,8 @@
     width: 64px;
     height: 64px;
     flex-basis: 64px;
+    grid-column: 1;
+    grid-row: 1;
   }
 
   .avatar svg {
@@ -689,6 +721,8 @@
   }
 
   .bannerCopy {
+    grid-column: 2;
+    grid-row: 1;
     margin-left: 0;
   }
 
@@ -716,7 +750,7 @@
     width: 100%;
     gap: v.$space-2;
     margin-top: v.$space-1;
-    padding-right: 58px;
+    padding-right: 0;
   }
 
   .outlineButton,
@@ -735,10 +769,7 @@
   }
 
   .mascotPlaceholder {
-    right: -36px;
-    bottom: -26px;
-    transform: scale(0.5);
-    transform-origin: right bottom;
+    display: none;
   }
 
   .infoGrid {
@@ -771,11 +802,6 @@
     height: 50px;
     margin-top: v.$space-8;
     font-size: v.$font-size-md;
-  }
-
-  .deliveryCard::before,
-  .deliveryCard::after {
-    display: none;
   }
 
   .addressList {
@@ -870,6 +896,54 @@
   font-size: v.$font-size-lg;
   font-weight: v.$font-weight-semibold;
   cursor: pointer;
+}
+
+.formActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: v.$space-3;
+  margin-top: auto;
+  padding-top: v.$space-6;
+}
+
+.formActions .completeButton,
+.cancelButton {
+  width: 132px;
+  height: 48px;
+  align-self: auto;
+  margin-top: 0;
+  border-radius: v.$radius-lg;
+  font: inherit;
+  font-size: v.$font-size-md;
+  font-weight: v.$font-weight-semibold;
+  cursor: pointer;
+}
+
+.formActions .completeButton {
+  background: v.$color-primary;
+}
+
+.cancelButton {
+  border: 1px solid v.$color-border;
+  background: v.$color-white;
+  color: v.$color-text-secondary;
+}
+
+.cancelButton:hover {
+  border-color: v.$color-primary;
+  color: v.$color-primary;
+}
+
+.cancelButton:focus-visible,
+.completeButton:focus-visible {
+  outline: 2px solid v.$color-primary-light;
+  outline-offset: 2px;
+}
+
+.completeButton:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 
 .passwordCard {
@@ -993,20 +1067,33 @@
   }
 
   .formRow {
-    min-height: 58px;
-    grid-template-columns: 92px minmax(0, 1fr);
+    min-height: 0;
+    grid-template-columns: 1fr;
+    gap: v.$space-2;
+    padding: v.$space-3 0;
     font-size: v.$font-size-sm;
+  }
+
+  .formRow input,
+  .formRow select {
+    height: 42px;
   }
 
   .deliveryFormCard .formRow input {
     width: 100%;
   }
 
-  .completeButton {
+  .formActions {
     width: 100%;
-    height: 50px;
-    margin-top: v.$space-8;
-    font-size: v.$font-size-md;
+    gap: v.$space-2;
+    padding-top: v.$space-6;
+  }
+
+  .formActions .completeButton,
+  .cancelButton {
+    width: auto;
+    height: 48px;
+    flex: 1;
   }
 
   .emptyCard {

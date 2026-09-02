@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
@@ -81,6 +82,7 @@ const JourneySection = ({ onSkip }) => {
   // 화면 요소를 GSAP 애니메이션과 연결하는 참조값입니다.
   // 장면 요소를 추가하거나 삭제하지 않는다면 이 부분은 수정하지 않아도 됩니다.
   const sectionRef = useRef(null)
+  const sceneCursorRef = useRef(null)
   const sceneRefs = useRef([])
   const guideRef = useRef(null)
   const handRef = useRef(null)
@@ -109,6 +111,7 @@ const JourneySection = ({ onSkip }) => {
     let removeTouchHandlers = () => {}
     let removeKeyHandler = () => {}
     let removePointerHandlers = () => {}
+    let removeCursorPointerHandler = () => {}
     const root = document.documentElement
     const scrollbarClass = 'main-journey-active'
     const stage = sectionRef.current?.querySelector(`.${styles.stage}`)
@@ -119,6 +122,7 @@ const JourneySection = ({ onSkip }) => {
     const context = gsap.context(() => {
       const sceneElements = sceneRefs.current
       const handElements = [handRef.current, handleHandRef.current]
+      const sceneCursor = sceneCursorRef.current
 
       // Journey가 처음 열렸을 때 각 이미지의 투명도와 크기를 초기화합니다.
       gsap.set(sceneElements, { opacity: 0, scale: 1.06 })
@@ -139,7 +143,14 @@ const JourneySection = ({ onSkip }) => {
       gsap.set(hanokFoodTrayRef.current, { autoAlpha: 0, yPercent: 12, scale: 0.95 })
       gsap.set(finaleCopyRef.current, { autoAlpha: 0, y: 24 })
       gsap.set(finaleTransitionRef.current, { autoAlpha: 0 })
+      gsap.set(sceneCursor, { autoAlpha: 0, x: -100, y: -100 })
       stage?.classList.add(styles.cursorHidden)
+
+      const followCursor = (event) => {
+        gsap.set(sceneCursor, { x: event.clientX, y: event.clientY })
+      }
+      window.addEventListener('pointermove', followCursor)
+      removeCursorPointerHandler = () => window.removeEventListener('pointermove', followCursor)
 
       let isFinishing = false
       const finishJourney = () => {
@@ -163,13 +174,19 @@ const JourneySection = ({ onSkip }) => {
           scrub: 1,
           invalidateOnRefresh: true,
           onUpdate: ({ progress }) => {
+            const finalSceneOpacity = Number(gsap.getProperty(sceneElements[sceneElements.length - 1], 'opacity'))
+            const showScrollCursor = progress > 0.04 && finalSceneOpacity < 0.5
             stage?.classList.toggle(styles.cursorHidden, progress <= 0.04)
+            stage?.classList.toggle(styles.customCursorActive, showScrollCursor)
+            gsap.set(sceneCursor, { autoAlpha: showScrollCursor ? 1 : 0 })
             gsap.set(bellRef.current, { autoAlpha: progress <= 0.04 ? 1 : 0 })
             if (progress > 0.04) gsap.to(handElements, { autoAlpha: 0, duration: 0.16, overwrite: 'auto' })
           },
           onEnter: () => root.classList.add(scrollbarClass),
           onLeave: () => {
             stage?.classList.remove(styles.cursorHidden)
+            stage?.classList.remove(styles.customCursorActive)
+            gsap.set(sceneCursor, { autoAlpha: 0 })
             root.classList.add(scrollbarClass)
             root.classList.remove('main-header-visible')
           },
@@ -473,8 +490,10 @@ const JourneySection = ({ onSkip }) => {
       removeTouchHandlers()
       removeKeyHandler()
       removePointerHandlers()
+      removeCursorPointerHandler()
       scrollTween?.kill()
       stage?.classList.remove(styles.cursorHidden)
+      stage?.classList.remove(styles.customCursorActive)
       finishJourneyRef.current = null
       context.revert()
       root.classList.remove(scrollbarClass)
@@ -482,6 +501,7 @@ const JourneySection = ({ onSkip }) => {
   }, [])
 
   return (
+    <>
     <section ref={sectionRef} className={styles.journey} aria-label="자작의 공간으로 들어가는 스크롤 이야기">
       <div className={styles.stage}>
         {/* scenes 배열의 사진을 같은 위치에 겹쳐 놓고 투명도로 전환합니다. */}
@@ -634,6 +654,11 @@ const JourneySection = ({ onSkip }) => {
         </div>
       </div>
     </section>
+    {createPortal(
+      <span ref={sceneCursorRef} className={styles.sceneScrollCursor} aria-hidden="true"><i /></span>,
+      document.body
+    )}
+    </>
   )
 }
 

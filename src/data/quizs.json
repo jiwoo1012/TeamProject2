@@ -1,0 +1,72 @@
+[
+    {
+        "id":1,
+        "question":"대한민국 법적으로 '전통주'는 무형문화재 보유자가 만든 술(명인 명주)이나 지역 농산물로 만든 민속주 등을 통틀어 일컫는 말이다.",
+        "Answer": "O",
+        "explanation":"주류 면허법 및 전통주산업진흥법에 따라 지역특산주(민속주)와 대한민국 식품명인이 만든 술 등을 통틀어 전통주로 분류합니다.",
+        "imageUrl":"/products/explain/traditional.png"
+    },
+    {
+        "id":2,
+        "question":"주막의 조력자인 ‘막동이’의 이름은 막걸리와 동동주를 결합해 지어낸 것이다.",
+        "Answer": "O",
+        "explanation":"'막동이'의 이름은 서민의 오랜 동반자인 탁주처럼 털털하고 친근하다는 의미를 가지고 있습니다.",
+        "imageUrl":"/products/explain/makdong-sitting-wave.png"
+    },
+    {
+        "id":3,
+        "question":"탁주(막걸리)와 달리, ‘증류주'는 발효된 술지게미를 걸러내어 맑게 떠낸 술로 법률상 명칭이다.",
+        "Answer": "X",
+        "explanation":"탁주를 체로 걸러 맑은 액기스만 가라앉혀 윗부분을 떠낸 맑은 술을 '약주(청주 계열)'라고 부릅니다.",
+        "imageUrl":"/products/explain/Yakju2.png"
+    },
+    {
+        "id":4,
+        "question":"생막걸리 병을 따기 전 위아래로 강하게 흔들면 내부의 탄산 가스 때문에 폭발하듯 넘쳐흐를 수 있으므로, 살짝 기울여서 가스를 빼준 뒤 섞는 것이 좋다.",
+        "Answer": "O",
+        "explanation":"살아있는 효모가 숨 쉬는 생막걸리는 흔들고 바로 열면 뿜어져 나올 수 있어 주의해야 합니다.",
+        "imageUrl":"/products/explain/Takju2.png"
+    },
+    {
+        "id":5,
+        "question":"증류식 소주와 희석식 소주는 모두 주정(에탄올)에 물과 감미료를 타서 만들기 때문에 제조 방식에 큰 차이가 없다.",
+        "Answer": "X",
+        "explanation":"희석식 소주는 주정에 물과 감미료를 섞어 만들지만, 증류식 소주는 곡물을 발효시킨 밑술을 전통 방식으로 증류하여 원재료의 풍미를 살려 만듭니다.",
+        "imageUrl":"/products/explain/spirit2.png"
+    },
+    {
+        "id":6,
+        "question":"약주와 청주는 법적으로 동일한 주류이며, 만드는 방식이나 재료에 있어서 큰 차이가 없다.",
+        "Answer": "X",
+        "explanation":"법적으로 약주는 곡발효주 중 맑게 떠낸 술 전체를 통칭하는 말에 가깝고, 청주는 전통 제조법에 일본식 청주(사케) 제조 기술이 융합되는 등 미세한 차이와 역사적 배경이 다릅니다.",
+        "imageUrl":"/products/explain/YakAndChung.png"
+    },
+    {
+        "id":7,
+        "question":"전통주 큐레이션 및 홈술 플랫폼 '자작(JAJAK)'은 술 단품만 추천해 주는 것이 아니라, 안주와 술잔 세트까지 함께 조합한 토탈 페어링 큐레이션을 제공한다.",
+        "Answer": "O",
+        "explanation":"자작은 술과 가장 잘 어울리는 안주, 분위기를 더하는 술잔 세트를 함께 묶어 제안하는 토탈 페어링 서비스를 지향합니다.",
+        "imageUrl":"/products/explain/brand-story-background.png"
+    },
+    {
+        "id":8,
+        "question":"전통주에 쓰이는 '누룩'은 술을 빚을 때 단맛을 내기 위해 인공적으로 첨가하는 조미료의 일종이다.",
+        "Answer": "X",
+        "explanation":"누룩은 곡물에 곰팡이 등의 미생물을 번식시켜 만든 전통 발효제로, 곡물의 전분을 당으로 분해하고 술을 발효시키는 핵심 역할을 합니다.",
+        "imageUrl":"/products/explain/nuruk.png"
+    },
+    {
+        "id":9,
+        "question":"탁주(막걸리)는 가라앉은 하얀 침전물(술지게미 등)과 윗부분의 맑은 술을 어떻게 섞어 마시느냐에 따라 전혀 다른 맛과 질감을 느낄 수 있다.",
+        "Answer": "O",
+        "explanation":"처음엔 맑은 윗부분만 따라 마시다가 나중에 흔들어 섞어 마시면 두 가지 서로 다른 매력을 즐길 수 있습니다.",
+        "imageUrl":"/products/explain/p3_5_bowl_top.png"
+    },
+    {
+        "id":10,
+        "question":"전통주를 보관할 때는 직사광선을 피하고 서늘한 곳에 두어야 하며, 특히 온도가 자주 바뀌는 곳에 방치하면 술이 쉽게 변질될 수 있다.",
+        "Answer": "O",
+        "explanation":"주류는 빛과 온도 변화에 민감하므로 직사광선을 피해 서늘하고 일정한 온도에 보관하는 것이 원칙입니다.",
+        "imageUrl":"/products/explain/save.png"
+    }
+]
