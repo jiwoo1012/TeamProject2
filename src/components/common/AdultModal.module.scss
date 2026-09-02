@@ -26,11 +26,11 @@
 // ==========================================
 
 .modal {
-  width: min(470px, calc(100vw - 40px));
+  width: min(400px, calc(100vw - 40px));
 
   padding: $space-10 $space-10 $space-8;
 
-  background: $color-bg;
+  background: color-mix(in srgb, $color-bg 72%, $color-surface 28%);
 
   border-radius: $radius-xl;
 
@@ -38,6 +38,21 @@
   box-sizing: border-box;
 
   box-shadow: 0 20px 60px rgba(44, 35, 27, 0.18);
+
+  animation: modalRise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+
+@keyframes modalRise {
+  from {
+    opacity: 0;
+    transform: translateY(64px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 
@@ -181,7 +196,7 @@
 
 .verifyButton,
 .exitButton {
-  width: 320px;
+  width: 280px;
   max-width: 100%;
 
   height: 48px;
@@ -278,7 +293,7 @@
 
 @include tablet {
   .modal {
-    width: 450px;
+    width: 420px;
 
     padding: $space-10 $space-8 $space-8;
   }
@@ -357,5 +372,12 @@
 
   .notice {
     margin-top: $space-5;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .modal {
+    animation: none;
   }
 }
