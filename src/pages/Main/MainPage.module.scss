@@ -41,6 +41,10 @@
   min-height: 300svh;
   background: $color-bg;
 }
+.mainContentDismissed {
+  visibility: hidden;
+  pointer-events: none;
+}
 .heroInner {
   --hero-image-half: min(22vw, 300px);
   --hero-arch-radius: min(22vw, 300px);

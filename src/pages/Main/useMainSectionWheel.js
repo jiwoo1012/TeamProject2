@@ -13,6 +13,8 @@ const useMainSectionWheel = ({
   heroSunPlayRef,
   heroSunResetRef,
   isHeroSunCompleteRef,
+  isHeroDismissed,
+  onHeroExit,
 }) => {
   useLayoutEffect(() => {
     const isDesktopStepMode = window.matchMedia('(hover: hover) and (pointer: fine)').matches
@@ -128,6 +130,10 @@ const useMainSectionWheel = ({
           const targetIndex = currentIndex + direction
 
           if (targetIndex < 0) {
+            if (isHeroDismissed) {
+              event.preventDefault()
+              return
+            }
             targetTop = heroExitStop
           } else if (targetIndex >= sectionTops.length) {
             return
@@ -152,6 +158,7 @@ const useMainSectionWheel = ({
         onUpdate: () => window.scrollTo(0, scrollState.y),
         onComplete: () => {
           root.style.scrollBehavior = previousScrollBehavior
+          if (targetTop === firstSectionTop) onHeroExit?.()
           gsap.delayedCall(0.22, () => {
             scrollTween = null
           })
@@ -176,8 +183,10 @@ const useMainSectionWheel = ({
     heroSunPlayRef,
     heroSunResetRef,
     isHeroSunCompleteRef,
+    isHeroDismissed,
     mainContentRef,
     makdongSectionRef,
+    onHeroExit,
   ])
 }
 

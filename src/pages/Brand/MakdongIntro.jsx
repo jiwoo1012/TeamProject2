@@ -117,6 +117,8 @@ const MakdongIntro = () => {
         aria-labelledby="makdong-transition-title"
       >
         <h2 id="makdong-transition-title">MAKDONG</h2>
+        <p className={styles.transitionTagline}>당신의 한 잔을 함께 고를 친구가 옵니다</p>
+
         <div className={styles.flowRibbons} aria-hidden="true">
           <i />
           <i />
