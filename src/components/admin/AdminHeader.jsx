@@ -30,7 +30,7 @@ const SITE_LINKS = [
   },
   {
     label: '공지사항',
-    to: '/notice',
+    to: '/notices',
   },
 ]
 

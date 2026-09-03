@@ -17,7 +17,6 @@
 ======================================== */
 
 @include mobile {
-
   .mobileHeader {
     position: relative;
     z-index: $z-header;
@@ -43,7 +42,6 @@
     padding: 0 $side-margin-mobile;
 
     background: transparent;
-
     border-bottom: 1px solid rgba($color-text-primary, 0.1);
 
     &::before {
@@ -51,9 +49,14 @@
       top: calc(50% - 10px);
       left: 0;
       z-index: 0;
+
       width: 100%;
       height: 440px;
-      background: url('../../assets/images/common/header-hanji.webp') center top / auto 440px no-repeat;
+
+      background:
+        url('../../assets/images/common/header-hanji.webp')
+        center top / auto 440px no-repeat;
+
       content: '';
       transform: translateY(-50%);
       pointer-events: none;
@@ -74,7 +77,6 @@
     display: flex;
     align-items: center;
     flex-shrink: 0;
-
     text-decoration: none;
 
     img {
@@ -96,12 +98,10 @@
     gap: $space-3;
   }
 
-
   .iconButton {
     @include flex-center;
 
     flex-shrink: 0;
-
     width: 22px;
     height: 22px;
     padding: 0;
@@ -127,7 +127,6 @@
 
   .menuButton {
     position: relative;
-
     flex-shrink: 0;
 
     width: 21px;
@@ -136,7 +135,6 @@
 
     background: transparent;
     border: 0;
-
     cursor: pointer;
 
     span {
@@ -147,7 +145,6 @@
       height: 1px;
 
       background: $color-text-primary;
-
       transform: translateX(-50%);
 
       transition:
@@ -164,11 +161,7 @@
     }
   }
 
-
-  /* 메뉴가 열렸을 때 X */
-
   .menuButtonOpen {
-
     span:first-child {
       top: 10px;
 
@@ -188,33 +181,40 @@
 
 
   /* ========================================
-     FULL MENU PANEL
+     HALF-SCREEN MENU PANEL
+     오른쪽에서 화면 절반만 차지
   ======================================== */
 
   .menuPanel {
     position: fixed;
-    top: 58px;
-    left: 0;
+    top: 76px;
+    right: 0;
+    left: auto;
     z-index: $z-dropdown;
 
     display: flex;
     flex-direction: column;
 
-    width: 100%;
-    height: calc(100dvh - 58px);
+    width: 50vw;
+    height: calc(100dvh - 76px);
 
     padding:
-      $space-8
+      $space-6
       $side-margin-mobile
-      $space-6;
+      96px;
+
+    box-sizing: border-box;
+    overflow-y: auto;
+    overscroll-behavior: contain;
 
     background: $color-bg;
+    border-left: 1px solid rgba($color-text-primary, 0.08);
+    box-shadow: -12px 0 28px rgba(44, 37, 34, 0.08);
 
     opacity: 0;
     visibility: hidden;
 
-    transform: translateY(-6px);
-
+    transform: translateX(100%);
     pointer-events: none;
 
     transition:
@@ -223,13 +223,10 @@
       transform $transition-base ease;
   }
 
-
   .menuPanelOpen {
     opacity: 1;
     visibility: visible;
-
-    transform: translateY(0);
-
+    transform: translateX(0);
     pointer-events: auto;
   }
 
@@ -241,10 +238,9 @@
   .gnb {
     display: flex;
     flex-direction: column;
-
+    flex-shrink: 0;
     width: 100%;
   }
-
 
   .menuGroup {
     width: 100%;
@@ -269,7 +265,6 @@
     text-decoration: none;
   }
 
-
   .menuTitle {
     @include flex-between;
 
@@ -279,15 +274,12 @@
     border: 0;
 
     text-align: left;
-
     cursor: pointer;
   }
-
 
   .directLink {
     display: flex;
     align-items: center;
-
     padding: 0 $space-3;
   }
 
@@ -307,9 +299,9 @@
     font-size: $font-size-md;
     font-weight: $font-weight-bold;
 
-    transition: transform $transition-fast ease;
+    transition:
+      transform $transition-fast ease;
   }
-
 
   .arrowOpen {
     transform: rotate(180deg);
@@ -322,11 +314,9 @@
 
   .subMenu {
     max-height: 0;
-
     overflow: hidden;
 
     opacity: 0;
-
     background: rgba($color-surface, 0.32);
 
     transition:
@@ -334,27 +324,22 @@
       opacity $transition-fast ease;
   }
 
-
   .subMenuOpen {
     max-height: 230px;
     opacity: 1;
   }
 
-
   .subMenuInner {
     display: flex;
     flex-direction: column;
-
     padding: $space-2 0;
   }
-
 
   .subMenuInner a {
     display: flex;
     align-items: center;
 
     min-height: 38px;
-
     padding: 0 $space-5;
 
     color: $color-text-primary;
@@ -372,16 +357,67 @@
 
     &:active {
       color: $color-primary;
-
       background: rgba($color-primary, 0.05);
-
       padding-left: 24px;
     }
   }
 
 
   /* ========================================
+     ADMIN AREA
+     관리자 로그인 시 메뉴 하단에만 노출
+  ======================================== */
+
+  .adminArea {
+    width: 100%;
+    margin-top: auto;
+    padding: 24px $space-1 0;
+    box-sizing: border-box;
+  }
+
+  .adminLink {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+    min-height: 48px;
+    padding: 0 14px;
+
+    box-sizing: border-box;
+
+    border-radius: 10px;
+    background: #4a382b;
+    color: #fff;
+
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.3;
+    text-decoration: none;
+
+    transition:
+      background $transition-fast ease,
+      transform $transition-fast ease;
+
+    &:active {
+      background: #382a20;
+      transform: scale(0.98);
+    }
+  }
+
+  .adminArrow {
+    flex-shrink: 0;
+    margin-left: 8px;
+
+    color: #fff;
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+
+  /* ========================================
      USER AREA
+     관리자일 때는 JSX에서 렌더링하지 않음
   ======================================== */
 
   .userArea {
@@ -390,23 +426,20 @@
     gap: $space-2;
 
     margin-top: auto;
-
     padding:
       $space-4
       $space-3;
 
     color: $color-text-muted;
-
     font-size: 10px;
 
     a {
       color: $color-text-primary;
-
       font-weight: $font-weight-regular;
-
       text-decoration: none;
 
-      transition: color $transition-fast ease;
+      transition:
+        color $transition-fast ease;
 
       &:active {
         color: $color-primary;

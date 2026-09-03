@@ -1,8 +1,11 @@
 rules_version = '2';
 
 service cloud.firestore {
-
   match /databases/{database}/documents {
+
+    // ========================================
+    // 공통 함수
+    // ========================================
 
     function signedIn() {
       return request.auth != null;
@@ -19,6 +22,11 @@ service cloud.firestore {
           /databases/$(database)/documents/users/$(request.auth.uid)
         ).data.role == 'admin';
     }
+
+
+    // ========================================
+    // 회원 생성 / 수정 검증
+    // ========================================
 
     function isValidMemberCreate(userId) {
       return request.resource.data.uid == userId
@@ -41,13 +49,19 @@ service cloud.firestore {
       return request.resource.data.points is int
         && request.resource.data.points >= 0
         && request.resource.data.points <= resource.data.points
-        && request.resource.data.diff(resource.data)
+        && request.resource.data
+          .diff(resource.data)
           .affectedKeys()
           .hasOnly([
             'points',
             'updatedAt'
           ]);
     }
+
+
+    // ========================================
+    // 배송지 검증
+    // ========================================
 
     function isValidAddress() {
       return request.resource.data.keys().hasAll([
@@ -66,6 +80,11 @@ service cloud.firestore {
         && request.resource.data.isDefault is bool;
     }
 
+
+    // ========================================
+    // 장바구니 검증
+    // ========================================
+
     function isValidCartItem(productId) {
       return request.resource.data.keys().hasOnly([
         'productId',
@@ -77,9 +96,9 @@ service cloud.firestore {
     }
 
 
-    /* ========================================
-       USERS
-    ======================================== */
+    // ========================================
+    // USERS
+    // ========================================
 
     match /users/{userId} {
 
@@ -105,20 +124,26 @@ service cloud.firestore {
         if isAdmin();
 
 
-      /* ========================================
-         WISHLIST
-      ======================================== */
+      // ========================================
+      // WISHLIST
+      // ========================================
 
       match /wishlist/{wishlistId} {
 
-        allow read, create, update, delete:
+        // 본인 + 관리자 조회 가능
+        allow read:
+          if isOwner(userId)
+          || isAdmin();
+
+        // 수정은 회원 본인만 가능
+        allow create, update, delete:
           if isOwner(userId);
       }
 
 
-      /* ========================================
-         ADDRESSES
-      ======================================== */
+      // ========================================
+      // ADDRESSES
+      // ========================================
 
       match /addresses/{addressId} {
 
@@ -134,9 +159,9 @@ service cloud.firestore {
       }
 
 
-      /* ========================================
-         CART
-      ======================================== */
+      // ========================================
+      // CART
+      // ========================================
 
       match /cart/{productId} {
 
@@ -153,25 +178,14 @@ service cloud.firestore {
     }
 
 
-    /* ========================================
-       NOTICES
-    ======================================== */
-
-    // 공지사항:
-    // 일반 사용자는 게시된 공지만,
-    // 관리자는 모든 상태를 관리한다.
-    //
-    // 예상 필드:
-    // title, content,
-    // status(draft|published),
-    // isPinned,
-    // authorId,
-    // authorName,
-    // createdAt,
-    // updatedAt
+    // ========================================
+    // NOTICES
+    // ========================================
 
     match /notices/{noticeId} {
 
+      // 일반 사용자는 게시된 공지만 조회
+      // 관리자는 모든 공지 조회 가능
       allow read:
         if resource.data.status == 'published'
         || isAdmin();
@@ -181,28 +195,9 @@ service cloud.firestore {
     }
 
 
-    /* ========================================
-       REVIEWS
-    ======================================== */
-
-    // 리뷰:
-    // 상품 상세에는 공개 리뷰를 표시하고,
-    // 작성자는 본인 리뷰만 수정·삭제한다.
-    //
-    // 예상 필드:
-    // orderId,
-    // productId,
-    // authorId,
-    // nickname,
-    // rating,
-    // content,
-    // status(visible|hidden),
-    // reportCount,
-    // createdAt,
-    // updatedAt
-    //
-    // orderId는 구매 상품(productIds)을
-    // 포함한 본인 주문이어야 한다.
+    // ========================================
+    // REVIEWS
+    // ========================================
 
     function hasPurchasedProduct(
       orderId,
@@ -219,7 +214,6 @@ service cloud.firestore {
 
 
     function isValidReviewCreate() {
-
       return request.resource.data.keys().hasAll([
         'orderId',
         'productId',
@@ -233,10 +227,10 @@ service cloud.firestore {
       ])
 
         && request.resource.data.orderId is string
-
         && request.resource.data.productId is string
 
-        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.authorId
+          == request.auth.uid
 
         && hasPurchasedProduct(
           request.resource.data.orderId,
@@ -244,25 +238,18 @@ service cloud.firestore {
         )
 
         && request.resource.data.nickname is string
-
         && request.resource.data.nickname.size() > 0
-
         && request.resource.data.nickname.size() <= 30
 
         && request.resource.data.rating is int
-
         && request.resource.data.rating >= 1
-
         && request.resource.data.rating <= 5
 
         && request.resource.data.content is string
-
         && request.resource.data.content.size() > 0
-
         && request.resource.data.content.size() <= 500
 
         && request.resource.data.status == 'visible'
-
         && request.resource.data.reportCount == 0
 
         && request.resource.data.createdAt is timestamp;
@@ -270,8 +257,8 @@ service cloud.firestore {
 
 
     function isValidReviewOwnerUpdate() {
-
-      return request.auth.uid == resource.data.authorId
+      return request.auth.uid
+          == resource.data.authorId
 
         && request.resource.data
           .diff(resource.data)
@@ -284,21 +271,15 @@ service cloud.firestore {
           ])
 
         && request.resource.data.nickname is string
-
         && request.resource.data.nickname.size() > 0
-
         && request.resource.data.nickname.size() <= 30
 
         && request.resource.data.rating is int
-
         && request.resource.data.rating >= 1
-
         && request.resource.data.rating <= 5
 
         && request.resource.data.content is string
-
         && request.resource.data.content.size() > 0
-
         && request.resource.data.content.size() <= 500;
     }
 
@@ -335,9 +316,9 @@ service cloud.firestore {
     }
 
 
-    /* ========================================
-       PRODUCTS
-    ======================================== */
+    // ========================================
+    // PRODUCTS
+    // ========================================
 
     match /products/{productId} {
 
@@ -349,9 +330,9 @@ service cloud.firestore {
     }
 
 
-    /* ========================================
-       EVENTS
-    ======================================== */
+    // ========================================
+    // EVENTS
+    // ========================================
 
     match /events/{eventId} {
 
@@ -363,9 +344,9 @@ service cloud.firestore {
     }
 
 
-    /* ========================================
-       PRODUCT PAIRINGS
-    ======================================== */
+    // ========================================
+    // PRODUCT PAIRINGS
+    // ========================================
 
     match /pairings/{pairingId} {
 
@@ -377,9 +358,9 @@ service cloud.firestore {
     }
 
 
-    /* ========================================
-       ORDERS
-    ======================================== */
+    // ========================================
+    // ORDERS
+    // ========================================
 
     match /orders/{orderId} {
 
@@ -424,39 +405,38 @@ service cloud.firestore {
     }
 
 
-    /* ========================================
-       EVENT PARTICIPATIONS
-       ★ 이번에 추가한 부분
-    ======================================== */
-
-    // 이벤트 참여 내역
-    //
-    // 일반 사용자는 본인의 이벤트 참여 내역만 조회 가능
-    //
-    // 이벤트 결과 저장,
-    // 포인트 지급,
-    // 당첨 내역 수정은
-    // 클라이언트에서 직접 처리하지 않고
-    // Cloud Function에서 처리한다.
+    // ========================================
+    // EVENT PARTICIPATIONS
+    // ========================================
 
     match /eventParticipations/{participationId} {
 
-      allow read:
-        if signedIn()
-        && resource.data.userId
-          == request.auth.uid;
+      // 일반 사용자:
+      // 자신의 참여 내역만 조회
 
+      // 관리자:
+      // 전체 회원 참여 내역 조회 가능
+      allow read:
+        if (
+          signedIn()
+          && resource.data.userId
+            == request.auth.uid
+        )
+        || isAdmin();
+
+      // 이벤트 결과 저장 / 포인트 지급 /
+      // 당첨 정보 변경 등은
+      // 클라이언트에서 직접 처리하지 않음
       allow create, update, delete:
         if false;
     }
 
 
-    /* ========================================
-       DEFAULT DENY
-    ======================================== */
+    // ========================================
+    // DEFAULT DENY
+    // ========================================
 
     match /{document=**} {
-
       allow read, write:
         if false;
     }

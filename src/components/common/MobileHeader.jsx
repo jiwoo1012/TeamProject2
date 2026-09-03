@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import jajakLogo from '../../assets/logos/jajakLogo.png'
@@ -6,6 +6,8 @@ import cartIcon from '../../assets/icons/cartIcon.png'
 import searchIcon from '../../assets/icons/searchIcon.png'
 
 import MobileSearchModal from './MobileSearchModal'
+import { subscribeToAuthState } from '../../firebase/auth'
+import { getDocument } from '../../firebase/firestore'
 
 import styles from './MobileHeader.module.scss'
 
@@ -23,6 +25,69 @@ const MobileHeader = () => {
     isSearchOpen,
     setIsSearchOpen,
   ] = useState(false)
+
+
+  const [
+    isAdmin,
+    setIsAdmin,
+  ] = useState(false)
+
+
+  // ========================================
+  // 관리자 여부 확인
+  // ========================================
+
+  useEffect(() => {
+    let isMounted = true
+
+    const unsubscribe =
+      subscribeToAuthState(
+        async (user) => {
+          if (!user) {
+            if (isMounted) {
+              setIsAdmin(false)
+            }
+
+            return
+          }
+
+          try {
+            const userDocument =
+              await getDocument(
+                'users',
+                user.uid
+              )
+
+            if (isMounted) {
+              setIsAdmin(
+                userDocument?.role ===
+                  'admin'
+              )
+            }
+          } catch (error) {
+            console.error(
+              '관리자 권한 확인 실패:',
+              error
+            )
+
+            if (isMounted) {
+              setIsAdmin(false)
+            }
+          }
+        }
+      )
+
+    return () => {
+      isMounted = false
+
+      if (
+        typeof unsubscribe ===
+        'function'
+      ) {
+        unsubscribe()
+      }
+    }
+  }, [])
 
 
   // ========================================
@@ -529,34 +594,73 @@ const MobileHeader = () => {
 
 
         {/* ==============================
-            로그인 영역
+            관리자 전용 이동 버튼
         ============================== */}
 
-        <div
-          className={
-            styles.userArea
-          }
-        >
-          <Link
-            to="/login"
-            onClick={
-              closeMenu
+        {isAdmin && (
+          <div
+            className={
+              styles.adminArea
             }
           >
-            로그인
-          </Link>
+            <Link
+              to="/admin"
+              className={
+                styles.adminLink
+              }
+              onClick={
+                closeMenu
+              }
+            >
+              <span>
+                관리자 페이지로 이동
+              </span>
 
-          <span>|</span>
+              <span
+                className={
+                  styles.adminArrow
+                }
+                aria-hidden="true"
+              >
+                →
+              </span>
+            </Link>
+          </div>
+        )}
 
-          <Link
-            to="/signup"
-            onClick={
-              closeMenu
+
+        {/* ==============================
+            비관리자 로그인 영역
+            관리자 로그인 시에는 노출하지 않음
+        ============================== */}
+
+        {!isAdmin && (
+          <div
+            className={
+              styles.userArea
             }
           >
-            회원가입
-          </Link>
-        </div>
+            <Link
+              to="/login"
+              onClick={
+                closeMenu
+              }
+            >
+              로그인
+            </Link>
+
+            <span>|</span>
+
+            <Link
+              to="/signup"
+              onClick={
+                closeMenu
+              }
+            >
+              회원가입
+            </Link>
+          </div>
+        )}
       </div>
 
 
