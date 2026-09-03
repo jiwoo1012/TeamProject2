@@ -3,7 +3,7 @@ import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { serverTimestamp } from 'firebase/firestore'
 import ProductCard from '../../components/ui/ProductCard/ProductCard'
 import Pagination from '../../components/ui/Pagination/Pagination'
-import { foods, gifts, glasses, liquors, products } from '../../data/products'
+import { fetchProducts, getManagedProducts } from '../../services/productCatalog'
 import { getCart, saveCart } from '../../utils/cartStorage'
 import { subscribeToAuthState } from '../../firebase/auth'
 import { getCollection, setDocument, deleteDocument } from '../../firebase/firestore'
@@ -58,36 +58,10 @@ const headerTypeMap = {
   liqueur: '리큐르',
 }
 
-const mainCategories = [
-  {
-    id: 'all',
-    label: '전체',
-    data: products,
-  },
-  {
-    id: 'liquor',
-    label: '전통주',
-    data: liquors,
-  },
-  {
-    id: 'food',
-    label: '안주',
-    data: foods,
-  },
-  {
-    id: 'glass',
-    label: '잔',
-    data: glasses,
-  },
-  {
-    id: 'gift',
-    label: '선물 세트',
-    data: gifts,
-  },
-]
-
 const resolveImage = (imageUrl) =>
-  Object.entries(productImages).find(([path]) =>
+  /^(data:|https?:\/\/)/.test(imageUrl ?? '')
+    ? imageUrl
+    : Object.entries(productImages).find(([path]) =>
     path.endsWith(`/${imageUrl}`)
   )?.[1]
 
@@ -124,6 +98,27 @@ const ProductList = () => {
   const [selectedAlcohol, setSelectedAlcohol] = useState(null)
   const [cartToast, setCartToast] = useState(null)
   const [wishToast, setWishToast] = useState(null)
+
+  const [catalogProducts, setCatalogProducts] = useState(getManagedProducts)
+  const liquors = useMemo(() => catalogProducts.filter((item) => item.productType === '전통주'), [catalogProducts])
+  const foods = useMemo(() => catalogProducts.filter((item) => item.productType === '안주'), [catalogProducts])
+  const glasses = useMemo(() => catalogProducts.filter((item) => item.productType === '주류용품' && item.glassType !== '선물세트'), [catalogProducts])
+  const gifts = useMemo(() => catalogProducts.filter((item) => item.productType === '주류용품' && item.glassType === '선물세트'), [catalogProducts])
+  const mainCategories = useMemo(() => [
+    { id: 'all', label: '전체', data: catalogProducts },
+    { id: 'liquor', label: '전통주', data: liquors },
+    { id: 'food', label: '안주', data: foods },
+    { id: 'glass', label: '잔', data: glasses },
+    { id: 'gift', label: '선물 세트', data: gifts },
+  ], [catalogProducts, foods, gifts, glasses, liquors])
+
+  useEffect(() => {
+    let isMounted = true
+    fetchProducts().then((items) => {
+      if (isMounted) setCatalogProducts(items)
+    })
+    return () => { isMounted = false }
+  }, [])
 
   useEffect(() => {
     const page = stageRef.current?.closest(`.${styles.page}`)
@@ -361,7 +356,7 @@ const ProductList = () => {
 
     return () =>
       window.cancelAnimationFrame(frameId)
-  }, [location.key, searchParams])
+  }, [location.key, mainCategories, searchParams])
 
   useEffect(() => {
     if (
@@ -488,7 +483,7 @@ const ProductList = () => {
         const searchGroups =
           searchKeyword
             .toLowerCase()
-            .split(/[\/·,]+/)
+            .split(/[/·,]+/)
             .map((group) =>
               group
                 .trim()
@@ -643,6 +638,8 @@ const ProductList = () => {
       priceFilter,
       sortBy,
       searchKeyword,
+      gifts,
+      glasses,
     ])
 
   const totalPages = Math.max(

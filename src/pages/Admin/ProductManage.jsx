@@ -1,124 +1,81 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { collection, onSnapshot, query, where } from 'firebase/firestore'
 import adminTopOrnament from '../../assets/images/admin/adminTopOrnament.svg'
+import { products as productData } from '../../data/products'
+import { db } from '../../firebase/firebase'
+import { deleteDocument, updateDocument } from '../../firebase/firestore'
+import { fetchProducts } from '../../services/productCatalog'
 import styles from './ProductManage.module.scss'
 
 // ========================================
 // 초기 상품 데이터
 // ========================================
-const initialProducts = [
-  {
-    id: 'ALC-260901',
-    name: '문경바람 40도 (오크 숙성)',
-    category: '증류주',
-    price: 68000,
-    stock: 4,
-    status: 'selling',
-    displayStatus: 'display',
-    createdAt: '2026-08-28 14:20',
-    description: '사과를 발효하여 정성스레 증류한 뒤 오크통에서 숙성시킨 고급 전통주입니다.',
-    tags: ['향: 사과향', '도수: 40도', '페어링: 갈비찜'],
-    views: 1420,
-    likes: 380,
-    reviews: 42,
-    rating: 4.8,
-  },
-  {
-    id: 'ALC-260902',
-    name: '이강주 25도 375ml',
-    category: '약주·청주',
-    price: 32000,
-    stock: 18,
-    status: 'selling',
-    displayStatus: 'display',
-    createdAt: '2026-08-25 11:15',
-    description: '배와 생강이 들어가 알싸하면서도 부드러운 목넘김을 자랑하는 조선 3대 명주.',
-    tags: ['향: 배·생강', '도수: 25도', '페어링: 생선회'],
-    views: 980,
-    likes: 210,
-    reviews: 28,
-    rating: 4.7,
-  },
-  {
-    id: 'ALC-260903',
-    name: '안동소주 일품 350ml',
-    category: '증류주',
-    price: 45000,
-    stock: 2,
-    status: 'selling',
-    displayStatus: 'display',
-    createdAt: '2026-08-21 16:40',
-    description: '100% 쌀과 전통 누룩으로 빚은 깊은 풍미의 전통 증류식 소주입니다.',
-    tags: ['향: 곡물향', '도수: 40도', '페어링: 삼겹살'],
-    views: 2100,
-    likes: 540,
-    reviews: 64,
-    rating: 4.9,
-  },
-  {
-    id: 'ALC-260904',
-    name: '한산소곡주 700ml',
-    category: '약주·청주',
-    price: 39000,
-    stock: 0,
-    status: 'soldout',
-    displayStatus: 'display',
-    createdAt: '2026-08-18 10:10',
-    description: '한번 앉으면 일어설 수 없다는 감미로운 맛의 대한민국 대표 전통 약주.',
-    tags: ['향: 국화향', '도수: 18도', '페어링: 전·부침개'],
-    views: 1850,
-    likes: 410,
-    reviews: 53,
-    rating: 4.6,
-  },
-  {
-    id: 'ALC-260905',
-    name: '해창 막걸리 12도 900ml',
-    category: '탁주',
-    price: 18000,
-    stock: 32,
-    status: 'selling',
-    displayStatus: 'display',
-    createdAt: '2026-08-15 09:30',
-    description: '물과 찹쌀의 조화가 이뤄낸 걸쭉하고 진한 프리미엄 수제 생막걸리.',
-    tags: ['향: 쌀 단향', '도수: 12도', '페어링: 보쌈'],
-    views: 3200,
-    likes: 890,
-    reviews: 112,
-    rating: 4.9,
-  },
-  {
-    id: 'ALC-260906',
-    name: '추사 40 애플 브랜디 500ml',
-    category: '과실주',
-    price: 72000,
-    stock: 11,
-    status: 'selling',
-    displayStatus: 'display',
-    createdAt: '2026-08-10 13:50',
-    description: '예산 사과만을 농축 발효하여 오크 숙성시킨 한국형 애플 브랜디.',
-    tags: ['향: 바닐라·사과', '도수: 40도', '페어링: 치즈'],
-    views: 1150,
-    likes: 310,
-    reviews: 35,
-    rating: 4.8,
-  },
-  {
-    id: 'ALC-260907',
-    name: '복순도가 손막걸리 935ml',
-    category: '탁주',
-    price: 14000,
-    stock: 0,
-    status: 'hidden',
-    displayStatus: 'hidden',
-    createdAt: '2026-08-04 15:20',
-    description: '천연 탄산이 가득해 샴페인처럼 터지는 스파클링 막걸리입니다.',
-    tags: ['향: 상큼한 산미', '도수: 6.5도', '페어링: 핑거푸드'],
-    views: 890,
-    likes: 190,
-    reviews: 19,
-    rating: 4.5,
-  },
-]
+const productImages = import.meta.glob('../../assets/images/products/*.{png,jpg,jpeg,webp}', { eager: true, import: 'default' })
+const productDetailImages = import.meta.glob('../../assets/images/products/productDetail/**/*.{png,jpg,jpeg,webp}', { eager: true, import: 'default' })
+const PRODUCT_OVERRIDES_KEY = 'jajak_admin_product_overrides'
+const DELETED_PRODUCTS_KEY = 'jajak_admin_deleted_products'
+
+const resolveProductImage = (imageUrl) => {
+  if (/^(data:|https?:\/\/)/.test(imageUrl ?? '')) return imageUrl
+  const fileName = imageUrl?.split('/').pop()
+  return Object.entries(productImages).find(([path]) => path.endsWith(`/${fileName}`))?.[1]
+}
+
+const getLocalDetailImages = (imageUrl = '') => {
+  if (/^(data:|https?:\/\/)/.test(imageUrl)) return []
+  const folder = imageUrl.replace(/\.[^.]+$/, '')
+  return Object.entries(productDetailImages)
+    .filter(([path]) => path.includes(`/productDetail/${folder}/`))
+    .sort(([first], [second]) => first.localeCompare(second, 'ko', { numeric: true }))
+    .map(([, source]) => source)
+    .slice(0, 3)
+}
+
+const normalizeProduct = (product) => {
+  const stock = Math.max(0, Number(product.stock ?? 0))
+  const status = product.status === 'hidden'
+    ? 'hidden'
+    : (stock === 0 || product.status === 'soldout' ? 'soldout' : 'selling')
+
+  return {
+    ...product,
+    id: product.productId,
+    name: product.productName,
+    category: product.productType === '전통주'
+      ? product.liquorType
+      : (product.productType === '주류용품' ? (product.glassType === '선물세트' ? '선물 세트' : '잔') : product.productType),
+    price: Number(product.price ?? 0),
+    stock,
+    status,
+    displayStatus: product.status === 'hidden' ? 'hidden' : 'display',
+    createdAt: product.createdAt ?? '-',
+    description: product.productDescription ?? '',
+    tags: product.flavorKeywords ?? [],
+    views: Number(product.views ?? 0),
+    likes: Number(product.likes ?? 0),
+    reviews: Number(product.reviewCount ?? product.reviews ?? 0),
+    rating: Number(product.rating ?? 0),
+    imageSrc: resolveProductImage(product.imageUrl),
+    detailImageUrls: Array.isArray(product.detailImageUrls) ? product.detailImageUrls : [],
+  }
+}
+
+const readStoredJson = (key, fallback) => {
+  try {
+    return JSON.parse(localStorage.getItem(key)) ?? fallback
+  } catch {
+    return fallback
+  }
+}
+
+const loadProducts = () => {
+  const overrides = readStoredJson(PRODUCT_OVERRIDES_KEY, {})
+  const deletedIds = new Set(readStoredJson(DELETED_PRODUCTS_KEY, []))
+  return productData
+    .map(normalizeProduct)
+    .filter((product) => !deletedIds.has(product.id))
+    .map((product) => ({ ...product, ...overrides[product.id] }))
+}
 
 const statusLabels = {
   selling: '판매 중',
@@ -131,8 +88,6 @@ const displayLabels = {
   hidden: '진열 안함',
 }
 
-const categories = ['전체 카테고리', '탁주', '약주·청주', '증류주', '과실주', '선물 세트']
-
 const RefreshIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M20 6v5h-5M4 18v-5h5" />
@@ -141,7 +96,7 @@ const RefreshIcon = () => (
 )
 
 const ProductManage = () => {
-  const [products, setProducts] = useState(initialProducts)
+  const [products, setProducts] = useState(loadProducts)
   const [searchQuery, setSearchQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('전체 카테고리')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -152,9 +107,16 @@ const ProductManage = () => {
   const [toastMessage, setToastMessage] = useState('')
   const [isRefreshing, setIsRefreshing] = useState(false)
 
+  const categories = useMemo(
+    () => ['전체 카테고리', ...new Set(products.map((product) => product.category).filter(Boolean))],
+    [products],
+  )
+
   // 외부 클릭 감지를 위한 Refs
   const tableRef = useRef(null)
   const panelRef = useRef(null)
+  const imageInputRef = useRef(null)
+  const detailImageInputRefs = useRef([])
 
   // 선택 상품 상태
   const selectedProduct = products.find((p) => p.id === selectedProductId) || null
@@ -165,6 +127,11 @@ const ProductManage = () => {
   const [draftStatus, setDraftStatus] = useState('selling')
   const [draftDisplayStatus, setDraftDisplayStatus] = useState('display')
   const [draftDescription, setDraftDescription] = useState('')
+  const [draftTags, setDraftTags] = useState([])
+  const [draftTag, setDraftTag] = useState('')
+  const [draftImageUrl, setDraftImageUrl] = useState('')
+  const [draftDetailImageUrls, setDraftDetailImageUrls] = useState([null, null, null])
+  const [liveMetrics, setLiveMetrics] = useState({ reviews: 0, rating: 0 })
 
   // 외부 빈 공간 클릭 시 통계 패널로 복귀
   useEffect(() => {
@@ -187,10 +154,31 @@ const ProductManage = () => {
     }
   }, [selectedProductId])
 
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, 'products'),
+      (snapshot) => {
+        setProducts(snapshot.docs.map((item) => {
+          const data = item.data()
+          return normalizeProduct({ ...data, productId: data.productId ?? item.id })
+        }))
+      },
+      (error) => {
+        console.error('Firestore 상품 실시간 조회 실패:', error)
+        fetchProducts({ includeHidden: true }).then((items) => {
+          setProducts(items.map(normalizeProduct))
+        })
+      },
+    )
+
+    return unsubscribe
+  }, [])
+
   // 새로고침 핸들러 (회전 모션 포함)
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setIsRefreshing(true)
-    setProducts(initialProducts)
+    const items = await fetchProducts({ includeHidden: true })
+    setProducts(items.map(normalizeProduct))
     setTimeout(() => {
       setIsRefreshing(false)
       setToastMessage('상품 목록을 새로고침했습니다.')
@@ -199,10 +187,20 @@ const ProductManage = () => {
   }
 
   // 지표 카운트 계산
+  const isSoldOut = (product) => product.status === 'soldout' || product.stock <= 0
   const totalCount = products.length
-  const sellingCount = products.filter((p) => p.status === 'selling').length
-  const lowStockCount = products.filter((p) => p.stock > 0 && p.stock <= 5).length
-  const hiddenCount = products.filter((p) => p.status === 'hidden' || p.status === 'soldout').length
+  const sellingCount = products.filter((p) => p.status === 'selling' && !isSoldOut(p)).length
+  const lowStockCount = products.filter((p) => p.status !== 'hidden' && p.stock > 0 && p.stock <= 5).length
+  const hiddenCount = products.filter((p) => p.status === 'hidden' || isSoldOut(p)).length
+  const categoryCounts = useMemo(() => {
+    const counts = new Map()
+    products.forEach((product) => {
+      if (!product.category) return
+      counts.set(product.category, (counts.get(product.category) ?? 0) + 1)
+    })
+    return [...counts.entries()].sort(([first], [second]) => first.localeCompare(second, 'ko'))
+  }, [products])
+  const largestCategoryCount = Math.max(...categoryCounts.map(([, count]) => count), 1)
 
   const summaryCards = [
     { key: 'total', label: '전체 상품 수', value: totalCount, unit: '개', caption: '정상 등록 상품' },
@@ -235,10 +233,10 @@ const ProductManage = () => {
 
       let matchesStatus = true
       if (statusFilter === 'selling') matchesStatus = p.status === 'selling'
-      else if (statusFilter === 'soldout') matchesStatus = p.status === 'soldout'
+      else if (statusFilter === 'soldout') matchesStatus = isSoldOut(p)
       else if (statusFilter === 'hidden') matchesStatus = p.status === 'hidden'
       else if (statusFilter === 'lowStock') matchesStatus = p.stock > 0 && p.stock <= 5
-      else if (statusFilter === 'hiddenOrSoldout') matchesStatus = p.status === 'hidden' || p.status === 'soldout'
+      else if (statusFilter === 'hiddenOrSoldout') matchesStatus = p.status === 'hidden' || isSoldOut(p)
 
       return matchesQuery && matchesCategory && matchesStatus
     })
@@ -263,35 +261,122 @@ const ProductManage = () => {
     setDraftStatus(product.status)
     setDraftDisplayStatus(product.displayStatus || 'display')
     setDraftDescription(product.description || '')
+    setDraftTags(product.tags || [])
+    setDraftTag('')
+    setDraftImageUrl(product.imageUrl || '')
+    setDraftDetailImageUrls(Array.from({ length: 3 }, (_, index) => product.detailImageUrls?.[index] ?? null))
   }
 
-  const handleSaveEdit = () => {
-    if (!selectedProduct) return
-    setProducts((prev) =>
-      prev.map((p) =>
-        p.id === selectedProduct.id
-          ? {
-              ...p,
-              name: draftName,
-              category: draftCategory,
-              price: Number(draftPrice),
-              stock: Number(draftStock),
-              status: draftStatus,
-              displayStatus: draftDisplayStatus,
-              description: draftDescription,
-            }
-          : p
-      )
+  useEffect(() => {
+    if (!selectedProductId) {
+      setLiveMetrics({ reviews: 0, rating: 0 })
+      return undefined
+    }
+    return onSnapshot(
+      query(collection(db, 'reviews'), where('productId', '==', selectedProductId)),
+      (snapshot) => {
+        const ratings = snapshot.docs.map((item) => Number(item.data().rating)).filter(Number.isFinite)
+        setLiveMetrics({ reviews: snapshot.size, rating: ratings.length ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length : 0 })
+      },
+      () => setLiveMetrics({ reviews: 0, rating: 0 }),
     )
+  }, [selectedProductId])
+
+  const handleAddTag = () => {
+    const nextTag = draftTag.trim()
+    if (!nextTag || draftTags.includes(nextTag)) return
+    setDraftTags((current) => [...current, nextTag])
+    setDraftTag('')
+  }
+
+  const handleImageChange = (event, detailIndex = null) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      setToastMessage('이미지 파일만 선택할 수 있습니다.')
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => {
+      const image = new Image()
+      image.onload = () => {
+        const maxSize = 720
+        const scale = Math.min(1, maxSize / Math.max(image.width, image.height))
+        const canvas = document.createElement('canvas')
+        canvas.width = Math.round(image.width * scale)
+        canvas.height = Math.round(image.height * scale)
+        canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height)
+        const nextUrl = canvas.toDataURL('image/jpeg', 0.78)
+        if (detailIndex === null) setDraftImageUrl(nextUrl)
+        else setDraftDetailImageUrls((current) => current.map((url, index) => index === detailIndex ? nextUrl : url))
+      }
+      image.src = reader.result
+    }
+    reader.readAsDataURL(file)
+    event.target.value = ''
+  }
+
+  const handleSaveEdit = async () => {
+    if (!selectedProduct) return
+    const normalizedStock = Math.max(0, Number(draftStock))
+    const normalizedStatus = draftDisplayStatus === 'hidden'
+      ? 'hidden'
+      : (normalizedStock === 0 ? 'soldout' : draftStatus)
+    const editedProduct = {
+      ...selectedProduct,
+      name: draftName,
+      category: draftCategory,
+      price: Number(draftPrice),
+      stock: normalizedStock,
+      status: normalizedStatus,
+      displayStatus: draftDisplayStatus,
+      description: draftDescription,
+      tags: draftTags,
+      imageUrl: draftImageUrl,
+      imageSrc: resolveProductImage(draftImageUrl),
+      detailImageUrls: draftDetailImageUrls,
+    }
+    const isLiquor = ['탁주', '약주', '청주', '증류주', '과실주', '리큐르'].includes(draftCategory)
+    const isAccessory = ['잔', '선물 세트'].includes(draftCategory)
+
+    try {
+      await updateDocument('products', selectedProduct.id, {
+        productName: draftName,
+        productType: isLiquor ? '전통주' : (isAccessory ? '주류용품' : draftCategory),
+        liquorType: isLiquor ? draftCategory : (selectedProduct.liquorType ?? null),
+        glassType: draftCategory === '선물 세트'
+          ? '선물세트'
+          : (draftCategory === '잔' ? (selectedProduct.glassType === '선물세트' ? '술잔' : selectedProduct.glassType) : (selectedProduct.glassType ?? null)),
+        price: Number(draftPrice),
+        stock: normalizedStock,
+        status: normalizedStatus,
+        productDescription: draftDescription,
+        flavorKeywords: draftTags,
+        imageUrl: draftImageUrl,
+        detailImageUrls: draftDetailImageUrls,
+      })
+      setProducts((prev) => prev.map((p) => p.id === selectedProduct.id ? editedProduct : p))
+    } catch (error) {
+      console.error('상품 수정 실패:', error)
+      setToastMessage('상품 정보를 수정하지 못했습니다. 관리자 권한을 확인해주세요.')
+      return
+    }
     setSelectedProductId(null)
     setToastMessage(`${draftName} 상품 정보가 수정되었습니다.`)
     setTimeout(() => setToastMessage(''), 3000)
   }
 
-  const handleDeleteProduct = () => {
+  const handleDeleteProduct = async () => {
     if (!selectedProduct) return
     if (window.confirm(`'${selectedProduct.name}' 상품을 정말 삭제하시겠습니까?`)) {
-      setProducts((prev) => prev.filter((p) => p.id !== selectedProduct.id))
+      try {
+        await deleteDocument('products', selectedProduct.id)
+        setProducts((prev) => prev.filter((p) => p.id !== selectedProduct.id))
+      } catch (error) {
+        console.error('상품 삭제 실패:', error)
+        setToastMessage('상품을 삭제하지 못했습니다. 관리자 권한을 확인해주세요.')
+        return
+      }
       setSelectedProductId(null)
       setToastMessage('상품이 삭제되었습니다.')
       setTimeout(() => setToastMessage(''), 3000)
@@ -462,7 +547,9 @@ const ProductManage = () => {
                     </td>
                     <td>
                       <div className={styles.productCell}>
-                        <span className={styles.thumbPlaceholder} aria-hidden="true" />
+                        <span className={styles.thumbPlaceholder} aria-hidden="true">
+                          {p.imageSrc && <img src={p.imageSrc} alt="" />}
+                        </span>
                         <span className={styles.pName}>{p.name}</span>
                       </div>
                     </td>
@@ -478,7 +565,7 @@ const ProductManage = () => {
                         {statusLabels[p.status]}
                       </span>
                     </td>
-                    <td>{p.createdAt.split(' ')[0]}</td>
+                    <td>{String(p.createdAt).split(' ')[0]}</td>
                     <td>
                       <button
                         type="button"
@@ -510,7 +597,9 @@ const ProductManage = () => {
 
             {/* 선택 상품 상단 미니 카드 */}
             <div className={styles.selectedProductCard}>
-              <div className={styles.cardThumb} />
+              <div className={styles.cardThumb}>
+                {selectedProduct.imageSrc && <img src={selectedProduct.imageSrc} alt="" />}
+              </div>
               <div className={styles.cardInfo}>
                 <h3 title={draftName}>{draftName}</h3>
                 <dl>
@@ -615,16 +704,18 @@ const ProductManage = () => {
                   </div>
 
                   <div className={styles.formFieldBlock}>
-                    <label>테이 정보 *</label>
+                    <label>맛 키워드 *</label>
                     <div className={styles.chipGroup}>
-                      {selectedProduct.tags?.map((tag) => (
+                      {draftTags.map((tag) => (
                         <span key={tag} className={styles.chip}>
                           {tag}
+                          <button type="button" onClick={() => setDraftTags((current) => current.filter((item) => item !== tag))} aria-label={`${tag} 삭제`}>×</button>
                         </span>
                       ))}
-                      <button type="button" className={styles.chipAddBtn}>
-                        +
-                      </button>
+                    </div>
+                    <div className={styles.tagEditor}>
+                      <input value={draftTag} onChange={(e) => setDraftTag(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddTag() } }} placeholder="맛 키워드 입력" />
+                      <button type="button" onClick={handleAddTag}>추가</button>
                     </div>
                   </div>
 
@@ -632,20 +723,29 @@ const ProductManage = () => {
                     <label>상품 앨범 *</label>
                     <div className={styles.albumRow}>
                       <div className={styles.mainImgBox}>
-                        <span>대표 이미지</span>
+                        {draftImageUrl ? <img src={resolveProductImage(draftImageUrl)} alt="변경할 대표 상품" /> : <span>대표 이미지</span>}
                       </div>
-                      <div className={styles.subImgBox}>
-                        <span>서브 1</span>
-                        <button type="button">×</button>
-                      </div>
-                      <div className={styles.subImgBox}>
-                        <span>서브 2</span>
-                        <button type="button">×</button>
-                      </div>
-                      <button type="button" className={styles.uploadPlusBox}>
+                      {Array.from({ length: 3 }, (_, index) => {
+                        const localImages = getLocalDetailImages(selectedProduct.imageUrl)
+                        const preview = draftDetailImageUrls[index] || localImages[index]
+                        return (
+                          <div className={styles.subImgBox} key={index}>
+                            {preview ? <img src={preview} alt={`서브 이미지 ${index + 1}`} /> : <span>서브 {index + 1}</span>}
+                            {draftDetailImageUrls[index] && <button type="button" onClick={() => setDraftDetailImageUrls((current) => current.map((url, itemIndex) => itemIndex === index ? null : url))} aria-label={`서브 이미지 ${index + 1} 변경 취소`}>×</button>}
+                          </div>
+                        )
+                      })}
+                      <button type="button" className={styles.uploadPlusBox} onClick={() => imageInputRef.current?.click()}>
                         <span>+</span>
-                        <small>이미지 추가</small>
+                        <small>대표 변경</small>
                       </button>
+                      <input ref={imageInputRef} className={styles.srOnly} type="file" accept="image/*" onChange={handleImageChange} />
+                      {Array.from({ length: 3 }, (_, index) => (
+                        <button type="button" className={styles.uploadPlusBox} key={`detail-upload-${index}`} onClick={() => detailImageInputRefs.current[index]?.click()}>
+                          <span>+</span><small>서브 {index + 1}</small>
+                          <input ref={(node) => { detailImageInputRefs.current[index] = node }} className={styles.srOnly} type="file" accept="image/*" onChange={(event) => handleImageChange(event, index)} />
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </section>
@@ -671,14 +771,14 @@ const ProductManage = () => {
                       <span>리뷰 수</span>
                       <p>
                         <i className={styles.dotGrey} />
-                        <strong>{selectedProduct.reviews}개</strong>
+                        <strong>{liveMetrics.reviews}개</strong>
                       </p>
                     </div>
                     <div className={styles.metricBox}>
                       <span>평균 평점</span>
                       <p>
                         <i className={styles.dotGrey} />
-                        <strong>{selectedProduct.rating}점</strong>
+                        <strong>{liveMetrics.rating.toFixed(1)}점</strong>
                       </p>
                     </div>
                   </div>
@@ -742,26 +842,13 @@ const ProductManage = () => {
                 <span>CATEGORY</span>
               </header>
               <div className={styles.activityBars}>
-                <div>
-                  <span>탁주</span>
-                  <i><b style={{ width: '45%' }} /></i>
-                  <strong>2개</strong>
-                </div>
-                <div>
-                  <span>약주·청주</span>
-                  <i><b style={{ width: '45%' }} /></i>
-                  <strong>2개</strong>
-                </div>
-                <div>
-                  <span>증류주</span>
-                  <i><b style={{ width: '45%' }} /></i>
-                  <strong>2개</strong>
-                </div>
-                <div>
-                  <span>과실주</span>
-                  <i><b style={{ width: '25%' }} /></i>
-                  <strong>1개</strong>
-                </div>
+                {categoryCounts.map(([category, count]) => (
+                  <div key={category}>
+                    <span>{category}</span>
+                    <i><b style={{ width: `${(count / largestCategoryCount) * 100}%` }} /></i>
+                    <strong>{count}개</strong>
+                  </div>
+                ))}
               </div>
               <p className={styles.analyticsCaption}>현재 등록 데이터 집계 기준</p>
             </section>
