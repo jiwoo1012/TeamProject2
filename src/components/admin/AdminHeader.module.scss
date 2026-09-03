@@ -3,207 +3,227 @@
   z-index: 100;
 
   width: 100%;
-  height: 72px;
+  height: 64px;
 
-  display: flex;
-  align-items: center;
-
-  border-bottom: 1px solid #e8e2da;
-
-  background: #fffdf9;
-
-  box-sizing: border-box;
+  background: #faf9f5;
+  border-bottom: 1px solid #ece9e1;
 }
-
 
 .inner {
   width: 100%;
   height: 100%;
 
-  padding: 0 32px;
+  padding: 0 48px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  box-sizing: border-box;
 }
 
 
-/* logo */
+// ==============================
+// 로고
+// ==============================
+
 .logoArea {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  color: #382b22;
-  text-decoration: none;
-}
-
-
-.logo {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: 1px;
-}
-
-
-.adminLabel {
-  padding: 4px 9px;
-
-  border-radius: 5px;
-
-  background: #568b86;
-  color: #fff;
-
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-
-
-/* right */
-.rightArea {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-
-.adminText {
-  color: #8b8077;
-
-  font-size: 12px;
-  font-weight: 400;
-}
-
-
-/* shortcut */
-.shortcutWrap {
-  position: relative;
-
-  display: flex;
-  align-items: center;
-}
-
-
-.shortcutButton {
-  height: 38px;
-
-  padding: 0 14px;
-
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 10px;
 
-  border: 1px solid #ded7cf;
-  border-radius: 6px;
+  color: #111;
+  text-decoration: none;
+}
 
+.logo {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.6px;
+}
+
+.adminLabel {
+  height: 18px;
+
+  padding: 0 8px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 3px;
+
+  background: #4e827d;
+  color: #fff;
+
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.3px;
+}
+
+
+// ==============================
+// 오른쪽 메뉴
+// ==============================
+
+.rightArea {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.headerAction {
+  padding: 8px 0;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  border: 0;
   background: transparent;
-  color: #4b4038;
+
+  color: #65615b;
+  text-decoration: none;
 
   font-family: inherit;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
 
   cursor: pointer;
 
-  transition:
-    border-color 0.18s ease,
-    background-color 0.18s ease,
-    color 0.18s ease;
+  transition: color 0.2s ease;
+
+  svg {
+    width: 15px;
+    height: 15px;
+
+    flex-shrink: 0;
+
+    fill: none;
+
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
 
   &:hover {
-    border-color: #b8c9c6;
-
-    background: #f8faf9;
-    color: #487a76;
+    color: #111;
   }
 }
 
 
-.shortcutButton.active {
-  border-color: #a9c1bd;
+// ==============================
+// 사이트 바로가기
+// ==============================
 
-  background: #f7faf9;
-  color: #487a76;
+.shortcutWrap {
+  position: relative;
 }
 
+.shortcutButton {
+  position: relative;
+}
 
-/* 직접 만든 작은 chevron */
 .chevron {
   width: 6px;
   height: 6px;
 
+  margin-left: 2px;
+
   border-right: 1.5px solid currentColor;
   border-bottom: 1.5px solid currentColor;
 
-  transform: translateY(-2px) rotate(45deg);
+  transform: rotate(45deg) translateY(-2px);
 
   transition: transform 0.2s ease;
 }
 
-
 .chevronOpen {
-  transform: translateY(2px) rotate(225deg);
+  transform: rotate(225deg) translate(-1px, -1px);
+}
+
+.active {
+  color: #111;
 }
 
 
-/*
-  버튼과 메뉴 사이의 빈 공간도 dropdownLayer 영역에 포함시킴.
-  그래서 커서를 아래로 이동해도 hover가 끊기지 않음.
-*/
+// ==============================
+// 드롭다운
+// ==============================
+
 .dropdownLayer {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 11px);
   right: 0;
 
-  width: 196px;
+  width: 220px;
 
-  padding-top: 7px;
+  z-index: 200;
 }
 
-
-/* dropdown */
 .shortcutMenu {
-  padding: 6px;
+  overflow: hidden;
 
-  display: flex;
-  flex-direction: column;
-
-  border: 1px solid #e7e1da;
-  border-radius: 8px;
+  width: 100%;
 
   background: #fff;
 
+  border: 1px solid #e7e3db;
+  border-radius: 8px;
+
   box-shadow:
-    0 10px 30px rgba(56, 43, 34, 0.08),
-    0 2px 8px rgba(56, 43, 34, 0.04);
-
-  box-sizing: border-box;
-
-  animation: dropdownOpen 0.15s ease;
+    0 4px 10px rgba(0, 0, 0, 0.04),
+    0 12px 30px rgba(0, 0, 0, 0.08);
 }
 
 
-@keyframes dropdownOpen {
-  from {
-    opacity: 0;
-    transform: translateY(-3px);
+// ==============================
+// 드롭다운 헤더
+// ==============================
+
+.menuHeader {
+  padding: 16px 18px 14px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  background: #faf9f5;
+
+  border-bottom: 1px solid #eeebe5;
+
+  span {
+    color: #4e827d;
+
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  strong {
+    color: #222;
+
+    font-size: 13px;
+    font-weight: 600;
   }
 }
 
+
+// ==============================
+// 메뉴
+// ==============================
+
+.menuList {
+  padding: 7px;
+}
 
 .menuItem {
   width: 100%;
-  height: 40px;
+  min-height: 42px;
 
-  padding: 0 11px;
+  padding: 0 12px;
 
   display: flex;
   align-items: center;
@@ -211,79 +231,68 @@
 
   border-radius: 5px;
 
-  color: #51473f;
+  color: #514d47;
   text-decoration: none;
 
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
 
-  box-sizing: border-box;
-
   transition:
-    background-color 0.15s ease,
-    color 0.15s ease;
+    background 0.18s ease,
+    color 0.18s ease,
+    padding 0.18s ease;
 
   &:hover {
-    background: #f4f7f6;
-    color: #477873;
+    padding-left: 15px;
 
-    .menuArrow {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    background: #f5f4ef;
+    color: #345f5b;
   }
 }
-
 
 .menuArrow {
-  color: #568b86;
+  color: #aaa59d;
 
-  font-size: 13px;
-  font-weight: 400;
-
-  opacity: 0;
-
-  transform: translateX(-3px);
+  font-size: 14px;
 
   transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.menuItem:hover .menuArrow {
+  color: #4e827d;
+
+  transform: translateX(2px);
 }
 
 
-@media (max-width: 650px) {
-  .adminHeader {
-    height: 64px;
-  }
+// ==============================
+// 반응형
+// ==============================
 
+@media (max-width: 768px) {
+  .adminHeader {
+    height: 60px;
+  }
 
   .inner {
-    padding: 0 18px;
+    padding: 0 20px;
   }
 
-
-  .adminText {
-    display: none;
+  .logo {
+    font-size: 20px;
   }
 
-
-  .shortcutButton {
-    height: 36px;
-
-    padding: 0 12px;
-
-    font-size: 11px;
+  .rightArea {
+    gap: 18px;
   }
 
+  .headerAction {
+    font-size: 12px;
+  }
 
   .dropdownLayer {
-    width: 184px;
-  }
-
-
-  .menuItem {
-    height: 39px;
-
-    font-size: 11px;
+    width: 200px;
   }
 }

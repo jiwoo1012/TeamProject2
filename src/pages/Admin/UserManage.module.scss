@@ -1,896 +1,882 @@
-@use '../../styles/variables' as v;
+// ==========================================
+// 변수 및 테마 토큰 (전통의 멋 + 현대적 어드민)
+// ==========================================
+$bg-canvas: #f8f6f2;          // 은은한 한지/미색 바탕
+$bg-surface: #ffffff;         // 카드/테이블 기본 흰색 바탕
+$primary: #3b5f54;            // 차분한 단청 쑥색 (Point)
+$primary-hover: #2e4b42;
+$primary-subtle: #edf3f0;     // 연한 쑥색 배경
 
+$text-title: #222524;         // 메인 텍스트
+$text-body: #4a504d;          // 서브 텍스트
+$text-caption: #7a827e;       // 캡션/안내
+$border-color: #e8e6df;       // 답답하지 않은 연한 미색 보더
+
+$danger: #b24840;             // 차분한 단청 적색 (이용 정지/경고)
+$danger-subtle: #fbeeed;
+
+$shadow-sm: 0 2px 8px rgba(34, 37, 36, 0.04);
+$shadow-md: 0 6px 18px rgba(34, 37, 36, 0.06);
+$radius-card: 14px;
+$radius-control: 8px;
+
+// ==========================================
+// 공통 레이아웃
+// ==========================================
 .page {
-  width: 100%;
-  color: v.$color-text-primary;
+  padding: 32px 40px;
+  background-color: $bg-canvas;
+  min-height: 100vh;
+  color: $text-body;
+  box-sizing: border-box;
 }
 
 .srOnly {
   position: absolute;
   width: 1px;
   height: 1px;
+  padding: 0;
+  margin: -1px;
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
+  border: 0;
 }
 
+// ==========================================
+// 툴바 & 타이틀 (새로고침 버튼 스타일 개선)
+// ==========================================
 .pageToolbar {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: v.$space-6;
-  margin-bottom: v.$space-8;
-}
-
-.pageToolbar h2 {
-  margin: 0;
-  font-size: v.$font-size-3xl;
-  font-weight: v.$font-weight-bold;
-}
-
-.pageToolbar button,
-.resetButton,
-.viewButton,
-.detailHeader button,
-.detailFooter button,
-.suspensionConfirm button,
-.pagination button {
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  border: 1px solid v.$color-border;
-  background: v.$color-white;
-  color: v.$color-text-secondary;
-  font: inherit;
-  cursor: pointer;
-  transition: border-color v.$transition-fast, background-color v.$transition-fast, color v.$transition-fast;
+  margin-bottom: 12px;
+
+  h1 {
+    font-size: 30px;
+    font-weight: 700;
+    color: $text-title;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: $text-body;
+    background: $bg-surface;
+    border: 1px solid $border-color;
+    border-radius: $radius-control;
+    box-shadow: $shadow-sm;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+
+    svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      fill: none;
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+
+    &:hover:not(:disabled) {
+      background: #fdfcf9;
+      color: $primary;
+      border-color: lighten($primary, 20%);
+      box-shadow: 0 2px 10px rgba(59, 95, 84, 0.08);
+
+      svg {
+        transform: rotate(180deg);
+      }
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
 }
 
-.pageToolbar button {
-  min-height: 40px;
-  gap: v.$space-2;
-  padding: 0 v.$space-4;
-  border-radius: v.$radius-pill;
-  font-size: v.$font-size-sm;
+// 전통 문양 선
+.ornamentLine {
+  width: 100%;
+  display: block;
+  margin: 1rem 0 1.8rem;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 32px;
+    display: block;
+    object-fit: fill;
+  }
 }
 
-.pageToolbar button svg {
-  width: 16px;
-  height: 16px;
-  fill: none;
-  stroke: currentcolor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.8;
-}
-
-.pageToolbar button:disabled,
-.detailFooter button:disabled,
-.pagination button:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-
-.pageToolbar button:hover,
-.resetButton:hover,
-.viewButton:hover {
-  border-color: v.$color-primary;
-  color: v.$color-primary;
+// ==========================================
+// 상단 요약 카드 (Summary Cards - 균형 및 여백 보정)
+// ==========================================
+.summaryArea {
+  margin-bottom: 24px;
 }
 
 .summaryGrid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: v.$space-4;
-  margin-bottom: v.$space-8;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
 }
 
 .summaryCard {
-  position: relative;
-  display: grid;
-  min-width: 0;
-  min-height: 148px;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: start;
-  gap: v.$space-5;
-  padding: v.$space-5 v.$space-6;
-  overflow: hidden;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-lg;
-  background: v.$color-white;
-  color: v.$color-text-primary;
-  font: inherit;
+  background: $bg-surface;
+  border: 1px solid $border-color;
+  border-radius: $radius-card;
+  padding: 18px 20px;          // 상하 패딩을 슬림하고 일정하게 정렬
   text-align: left;
+  display: flex;
+  align-items: center;          // 상단 치우침 완화하고 중앙 정렬감 부여
+  gap: 16px;
+  min-height: 94px;             // 카드 높이 일관성 유지
+  box-sizing: border-box;
+  box-shadow: $shadow-sm;
+  transition: all 0.2s ease;
   cursor: pointer;
-  transition: border-color v.$transition-fast, background-color v.$transition-fast, box-shadow v.$transition-fast;
-}
 
-.summaryCard:hover,
-.summaryCard:focus-visible,
-.summaryCardActive {
-  border-color: color-mix(in srgb, v.$color-primary 58%, v.$color-border);
-  background: color-mix(in srgb, v.$color-primary 4%, v.$color-white);
-  box-shadow: 0 8px 18px color-mix(in srgb, v.$color-primary 8%, transparent);
-}
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+    border-color: lighten($primary, 20%);
+  }
 
-.summaryCard:focus-visible {
-  outline: 2px solid v.$color-primary-light;
-  outline-offset: 2px;
-}
-
-.summaryCard::before {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  background: color-mix(in srgb, v.$color-primary 72%, v.$color-primary-light);
-  content: '';
-}
-
-.summaryCardtoday::before {
-  background: v.$color-primary-light;
-}
-
-.summaryCardsuspended::before {
-  background: v.$color-error;
-}
-
-.summaryCardadmin::before {
-  background: v.$color-warning;
+  &.summaryCardActive {
+    border-color: $primary;
+    background: #fdfefd;
+    box-shadow: 0 0 0 1.5px $primary, $shadow-sm;
+  }
 }
 
 .summaryIcon {
-  display: inline-grid;
   width: 44px;
   height: 44px;
-  place-items: center;
-  border-radius: 50%;
-  background: color-mix(in srgb, v.$color-success 10%, v.$color-white);
-  color: v.$color-success;
-}
+  border-radius: 12px;
+  background: $primary-subtle;
+  color: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 
-.summaryIcon svg {
-  width: 22px;
-  height: 22px;
-  fill: none;
-  stroke: currentcolor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.7;
-}
-
-.summaryCardtoday .summaryIcon {
-  background: color-mix(in srgb, v.$color-primary-light 10%, v.$color-white);
-  color: v.$color-primary-light;
+  svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+  }
 }
 
 .summaryCardsuspended .summaryIcon {
-  background: color-mix(in srgb, v.$color-error 9%, v.$color-white);
-  color: v.$color-error;
+  background: $danger-subtle;
+  color: $danger;
 }
 
-.summaryCardadmin .summaryIcon {
-  background: color-mix(in srgb, v.$color-warning 9%, v.$color-white);
-  color: v.$color-warning;
-}
-
-.summaryCard h3,
-.summaryCard p,
-.summaryCard small {
-  margin: 0;
-}
-
-.summaryCard h3 {
-  font-size: v.$font-size-lg;
-  font-weight: v.$font-weight-medium;
-}
-
-.summaryCard p {
+.summaryContent {
   display: flex;
-  align-items: baseline;
-  gap: v.$space-2;
-  margin-top: v.$space-2;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  flex: 1;
+
+  h3 {
+    font-size: 13px;
+    font-weight: 500;
+    color: $text-caption;
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 24px;
+    color: $text-title;
+    font-weight: 700;
+    line-height: 1.2;
+
+    span {
+      font-size: 14px;
+      font-weight: 400;
+      color: $text-caption;
+      margin-left: 3px;
+    }
+  }
+
+  small {
+    font-size: 12px;
+    color: $text-caption;
+    margin-top: 2px;
+  }
 }
 
-.summaryCard p strong {
-  color: v.$color-primary;
-  letter-spacing: -0.03em;
-  font-size: v.$font-size-3xl;
-  line-height: 1;
-}
-
-.summaryCard p span {
-  font-size: v.$font-size-md;
-}
-
-.summaryCardtoday p strong {
-  color: v.$color-primary-light;
-}
-
-.summaryCardsuspended p strong {
-  color: v.$color-error;
-}
-
-.summaryCardadmin p strong {
-  color: v.$color-warning;
-}
-
-.summaryCard small {
-  display: block;
-  margin-top: v.$space-5;
-  color: v.$color-text-muted;
-  font-size: v.$font-size-xs;
-}
-
-.summaryAction {
-  display: inline-flex;
-  align-items: center;
-  gap: v.$space-2;
-  margin-top: v.$space-3;
-  color: v.$color-primary;
-  font-size: 11px;
-  font-weight: v.$font-weight-semibold;
-}
-
-.summaryAction > span {
-  transition: transform v.$transition-fast;
-}
-
-.summaryCard:hover .summaryAction > span {
-  transform: translateX(3px);
-}
-
+// ==========================================
+// 메인 그리드
+// ==========================================
 .managementGrid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
   align-items: start;
-  gap: v.$space-4;
 }
 
-.memberSection,
-.analyticsCard,
-.detailPanel {
-  min-width: 0;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-xl;
-  background: v.$color-white;
-}
-
+// ==========================================
+// 회원 목록 섹션 (Main Content)
+// ==========================================
 .memberSection {
-  overflow: hidden;
+  background: $bg-surface;
+  border: 1px solid $border-color;
+  border-radius: $radius-card;
+  padding: 24px;
+  box-shadow: $shadow-sm;
 }
 
+// 검색 및 필터 바
 .filterBar {
-  display: grid;
-  grid-template-columns: minmax(220px, 1.5fr) repeat(3, minmax(104px, 0.62fr)) auto;
-  gap: v.$space-2;
-  padding: v.$space-4;
-  border-bottom: 1px solid v.$color-border;
-  background: color-mix(in srgb, v.$color-surface 20%, v.$color-white);
-}
-
-.searchField,
-.selectField {
   display: flex;
-  min-width: 0;
-  height: 44px;
-  box-sizing: border-box;
   align-items: center;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-md;
-  background: v.$color-white;
+  gap: 10px;
+  margin-bottom: 24px;         // 아래 목록 헤더와의 간격을 넉넉히 확보
+  flex-wrap: wrap;
 }
 
 .searchField {
-  gap: v.$space-2;
-  padding: 0 v.$space-3;
-}
+  flex: 1;
+  min-width: 240px;
+  position: relative;
+  display: flex;
+  align-items: center;
 
-.searchField svg {
-  width: v.$space-6;
-  height: v.$space-6;
-  flex: 0 0 auto;
-  fill: none;
-  stroke: v.$color-text-primary;
-  stroke-linecap: round;
-  stroke-width: 2;
-}
+  svg {
+    position: absolute;
+    left: 12px;
+    width: 16px;
+    height: 16px;
+    stroke: $text-caption;
+    stroke-width: 2;
+    fill: none;
+  }
 
-.searchField input,
-.selectField select,
-.accountFields select {
-  width: 100%;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: v.$color-text-primary;
-  font: inherit;
-}
+  input {
+    width: 100%;
+    height: 40px;
+    padding: 0 14px 0 36px;
+    background: #fbfaf8;
+    border: 1px solid $border-color;
+    border-radius: $radius-control;
+    font-size: 13px;
+    color: $text-title;
+    transition: all 0.2s;
 
-.searchField input,
-.selectField select {
-  min-width: 0;
-  font-size: v.$font-size-sm;
+    &::placeholder {
+      color: #9ea4a0;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      background: $bg-surface;
+      box-shadow: 0 0 0 2px rgba($primary, 0.1);
+    }
+  }
 }
 
 .selectField {
-  padding: 0 v.$space-3;
+  select {
+    height: 40px;
+    padding: 0 32px 0 12px;
+    background: #fbfaf8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a827e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 10px center;
+    border: 1px solid $border-color;
+    border-radius: $radius-control;
+    font-size: 13px;
+    color: $text-body;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+    }
+  }
 }
 
 .resetButton {
-  min-width: 64px;
-  border-radius: v.$radius-md;
-  font-size: v.$font-size-xs;
-}
+  height: 40px;
+  padding: 0 14px;
+  background: transparent;
+  border: 1px solid $border-color;
+  border-radius: $radius-control;
+  font-size: 13px;
+  color: $text-caption;
+  cursor: pointer;
+  transition: all 0.2s;
 
-.searchField:focus-within,
-.selectField:focus-within,
-.pageToolbar button:focus-visible,
-.resetButton:focus-visible,
-.viewButton:focus-visible,
-.detailHeader button:focus-visible,
-.detailFooter button:focus-visible,
-.pagination button:focus-visible {
-  outline: 2px solid v.$color-primary-light;
-  outline-offset: 2px;
+  &:hover {
+    color: $text-title;
+    background: #f5f4ef;
+  }
 }
 
 .sectionHeading {
   display: flex;
-  align-items: baseline;
-  gap: v.$space-5;
-  padding: v.$space-5 v.$space-8 v.$space-6;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: $text-title;
+    margin: 0;
+  }
+
+  span {
+    font-size: 13px;
+    color: $primary;
+    font-weight: 600;
+  }
 }
 
-.sectionHeading h3 {
-  margin: 0;
-  font-size: v.$font-size-2xl;
-}
-
-.sectionHeading span {
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-sm;
-}
-
+// ==========================================
+// 테이블
+// ==========================================
 .tableWrap {
   overflow-x: auto;
 }
 
 .memberTable {
   width: 100%;
-  min-width: 720px;
   border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+
+  th {
+    padding: 12px 14px;
+    background: #faf8f5;
+    color: $text-caption;
+    font-weight: 600;
+    border-bottom: 1px solid $border-color;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 14px;
+    border-bottom: 1px solid #f0eee8;
+    color: $text-body;
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background-color 0.15s;
+
+    &:hover {
+      background-color: #faf9f5;
+    }
+
+    &.selectedRow {
+      background-color: $primary-subtle;
+    }
+  }
 }
 
-.memberTable th,
-.memberTable td {
-  padding: v.$space-4 v.$space-3;
-  border-bottom: 1px solid color-mix(in srgb, v.$color-border 72%, transparent);
-  font-size: v.$font-size-sm;
-  text-align: center;
-  vertical-align: middle;
-  white-space: nowrap;
-}
-
-.memberTable th {
-  background: color-mix(in srgb, v.$color-surface 24%, v.$color-white);
-  color: v.$color-text-muted;
-  font-weight: v.$font-weight-medium;
-}
-
-.memberTable tbody tr {
-  transition: background-color v.$transition-fast;
-}
-
-.memberTable tbody tr:hover,
-.memberTable .selectedRow {
-  background: color-mix(in srgb, v.$color-primary 9%, v.$color-white);
-  box-shadow: inset 3px 0 0 v.$color-primary;
-}
-
-.statusBadge,
-.roleBadge {
-  display: inline-flex;
-  min-height: 24px;
-  align-items: center;
-  justify-content: center;
-  padding: 0 v.$space-2;
-  border-radius: v.$radius-pill;
+// 뱃지 디자인
+.statusBadge, .roleBadge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
   font-size: 11px;
+  font-weight: 600;
 }
 
-.statusBadge::before {
-  width: 6px;
-  height: 6px;
-  margin-right: v.$space-1;
-  border-radius: 50%;
-  background: currentcolor;
-  content: '';
-}
+.statusBadge {
+  &.active {
+    background: $primary-subtle;
+    color: $primary;
+  }
 
-.statusBadge.active {
-  background: color-mix(in srgb, v.$color-success 15%, v.$color-white);
-  color: v.$color-success;
-}
-
-.statusBadge.suspended {
-  background: color-mix(in srgb, v.$color-error 13%, v.$color-white);
-  color: v.$color-error;
+  &.suspended {
+    background: $danger-subtle;
+    color: $danger;
+  }
 }
 
 .roleBadge {
-  background: color-mix(in srgb, v.$color-taupe 15%, v.$color-white);
-  color: v.$color-taupe;
+  background: #f0eee8;
+  color: $text-caption;
 }
 
 .viewButton {
-  min-height: 26px;
-  padding: 0 v.$space-2;
-  border-radius: v.$radius-pill;
-  font-size: 11px;
-}
+  padding: 6px 12px;
+  background: $bg-surface;
+  border: 1px solid $border-color;
+  border-radius: 6px;
+  font-size: 12px;
+  color: $text-title;
+  cursor: pointer;
+  transition: all 0.2s;
 
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: v.$space-3;
-  padding: v.$space-4;
-}
-
-.pagination button {
-  min-width: 28px;
-  height: 28px;
-  border-color: v.$color-border;
-  border-radius: 50%;
-  font-size: v.$font-size-xs;
-}
-
-.pagination .activePage {
-  border-color: v.$color-primary;
-  background: v.$color-primary;
-  color: v.$color-white;
-  font-weight: v.$font-weight-bold;
+  &:hover {
+    background: $primary;
+    color: #ffffff;
+    border-color: $primary;
+  }
 }
 
 .emptyState {
-  display: grid;
-  min-height: 300px;
-  place-items: center;
-  padding: v.$space-8;
-  color: v.$color-text-muted;
+  padding: 60px 0;
   text-align: center;
+  color: $text-caption;
+  font-size: 14px;
 }
 
-.analyticsColumn {
-  display: grid;
-  gap: v.$space-8;
-}
-
-.analyticsCard {
-  padding: v.$space-6;
-  background: v.$color-white;
-}
-
-.analyticsCard h3 {
-  margin: 0 0 v.$space-6;
-  font-size: v.$font-size-xl;
-}
-
-.statusOverview {
-  display: grid;
-  grid-template-columns: 120px minmax(0, 1fr);
+// ==========================================
+// 페이지네이션
+// ==========================================
+.pagination {
+  display: flex;
+  justify-content: center;
   align-items: center;
-  gap: v.$space-4;
+  gap: 4px;
+  margin-top: 24px;
+
+  button {
+    min-width: 32px;
+    height: 32px;
+    border: 1px solid $border-color;
+    background: $bg-surface;
+    border-radius: 6px;
+    font-size: 13px;
+    color: $text-body;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover:not(:disabled) {
+      border-color: $primary;
+      color: $primary;
+    }
+
+    &.activePage {
+      background: $primary;
+      border-color: $primary;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// ==========================================
+// 우측 패널 (분석 / 상세)
+// ==========================================
+.analyticsColumn, .detailPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.analyticsCard, .detailPanel {
+  background: $bg-surface;
+  border: 1px solid $border-color;
+  border-radius: $radius-card;
+  padding: 20px;
+  box-shadow: $shadow-sm;
+}
+
+.analyticsHeader, .detailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+
+  h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: $text-title;
+    margin: 0;
+  }
+
+  span {
+    font-size: 11px;
+    color: #a0a6a2;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  button {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: $text-caption;
+    cursor: pointer;
+    &:hover { color: $text-title; }
+  }
+}
+
+// 도넛 차트 영역
+.statusOverview {
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 
 .statusDonut {
-  position: relative;
-  display: grid;
-  width: 112px;
-  height: 112px;
-  place-content: center;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
-  background: conic-gradient(
-    v.$color-primary 0 var(--active-rate),
-    color-mix(in srgb, v.$color-error 82%, v.$color-white) var(--active-rate) 100%
-  );
-  text-align: center;
-}
-
-.statusDonut::before {
-  position: absolute;
-  inset: 17px;
-  border-radius: 50%;
-  background: v.$color-white;
-  content: '';
-}
-
-.statusDonut span,
-.statusDonut strong {
+  background: conic-gradient($primary var(--active-rate, 100%), #e8e6df 0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   position: relative;
-  z-index: 1;
-}
 
-.statusDonut span {
-  font-size: 11px;
-}
+  &::before {
+    content: '';
+    position: absolute;
+    width: 66px;
+    height: 66px;
+    border-radius: 50%;
+    background: $bg-surface;
+  }
 
-.statusDonut strong {
-  margin-top: v.$space-1;
-  font-size: v.$font-size-sm;
+  span, strong {
+    position: relative;
+    z-index: 1;
+  }
+
+  span {
+    font-size: 11px;
+    color: $text-caption;
+  }
+
+  strong {
+    font-size: 15px;
+    color: $text-title;
+  }
 }
 
 .statusOverview ul {
-  display: grid;
-  gap: v.$space-3;
-  margin: 0;
-  padding: 0;
   list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+
+    span:nth-child(2) {
+      margin-left: 6px;
+      color: $text-body;
+      flex: 1;
+    }
+
+    strong {
+      color: $text-title;
+    }
+  }
 }
 
-.statusOverview li {
-  display: grid;
-  grid-template-columns: 8px minmax(0, 1fr) auto auto;
-  align-items: center;
-  gap: v.$space-2;
-  font-size: 11px;
-}
-
-.statusOverview li small {
-  color: v.$color-text-muted;
-}
-
-.activeDot,
-.suspendedDot {
+.activeDot, .suspendedDot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
 }
 
-.activeDot {
-  background: v.$color-primary;
-}
+.activeDot { background-color: $primary; }
+.suspendedDot { background-color: $danger; }
 
-.suspendedDot {
-  background: v.$color-error;
-}
-
+// 활동 바 차트
 .activityBars {
-  display: grid;
-  gap: v.$space-4;
-}
-
-.activityBars > div {
-  display: grid;
-  grid-template-columns: 90px minmax(50px, 1fr) auto;
-  align-items: center;
-  gap: v.$space-2;
-  font-size: 11px;
-}
-
-.activityBars i {
-  display: block;
-  height: 6px;
-  overflow: hidden;
-  border-radius: v.$radius-pill;
-  background: color-mix(in srgb, v.$color-border 72%, v.$color-white);
-}
-
-.activityBars b {
-  display: block;
-  height: 100%;
-  min-width: 2px;
-  border-radius: inherit;
-  background: linear-gradient(90deg, v.$color-primary, v.$color-primary-light);
-}
-
-.analyticsCard > p {
-  margin: v.$space-6 0 0;
-  color: v.$color-text-muted;
-  font-size: 11px;
-}
-
-.detailPanel {
-  overflow: hidden;
-}
-
-.detailHeader {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: v.$space-5 v.$space-6;
-  border-bottom: 1px solid v.$color-border;
+  flex-direction: column;
+  gap: 12px;
+
+  div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+
+    span {
+      width: 80px;
+      color: $text-caption;
+      flex-shrink: 0;
+    }
+
+    i {
+      flex: 1;
+      height: 6px;
+      background: #f0eee8;
+      border-radius: 4px;
+      overflow: hidden;
+      display: block;
+
+      b {
+        display: block;
+        height: 100%;
+        background: $primary;
+        border-radius: 4px;
+      }
+    }
+
+    strong {
+      width: 32px;
+      text-align: right;
+      color: $text-title;
+    }
+  }
 }
 
-.detailHeader h3 {
-  margin: 0;
-  font-size: v.$font-size-xl;
+.analyticsCaption {
+  margin: 16px 0 0 0;
+  font-size: 11px;
+  color: #a5aca7;
+  text-align: right;
 }
 
-.detailHeader button {
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border-color: transparent;
-  font-size: v.$font-size-lg;
-}
-
+// ==========================================
+// 상세 정보 모달/패널 추가 속성
+// ==========================================
 .profileSummary {
   display: flex;
   align-items: center;
-  gap: v.$space-4;
-  padding: v.$space-6;
-  border-bottom: 1px solid v.$color-border;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid $border-color;
+  margin-bottom: 16px;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    strong {
+      font-size: 15px;
+      color: $text-title;
+    }
+
+    span {
+      font-size: 12px;
+      color: $text-caption;
+    }
+
+    small {
+      font-size: 11px;
+      color: #9aa19d;
+      margin-top: 4px;
+      line-height: 1.3;
+    }
+  }
 }
 
 .avatar {
-  display: inline-grid;
-  width: 56px;
-  height: 56px;
-  flex: 0 0 auto;
-  place-items: center;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: v.$color-text-muted;
-  color: v.$color-white;
-  font-size: v.$font-size-lg;
-  font-weight: v.$font-weight-bold;
-}
-
-.profileSummary > div {
-  display: grid;
-  min-width: 0;
-  gap: v.$space-1;
-}
-
-.profileSummary strong {
-  font-size: v.$font-size-lg;
-}
-
-.profileSummary span,
-.profileSummary small {
-  overflow: hidden;
-  font-size: v.$font-size-xs;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  background: $primary-subtle;
+  color: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
 }
 
 .detailBlock {
-  padding: v.$space-6;
-  border-bottom: 1px solid v.$color-border;
-}
+  margin-bottom: 18px;
 
-.detailBlock:nth-of-type(even) {
-  background: color-mix(in srgb, v.$color-surface 20%, v.$color-white);
-}
+  h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: $text-title;
+    margin: 0 0 10px;
+  }
 
-.detailBlock h4 {
-  margin: 0 0 v.$space-4;
-  padding-left: v.$space-3;
-  border-left: 2px solid v.$color-primary-light;
-  font-size: v.$font-size-md;
-}
+  dl {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 
-.detailBlock dl {
-  display: grid;
-  gap: v.$space-3;
-  margin: 0;
-}
+    div {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
 
-.detailBlock dl div {
-  display: grid;
-  grid-template-columns: 80px minmax(0, 1fr);
-  gap: v.$space-3;
-}
-
-.detailBlock dt,
-.detailBlock dd {
-  margin: 0;
-  font-size: v.$font-size-sm;
-}
-
-.detailBlock dd {
-  overflow-wrap: anywhere;
+      dt { color: $text-caption; }
+      dd { margin: 0; color: $text-title; font-weight: 500; }
+    }
+  }
 }
 
 .accountFields {
-  display: grid;
-  gap: v.$space-3;
-}
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 
-.accountFields label {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 110px;
-  align-items: center;
-  gap: v.$space-3;
-  font-size: v.$font-size-sm;
-}
+  label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: $text-caption;
 
-.accountFields select {
-  height: 36px;
-  box-sizing: border-box;
-  padding: 0 v.$space-2;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-md;
-  background: v.$color-white;
-  font-size: v.$font-size-sm;
+    select {
+      width: 130px;
+      height: 34px;
+      padding: 0 24px 0 10px;
+      font-size: 12px;
+      border: 1px solid $border-color;
+      border-radius: 6px;
+      background: #fbfaf8;
+      color: $text-title;
+      cursor: pointer;
+    }
+  }
 }
 
 .activityCards {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: v.$space-2;
-}
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
 
-.activityCards article {
-  display: grid;
-  min-height: 64px;
-  align-content: center;
-  gap: v.$space-2;
-  padding: v.$space-3;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-md;
-  background: v.$color-white;
-}
+  article {
+    background: #faf8f5;
+    padding: 10px 12px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 
-.activityCards span {
-  font-size: v.$font-size-xs;
-}
+    span {
+      font-size: 11px;
+      color: $text-caption;
+    }
 
-.activityCards strong {
-  font-size: v.$font-size-md;
+    strong {
+      font-size: 14px;
+      color: $text-title;
+      font-weight: 700;
+    }
+  }
 }
 
 .suspensionConfirm {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: v.$space-2;
-  padding: v.$space-3 v.$space-5;
-  background: color-mix(in srgb, v.$color-error 8%, v.$color-white);
-  color: v.$color-error;
-  font-size: 11px;
-}
+  background: $danger-subtle;
+  border: 1px solid rgba($danger, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
 
-.suspensionConfirm button {
-  min-height: 28px;
-  border-radius: v.$radius-sm;
-  font-size: 10px;
+  strong { color: $danger; font-weight: 600; }
+  span { color: $text-body; font-size: 11px; }
+
+  button {
+    align-self: flex-end;
+    margin-top: 6px;
+    padding: 4px 10px;
+    font-size: 11px;
+    border-radius: 4px;
+    background: #fff;
+    border: 1px solid rgba($danger, 0.3);
+    color: $danger;
+    cursor: pointer;
+  }
 }
 
 .detailFooter {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: v.$space-2;
-  padding: v.$space-5 v.$space-6;
-  background: color-mix(in srgb, v.$color-surface 24%, v.$color-white);
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+
+  button {
+    flex: 1;
+    height: 38px;
+    border-radius: $radius-control;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .suspendButton {
+    background: #fff;
+    border: 1px solid rgba($danger, 0.3);
+    color: $danger;
+
+    &:hover {
+      background: $danger-subtle;
+    }
+  }
+
+  .saveButton {
+    background: $primary;
+    border: 1px solid $primary;
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background: $primary-hover;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
 }
 
-.detailFooter button {
-  min-height: 40px;
-  border-radius: v.$radius-pill;
-  font-size: v.$font-size-sm;
-}
-
-.detailFooter .suspendButton {
-  border-color: v.$color-error;
-  color: v.$color-error;
-}
-
-.detailFooter .saveButton {
-  border-color: v.$color-primary;
-  background: v.$color-primary;
-  color: v.$color-white;
-}
-
+// ==========================================
+// 토스트 (Toast)
+// ==========================================
 .toast {
   position: fixed;
-  z-index: v.$z-toast;
-  right: v.$space-6;
-  bottom: v.$space-6;
+  bottom: 32px;
+  right: 32px;
+  background: #2b302d;
+  color: #ffffff;
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: $shadow-md;
   display: flex;
-  min-height: 48px;
   align-items: center;
-  gap: v.$space-3;
-  padding: 0 v.$space-4;
-  border-radius: v.$radius-md;
-  background: v.$color-text-primary;
-  box-shadow: v.$shadow-sm;
-  color: v.$color-white;
-  font-size: v.$font-size-sm;
-}
+  gap: 12px;
+  font-size: 13px;
+  z-index: 1000;
 
-.toast button {
-  border: 0;
-  background: transparent;
-  color: v.$color-white;
-  font-size: v.$font-size-lg;
-  cursor: pointer;
-}
-
-@media (max-width: 1500px) {
-  .summaryGrid {
-    gap: v.$space-3;
-  }
-
-  .summaryCard {
-    gap: v.$space-3;
-    padding-inline: v.$space-4;
-  }
-
-  .managementGrid {
-    grid-template-columns: minmax(0, 1fr) 280px;
-  }
-
-  .filterBar {
-    grid-template-columns: minmax(210px, 1fr) repeat(3, minmax(96px, 0.55fr)) auto;
-    padding-inline: v.$space-4;
-  }
-}
-
-@media (max-width: v.$breakpoint-tablet-max) {
-  .summaryGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .managementGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .analyticsColumn,
-  .detailPanel {
-    order: -1;
-  }
-
-  .filterBar {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .searchField {
-    grid-column: 1 / -1;
-  }
-}
-
-@media (max-width: v.$breakpoint-mobile-max) {
-  .pageToolbar {
-    margin-bottom: v.$space-6;
-  }
-
-  .pageToolbar h2 {
-    font-size: v.$font-size-2xl;
-  }
-
-  .summaryGrid,
-  .filterBar {
-    grid-template-columns: 1fr;
-  }
-
-  .summaryCard {
-    min-height: 132px;
-  }
-
-  .filterBar {
-    padding: v.$space-4;
-  }
-
-  .searchField {
-    grid-column: auto;
-  }
-
-  .resetButton {
-    min-height: 42px;
-  }
-
-  .sectionHeading {
-    padding-inline: v.$space-5;
-  }
-
-  .analyticsColumn {
-    gap: v.$space-4;
-  }
-
-  .statusOverview {
-    grid-template-columns: 112px minmax(0, 1fr);
+  button {
+    background: none;
+    border: none;
+    color: #9ea4a0;
+    cursor: pointer;
+    font-size: 16px;
+    &:hover { color: #fff; }
   }
 }
