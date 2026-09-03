@@ -1,5 +1,3 @@
-// src/pages/AiCurator/AiResult.jsx
-
 import {
   useEffect,
   useMemo,
@@ -31,6 +29,10 @@ import {
 
 import pairings from '../../data/pairings.json'
 
+import trayImage from '../../assets/images/ai/tray.png'
+import backgroundImage from '../../assets/images/ai/background.png'
+import makdongImage from '../../assets/characters/M007_Poses03.png'
+
 import styles from './AiResult.module.scss'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -38,9 +40,6 @@ gsap.registerPlugin(ScrollTrigger)
 
 // ========================================
 // 상품 이미지
-//
-// 현재 ProductList와 동일하게
-// product*.png 파일을 imageUrl로 연결
 // ========================================
 
 const productImages = import.meta.glob(
@@ -62,15 +61,6 @@ const aiAssetImages = import.meta.glob(
 )
 
 
-// ========================================
-// imageUrl → 실제 이미지 경로
-//
-// 예:
-// product1.png
-// ↓
-// Vite가 읽은 실제 이미지 URL
-// ========================================
-
 const resolveImage = (imageUrl) => {
   if (!imageUrl) {
     return ''
@@ -86,7 +76,6 @@ const resolveImage = (imageUrl) => {
 }
 
 
-// JSON의 aiImageUrl(또는 aiImage)을 실제 누끼 이미지 경로로 연결
 const resolveAiImage = (imageUrl) => {
   if (!imageUrl) {
     return ''
@@ -115,18 +104,6 @@ const getAiImageName = (product) =>
 const functions =
   getFunctions(app)
 
-
-// ========================================
-// 개발 환경에서는
-// Firebase Functions Emulator 사용
-//
-// npm run dev → React
-// firebase emulators:start --only functions
-// → Functions Emulator
-//
-// 기본 Functions Emulator 포트: 5001
-// ========================================
-
 if (import.meta.env.DEV) {
   try {
     connectFunctionsEmulator(
@@ -135,15 +112,9 @@ if (import.meta.env.DEV) {
       5001
     )
   } catch (error) {
-    // Vite HMR로 이미 Emulator가
-    // 연결되어 있는 경우 무시
+    // 무시
   }
 }
-
-
-// ========================================
-// Callable Function
-// ========================================
 
 const recommendJajak =
   httpsCallable(
@@ -151,10 +122,6 @@ const recommendJajak =
     'recommendJajak'
   )
 
-
-// ========================================
-// ID로 실제 상품 찾기
-// ========================================
 
 const findProductById = (
   products,
@@ -167,14 +134,6 @@ const findProductById = (
   ) || null
 }
 
-
-// ========================================
-// Firebase Function 결과
-// + 실제 상품 JSON 결합
-//
-// Function에서는 안전하게 ID만 반환하고,
-// 화면에서 실제 상품 전체 데이터를 연결
-// ========================================
 
 const combineRecommendation = (
   recommendation
@@ -201,9 +160,6 @@ const combineRecommendation = (
       recommendation.glassId
     )
 
-
-  // 상품 JSON에서 찾을 수 없는 ID가
-  // 반환된 경우 잘못된 결과로 처리
   if (
     !liquor ||
     !food ||
@@ -212,10 +168,8 @@ const combineRecommendation = (
     return null
   }
 
-
   return {
     ...recommendation,
-
     liquor,
     food,
     glass,
@@ -225,12 +179,10 @@ const combineRecommendation = (
         resolveImage(
           liquor.imageUrl
         ),
-
       food:
         resolveImage(
           food.imageUrl
         ),
-
       glass:
         resolveImage(
           glass.imageUrl
@@ -242,12 +194,10 @@ const combineRecommendation = (
         resolveAiImage(
           getAiImageName(liquor)
         ),
-
       food:
         resolveAiImage(
           getAiImageName(food)
         ),
-
       glass:
         resolveAiImage(
           getAiImageName(glass)
@@ -256,10 +206,6 @@ const combineRecommendation = (
   }
 }
 
-
-// ========================================
-// Firebase Function 오류 메시지 변환
-// ========================================
 
 const getErrorMessage = (
   error
@@ -309,21 +255,12 @@ const getErrorMessage = (
 }
 
 
-// ========================================
-// AiResult
-// ========================================
-
 const AiResult = () => {
   const navigate =
     useNavigate()
 
   const location =
     useLocation()
-
-
-  // ========================================
-  // AiSurvey에서 전달한 값
-  // ========================================
 
   const surveyType =
     location.state?.surveyType
@@ -333,28 +270,9 @@ const AiResult = () => {
     location.state?.answers ||
     null
 
-
-  // ========================================
-  // 로그인 회원의 평소 취향
-  //
-  // AiSurvey에서 이미 Firestore를 통해
-  // 불러온 userPreference
-  //
-  // Mock 모드에서만
-  // Functions에 전달해서 사용
-  //
-  // 실제 OpenAI 배포 모드에서는
-  // 서버가 Firestore에서 다시 조회
-  // ========================================
-
   const userPreference =
     location.state?.userPreference ||
     null
-
-
-  // ========================================
-  // 추천 상태
-  // ========================================
 
   const [
     recommendationResponse,
@@ -376,16 +294,8 @@ const AiResult = () => {
     setSelectedRecommendationIndex,
   ] = useState(0)
 
-
-  // React 개발 모드에서
-  // Effect 중복 호출 방지
   const hasRequestedRef =
     useRef(false)
-
-
-  // ========================================
-  // 스크롤 / 추천 구성 애니메이션 Ref
-  // ========================================
 
   const pageRef =
     useRef(null)
@@ -411,10 +321,36 @@ const AiResult = () => {
   const foodVisualRef =
     useRef(null)
 
+  const compositionHeadingRef =
+    useRef(null)
 
-  // ========================================
-  // 추천 Function 호출
-  // ========================================
+  const bgPatternRef =
+    useRef(null)
+
+  const trayRef =
+    useRef(null)
+
+  const compositionFooterRef =
+    useRef(null)
+
+  const liquorDetailTextRef =
+    useRef(null)
+
+  const foodDetailTextRef =
+    useRef(null)
+
+  const glassDetailTextRef =
+    useRef(null)
+
+  const liquorFocusTargetRef =
+    useRef(null)
+
+  const foodDetailVisualRef =
+    useRef(null)
+
+  const glassDetailVisualRef =
+    useRef(null)
+
 
   useEffect(() => {
     if (
@@ -423,48 +359,30 @@ const AiResult = () => {
       return
     }
 
-
-    // AiSurvey를 거치지 않고
-    // /ai/result 직접 접속한 경우
     if (
       !surveyType ||
       !todaySurvey
     ) {
       setIsLoading(false)
-
       setErrorMessage(
         '추천에 필요한 설문 정보가 없어요. 먼저 막둥이의 질문에 답해주세요.'
       )
-
       return
     }
-
-
-    // ========================================
-    // 회원인데 AiSurvey에서
-    // 취향 정보를 전달받지 못한 경우
-    //
-    // Mock 회원 추천에서는
-    // userPreference가 필요함
-    // ========================================
 
     if (
       surveyType === 'member' &&
       !userPreference
     ) {
       setIsLoading(false)
-
       setErrorMessage(
         '저장된 취향 정보를 확인할 수 없어요. 취향 등록 상태를 확인해주세요.'
       )
-
       return
     }
 
-
     hasRequestedRef.current =
       true
-
 
     const fetchRecommendation =
       async () => {
@@ -472,48 +390,22 @@ const AiResult = () => {
           setIsLoading(true)
           setErrorMessage('')
 
-
-          // ========================================
-          // Firebase Function 호출
-          //
-          // 실제 상품 전체 데이터
-          // + pairings
-          // + 오늘 설문
-          // + 회원 평소 취향 전달
-          // ========================================
-
           const response =
             await recommendJajak({
               surveyType,
-
               todaySurvey,
-
-              // ====================================
-              // 회원:
-              // AiSurvey에서 읽어온
-              // Firestore 취향 전달
-              //
-              // 비회원:
-              // null
-              // ====================================
               userPreference:
                 surveyType === 'member'
                   ? userPreference
                   : null,
-
               liquors,
-
               foods,
-
               glasses,
-
               pairings,
             })
 
-
           const data =
             response.data
-
 
           if (
             !data ||
@@ -528,7 +420,6 @@ const AiResult = () => {
             )
           }
 
-
           setRecommendationResponse(
             data
           )
@@ -537,7 +428,6 @@ const AiResult = () => {
             'JAJAK 추천 불러오기 실패:',
             error
           )
-
           setErrorMessage(
             getErrorMessage(
               error
@@ -548,7 +438,6 @@ const AiResult = () => {
         }
       }
 
-
     fetchRecommendation()
   }, [
     surveyType,
@@ -556,11 +445,6 @@ const AiResult = () => {
     userPreference,
   ])
 
-
-  // ========================================
-  // Function 결과
-  // 실제 상품 데이터와 결합
-  // ========================================
 
   const recommendationTables =
     useMemo(() => {
@@ -576,7 +460,6 @@ const AiResult = () => {
         return []
       }
 
-
       return recommendations
         .map(
           combineRecommendation
@@ -587,19 +470,11 @@ const AiResult = () => {
     ])
 
 
-  // ========================================
-  // 현재 메인으로 보고 있는 추천
-  // ========================================
-
   const currentResult =
     recommendationTables[
       selectedRecommendationIndex
     ] || null
 
-
-  // ========================================
-  // 메인 추천을 제외한 다른 추천
-  // ========================================
 
   const otherResults =
     recommendationTables
@@ -620,18 +495,12 @@ const AiResult = () => {
       )
 
 
-  // ========================================
-  // 다른 주안상 선택
-  // ========================================
-
   const handleSelectOther =
     (index) => {
       setSelectedRecommendationIndex(
         index
       )
-
       currentSectionRef.current = 0
-
       sectionRefs.current[0]
         ?.scrollIntoView({
           behavior: 'smooth',
@@ -640,37 +509,17 @@ const AiResult = () => {
     }
 
 
-  // ========================================
-  // 이 주안상 저장하기
-  //
-  // TODO: Firestore에 저장하는 로직 연결
-  // (예: users/{uid}/savedTables 서브컬렉션에
-  // currentResult.tableId 저장)
-  // ========================================
-
   const handleSaveTable =
     () => {
       if (!currentResult) {
         return
       }
-
       console.log(
         '주안상 저장:',
         currentResult.tableId
       )
     }
 
-
-  // ========================================
-  // 토스플레이스 느낌의 추천 구성 애니메이션
-  //
-  // 1. 전통주 → 안주 → 술잔 순서로 회전하며 등장
-  // 2. 세 상품이 하나의 주안상으로 완성
-  // 3. 한 번 더 스크롤하면 전통주가 중앙으로 커지며 정면을 봄
-  //
-  // 기존 wheel preventDefault 방식은 ScrollTrigger와 충돌하므로
-  // 제거하고 브라우저 기본 스크롤을 사용함
-  // ========================================
 
   useEffect(() => {
     if (
@@ -710,27 +559,93 @@ const AiResult = () => {
         ? page
         : window
 
-    // 기존 결과 페이지가 scroll-snap을 사용하고 있어도
-    // 첫 섹션의 scrub 애니메이션이 건너뛰어지지 않도록 해제
     const previousScrollSnapType =
       page.style.scrollSnapType
 
     page.style.scrollSnapType =
       'none'
 
+    const heading =
+      compositionHeadingRef.current
+
     const liquor =
       liquorVisualRef.current
+
+    const food =
+      foodVisualRef.current
 
     const glass =
       glassVisualRef.current
 
-    const food =
-      foodVisualRef.current
+    const bgPattern =
+      bgPatternRef.current
+
+    const tray =
+      trayRef.current
+
+    const footer =
+      compositionFooterRef.current
+
+    const liquorDetailText =
+      liquorDetailTextRef.current
+
+    const foodDetailText =
+      foodDetailTextRef.current
+
+    const glassDetailText =
+      glassDetailTextRef.current
+
+    const liquorFocusTarget =
+      liquorFocusTargetRef.current
+
+    const foodDetailVisual =
+      foodDetailVisualRef.current
+
+    const glassDetailVisual =
+      glassDetailVisualRef.current
 
     const infoCards =
       stage.querySelectorAll(
         `.${styles.compositionCard}`
       )
+
+    const getLiquorOffset =
+      () => {
+        if (
+          !liquor ||
+          !liquorFocusTarget
+        ) {
+          return {
+            x: 0,
+            y: 0,
+          }
+        }
+
+        const liquorRect =
+          liquor.getBoundingClientRect()
+
+        const targetRect =
+          liquorFocusTarget
+            .getBoundingClientRect()
+
+        return {
+          x:
+            targetRect.left +
+            targetRect.width / 2 -
+            (
+              liquorRect.left +
+              liquorRect.width / 2
+            ),
+
+          y:
+            targetRect.top +
+            targetRect.height / 2 -
+            (
+              liquorRect.top +
+              liquorRect.height / 2
+            ),
+        }
+      }
 
     const mm =
       gsap.matchMedia()
@@ -738,6 +653,39 @@ const AiResult = () => {
     mm.add(
       '(min-width: 769px) and (prefers-reduced-motion: no-preference)',
       () => {
+        gsap.set(
+          infoCards,
+          {
+            autoAlpha: 0,
+            y: 30,
+          }
+        )
+
+        gsap.set(
+          [
+            liquorDetailText,
+            foodDetailText,
+            glassDetailText,
+          ],
+          {
+            autoAlpha: 0,
+            x: -36,
+            y: 0,
+          }
+        )
+
+        gsap.set(
+          [
+            foodDetailVisual,
+            glassDetailVisual,
+          ],
+          {
+            autoAlpha: 0,
+            y: 54,
+            scale: 0.94,
+          }
+        )
+
         const timeline =
           gsap.timeline({
             defaults: {
@@ -749,24 +697,20 @@ const AiResult = () => {
               scroller:
                 scrollContainer,
               start: 'top top',
-              end: '+=2600',
-              scrub: 1.15,
+              end: '+=7200',
+              scrub: 1.1,
               pin: true,
               anticipatePin: 1,
               invalidateOnRefresh: true,
             },
           })
 
-        // 처음에는 상품 설명 카드를 숨겨둠
-        gsap.set(
-          infoCards,
-          {
-            autoAlpha: 0,
-            y: 30,
-          }
-        )
 
-        // 01. 전통주 등장
+        // ========================================
+        // 01. 현재 주안상 연출
+        // 기존 위치값은 그대로 사용
+        // ========================================
+
         timeline.fromTo(
           liquor,
           {
@@ -786,7 +730,6 @@ const AiResult = () => {
           0
         )
 
-        // 02. 안주 등장
         timeline.fromTo(
           food,
           {
@@ -806,7 +749,6 @@ const AiResult = () => {
           0.34
         )
 
-        // 03. 술잔 등장
         timeline.fromTo(
           glass,
           {
@@ -826,8 +768,6 @@ const AiResult = () => {
           0.62
         )
 
-        // 04. 세 구성이 완성되면
-        // 상품 설명 카드가 차례로 나타남
         timeline.to(
           infoCards,
           {
@@ -839,62 +779,279 @@ const AiResult = () => {
           1.28
         )
 
-        // 조합이 완성된 상태를 잠깐 유지
+        // 완성된 주안상을 잠깐 유지
         timeline.to(
           {},
           {
-            duration: 0.55,
+            duration: 0.85,
           }
         )
 
-        // 05. 한 번 더 스크롤
-        // 안주 / 술잔은 뒤로 빠지고
-        // 전통주가 앞으로 나오면서 정면을 바라봄
+
+        // ========================================
+        // 02. 전통주 포커스
+        // 제목/안주/잔/쟁반/문양/버튼은 사라지고
+        // 기존 전통주만 오른쪽으로 이동
+        // ========================================
+
+        timeline.addLabel(
+          'liquorFocus'
+        )
+
         timeline.to(
           infoCards,
           {
             autoAlpha: 0,
-            y: 18,
-            duration: 0.35,
+            y: 16,
+            duration: 0.38,
+            stagger: 0.04,
           },
-          2.2
+          'liquorFocus'
+        )
+
+        timeline.to(
+          heading,
+          {
+            autoAlpha: 0,
+            y: -34,
+            duration: 0.58,
+          },
+          'liquorFocus'
+        )
+
+        timeline.to(
+          footer,
+          {
+            autoAlpha: 0,
+            y: 24,
+            duration: 0.48,
+          },
+          'liquorFocus'
+        )
+
+        timeline.to(
+          bgPattern,
+          {
+            autoAlpha: 0,
+            scale: 1.04,
+            duration: 0.58,
+          },
+          'liquorFocus+=0.05'
+        )
+
+        timeline.to(
+          tray,
+          {
+            autoAlpha: 0,
+            y: 34,
+            duration: 0.62,
+          },
+          'liquorFocus+=0.03'
         )
 
         timeline.to(
           food,
           {
-            autoAlpha: 0.16,
+            autoAlpha: 0,
             x: -120,
-            y: 45,
-            scale: 0.78,
-            duration: 0.8,
+            y: 44,
+            scale: 0.82,
+            duration: 0.64,
           },
-          2.25
+          'liquorFocus+=0.05'
         )
 
         timeline.to(
           glass,
           {
-            autoAlpha: 0.16,
+            autoAlpha: 0,
             x: 120,
-            y: 45,
-            scale: 0.78,
-            duration: 0.8,
+            y: 44,
+            scale: 0.82,
+            duration: 0.64,
           },
-          2.25
+          'liquorFocus+=0.05'
         )
 
         timeline.to(
           liquor,
           {
-            x: 0,
-            y: 30,
-            scale: 1.5,
-            duration: 1,
+            x: () =>
+              getLiquorOffset().x,
+            y: () =>
+              getLiquorOffset().y,
+            scale: 1.14,
+            duration: 0.9,
             ease: 'power2.inOut',
             force3D: true,
           },
-          2.28
+          'liquorFocus+=0.08'
+        )
+
+        timeline.fromTo(
+          liquorDetailText,
+          {
+            autoAlpha: 0,
+            x: -36,
+          },
+          {
+            autoAlpha: 1,
+            x: 0,
+            duration: 0.62,
+          },
+          'liquorFocus+=0.46'
+        )
+
+        // 전통주 소개 화면 유지
+        timeline.to(
+          {},
+          {
+            duration: 1.15,
+          }
+        )
+
+
+        // ========================================
+        // 03. 전통주 -> 안주
+        // 화면은 고정, 왼쪽 텍스트/오른쪽 사진만 교체
+        // ========================================
+
+        timeline.addLabel(
+          'foodFocus'
+        )
+
+        timeline.to(
+          liquorDetailText,
+          {
+            autoAlpha: 0,
+            x: -26,
+            y: -14,
+            duration: 0.42,
+          },
+          'foodFocus'
+        )
+
+        timeline.to(
+          liquor,
+          {
+            autoAlpha: 0,
+            y: '-=28',
+            scale: 1.08,
+            duration: 0.48,
+          },
+          'foodFocus'
+        )
+
+        timeline.fromTo(
+          foodDetailVisual,
+          {
+            autoAlpha: 0,
+            y: 54,
+            scale: 0.94,
+          },
+          {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.62,
+          },
+          'foodFocus+=0.18'
+        )
+
+        timeline.fromTo(
+          foodDetailText,
+          {
+            autoAlpha: 0,
+            x: -36,
+            y: 12,
+          },
+          {
+            autoAlpha: 1,
+            x: 0,
+            y: 0,
+            duration: 0.58,
+          },
+          'foodFocus+=0.2'
+        )
+
+        // 안주 소개 화면 유지
+        timeline.to(
+          {},
+          {
+            duration: 1.15,
+          }
+        )
+
+
+        // ========================================
+        // 04. 안주 -> 술잔
+        // 화면은 고정, 왼쪽 텍스트/오른쪽 사진만 교체
+        // ========================================
+
+        timeline.addLabel(
+          'glassFocus'
+        )
+
+        timeline.to(
+          foodDetailText,
+          {
+            autoAlpha: 0,
+            x: -26,
+            y: -14,
+            duration: 0.42,
+          },
+          'glassFocus'
+        )
+
+        timeline.to(
+          foodDetailVisual,
+          {
+            autoAlpha: 0,
+            y: -34,
+            scale: 0.96,
+            duration: 0.48,
+          },
+          'glassFocus'
+        )
+
+        timeline.fromTo(
+          glassDetailVisual,
+          {
+            autoAlpha: 0,
+            y: 54,
+            scale: 0.92,
+          },
+          {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.62,
+          },
+          'glassFocus+=0.18'
+        )
+
+        timeline.fromTo(
+          glassDetailText,
+          {
+            autoAlpha: 0,
+            x: -36,
+            y: 12,
+          },
+          {
+            autoAlpha: 1,
+            x: 0,
+            y: 0,
+            duration: 0.58,
+          },
+          'glassFocus+=0.2'
+        )
+
+        // 술잔 소개 화면을 충분히 보여준 뒤 pin 해제
+        timeline.to(
+          {},
+          {
+            duration: 1.3,
+          }
         )
 
         return () => {
@@ -904,8 +1061,9 @@ const AiResult = () => {
       }
     )
 
+
     // 모바일 / 모션 감소 환경에서는
-    // 제품이 모두 보이는 정적인 구성으로 보여줌
+    // 기존 상세 섹션을 그대로 사용
     mm.add(
       '(max-width: 768px), (prefers-reduced-motion: reduce)',
       () => {
@@ -924,6 +1082,7 @@ const AiResult = () => {
       }
     )
 
+
     const refreshId =
       window.requestAnimationFrame(
         () => {
@@ -931,13 +1090,12 @@ const AiResult = () => {
         }
       )
 
+
     return () => {
       window.cancelAnimationFrame(
         refreshId
       )
-
       mm.revert()
-
       page.style.scrollSnapType =
         previousScrollSnapType
     }
@@ -946,11 +1104,6 @@ const AiResult = () => {
     currentResult,
   ])
 
-
-  // ========================================
-  // Section Ref
-  // ========================================
-
   const setSectionRef =
     (index) => (el) => {
       sectionRefs.current[
@@ -958,10 +1111,6 @@ const AiResult = () => {
       ] = el
     }
 
-
-  // ========================================
-  // Loading
-  // ========================================
 
   if (isLoading) {
     return (
@@ -984,15 +1133,14 @@ const AiResult = () => {
               }
             >
               <h1>
-                막둥이가 주안상을
-                차리고 있어요!
-              </h1>
-
-              <p>
-                오늘의 취향과 상품을
-                하나씩 살펴보고 있어요.
+                막둥이가 정성을 담아
                 <br />
-                잠시만 기다려주세요.
+                주안상을 차리고 있어요!
+              </h1>
+              <p>
+                오늘의 취향에 딱 맞는 안주와 술을
+                <br />
+                정갈하게 모으고 있습니다.
               </p>
             </div>
           </div>
@@ -1001,10 +1149,6 @@ const AiResult = () => {
     )
   }
 
-
-  // ========================================
-  // Error
-  // ========================================
 
   if (
     errorMessage ||
@@ -1031,14 +1175,13 @@ const AiResult = () => {
             >
               <h1>
                 주안상을 준비하지
+                <br />
                 못했어요.
               </h1>
-
               <p>
                 {errorMessage ||
                   '추천 결과를 불러올 수 없어요.'}
               </p>
-
               <button
                 type="button"
                 className={
@@ -1060,10 +1203,6 @@ const AiResult = () => {
   }
 
 
-  // ========================================
-  // 현재 추천 상품
-  // ========================================
-
   const {
     liquor,
     food,
@@ -1080,16 +1219,14 @@ const AiResult = () => {
         styles.aiResult
       }
     >
-      {/* =========================
-          01. 전체 주안상
-          토스플레이스형 스크롤 조립 애니메이션
-      ========================= */}
+      {/* =========================================
+          01. 주안상 메인 화면 (트레이 + 상차림)
+      ========================================= */}
 
       <section
         ref={(el) => {
           sectionRefs.current[0] =
             el
-
           compositionSectionRef.current =
             el
         }}
@@ -1103,6 +1240,7 @@ const AiResult = () => {
           }
         >
           <div
+            ref={compositionHeadingRef}
             className={
               styles.compositionHeading
             }
@@ -1110,9 +1248,8 @@ const AiResult = () => {
             <h1>
               막둥이가 오늘의
               <br />
-              주안상을 차렸어요!
+              주안상을 정갈히 차렸어요!
             </h1>
-
             <p>
               {currentResult.reason}
             </p>
@@ -1125,145 +1262,158 @@ const AiResult = () => {
               styles.compositionStage
             }
           >
+            {/* 전통 창살 배경 문양 */}
+            <img
+              ref={bgPatternRef}
+              src={backgroundImage}
+              alt="전통 문양 배경"
+              className={styles.bgPatternImage}
+            />
+
+            {/* 쟁반(트레이) 이미지 */}
+            <img
+              ref={trayRef}
+              src={trayImage}
+              alt="주안상 트레이"
+              className={styles.trayImage}
+            />
+
             {/* 안주 */}
-
-              <article
-                ref={foodVisualRef}
-                className={`${styles.compositionItem} ${styles.foodItem}`}
+            <article
+              ref={foodVisualRef}
+              className={`${styles.compositionItem} ${styles.foodItem}`}
+            >
+              <div
+                className={
+                  styles.imageWrap
+                }
               >
-                <div
-                  className={
-                    styles.imageWrap
-                  }
-                >
-                  <img
-                    src={aiImages.food || images.food}
-                    alt={food.productName}
-                  />
-                </div>
+                <img
+                  src={aiImages.food || images.food}
+                  alt={food.productName}
+                />
+              </div>
 
-                <div
-                  className={`${styles.compositionCard} ${styles.foodCard}`}
-                >
-                  <span>
-                    제철 안주
-                  </span>
-
-                  <strong>
-                    {food.productName}
-                  </strong>
-                </div>
-              </article>
-
-
-              {/* 전통주 */}
-
-              <article
-                ref={liquorVisualRef}
-                className={`${styles.compositionItem} ${styles.liquorItem}`}
+              <div
+                className={`${styles.compositionCard} ${styles.foodCard}`}
               >
-                <div
-                  className={
-                    styles.imageWrap
-                  }
-                >
-                  <img
-                    src={aiImages.liquor || images.liquor}
-                    alt={liquor.productName}
-                  />
-                </div>
-
-                <div
-                  className={`${styles.compositionCard} ${styles.liquorCard}`}
-                >
-                  <span>
-                    메인 술
-                  </span>
-
-                  <strong>
-                    {liquor.productName}
-                  </strong>
-
-                  {(liquor.liquorType ||
-                    liquor.alcoholByVolume) && (
-                    <p
-                      className={
-                        styles.cardMeta
-                      }
-                    >
-                      {liquor.liquorType ||
-                        '전통주'}
-                      {liquor.alcoholByVolume
-                        ? ` · ${liquor.alcoholByVolume}`
-                        : ''}
-                    </p>
-                  )}
-
-                  {Array.isArray(
-                    liquor.flavorKeywords
-                  ) &&
-                    liquor.flavorKeywords
-                      .length > 0 && (
-                      <ul
-                        className={
-                          styles.cardKeywords
-                        }
-                      >
-                        {liquor.flavorKeywords
-                          .slice(0, 3)
-                          .map((keyword) => (
-                            <li key={keyword}>
-                              {keyword}
-                            </li>
-                          ))}
-                      </ul>
-                    )}
-                </div>
-              </article>
+                <span>
+                  제철 안주
+                </span>
+                <strong>
+                  {food.productName}
+                </strong>
+                <p className={styles.cardMeta}>
+                  {currentResult.foodReason || food.productDescription || '술과 찰떡궁합인 오늘의 안주예요.'}
+                </p>
+              </div>
+            </article>
 
 
-              {/* 술잔 */}
-
-              <article
-                ref={glassVisualRef}
-                className={`${styles.compositionItem} ${styles.glassItem}`}
+            {/* 전통주 */}
+            <article
+              ref={liquorVisualRef}
+              className={`${styles.compositionItem} ${styles.liquorItem}`}
+            >
+              <div
+                className={
+                  styles.imageWrap
+                }
               >
-                <div
-                  className={
-                    styles.imageWrap
-                  }
-                >
-                  <img
-                    src={aiImages.glass || images.glass}
-                    alt={glass.productName}
-                  />
-                </div>
+                <img
+                  src={aiImages.liquor || images.liquor}
+                  alt={liquor.productName}
+                />
+              </div>
 
-                <div
-                  className={`${styles.compositionCard} ${styles.glassCard}`}
-                >
-                  <span>
-                    술잔
-                  </span>
+              <div
+                className={`${styles.compositionCard} ${styles.liquorCard}`}
+              >
+                <span>
+                  메인 술
+                </span>
+                <strong>
+                  {liquor.productName}
+                </strong>
 
-                  <strong>
-                    {glass.productName}
-                  </strong>
-
+                {(liquor.liquorType ||
+                  liquor.alcoholByVolume) && (
                   <p
                     className={
                       styles.cardMeta
                     }
                   >
-                    {currentResult.glassReason ||
-                      glass.productDescription}
+                    {liquor.liquorType ||
+                      '전통주'}
+                    {liquor.alcoholByVolume
+                      ? ` · ${liquor.alcoholByVolume}`
+                      : ''}
                   </p>
-                </div>
-              </article>
+                )}
+
+                {Array.isArray(
+                  liquor.flavorKeywords
+                ) &&
+                  liquor.flavorKeywords
+                    .length > 0 && (
+                    <ul
+                      className={
+                        styles.cardKeywords
+                      }
+                    >
+                      {liquor.flavorKeywords
+                        .slice(0, 3)
+                        .map((keyword) => (
+                          <li key={keyword}>
+                            #{keyword}
+                          </li>
+                        ))}
+                    </ul>
+                  )}
+              </div>
+            </article>
+
+
+            {/* 술잔 */}
+            <article
+              ref={glassVisualRef}
+              className={`${styles.compositionItem} ${styles.glassItem}`}
+            >
+              <div
+                className={
+                  styles.imageWrap
+                }
+              >
+                <img
+                  src={aiImages.glass || images.glass}
+                  alt={glass.productName}
+                />
+              </div>
+
+              <div
+                className={`${styles.compositionCard} ${styles.glassCard}`}
+              >
+                <span>
+                  오늘의 잔
+                </span>
+                <strong>
+                  {glass.productName}
+                </strong>
+                <p
+                  className={
+                    styles.cardMeta
+                  }
+                >
+                  {currentResult.glassReason ||
+                    glass.productDescription || '전통주의 풍미를 더해줄 어울림 잔이에요.'}
+                </p>
+              </div>
+            </article>
           </div>
 
 
           <div
+            ref={compositionFooterRef}
             className={
               styles.compositionFooter
             }
@@ -1282,45 +1432,391 @@ const AiResult = () => {
           </div>
 
 
+          {/* =========================================
+              스크롤 상세 쇼케이스
+              처음에는 보이지 않고,
+              주안상 완성 이후 GSAP으로만 등장
+          ========================================= */}
           <div
             className={
-              styles.scrollIndicator
+              styles.detailShowcase
             }
-            aria-hidden="true"
           >
-            <span
+            <div
               className={
-                styles.scrollDot
-              }
-            />
-
-            <span
-              className={
-                styles.scrollLine
-              }
-            />
-
-            <span
-              className={
-                styles.scrollLabel
+                styles.detailTextArea
               }
             >
-              SCROLL
-            </span>
+              {/* 전통주 추천 이유 */}
+              <article
+                ref={
+                  liquorDetailTextRef
+                }
+                className={
+                  styles.detailPanel
+                }
+              >
+                <span
+                  className={
+                    styles.detailEyebrow
+                  }
+                >
+                  TODAY&apos;S LIQUOR
+                </span>
+
+                <p
+                  className={
+                    styles.detailKicker
+                  }
+                >
+                  막둥이가 고른 오늘의 한 잔
+                </p>
+
+                <h2>
+                  {liquor.productName}
+                </h2>
+
+                <p
+                  className={
+                    styles.detailReason
+                  }
+                >
+                  {
+                    currentResult
+                      .liquorReason ||
+                    liquor
+                      .productDescription ||
+                    '오늘의 취향과 가장 잘 맞는 전통주로 골랐어요.'
+                  }
+                </p>
+
+                <div
+                  className={
+                    styles.detailMetaTags
+                  }
+                >
+                  {liquor
+                    .liquorType && (
+                    <span>
+                      {
+                        liquor
+                          .liquorType
+                      }
+                    </span>
+                  )}
+
+                  {(liquor
+                    .alcoholByVolume ||
+                    typeof liquor.abv ===
+                      'number') && (
+                    <span>
+                      {
+                        liquor
+                          .alcoholByVolume ||
+                        `${liquor.abv}%`
+                      }
+                    </span>
+                  )}
+
+                  {Array.isArray(
+                    liquor
+                      .flavorKeywords
+                  ) &&
+                    liquor
+                      .flavorKeywords
+                      .slice(0, 2)
+                      .map(
+                        (
+                          keyword
+                        ) => (
+                          <span
+                            key={
+                              keyword
+                            }
+                          >
+                            #{keyword}
+                          </span>
+                        )
+                      )}
+                </div>
+
+                <button
+                  type="button"
+                  className={
+                    styles.detailButton
+                  }
+                  onClick={() =>
+                    navigate(
+                      `/product/${liquor.productId}`
+                    )
+                  }
+                >
+                  상품 자세히 보기
+                </button>
+              </article>
+
+
+              {/* 안주 추천 이유 */}
+              <article
+                ref={
+                  foodDetailTextRef
+                }
+                className={
+                  styles.detailPanel
+                }
+              >
+                <span
+                  className={
+                    styles.detailEyebrow
+                  }
+                >
+                  TODAY&apos;S PAIRING
+                </span>
+
+                <p
+                  className={
+                    styles.detailKicker
+                  }
+                >
+                  막둥이가 곁들인 오늘의 한 접시
+                </p>
+
+                <h2>
+                  {food.productName}
+                </h2>
+
+                <p
+                  className={
+                    styles.detailReason
+                  }
+                >
+                  {
+                    currentResult
+                      .foodReason ||
+                    food
+                      .productDescription ||
+                    '오늘의 전통주와 가장 잘 어울리는 안주로 골랐어요.'
+                  }
+                </p>
+
+                <div
+                  className={
+                    styles.detailMetaTags
+                  }
+                >
+                  {food
+                    .snackType && (
+                    <span>
+                      {
+                        food
+                          .snackType
+                      }
+                    </span>
+                  )}
+
+                  {food
+                    .volume && (
+                    <span>
+                      {
+                        food
+                          .volume
+                      }
+                    </span>
+                  )}
+
+                  {food
+                    .brandManufacturer && (
+                    <span>
+                      {
+                        food
+                          .brandManufacturer
+                      }
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  className={
+                    styles.detailButton
+                  }
+                  onClick={() =>
+                    navigate(
+                      `/product/${food.productId}`
+                    )
+                  }
+                >
+                  상품 자세히 보기
+                </button>
+              </article>
+
+
+              {/* 술잔 추천 이유 */}
+              <article
+                ref={
+                  glassDetailTextRef
+                }
+                className={
+                  styles.detailPanel
+                }
+              >
+                <span
+                  className={
+                    styles.detailEyebrow
+                  }
+                >
+                  TODAY&apos;S GLASS
+                </span>
+
+                <p
+                  className={
+                    styles.detailKicker
+                  }
+                >
+                  마지막으로 고른 오늘의 잔
+                </p>
+
+                <h2>
+                  {glass.productName}
+                </h2>
+
+                <p
+                  className={
+                    styles.detailReason
+                  }
+                >
+                  {
+                    currentResult
+                      .glassReason ||
+                    glass
+                      .productDescription ||
+                    '오늘의 술과 안주를 더 기분 좋게 즐길 수 있는 잔으로 골랐어요.'
+                  }
+                </p>
+
+                <div
+                  className={
+                    styles.detailMetaTags
+                  }
+                >
+                  {glass
+                    .glassType && (
+                    <span>
+                      {
+                        glass
+                          .glassType
+                      }
+                    </span>
+                  )}
+
+                  {glass
+                    .volume && (
+                    <span>
+                      {
+                        glass
+                          .volume
+                      }
+                    </span>
+                  )}
+
+                  {glass
+                    .brandManufacturer && (
+                    <span>
+                      {
+                        glass
+                          .brandManufacturer
+                      }
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  className={
+                    styles.detailButton
+                  }
+                  onClick={() =>
+                    navigate(
+                      `/product/${glass.productId}`
+                    )
+                  }
+                >
+                  상품 자세히 보기
+                </button>
+              </article>
+            </div>
+
+
+            <div
+              className={
+                styles.detailVisualArea
+              }
+            >
+              {/* 기존 전통주가 이동할 최종 위치.
+                  화면에는 보이지 않는 기준점 */}
+              <div
+                ref={
+                  liquorFocusTargetRef
+                }
+                className={
+                  styles.liquorFocusTarget
+                }
+                aria-hidden="true"
+              />
+
+
+              {/* 안주 상세 사진 */}
+              <div
+                ref={
+                  foodDetailVisualRef
+                }
+                className={`${styles.detailVisual} ${styles.detailFoodVisual}`}
+              >
+                <img
+                  src={
+                    aiImages.food ||
+                    images.food
+                  }
+                  alt={
+                    food.productName
+                  }
+                />
+              </div>
+
+
+              {/* 술잔 상세 사진 */}
+              <div
+                ref={
+                  glassDetailVisualRef
+                }
+                className={`${styles.detailVisual} ${styles.detailGlassVisual}`}
+              >
+                <img
+                  src={
+                    aiImages.glass ||
+                    images.glass
+                  }
+                  alt={
+                    glass.productName
+                  }
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
 
-      {/* =========================
-          02. 전통주
-      ========================= */}
+      {/* =========================================
+          02. 전통주 상세 섹션
+          모바일에서는 기존 방식 유지
+      ========================================= */}
 
       <section
         ref={
           setSectionRef(1)
         }
-        className={`${styles.section} ${styles.productSection}`}
+        className={`${styles.section} ${styles.productSection} ${styles.desktopHiddenDetailSection}`}
       >
         <div
           className={
@@ -1376,10 +1872,7 @@ const AiResult = () => {
               }
             >
               <div>
-                <span>
-                  도수
-                </span>
-
+                <span>도수</span>
                 <strong>
                   {
                     liquor
@@ -1396,10 +1889,7 @@ const AiResult = () => {
 
 
               <div>
-                <span>
-                  단맛
-                </span>
-
+                <span>단맛</span>
                 <strong>
                   {
                     liquor.sweetness ??
@@ -1411,10 +1901,7 @@ const AiResult = () => {
 
 
               <div>
-                <span>
-                  산미
-                </span>
-
+                <span>산미</span>
                 <strong>
                   {
                     liquor.acidity ??
@@ -1426,10 +1913,7 @@ const AiResult = () => {
 
 
               <div>
-                <span>
-                  향
-                </span>
-
+                <span>향</span>
                 <strong>
                   {
                     liquor
@@ -1442,10 +1926,7 @@ const AiResult = () => {
 
 
               <div>
-                <span>
-                  무게감
-                </span>
-
+                <span>무게감</span>
                 <strong>
                   {
                     liquor
@@ -1480,9 +1961,7 @@ const AiResult = () => {
                             keyword
                           }
                         >
-                          {
-                            keyword
-                          }
+                          #{keyword}
                         </span>
                       )
                     )}
@@ -1526,15 +2005,15 @@ const AiResult = () => {
       </section>
 
 
-      {/* =========================
-          03. 안주
-      ========================= */}
+      {/* =========================================
+          03. 안주 상세 섹션 (모바일)
+      ========================================= */}
 
       <section
         ref={
           setSectionRef(2)
         }
-        className={`${styles.section} ${styles.productSection}`}
+        className={`${styles.section} ${styles.productSection} ${styles.desktopHiddenDetailSection}`}
       >
         <div
           className={
@@ -1651,15 +2130,15 @@ const AiResult = () => {
       </section>
 
 
-      {/* =========================
-          04. 술잔
-      ========================= */}
+      {/* =========================================
+          04. 술잔 상세 섹션 (모바일)
+      ========================================= */}
 
       <section
         ref={
           setSectionRef(3)
         }
-        className={`${styles.section} ${styles.productSection}`}
+        className={`${styles.section} ${styles.productSection} ${styles.desktopHiddenDetailSection}`}
       >
         <div
           className={
@@ -1778,165 +2257,174 @@ const AiResult = () => {
       </section>
 
 
-      {/* =========================
+      {/* =========================================
           05. 다른 주안상
-      ========================= */}
+      ========================================= */}
 
       <section
-        ref={
-          setSectionRef(4)
-        }
+        ref={setSectionRef(4)}
         className={`${styles.section} ${styles.otherSection}`}
       >
-        <div
-          className={
-            styles.otherInner
-          }
-        >
-          <div
-            className={
-              styles.otherHeading
-            }
-          >
+        <div className={styles.otherInner}>
+          <header className={styles.otherHeading}>
             <h2>
-              막둥이가 준비한 또
-              다른 주안상도 있어요
+              막둥이가 준비한 또 다른 주안상도 있어요
             </h2>
-
             <p>
-              조금 다른 조합도 함께
-              살펴보세요!
+              같은 취향을 조금 다른 분위기로 즐겨보세요!
             </p>
+          </header>
+
+          <div className={styles.otherShowcase}>
+            <img
+              src={makdongImage}
+              alt="다른 주안상을 소개하는 막둥이"
+              className={styles.otherMakdong}
+            />
+
+            <div className={styles.otherList}>
+              {otherResults
+                .slice(0, 2)
+                .map(
+                  (
+                    {
+                      recommendation: item,
+                      originalIndex,
+                    },
+                    cardIndex
+                  ) => {
+                    const flavorKeywords =
+                      Array.isArray(
+                        item.liquor.flavorKeywords
+                      )
+                        ? item.liquor.flavorKeywords
+                        : []
+
+                    const tags = [
+                      flavorKeywords[0] ||
+                        item.liquor.liquorType ||
+                        '전통주',
+                      flavorKeywords[1] ||
+                        item.food.snackType ||
+                        '막둥이 추천',
+                    ].filter(Boolean)
+
+                    const cardTitle =
+                      cardIndex === 0
+                        ? '산뜻하게 즐기는 상'
+                        : '좀 더 깊게 즐기는 상'
+
+                    return (
+                      <article
+                        key={item.tableId}
+                        className={styles.otherCard}
+                      >
+                        <h3>{cardTitle}</h3>
+
+                        <div className={styles.otherCardImage}>
+                          <div className={styles.otherMiniStage}>
+                            <img
+                              src={backgroundImage}
+                              alt=""
+                              aria-hidden="true"
+                              className={styles.otherMiniPattern}
+                            />
+
+                            <img
+                              src={trayImage}
+                              alt=""
+                              aria-hidden="true"
+                              className={styles.otherMiniTray}
+                            />
+
+                            {(item.aiImages.food ||
+                              item.images.food) && (
+                              <img
+                                src={
+                                  item.aiImages.food ||
+                                  item.images.food
+                                }
+                                alt={item.food.productName}
+                                className={styles.otherMiniFood}
+                              />
+                            )}
+
+                            {(item.aiImages.liquor ||
+                              item.images.liquor) && (
+                              <img
+                                src={
+                                  item.aiImages.liquor ||
+                                  item.images.liquor
+                                }
+                                alt={item.liquor.productName}
+                                className={styles.otherMiniLiquor}
+                              />
+                            )}
+
+                            {(item.aiImages.glass ||
+                              item.images.glass) && (
+                              <img
+                                src={
+                                  item.aiImages.glass ||
+                                  item.images.glass
+                                }
+                                alt={item.glass.productName}
+                                className={styles.otherMiniGlass}
+                              />
+                            )}
+                          </div>
+                        </div>
+
+                        <div className={styles.otherCardText}>
+                          <p className={styles.otherCardReason}>
+                            {item.reason ||
+                              `${item.liquor.productName}와 ${item.food.productName}을 함께 즐기는 막둥이의 또 다른 주안상이에요.`}
+                          </p>
+
+                          <div className={styles.otherCardTags}>
+                            {tags.map((tag) => (
+                              <span key={tag}>
+                                #{tag}
+                              </span>
+                            ))}
+                          </div>
+
+                          <button
+                            type="button"
+                            className={styles.otherCardLink}
+                            onClick={() =>
+                              handleSelectOther(
+                                originalIndex
+                              )
+                            }
+                          >
+                            자세히 보기
+                            <span aria-hidden="true">›</span>
+                          </button>
+                        </div>
+                      </article>
+                    )
+                  }
+                )}
+            </div>
           </div>
 
-
-          <div
-            className={
-              styles.otherList
-            }
-          >
-            {otherResults.map(
-              ({
-                recommendation:
-                  item,
-
-                originalIndex,
-              }) => (
-                <article
-                  key={
-                    item.tableId
-                  }
-                  className={
-                    styles.otherCard
-                  }
-                >
-                  <div
-                    className={
-                      styles.otherCardImage
-                    }
-                  >
-                    {item
-                      .images
-                      .liquor && (
-                      <img
-                        src={
-                          item
-                            .images
-                            .liquor
-                        }
-                        alt={
-                          item
-                            .liquor
-                            .productName
-                        }
-                      />
-                    )}
-                  </div>
-
-
-                  <div
-                    className={
-                      styles.otherCardText
-                    }
-                  >
-                    <span>
-                      막둥이의 또
-                      다른 추천
-                    </span>
-
-                    <h3>
-                      {
-                        item
-                          .liquor
-                          .productName
-                      }{' '}
-                      주안상
-                    </h3>
-
-                    <p>
-                      {
-                        item
-                          .liquor
-                          .productName
-                      }
-                    </p>
-
-                    <p>
-                      {
-                        item
-                          .food
-                          .productName
-                      }
-                    </p>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleSelectOther(
-                          originalIndex
-                        )
-                      }
-                    >
-                      주안상 보기
-                    </button>
-                  </div>
-                </article>
-              )
-            )}
-          </div>
-
-
-          <div
-            className={
-              styles.bottomButtons
-            }
-          >
+          <div className={styles.bottomButtons}>
             <button
               type="button"
-              className={
-                styles.smallButton
-              }
-              onClick={() =>
-                navigate(
-                  '/ai/survey'
-                )
-              }
+              className={styles.otherBottomButton}
+              onClick={() => navigate('/ai/survey')}
             >
               다시 추천받기
             </button>
 
             <button
               type="button"
-              className={
-                styles.smallButton
-              }
-              onClick={() =>
-                navigate(
-                  '/shop'
-                )
-              }
+              className={styles.otherBottomButton}
+              onClick={() => navigate('/shop')}
             >
-              다른 상품 보러 가기
+              더 많은 상품 보러 가기
+              <span aria-hidden="true">›</span>
             </button>
           </div>
         </div>

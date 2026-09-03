@@ -1,400 +1,838 @@
+/* ========================================
+   AiResult.module.scss (트레이 맞춤 정렬)
+======================================== */
+
+.aiResult {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #FAF9F5;
+  color: #2c2522;
+  font-family: 'Pretendard', sans-serif;
+  overflow-x: hidden;
+}
+
+/* 01. 메인 주안상 스테이지 섹션 */
 .compositionSection {
   position: relative;
   width: 100%;
-  min-height: calc(100vh - 72px);
-  overflow: hidden;
-  color: #2f261f;
-  background: #fbf8f1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
 }
 
 .compositionInner {
   position: relative;
+  width: 100%;
+  max-width: 2000px;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  width: min(1080px, calc(100% - 96px));
-  min-height: calc(100vh - 72px);
-  margin: 0 auto;
-  padding: 56px 0 40px;
-  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
 }
 
+/* 상단 타이틀 (왼쪽 정렬) */
 .compositionHeading {
-  position: relative;
-  z-index: 20;
+  text-align: left;
   width: 100%;
+  max-width: 820px;
+  padding-left: 0px;
+  z-index: 5;
+  margin-bottom: 100px;
+
+  h1 {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: #2c2522;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+    line-height: 1.25;
+  }
+
+  p {
+    font-size: 0.92rem;
+    color: #7a6b63;
+    line-height: 1.5;
+  }
 }
 
-.compositionHeading h1 {
-  margin: 0;
-  color: #201a16;
-  font-size: clamp(30px, 2.6vw, 40px);
-  font-weight: 800;
-  line-height: 1.28;
-  letter-spacing: -0.04em;
-}
-
-.compositionHeading p {
-  max-width: 640px;
-  margin: 12px 0 0;
-  color: #776a5f;
-  font-size: 15px;
-  line-height: 1.7;
-}
-
-// ========================================
-// 세 상품(안주 / 전통주 / 술잔)을
-// flex로 배치
-//
-// 예전에는 각 아이템을 position:absolute +
-// left/right %로 잡았는데,
-// 아이템 너비만큼 오차가 생겨서
-// 전통주가 중앙에서 벗어나 보였음.
-// flex 정렬로 바꿔서 항상 중앙에 오도록 함.
-// ========================================
+/* ========================================
+   트레이(쟁반) 및 배경 문양 스테이지 정렬
+======================================== */
 
 .compositionStage {
   position: relative;
-  z-index: 2;
+  width: 100%;
+  max-width: 1300px;
+  height: 380px;
   display: flex;
-  align-items: flex-end;
   justify-content: center;
-  gap: clamp(28px, 5vw, 72px);
-  min-height: 420px;
-  margin-top: 40px;
-  padding-top: 130px;
-  box-sizing: border-box;
+  align-items: center;
+  margin: 10px auto;
+}
+
+.bgPatternImage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 580px;
+  height: auto;
+  opacity: 0.1;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.trayImage {
+  position: absolute;
+  bottom: -230px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1300px !important;
+  height: auto;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .compositionItem {
-  position: relative;
-  z-index: 5;
-  flex: 0 0 auto;
-  margin: 0;
-  will-change: transform, opacity;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 3;
+
+  .imageWrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 16px 20px rgba(40, 25, 15, 0.35))
+              drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+    }
+  }
 }
 
-.imageWrap {
-  position: relative;
-  width: 100%;
-}
-
-.imageWrap img {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-height: 320px;
-  object-fit: contain;
-  filter:
-    drop-shadow(
-      0 20px 16px rgba(70, 52, 37, 0.16)
-    );
-  user-select: none;
-  -webkit-user-drag: none;
-}
-
-// 안주 - 왼쪽
-.foodItem {
-  order: 1;
-  width: clamp(220px, 25vw, 300px);
-}
-
-// 전통주 - 중앙, 가장 앞
+/* 1. 전통주 (트레이 정중앙 위) */
 .liquorItem {
-  order: 2;
-  z-index: 8;
-  width: clamp(160px, 15vw, 200px);
+  bottom: -10px;
+  left: 55%;
+  transform: translateX(-50%);
+  z-index: 3;
+
+  .imageWrap {
+    width: 425px;
+    height: 485px;
+  }
 }
 
-// 술잔 - 오른쪽, 가장 작게
+/* 2. 제철 안주 (트레이 왼쪽 위) */
+.foodItem {
+  bottom: -60px;
+  z-index: 4;
+  left: 38%;
+  transform: translateX(-50%);
+
+  .imageWrap {
+    width: 325px;
+    height: 325px;
+  }
+}
+
+/* 3. 술잔 (트레이 오른쪽 위) */
 .glassItem {
-  order: 3;
-  width: clamp(90px, 10vw, 130px);
+  bottom: 0;
+  right: 30%;
+  transform: translateX(50%);
+  z-index: 3;
+
+  .imageWrap {
+    width: 150px;
+    height: 165px;
+  }
 }
 
-// ========================================
-// 상품 설명 카드
-//
-// 각 상품 이미지 "바로 위 중앙"에
-// margin-left(고정 px)로 고정.
-// GSAP이 y(translateY)를 애니메이션하므로,
-// 가운데 정렬은 transform이 아니라
-// margin으로 처리해야 서로 충돌하지 않음.
-// ========================================
+/* ========================================
+   정보 카드 (Label) 디자인 및 위치 조정
+======================================== */
 
 .compositionCard {
   position: absolute;
-  bottom: 100%;
-  left: 50%;
-  z-index: 12;
+  background: rgba(255, 253, 248, 0.96);
+  backdrop-filter: blur(6px);
+  border: 1px solid #dcd0bc;
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(70, 50, 35, 0.1);
+  text-align: left;
+  z-index: 5;
+  min-width: 160px;
+
+  span {
+    display: block;
+    font-size: 0.72rem;
+    color: #9c6d42;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+
+  strong {
+    display: block;
+    font-size: 0.9rem;
+    color: #2c2522;
+    font-weight: 700;
+  }
+
+  .cardMeta {
+    font-size: 0.72rem;
+    color: #7a6b63;
+    margin-top: 4px;
+    line-height: 1.35;
+  }
+
+  .cardKeywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+    padding: 0;
+    list-style: none;
+
+    li {
+      font-size: 0.65rem;
+      color: #8c735d;
+      background: #f0e8dc;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+  }
+}
+
+.foodCard {
+  top: 20px;
+  left: -270px;
+  min-width: 250px;
+}
+
+.liquorCard {
+  top: 90px;
+  left: 300px;
+  min-width: 200px;
+}
+
+.glassCard {
+  top: 20px;
+  right: -290px;
+  max-width: 300px;
+}
+
+.compositionFooter {
+  z-index: 5;
+  margin-top: 30px;
+}
+
+.saveButton {
+  background: #4a382b;
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 25px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(74, 56, 43, 0.2);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #382a20;
+    transform: translateY(-2px);
+  }
+}
+
+/* 토스 스타일 좌우 2단 레이아웃 */
+.tossLayoutContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1250px;
+  gap: 40px;
+  box-sizing: border-box;
+  margin: 10px auto;
+}
+
+.tossLeftDescription {
+  flex: 1;
+  text-align: left;
+  opacity: 0;
+  padding-right: 20px;
+
+  .tossSubLabel {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    color: #9c6d42;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-size: 2.3rem;
+    font-weight: 800;
+    color: #2c2522;
+    margin-bottom: 14px;
+    line-height: 1.25;
+    letter-spacing: -0.5px;
+  }
+
+  p {
+    font-size: 1rem;
+    color: #7a6b63;
+    line-height: 1.65;
+    margin-bottom: 20px;
+  }
+
+  .tossMetaTags {
+    display: flex;
+    gap: 14px;
+    font-size: 0.88rem;
+    color: #8c735d;
+    font-weight: 600;
+
+    span {
+      background: #f0e8dc;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+  }
+}
+
+/* ========================================
+   스크롤 상세 쇼케이스
+======================================== */
+.detailShowcase {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  width: min(1220px, calc(100% - 80px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: 80px;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.detailTextArea {
+  position: relative;
+  width: 100%;
+  height: 520px;
+}
+
+.detailPanel {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
-  width: 190px;
-  margin-bottom: 16px;
-  margin-left: -95px; // width의 절반
-  padding: 14px 16px;
-  box-sizing: border-box;
-  border: 1px solid rgba(120, 94, 62, 0.14);
-  border-radius: 16px;
-  color: #3d322a;
-  background: rgba(255, 253, 248, 0.94);
-  box-shadow: 0 12px 26px rgba(79, 58, 38, 0.1);
-  backdrop-filter: blur(8px);
-  gap: 4px;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 480px;
+  opacity: 0;
+  visibility: hidden;
+  text-align: left;
+  pointer-events: none;
 }
 
-.compositionCard > span {
-  align-self: flex-start;
-  padding: 3px 9px;
+.detailEyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: #9c6d42;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 2.4px;
+}
+
+.detailKicker {
+  margin: 0 0 10px;
+  color: #8c735d;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.detailPanel h2 {
+  margin: 0 0 18px;
+  color: #2c2522;
+  font-size: clamp(2.25rem, 3vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -1.2px;
+  word-break: keep-all;
+}
+
+.detailReason {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 0 22px;
+  color: #6f625b;
+  font-size: 1rem;
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+.detailMetaTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.detailMetaTags span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 5px 11px;
   border-radius: 999px;
-  color: #9a7445;
-  background: rgba(154, 116, 69, 0.1);
-  font-size: 11px;
-  font-weight: 700;
+  background: #f0e8dc;
+  color: #806a58;
+  font-size: 0.78rem;
+  font-weight: 650;
+  line-height: 1;
 }
 
-.compositionCard strong {
-  margin-top: 4px;
+.detailButton {
+  border: 0;
+  border-bottom: 1px solid #5b4637;
+  padding: 0 0 5px;
+  background: transparent;
+  color: #4a382b;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: opacity 0.2s ease;
+}
+
+.detailButton:hover {
+  opacity: 0.62;
+}
+
+.detailVisualArea {
+  position: relative;
+  width: 100%;
+  height: 620px;
+}
+
+.liquorFocusTarget {
+  position: absolute;
+  top: 50%;
+  left: 54%;
+  width: 485px;
+  height: 555px;
+  transform: translate(-50%, -50%);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.detailVisual {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.detailVisual img {
+  display: block;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 20px 28px rgba(40, 25, 15, 0.24))
+    drop-shadow(0 5px 9px rgba(0, 0, 0, 0.12));
+}
+
+.detailFoodVisual img {
+  max-width: 540px;
+  max-height: 500px;
+}
+
+.detailGlassVisual img {
+  max-width: 320px;
+  max-height: 420px;
+}
+
+/* ========================================
+   05. 다른 주안상
+======================================== */
+.otherSection {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 20px 64px;
+  box-sizing: border-box;
   overflow: hidden;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.4;
-  text-overflow: ellipsis;
+  background: #FAF9F5;
 }
 
-.cardMeta {
-  display: -webkit-box;
+.otherInner {
+  position: relative;
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.otherHeading {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.otherHeading h2 {
+  margin: 0 0 12px;
+  color: #2c2522;
+  font-size: clamp(1.75rem, 2.35vw, 2.35rem);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.9px;
+}
+
+.otherHeading p {
   margin: 0;
+  color: #7a6b63;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.otherShowcase {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.otherMakdong {
+  position: absolute;
+  left: -112px;
+  top: 52%;
+  width: 158px;
+  height: auto;
+  transform: translateY(-50%);
+  object-fit: contain;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.otherList {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+
+.otherCard {
+  position: relative;
+  min-width: 0;
+  padding: 25px 24px 22px;
+  box-sizing: border-box;
+  border: 1px solid rgba(112, 91, 72, 0.13);
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow:
+    0 2px 0 rgba(78, 61, 48, 0.18),
+    0 14px 34px rgba(72, 54, 39, 0.06);
+  backdrop-filter: blur(8px);
+}
+
+.otherCard > h3 {
+  margin: 0 0 18px;
+  text-align: center;
+  color: #332a26;
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.otherCardImage {
+  width: 100%;
+  height: 150px;
+  margin-bottom: 16px;
   overflow: hidden;
-  color: #8a7c6f;
-  font-size: 12px;
-  line-height: 1.55;
+  border-radius: 7px;
+  background: #f8f4ec;
+}
+
+.otherMiniStage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.otherMiniPattern {
+  position: absolute;
+  top: 49%;
+  left: 50%;
+  width: 170px;
+  height: auto;
+  transform: translate(-50%, -50%);
+  opacity: 0.12;
+  mix-blend-mode: multiply;
+  z-index: 0;
+}
+
+.otherMiniTray {
+  position: absolute;
+  left: 50%;
+  bottom: -50px;
+  width: 350px;
+  max-width: none;
+  height: auto;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.otherMiniFood,
+.otherMiniLiquor,
+.otherMiniGlass {
+  position: absolute;
+  display: block;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 10px rgba(48, 33, 23, 0.2));
+}
+
+.otherMiniFood {
+  left: 23%;
+  bottom: 7px;
+
+  width: 105px;
+  height: auto;
+
+  max-width: none;
+  max-height: none;
+
+  z-index: 3;
+}
+
+.otherMiniLiquor {
+  left: 60%;
+  bottom: 15px;
+
+  width: 45px;
+  height: auto;
+
+  max-width: none;
+  max-height: none;
+
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.otherMiniGlass {
+  right: 20%;
+  bottom: 15px;
+
+  width: 50px;
+  height: auto;
+
+  max-width: none;
+  max-height: none;
+
+  z-index: 3;
+}
+
+.otherCardText {
+  text-align: center;
+}
+
+.otherCardReason {
+  display: -webkit-box;
+  min-height: 38px;
+  margin: 0 auto 13px;
+  overflow: hidden;
+  color: #625750;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  word-break: keep-all;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   line-clamp: 2;
 }
 
-.cardKeywords {
+.otherCardTags {
   display: flex;
-  flex-direction: column;
-  margin: 2px 0 0;
-  padding: 0;
-  list-style: none;
-  gap: 3px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  min-height: 28px;
+  margin-bottom: 17px;
 }
 
-.cardKeywords li {
-  position: relative;
-  padding-left: 12px;
-  color: #6c5f53;
-  font-size: 12px;
-  line-height: 1.5;
+.otherCardTags span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #eeece8;
+  color: #6f675f;
+  font-size: 0.68rem;
+  font-weight: 600;
 }
 
-.cardKeywords li::before {
-  position: absolute;
-  left: 0;
-  color: #c9a76c;
-  content: '·';
+.otherCardLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  padding: 3px 0;
+  background: transparent;
+  color: #38312d;
+  font-size: 0.73rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-// ========================================
-// 와이어프레임 기준 카드별 위치 조정
-//
-// 안주 카드 → 접시 위, 왼쪽으로 치우침
-// 전통주 카드 → 병 위, 오른쪽으로 치우침
-// 술잔 카드 → 잔 "위"가 아니라 잔 옆(오른쪽,
-// 같은 높이)에 배치
-// ========================================
-
-.foodCard {
-  margin-left: -150px;
+.otherCardLink span {
+  font-size: 1rem;
+  line-height: 1;
 }
 
-.liquorCard {
-  margin-left: 20px;
+.otherCardLink:hover {
+  opacity: 0.62;
+  transform: translateX(2px);
 }
 
-.glassCard {
-  top: 0;
-  bottom: auto;
-  left: 100%;
-  margin-top: 0;
-  margin-bottom: 0;
-  margin-left: 16px;
+.bottomButtons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+  max-width: 760px;
+  margin: 48px auto 0;
 }
 
-.compositionFooter {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 22px;
-}
-
-.saveButton {
-  padding: 12px 22px;
+.otherBottomButton {
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 132px;
+  min-height: 38px;
   border: 0;
   border-radius: 999px;
-  color: #3d322a;
-  background: #ecdfc8;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
+  padding: 9px 18px;
+  background: #e1e1df;
+  color: #5f5b57;
+  font-size: 0.76rem;
+  font-weight: 650;
   cursor: pointer;
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
-.saveButton:hover {
-  background: #e2d1b1;
-  transform: translateY(-1px);
+.otherBottomButton span {
+  font-size: 1rem;
+  line-height: 1;
 }
 
-// ========================================
-// 세로형 SCROLL 인디케이터
-// ========================================
-
-.scrollIndicator {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 40px auto 0;
-  gap: 8px;
+.otherBottomButton:hover {
+  background: #d7d6d3;
+  transform: translateY(-2px);
 }
 
-.scrollDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #a67d4d;
-}
-
-.scrollLine {
-  width: 1px;
-  height: 34px;
-  background: rgba(166, 125, 77, 0.4);
-  animation: compositionScrollLine 1.6s ease-in-out infinite;
-}
-
-.scrollLabel {
-  color: #a67d4d;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-}
-
-@keyframes compositionScrollLine {
-  0%,
-  100% {
-    transform: scaleY(1);
-    transform-origin: top;
-  }
-
-  50% {
-    transform: scaleY(0.55);
-    transform-origin: top;
-  }
-}
-
-@media (max-width: 1100px) {
-  .compositionInner {
-    width: min(100% - 56px, 960px);
-  }
-
-  .compositionStage {
-    gap: clamp(20px, 4vw, 48px);
-    padding-top: 110px;
-  }
-
-  .foodItem {
-    width: clamp(190px, 28vw, 250px);
-  }
-
-  .liquorItem {
-    width: clamp(140px, 16vw, 175px);
+@media (min-width: 769px) {
+  .desktopHiddenDetailSection {
+    display: none !important;
   }
 }
 
 @media (max-width: 768px) {
-  .compositionSection {
+  .detailShowcase {
+    display: none;
+  }
+
+  .otherSection {
     min-height: auto;
-    overflow: visible;
+    padding: 72px 20px 54px;
   }
 
-  .compositionInner {
-    width: calc(100% - 36px);
-    min-height: auto;
-    padding: 48px 0 56px;
+  .otherHeading {
+    margin-bottom: 30px;
   }
 
-  .compositionHeading h1 {
-    font-size: 28px;
+  .otherHeading h2 {
+    font-size: 1.7rem;
   }
 
-  .compositionHeading p {
-    font-size: 13px;
+  .otherShowcase {
+    max-width: 440px;
   }
 
-  .compositionStage {
-    display: grid;
-    min-height: auto;
-    margin-top: 28px;
-    padding-top: 0;
+  .otherMakdong {
+    display: none;
+  }
+
+  .otherList {
     grid-template-columns: 1fr;
-    gap: 30px;
+    gap: 18px;
   }
 
-  .compositionItem {
-    display: grid;
-    width: 100%;
-    grid-template-columns: minmax(110px, 40%) 1fr;
-    align-items: center;
-    gap: 16px;
+  .otherCard {
+    padding: 22px 20px 20px;
   }
 
-  .imageWrap img {
-    max-height: 190px;
+  .otherCardImage {
+    height: 180px;
   }
 
-  .compositionCard {
-    position: relative;
-    inset: auto;
-    width: 100%;
-    margin: 0;
-    opacity: 1;
-    transform: none;
+  .otherMiniTray {
+    bottom: -54px;
+    width: 390px;
   }
 
-  .foodItem {
-    order: 2;
+  .otherMiniFood {
+    max-width: 138px;
+    max-height: 105px;
   }
 
-  .liquorItem {
-    order: 1;
+  .otherMiniLiquor {
+    max-width: 126px;
+    max-height: 154px;
   }
 
-  .glassItem {
-    order: 3;
+  .otherMiniGlass {
+    max-width: 64px;
+    max-height: 76px;
   }
 
-  .compositionFooter {
-    justify-content: center;
-    margin-top: 28px;
-  }
-
-  .saveButton {
-    width: 100%;
-    text-align: center;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .scrollLine {
-    animation: none;
-  }
-
-  .saveButton {
-    transition: none;
+  .bottomButtons {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    max-width: 440px;
+    margin-top: 30px;
   }
 }
