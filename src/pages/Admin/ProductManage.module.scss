@@ -427,9 +427,12 @@ $radius-control: 8px;
   .thumbPlaceholder {
     width: 36px;
     height: 36px;
+    overflow: hidden;
     background: #eae7df;
     border-radius: 6px;
     flex-shrink: 0;
+
+    img { width: 100%; height: 100%; object-fit: cover; }
   }
 
   .pName {
@@ -529,9 +532,12 @@ $radius-control: 8px;
   .cardThumb {
     width: 76px;
     height: 76px;
+    overflow: hidden;
     background: #eae7df;
     border-radius: 8px;
     flex-shrink: 0;
+
+    img { width: 100%; height: 100%; object-fit: cover; }
   }
 
   .cardInfo {
@@ -678,6 +684,7 @@ $radius-control: 8px;
     padding: 4px 8px;
     border-radius: 4px;
     border: 1px solid #e8e4da;
+    button { margin-left: 4px; color: $danger; }
   }
 
   .chipAddBtn {
@@ -692,8 +699,16 @@ $radius-control: 8px;
   }
 }
 
+.tagEditor {
+  display: flex;
+  gap: 6px;
+  input { flex: 1; min-width: 0; height: 32px; padding: 0 8px; border: 1px solid $border-color; border-radius: 5px; }
+  button { padding: 0 12px; color: #fff; background: $primary; border-radius: 5px; }
+}
+
 .albumRow {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
 
   .mainImgBox, .subImgBox, .uploadPlusBox {
@@ -713,12 +728,14 @@ $radius-control: 8px;
     color: #636b67;
     font-weight: 600;
     text-align: center;
+    img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
   }
 
   .subImgBox {
     background: #eae7df;
     color: #8c9490;
     position: relative;
+    img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
 
     button {
       position: absolute;

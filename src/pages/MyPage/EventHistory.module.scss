@@ -1,5 +1,68 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 0 5% 4rem; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as v;
+
+.page { width: 100%; padding-bottom: v.$space-20; color: v.$color-text-primary; font-family: v.$font-family-base; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
+.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: v.$space-16; }
+.activeSection, .historySection { min-width: 0; }
+.activeSection h2, .historySection h2 { margin-bottom: v.$space-8; font-size: v.$font-size-2xl; font-weight: v.$font-weight-bold; }
+.activeList, .historyList { display: grid; gap: v.$space-8; }
+.activeCard { display: grid; grid-template-columns: 176px minmax(0, 1fr); gap: v.$space-8; align-items: center; }
+.activeImage, .historyImage { overflow: hidden; background: v.$color-surface; border-radius: v.$radius-xl; }
+.activeImage { aspect-ratio: 1; }
+.activeImage img, .historyImage img { width: 100%; height: 100%; object-fit: cover; }
+.activeInfo h3, .historyInfo h3 { overflow: hidden; font-size: v.$font-size-xl; font-weight: v.$font-weight-bold; line-height: v.$line-height-tight; text-overflow: ellipsis; white-space: nowrap; }
+.activeInfo p { display: -webkit-box; margin-top: v.$space-2; overflow: hidden; color: v.$color-text-secondary; font-size: v.$font-size-md; line-height: v.$line-height-base; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.activeInfo time, .historyInfo time { display: block; margin-top: v.$space-2; color: v.$color-text-primary; font-size: v.$font-size-sm; }
+.activeInfo a { display: inline-flex; min-width: 124px; min-height: v.$space-10; align-items: center; justify-content: center; margin-top: v.$space-5; padding-inline: v.$space-5; color: v.$color-white; font-size: v.$font-size-md; font-weight: v.$font-weight-semibold; background: v.$color-primary; border-radius: v.$radius-lg; transition: background-color v.$transition-fast ease, transform v.$transition-fast ease; }
+.activeInfo a:hover { background: v.$color-primary-light; transform: translateY(-2px); }
+.moreEvents, .historyLink { display: flex; min-height: 58px; align-items: center; justify-content: center; margin-top: v.$space-10; color: v.$color-text-secondary; font-size: v.$font-size-lg; font-weight: v.$font-weight-semibold; background: v.$color-white; border: 1px solid v.$color-border; border-radius: v.$radius-lg; transition: color v.$transition-fast ease, border-color v.$transition-fast ease; }
+.moreEvents:hover, .historyLink:hover { color: v.$color-primary; border-color: v.$color-primary; }
+.historyCard { position: relative; display: grid; min-height: 138px; grid-template-columns: 96px minmax(0, 1fr) auto; gap: v.$space-5; align-items: center; padding: v.$space-5; background: v.$color-white; border: 1px solid v.$color-border; border-radius: v.$radius-lg; }
+.historyImage { width: 96px; aspect-ratio: 1; border-radius: v.$radius-lg; }
+.historyInfo p { margin-top: v.$space-2; overflow: hidden; color: v.$color-text-muted; font-size: v.$font-size-xs; text-overflow: ellipsis; white-space: nowrap; }
+.statusBadge { align-self: start; padding: v.$space-1 v.$space-3; color: v.$color-primary; font-size: v.$font-size-xs; font-weight: v.$font-weight-semibold; background: color-mix(in srgb, v.$color-primary 14%, v.$color-white); border-radius: v.$radius-pill; white-space: nowrap; }
+.stateBox, .emptyState { display: flex; min-height: 540px; align-items: center; flex-direction: column; justify-content: center; padding: v.$space-10; text-align: center; background: v.$color-white; border: 1px solid v.$color-border; border-radius: v.$radius-lg; }
+.stateBox { color: v.$color-text-muted; font-size: v.$font-size-md; }
+.emptyIcon { display: grid; width: 132px; aspect-ratio: 1; place-items: center; color: v.$color-white; font-size: v.$font-size-5xl; font-weight: v.$font-weight-bold; background: color-mix(in srgb, v.$color-primary 48%, v.$color-white); border-radius: v.$radius-pill; }
+.emptyState strong { margin-top: v.$space-10; font-size: v.$font-size-2xl; font-weight: v.$font-weight-bold; }
+.emptyState p { margin-top: v.$space-3; color: v.$color-text-secondary; font-size: v.$font-size-md; }
+.emptyState a { display: flex; width: min(100%, 280px); min-height: 58px; align-items: center; justify-content: center; margin-top: v.$space-8; color: v.$color-white; font-size: v.$font-size-lg; font-weight: v.$font-weight-semibold; background: v.$color-primary; border-radius: v.$radius-lg; transition: background-color v.$transition-fast ease; }
+.emptyState a:hover { background: v.$color-primary-light; }
+
+@media (max-width: 1500px) {
+  .columns { gap: v.$space-8; }
+  .activeCard { grid-template-columns: 140px minmax(0, 1fr); gap: v.$space-5; }
+  .historyCard { grid-template-columns: 80px minmax(0, 1fr); }
+  .historyImage { width: 80px; }
+  .statusBadge { position: absolute; top: v.$space-3; right: v.$space-3; }
+}
+
+@media (max-width: v.$breakpoint-tablet-max) {
+  .columns { grid-template-columns: 1fr; gap: v.$space-16; }
+  .activeCard { grid-template-columns: 176px minmax(0, 1fr); }
+  .historyCard { grid-template-columns: 96px minmax(0, 1fr) auto; }
+  .historyImage { width: 96px; }
+  .statusBadge { position: static; }
+  .stateBox, .emptyState { min-height: 420px; }
+}
+
+@media (max-width: v.$breakpoint-mobile-max) {
+  .page { padding-bottom: v.$space-12; }
+  .activeSection h2, .historySection h2 { margin-bottom: v.$space-6; font-size: v.$font-size-xl; }
+  .activeList, .historyList { gap: v.$space-5; }
+  .activeCard { grid-template-columns: 112px minmax(0, 1fr); gap: v.$space-4; }
+  .activeInfo h3, .historyInfo h3 { font-size: v.$font-size-md; }
+  .activeInfo p { font-size: v.$font-size-sm; -webkit-line-clamp: 1; }
+  .activeInfo time, .historyInfo time { font-size: v.$font-size-xs; }
+  .activeInfo a { min-width: 96px; min-height: v.$space-8; margin-top: v.$space-3; font-size: v.$font-size-sm; }
+  .historyCard { min-height: 112px; grid-template-columns: 72px minmax(0, 1fr); gap: v.$space-4; padding: v.$space-4; }
+  .historyImage { width: 72px; }
+  .statusBadge { position: absolute; top: v.$space-3; right: v.$space-3; }
+  .historyInfo { padding-right: v.$space-12; }
+  .moreEvents, .historyLink { min-height: v.$space-12; margin-top: v.$space-8; font-size: v.$font-size-md; }
+  .stateBox, .emptyState { min-height: 360px; padding: v.$space-6; }
+  .emptyIcon { width: 96px; }
+  .emptyState strong { margin-top: v.$space-8; font-size: v.$font-size-xl; }
+  .emptyState p { font-size: v.$font-size-sm; }
+  .emptyState a { min-height: v.$space-12; font-size: v.$font-size-md; }
+}

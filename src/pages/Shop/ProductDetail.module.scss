@@ -80,6 +80,7 @@
 .purchasePanel { position: sticky; top: calc(var(--detail-header-height) + #{$space-3}); display: flex; flex-direction: column; height: var(--detail-top-height); padding: $space-6; background: $color-bg; border: 1px solid $color-border; border-radius: $radius-lg; box-shadow: 0 $space-2 $space-6 rgba($color-text-primary, .08); }
 .brand { margin-bottom: $space-2; color: $color-text-muted; font-size: $font-size-xs; }
 .purchasePanel > h1 { font-size: $font-size-xl; font-weight: $font-weight-semibold; line-height: $line-height-tight; }
+.lowStockLabel { margin-left: $space-2; color: $color-error; font-size: $font-size-xs; font-weight: $font-weight-semibold; vertical-align: middle; }
 .price { display: flex; gap: $space-2; align-items: center; margin-top: $space-3; }
 .price span { color: $color-error; font-weight: $font-weight-semibold; }
 .price strong { color: $color-primary; font-size: $font-size-xl; font-weight: $font-weight-bold; }
@@ -94,6 +95,7 @@
 .wished { background: $color-error; color: $color-bg;}
 .cartButton { margin-top: $space-2; color: $color-white; background: $color-primary; }
 .cartButton:hover { background: $color-primary-light; }
+.cartButton.soldOutButton, .cartButton.soldOutButton:hover { color: $color-white; background: $color-taupe; cursor: not-allowed; transform: none; }
 .notice { position: fixed; z-index: $z-toast; bottom: $space-8; left: 50%; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: $space-4; align-items: center; width: min(600px, calc(100% - (#{$side-margin-mobile} * 2))); padding: $space-4 $space-5; color: $color-text-primary; background: $color-white; border: 1px solid rgba($color-border, .7); border-radius: $radius-xl; box-shadow: 0 $space-3 $space-8 rgba($color-text-primary, .2); transform: translateX(-50%); animation: detailNotice 2.6s cubic-bezier(.22, 1, .36, 1) both; }
 .noticeIcon { @include mixins.flex-center; width: 36px; aspect-ratio: 1; color: $color-white; font-size: $font-size-xl; font-weight: $font-weight-bold; background: $color-primary; border-radius: 50%; }
 .loginNoticeIcon { background: $color-error; }
