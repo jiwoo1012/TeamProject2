@@ -187,6 +187,8 @@
 }
 
 .curationSteps {
+  --brush-reveal: 0%;
+
   @include container;
   display: grid;
   // PC에서는 5개 단계를 한 줄에 배치한다.
@@ -236,6 +238,7 @@
     width: 94%;
     height: 13rem;
     background: url('../../assets/images/brand/brand-step-brush.png') center / 100% 100% no-repeat;
+    clip-path: inset(0 var(--brush-reveal) 0 0);
     content: '';
     opacity: 0.72;
     pointer-events: none;
@@ -475,6 +478,14 @@
   max-width: 65rem;
   font-size: clamp(1.9rem, 2.9vw, 3.4rem);
   line-height: 1.55;
+}
+
+.message h2 [data-message-character] {
+  display: inline-block;
+}
+
+.messageCharacters {
+  display: inline;
 }
 
 .messageBrand {
