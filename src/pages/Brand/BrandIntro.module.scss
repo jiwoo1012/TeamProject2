@@ -1,6 +1,21 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
 
+// =====================================================================
+// BrandIntro 스타일 수정 안내
+// =====================================================================
+// 페이지 흐름: Story → Reason → Curation → Senses → Message → Closing
+//
+// 자주 수정하는 위치
+// - 섹션 배경색: 각 섹션의 background
+// - 섹션 위아래 여백: padding-block
+// - 제목 크기: 각 Heading의 h2에 있는 font-size
+// - PC 배치: 기본 스타일 영역
+// - 태블릿/모바일 배치: 파일 아래쪽 @include tablet / mobile 영역
+//
+// clamp(최솟값, 화면에 따라 변하는 값, 최댓값)는 반응형 크기 설정이다.
+// 공통 색상·간격 변수($color-*, $space-*)는 ../../styles/_variables.scss에 있다.
+
 // NOTE
 // - JS Arirang HON은 현재 프로젝트에 @font-face가 없어 로드되지 않는다.
 //   $font-family-display를 참조는 하되, 실제 폰트 로딩은 이 파일의 책임 범위가 아니다.
@@ -9,11 +24,13 @@
 //   그 외 헤딩은 전부 $font-family-base를 상속한다.
 
 :global(html.brand-header-sticky) :global(body > #root > div > header) {
+  // 브랜드 페이지에서만 공통 헤더를 화면 상단에 고정한다.
   position: sticky;
   top: 0;
 }
 
 .page {
+  // 브랜드 페이지 전체의 기본 배경색·글자색·폰트
   overflow-x: clip;
   overflow-y: visible;
   background: $color-bg;
@@ -29,26 +46,29 @@
 }
 
 // ---------------------------------------------------------------------
-// Story
+// Story: 첫 화면의 병/배경 이미지 스크롤 애니메이션
 // ---------------------------------------------------------------------
 .storySequence {
   position: relative;
-  height: 300svh;
+  // 300svh 동안 sticky 장면이 유지되며 GSAP 애니메이션이 진행된다.
+  height: 350svh;
   background: rgba($color-surface, 0.85);
 }
 
 .storyScene {
   position: sticky;
-  top: 72px;
+  // 데스크톱 헤더 높이(80px)만큼 아래에서 고정한다.
+  top: 80px;
   display: grid;
   overflow: hidden;
-  height: calc(100svh - 72px);
+  height: calc(100svh - 80px);
   box-sizing: border-box;
   place-items: center;
   isolation: isolate;
 }
 
 .storyBottle {
+  // 전면에 보이는 술병 이미지
   position: absolute;
   z-index: 2;
   display: block;
@@ -58,9 +78,11 @@
   transform-origin: 50% 50%;
   object-fit: contain;
   will-change: transform;
+  
 }
 
 .storyStage {
+  // 술병 뒤에 보이는 무대/배경 이미지
   position: absolute;
   z-index: 1;
   display: block;
@@ -71,15 +93,19 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  // 기기에서 '동작 줄이기'를 사용하면 긴 스크롤 애니메이션 공간을 제거한다.
   .storySequence {
-    height: calc(100svh - 72px);
+    height: calc(100svh - 80px);
   }
 }
 
+
+
 // ---------------------------------------------------------------------
-// Reason
+// Reason: 브랜드가 필요한 이유 3가지
 // ---------------------------------------------------------------------
 .reason {
+  // 섹션 전체 위아래 여백과 배경
   padding-block: clamp($space-24, 11vw, $space-30);
   background: $color-bg;
   text-align: center;
@@ -105,6 +131,7 @@
 .reasonList {
   @include container;
   display: grid;
+  // PC에서는 3개 항목을 한 줄에 배치한다.
   grid-template-columns: repeat(3, 1fr);
   margin-top: clamp($space-16, 8vw, $space-24);
   padding: 0;
@@ -112,7 +139,7 @@
 }
 
 .reasonList li {
-  padding: $space-8 clamp($space-6, 3vw, $space-12) 0;
+  padding: $space-8 $space-12 0;
   border-top: 1px solid $color-border;
   text-align: left;
 }
@@ -124,7 +151,7 @@
 }
 
 .reasonList p {
-  max-width: 18rem;
+  max-width: 24rem;
   margin: $space-4 0 0;
   color: $color-text-secondary;
   font-size: 0.88rem;
@@ -132,7 +159,7 @@
 }
 
 // ---------------------------------------------------------------------
-// Curation
+// Curation: 큐레이션 진행 단계 5개
 // ---------------------------------------------------------------------
 .curation {
   display: flex;
@@ -162,6 +189,7 @@
 .curationSteps {
   @include container;
   display: grid;
+  // PC에서는 5개 단계를 한 줄에 배치한다.
   grid-template-columns: repeat(5, 1fr);
   margin-top: clamp($space-20, 12vh, $space-24);
   padding: 0;
@@ -175,17 +203,8 @@
   flex-direction: column;
 }
 
-.curationSteps li:not(:last-child)::after {
-  position: absolute;
-  top: $space-8;
-  right: -0.25rem;
-  color: $color-text-muted;
-  content: '›';
-  font-size: 1.75rem;
-  font-weight: 300;
-}
-
 .stepIcon {
+  // 각 큐레이션 단계의 원형 아이콘
   @include flex-center;
   width: 4.75rem;
   margin-bottom: $space-6;
@@ -203,111 +222,271 @@
   font-size: clamp(0.85rem, 0.95vw, 1rem);
 }
 
+@media (min-width: 1200px) {
+  .curationSteps {
+    position: relative;
+  }
+
+  // 다섯 단계 전체를 잇는 붓 터치 장식
+  .curationSteps::before {
+    position: absolute;
+    z-index: 0;
+    top: -80px;
+    left: 50%;
+    width: 94%;
+    height: 13rem;
+    background: url('../../assets/images/brand/brand-step-brush.png') center / 100% 100% no-repeat;
+    content: '';
+    opacity: 0.72;
+    pointer-events: none;
+    transform: translateX(-50%);
+  }
+
+  .curationSteps li {
+    z-index: 1;
+  }
+
+  .stepIcon {
+    position: relative;
+    border: 0;
+    background: transparent;
+    color: $color-text-primary;
+    font-size: 1.35rem;
+  }
+}
+
 // ---------------------------------------------------------------------
-// Senses
+// Senses: 다섯 가지 감각 이미지 카드
 // ---------------------------------------------------------------------
 .senses {
-  padding-block: clamp($space-24, 11vw, $space-30);
+  padding-block: clamp($space-20, 9vw, $space-24) clamp($space-24, 11vw, $space-30);
   background: $color-white;
 }
 
 .sensesHeading {
   @include container;
-  margin-bottom: clamp($space-16, 8vw, $space-24);
+  margin-bottom: clamp($space-8, 4vw, $space-12);
+  transform: translateX($space-6);
 }
 
 .sensesHeading h2 {
-  font-size: clamp(2.5rem, 3.6vw, 4.4rem);
+  font-size: clamp(2.5rem, 3.6vw, 3.4rem);
   line-height: 1.3;
+  white-space: nowrap;
+}
+
+.sensesAccent {
+  display: inline-flex;
+  width: 4.2em;
+  aspect-ratio: 1831 / 925;
+  margin-inline: 0.08em 0.12em;
+  align-items: stretch;
+  background-image: url('../../assets/images/brand/brand-five-circle.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  vertical-align: -0.05em;
+}
+
+.sensesAccent > span {
+  display: inline-flex;
+  width: 50%;
+  align-items: center;
+  justify-content: center;
+  color: $color-white;
+  font-size: 0.96em;
+  font-weight: $font-weight-medium;
+  line-height: 1;
+}
+
+.sensesAccent > span:first-child {
+  transform: translateX(0.1em);
+}
+
+.sensesAccent > span:last-child {
+  transform: translateX(-0.1em);
 }
 
 .senseCards {
   @include container;
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp($space-16, 8vw, $space-24) clamp($space-6, 4vw, $space-16);
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp($space-16, 7vw, $space-24);
+  overflow: hidden;
 }
 
 .senseCard {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: clamp($space-6, 3vw, $space-12);
+  align-items: stretch;
   margin: 0;
 }
 
-.senseCard:first-child {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
-  gap: clamp($space-8, 5vw, $space-20);
-  align-items: center;
+.senseImageFrame {
+  width: 100%;
+  aspect-ratio: 1.55 / 1;
+  overflow: hidden;
+  background: $color-surface;
+  mask-image: url('../../assets/images/brand/image-brush-mask.png');
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: 100% 100%;
+  -webkit-mask-image: url('../../assets/images/brand/image-brush-mask.png');
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: 100% 100%;
 }
 
-.senseCard img {
-  display: block;
+.senseImageTrack {
+  display: flex;
   width: 100%;
-  border-radius: $radius-md;
-  aspect-ratio: 1.55 / 1;
+  height: 100%;
+  transition: transform 1400ms cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform;
+}
+
+.senseImageTrack.isTransitionDisabled {
+  transition: none;
+}
+
+.senseImageTrack img {
+  display: block;
+  min-width: 100%;
+  width: 100%;
+  height: 100%;
+  flex: 0 0 100%;
   object-fit: cover;
-  background: $color-surface;
+  transform: scale(0.96);
 }
 
 .senseText {
-  padding-top: $space-6;
+  display: flex;
+  min-width: 0;
+  padding-top: $space-4;
+  flex-direction: column;
 }
 
 .senseText > span {
   display: block;
-  color: $color-primary;
-  font-size: $font-size-sm;
+  color: $color-taupe;
+  font-size: clamp(2.2rem, 3.2vw, 3.4rem);
   font-weight: $font-weight-bold;
+  line-height: 1;
 }
 
 .senseText h3 {
-  margin: $space-3 0 0;
+  margin: $space-10 0 0;
   font-size: clamp(1.4rem, 1.9vw, 1.85rem);
 }
 
 .senseText p {
-  max-width: 34rem;
+  width: 100%;
+  max-width: 46rem;
   margin: $space-4 0 0;
   color: $color-text-secondary;
   font-size: clamp(0.9rem, 1vw, 1rem);
   line-height: 1.8;
 }
 
+.senseControlButtons {
+  position: absolute;
+  right: 0;
+  bottom: $space-4;
+  display: flex;
+  width: calc(40% - (clamp($space-6, 3vw, $space-12) * 0.4));
+  align-items: center;
+  justify-content: flex-start;
+  gap: $space-4;
+}
+
+.senseControlButtons > button {
+  @include flex-center;
+  width: $space-10;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 1px solid $color-border;
+  border-radius: 50%;
+  background: $color-white;
+  color: $color-text-secondary;
+  cursor: pointer;
+  font-size: $font-size-lg;
+  transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+
+.senseControlButtons > button:hover,
+.senseControlButtons > button:focus-visible {
+  border-color: $color-taupe;
+  background: $color-taupe;
+  color: $color-white;
+}
+
+.sensePagination {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.sensePagination button {
+  width: $space-2;
+  height: $space-2;
+  padding: 0;
+  border: 0;
+  border-radius: $radius-pill;
+  background: $color-surface;
+  cursor: pointer;
+  transition: width 180ms ease, background-color 180ms ease;
+}
+
+.sensePagination button.isActive {
+  width: $space-6;
+  background: $color-taupe;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .senseImageTrack {
+    transition: none;
+  }
+}
+
 // ---------------------------------------------------------------------
-// Message — 유일한 볼드 시그니처 섹션 ($color-primary 그대로 사용)
+// Message: 초록색 브랜드 메시지 강조 섹션
 // ---------------------------------------------------------------------
 .message {
-  display: grid;
-  min-height: 70svh;
-  padding-block: clamp($space-24, 15vh, $space-30);
+  display: flex;
+  min-height: clamp(34rem, 70svh, 48rem);
+  padding-block: clamp($space-16, 8vh, $space-24);
+  align-items: center;
   background: $color-primary;
   color: $color-white;
-  place-items: center;
+  justify-content: center;
   text-align: center;
 }
 
 .messageInner {
   @include container;
   @include flex-center;
+  justify-content: center;
   flex-direction: column;
 }
 
 .message h2 {
-  max-width: 46rem;
+  max-width: 60rem;
   font-size: clamp(1.9rem, 2.9vw, 3.4rem);
   line-height: 1.55;
 }
 
 .messageDescription {
   max-width: 40rem;
-  margin: $space-8 0 0;
+  margin: $space-10 0 0;
   color: rgba($color-white, 0.8);
   font-size: clamp(0.9rem, 1vw, 1.05rem);
   line-height: 1.9;
 }
 
 // ---------------------------------------------------------------------
-// Closing
+// Closing: 막동이 소개와 브랜드 핵심 가치
 // ---------------------------------------------------------------------
 .closing {
   padding-block: clamp($space-20, 12vh, $space-24);
@@ -317,6 +496,7 @@
 .closingInner {
   @include container;
   display: grid;
+  // PC에서는 막동이 영역(왼쪽)과 가치 목록(오른쪽)을 나란히 배치한다.
   grid-template-columns: minmax(300px, 0.85fr) minmax(480px, 1.15fr);
   gap: clamp($space-16, 8vw, $space-20);
   align-items: end;
@@ -329,6 +509,7 @@
 }
 
 .makdongVisual {
+  // 막동이 이미지가 들어가는 세로형 프레임
   @include flex-center;
   overflow: hidden;
   width: min(100%, 420px);
@@ -346,6 +527,7 @@
 }
 
 .shopLink {
+  // '막동이 이야기 보기' 버튼
   @include flex-center;
   display: inline-flex;
   min-height: 3.25rem;
@@ -372,6 +554,7 @@
 }
 
 .closingValues {
+  // 오른쪽 브랜드 가치 목록
   display: grid;
   gap: 0;
   margin: 0 0 $space-2;
@@ -401,18 +584,28 @@
 }
 
 // ---------------------------------------------------------------------
-// Responsive — 팀 3단 breakpoint 기준 (mobile / tablet / desktop)
-// desktop이 기본값이므로 별도 블록 없음
+// Responsive: 태블릿/모바일 전용 재배치
+// 데스크톱(1200px 이상)은 위의 기본 스타일을 사용한다.
+// 정확한 breakpoint 값은 ../../styles/_mixins.scss에서 관리한다.
 // ---------------------------------------------------------------------
+@include desktop {
+  .senseText > span {
+    font-size: clamp(4.5rem, 6vw, 5rem);
+  }
+}
+
 @include tablet {
+  // 태블릿에서는 큰 줄바꿈을 숨기고 일부 간격만 줄인다.
   .desktopBreak { display: none; }
   .curationSteps { gap: $space-4; }
   .curationSteps li:not(:last-child)::after { right: -0.75rem; }
   .stepIcon { width: 4.5rem; }
+  .senseCard { gap: $space-8; }
   .closingInner { grid-template-columns: 0.8fr 1.2fr; gap: $space-12; }
 }
 
 @include mobile {
+  // Story: 모바일에서는 sticky 애니메이션 대신 이미지가 세로로 흐른다.
   .storySequence { height: auto; }
   .storyScene {
     position: static;
@@ -433,6 +626,7 @@
   .storyStage { order: 1; }
   .storyBottle { order: 2; margin-top: -18%; max-height: 62svh; }
 
+  // Reason: 3열 목록을 1열로 변경
   .reason { padding-block: $space-24 $space-30; }
   .desktopBreak { display: none; }
   .reasonHeading h2 { font-size: clamp(1.9rem, 9vw, 2.5rem); }
@@ -440,11 +634,13 @@
   .reasonList { grid-template-columns: 1fr; gap: $space-10; margin-top: $space-16; }
   .reasonList li { padding: $space-6 0 0; }
 
+  // Curation: 5열 단계를 세로 순서로 변경
   .curation { padding-block: $space-24 $space-30; }
   .curationHeading h2 { font-size: clamp(1.65rem, 7.5vw, 2.2rem); }
   .curationHeading p { margin-top: $space-6; font-size: 0.9rem; line-height: 1.8; }
   .curationSteps { grid-template-columns: 1fr; gap: $space-12; margin-top: $space-16; }
   .curationSteps li:not(:last-child)::after {
+    // 모바일에서는 단계 화살표가 아래를 향한다.
     top: auto;
     right: auto;
     bottom: -2.25rem;
@@ -453,19 +649,32 @@
   }
   .stepIcon { width: 4.5rem; margin-bottom: $space-4; }
 
-  .senses { padding-block: $space-24 $space-30; }
+  // Senses: 모든 감각 카드를 1열로 변경
+  .senses { padding-block: $space-20 $space-30; }
   .sensesHeading { margin-bottom: $space-12; }
-  .sensesHeading h2 { font-size: clamp(2.3rem, 11vw, 3.2rem); }
-  .senseCards { grid-template-columns: 1fr; gap: $space-16; }
-  .senseCard:first-child { display: block; grid-column: auto; }
-  .senseCard img { border-radius: $radius-sm; aspect-ratio: 4 / 3; }
+  .sensesHeading h2 {
+    font-size: clamp(1.65rem, 7.6vw, 2.3rem);
+    white-space: normal;
+  }
+  .senseCards { gap: $space-16; }
+  .senseCard { grid-template-columns: minmax(0, 1fr); gap: $space-4; }
+  .senseImageFrame { aspect-ratio: 4 / 3; }
+  .senseText { padding-top: $space-2; }
+  .senseText > span { font-size: 2.2rem; }
   .senseText h3 { font-size: 1.4rem; }
   .senseText p { font-size: 0.9rem; }
+  .senseControlButtons {
+    position: static;
+    width: 100%;
+    margin-top: $space-4;
+  }
 
-  .message { min-height: 65svh; padding-block: $space-24; }
+  // Message: 모바일 화면에 맞춰 높이와 글자 크기를 축소
+  .message { min-height: 60svh; padding-block: $space-20; }
   .message h2 { font-size: clamp(1.6rem, 7.2vw, 2.2rem); line-height: 1.55; }
-  .messageDescription { margin-top: $space-6; font-size: 0.9rem; line-height: 1.8; }
+  .messageDescription { margin-top: $space-8; font-size: 0.9rem; line-height: 1.8; }
 
+  // Closing: 좌우 배치를 한 열로 쌓는다.
   .closing { padding-block: $space-24 $space-30; }
   .closingInner { grid-template-columns: 1fr; gap: $space-16; }
   .closingIntro h2 { margin-bottom: $space-8; font-size: clamp(2.3rem, 11vw, 3.2rem); }
@@ -476,6 +685,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  // 동작 줄이기 설정에서는 버튼 hover 애니메이션도 제거한다.
   .shopLink {
     transition: none;
   }
