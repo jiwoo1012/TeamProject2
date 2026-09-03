@@ -1,33 +1,499 @@
-@use '../../styles/variables' as v;
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
 
-.page { min-height: 70vh; padding: v.$space-12 0 v.$space-20; background: v.$color-bg; }
-.content { width: min(900px, calc(100% - 40px)); margin: 0 auto; }
 
-.pageTitle { margin: 0 0 v.$space-6; font-size: v.$font-size-4xl; color: v.$color-text-primary; }
+/* ========================================
+   NOTICE DETAIL
+======================================== */
 
-.noticeArticle { background: v.$color-white; }
-.noticeArticle header { padding: v.$space-8 v.$space-8 v.$space-4; border-bottom: 2px solid v.$color-border; }
-.noticeArticle h2 { margin: 0 0 v.$space-5; font-size: v.$font-size-3xl; line-height: v.$line-height-tight; }
-.noticeArticle header > div { display: flex; align-items: center; color: v.$color-text-muted; font-size: v.$font-size-sm; }
+.page {
+  width: 100%;
+  min-height: 100vh;
 
-.pinBadge { display: inline-flex; min-height: 36px; align-items: center; margin-right: v.$space-4; padding: 0 v.$space-4; border-radius: v.$radius-pill; background: color-mix(in srgb, v.$color-warning 14%, v.$color-white); color: v.$color-warning; font-size: v.$font-size-sm; font-weight: v.$font-weight-bold; }
-.divider { margin-right: v.$space-2; color: v.$color-border; }
+  background: $color-bg;
+  color: $color-text-primary;
+}
 
-.body { min-height: 280px; padding: v.$space-8; color: v.$color-text-secondary; line-height: v.$line-height-relaxed; white-space: pre-wrap; }
-.emptyState { min-height: 280px; display: grid; place-items: center; border-top: 2px solid v.$color-text-primary; color: v.$color-text-muted; }
 
-.bottomBar { display: flex; align-items: center; justify-content: space-between; margin-top: v.$space-6; }
-.listButton { display: inline-flex; align-items: center; gap: v.$space-2; padding: v.$space-2 0; border: none; background: none; color: v.$color-text-secondary; font-size: v.$font-size-sm; }
-.postNav { display: flex; gap: v.$space-3; }
-.postNav button { min-height: 33px; padding: 0 v.$space-5; border: 2px solid v.$color-border; border-radius: v.$radius-pill; background: v.$color-white; color: v.$color-text-primary; font-size: v.$font-size-sm; transition: all v.$transition-fast; }
-.postNav button:not(:disabled):hover { border-color: v.$color-taupe; color: v.$color-taupe; }
-.postNav button:not(:disabled):active { background: v.$color-taupe; border-color: v.$color-taupe; color: v.$color-white; }
-.postNav button:disabled { opacity: .4; cursor: not-allowed; }
+/* ========================================
+   CONTENT
+   NoticeList와 동일한 기준
+======================================== */
 
-@media (max-width: v.$breakpoint-mobile-max) {
-  .page { padding-top: v.$space-8; }
-  .noticeArticle header, .body { padding: v.$space-5; }
-  .noticeArticle h2 { font-size: v.$font-size-2xl; }
-  .bottomBar { flex-direction: column; align-items: stretch; gap: v.$space-3; }
-  .postNav { justify-content: space-between; }
+.content {
+  width: calc(100% - (#{$side-margin-desktop} * 2));
+  max-width: 1040px;
+
+  margin: 0 auto;
+
+  /* NoticeList 제목과 동일한 Y 위치 */
+  padding:
+    $space-20
+    0
+    $space-24;
+
+  box-sizing: border-box;
+}
+
+
+/* ========================================
+   PAGE TITLE
+   NoticeList와 완전히 동일
+======================================== */
+
+.pageTitle {
+  margin:
+    0
+    0
+    $space-10;
+
+  color: $color-text-primary;
+
+  font-family: $font-family-display;
+
+  /* NoticeList와 동일 */
+  font-size: $font-size-4xl;
+
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-tight;
+  letter-spacing: -1px;
+}
+
+
+/* ========================================
+   NOTICE ARTICLE
+======================================== */
+
+.noticeArticle {
+  width: 100%;
+  background: transparent;
+
+  > header {
+    padding-bottom: $space-4;
+
+    border-bottom:
+      1px solid
+      rgba($color-text-primary, 0.55);
+
+    h2 {
+      margin:
+        0
+        0
+        $space-3;
+
+      color: $color-text-primary;
+
+      font-family: $font-family-base;
+      font-size: $font-size-2xl;
+      font-weight: $font-weight-semibold;
+
+      line-height: 1.45;
+      letter-spacing: -0.5px;
+
+      word-break: keep-all;
+    }
+
+    > div {
+      display: flex;
+      align-items: center;
+      gap: $space-3;
+
+      min-height: 28px;
+
+      color: $color-text-muted;
+
+      font-size: $font-size-xs;
+    }
+
+    time {
+      color: $color-text-muted;
+
+      font-size: $font-size-xs;
+      font-weight: $font-weight-regular;
+    }
+  }
+}
+
+
+/* ========================================
+   PIN BADGE
+======================================== */
+
+.pinBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 50px;
+  height: 28px;
+
+  padding: 0 $space-3;
+
+  box-sizing: border-box;
+
+  border-radius: $radius-pill;
+
+  background:
+    rgba($color-warning, 0.14);
+
+  color: $color-text-secondary;
+
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+
+.divider {
+  color:
+    rgba($color-text-primary, 0.3);
+}
+
+
+/* ========================================
+   NOTICE BODY
+======================================== */
+
+.body {
+  min-height: 260px;
+
+  padding:
+    $space-10
+    $space-4
+    $space-16;
+
+  color: $color-text-primary;
+
+  font-family: $font-family-base;
+  font-size: $font-size-md;
+  font-weight: $font-weight-regular;
+
+  line-height: $line-height-relaxed;
+
+  white-space: pre-wrap;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+
+/* ========================================
+   BOTTOM NAVIGATION
+======================================== */
+
+.bottomBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+
+  margin-top: $space-4;
+}
+
+
+/* 목록으로 */
+
+.listButton {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+
+  min-height: 40px;
+
+  padding: 0;
+
+  background: transparent;
+  border: 0;
+
+  color: $color-text-secondary;
+
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+
+  transition:
+    color $transition-fast ease,
+    opacity $transition-fast ease;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  &:hover {
+    color: $color-text-primary;
+  }
+
+  &:active {
+    opacity: 0.65;
+  }
+}
+
+
+/* ========================================
+   PREV / NEXT
+======================================== */
+
+.postNav {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 92px;
+    height: 38px;
+
+    padding: 0 $space-4;
+
+    box-sizing: border-box;
+
+    background: transparent;
+
+    border:
+      1px solid
+      $color-border;
+
+    border-radius: $radius-pill;
+
+    color: $color-text-secondary;
+
+    font-size: $font-size-sm;
+    font-weight: $font-weight-regular;
+
+    transition:
+      background $transition-fast ease,
+      border-color $transition-fast ease,
+      color $transition-fast ease,
+      transform $transition-fast ease;
+
+    &:hover:not(:disabled) {
+      background:
+        rgba($color-surface, 0.5);
+
+      border-color:
+        rgba($color-text-secondary, 0.35);
+
+      color: $color-text-primary;
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    &:disabled {
+      opacity: 0.38;
+      cursor: default;
+    }
+
+    &:last-child:not(:disabled) {
+      background:
+        rgba($color-warning, 0.11);
+
+      border-color:
+        rgba($color-warning, 0.22);
+    }
+  }
+}
+
+
+/* ========================================
+   LOADING / ERROR
+======================================== */
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 360px;
+
+  border-top:
+    1px solid
+    rgba($color-text-primary, 0.18);
+
+  border-bottom:
+    1px solid
+    rgba($color-text-primary, 0.18);
+
+  color: $color-text-muted;
+
+  font-size: $font-size-sm;
+  text-align: center;
+}
+
+
+/* ========================================
+   TABLET
+======================================== */
+
+@include tablet {
+  .content {
+    width:
+      calc(
+        100% -
+        (#{$side-margin-tablet} * 2)
+      );
+
+    max-width: 920px;
+
+    /* NoticeList tablet과 동일 */
+    padding:
+      $space-16
+      0
+      $space-20;
+  }
+
+
+  .pageTitle {
+    margin-bottom: $space-8;
+
+    /* NoticeList tablet과 동일 */
+    font-size: 36px;
+  }
+
+
+  .noticeArticle {
+    > header {
+      h2 {
+        font-size: 22px;
+      }
+    }
+  }
+
+
+  .body {
+    min-height: 240px;
+
+    padding:
+      $space-8
+      $space-2
+      $space-12;
+
+    font-size: $font-size-sm;
+  }
+}
+
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@include mobile {
+  .page {
+    min-height:
+      calc(100vh - 76px);
+  }
+
+
+  .content {
+    width:
+      calc(
+        100% -
+        (#{$side-margin-mobile} * 2)
+      );
+
+    max-width: none;
+
+    /* NoticeList mobile과 동일 */
+    padding:
+      $space-10
+      0
+      $space-16;
+  }
+
+
+  .pageTitle {
+    margin-bottom: $space-8;
+
+    /* NoticeList mobile과 동일 */
+    font-size: 30px;
+
+    letter-spacing: -0.5px;
+  }
+
+
+  .noticeArticle {
+    > header {
+      padding-bottom: $space-4;
+
+      h2 {
+        margin-bottom: $space-3;
+
+        font-size: $font-size-xl;
+
+        line-height: 1.45;
+      }
+
+      > div {
+        gap: $space-2;
+      }
+    }
+  }
+
+
+  .pinBadge {
+    min-width: 44px;
+    height: 26px;
+
+    padding: 0 $space-2;
+
+    font-size: 11px;
+  }
+
+
+  .body {
+    min-height: 220px;
+
+    padding:
+      $space-8
+      0
+      $space-12;
+
+    font-size: $font-size-sm;
+
+    line-height: 1.8;
+  }
+
+
+  .bottomBar {
+    align-items: flex-end;
+    gap: $space-4;
+
+    margin-top: 0;
+  }
+
+
+  .listButton {
+    flex-shrink: 0;
+
+    font-size: $font-size-xs;
+  }
+
+
+  .postNav {
+    gap: $space-2;
+
+    button {
+      min-width: 74px;
+      height: 34px;
+
+      padding: 0 $space-3;
+
+      font-size: 11px;
+    }
+  }
+
+
+  .emptyState {
+    min-height: 280px;
+
+    font-size: $font-size-xs;
+  }
 }
