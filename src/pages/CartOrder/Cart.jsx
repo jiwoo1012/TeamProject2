@@ -24,11 +24,12 @@ import {
 } from '../../firebase/auth'
 
 import {
+  getCollection,
   getDocument,
 } from '../../firebase/firestore'
 
 import {
-  products,
+  products as fallbackProducts,
 } from '../../data/products'
 
 import cartTopOrnament from '../../assets/images/mypage/cartTopOrnament.svg'
@@ -54,6 +55,10 @@ const resolveImage = (
     return ''
   }
 
+  if (/^(https?:|data:|blob:)/.test(imageUrl)) {
+    return imageUrl
+  }
+
   return (
     Object.entries(
       productImages
@@ -75,6 +80,24 @@ const normalizeProductId = (
     /^liq-/,
     'liq_'
   )
+}
+
+
+const mergeProductCatalog = (
+  firestoreProducts
+) => {
+  const firestoreProductIds = new Set(
+    firestoreProducts.map((product) =>
+      normalizeProductId(product.productId || product.id)
+    )
+  )
+
+  return [
+    ...firestoreProducts,
+    ...fallbackProducts.filter((product) =>
+      !firestoreProductIds.has(normalizeProductId(product.productId))
+    ),
+  ]
 }
 
 
@@ -174,22 +197,6 @@ const getDiscountAmount = (
 }
 
 
-const mockRecommendations =
-  [...products]
-    .sort(
-      () => Math.random() - 0.5
-    )
-    .slice(0, 3)
-    .map(
-      (product) => ({
-        id: product.productId,
-        name: product.productName,
-        price: Number(product.price) || 0,
-        imageUrl: resolveImage(product.imageUrl),
-      })
-    )
-
-
 const formatPrice = (
   value
 ) =>
@@ -213,7 +220,7 @@ const formatPrice = (
   Cart에서 사용할 형태로 바꿔준다.
 */
 const getCartItems =
-  (savedCart = getCart()) => {
+  (savedCart, productCatalog) => {
 
     return savedCart
       .map(
@@ -224,30 +231,15 @@ const getCartItems =
             )
 
           const product =
-            products.find(
+            productCatalog.find(
               (item) =>
                 normalizeProductId(
-                  item.productId
+                  item.productId || item.id
                 ) ===
                 savedProductId
             )
 
-          const mockProduct =
-            mockRecommendations.find(
-              (item) =>
-                normalizeProductId(
-                  item.id
-                ) ===
-                savedProductId
-            )
-
-          const foundProduct =
-            product ??
-            mockProduct
-
-          if (
-            !foundProduct
-          ) {
+          if (!product) {
             return null
           }
 
@@ -267,51 +259,40 @@ const getCartItems =
             return null
           }
 
-          if (product) {
-            return {
-              id: product.productId,
-
-              name:
-                product.productName,
-
-              option:
-                makeOptionText(
-                  product
-                ),
-
-              price:
-                Number(
-                  product.price
-                ) || 0,
-
-              discount:
-                getDiscountAmount(
-                  product
-                ),
-
-              quantity,
-
-              imageUrl:
-                resolveImage(
-                  product.imageUrl
-                ),
-            }
-          }
-
           return {
-            ...mockProduct,
-            option: '추천 상품',
-            discount: 0,
+            id: product.productId || product.id,
+
+            name:
+              product.productName,
+
+            option:
+              makeOptionText(
+                product
+              ),
+
+            price:
+              Number(
+                product.price
+              ) || 0,
+
+            discount:
+              getDiscountAmount(
+                product
+              ),
+
             quantity,
+
+            imageUrl:
+              resolveImage(
+                product.imageUrl
+              ),
+            status: product.status,
+            stock: Number(product.stock) || 0,
           }
         }
       )
       .filter(Boolean)
   }
-
-
-const getInitialCartItems =
-  () => getCartItems()
 
 
 const PurchaseSteps =
@@ -443,9 +424,13 @@ const Cart = () => {
     useNavigate()
 
   const [items, setItems] =
-    useState(
-      getInitialCartItems
-    )
+    useState([])
+
+  const [productCatalog, setProductCatalog] =
+    useState([])
+
+  const [cartLoadError, setCartLoadError] =
+    useState('')
 
   const [currentUser, setCurrentUser] =
     useState(null)
@@ -463,9 +448,7 @@ const Cart = () => {
     selectedIds,
     setSelectedIds,
   ] = useState(() =>
-    items.map(
-      (item) => item.id
-    )
+    []
   )
 
   const [
@@ -512,16 +495,27 @@ const Cart = () => {
   }, [currentUser])
 
   useEffect(() => {
-    if (!currentUser || currentUser.isAnonymous) {
-      setIsRemoteCartReady(true)
-      return undefined
-    }
+    if (!isAuthReady) return undefined
 
     let isCancelled = false
     setIsRemoteCartReady(false)
+    setCartLoadError('')
 
-    getRemoteCart(currentUser.uid)
-      .then(async (remoteCart) => {
+    Promise.all([
+      getCollection('products')
+        .then(mergeProductCatalog)
+        .catch((error) => {
+          console.error('Firestore 상품 조회 실패, 기준 상품 데이터로 대체합니다:', error)
+          return fallbackProducts
+        }),
+      currentUser && !currentUser.isAnonymous
+        ? getRemoteCart(currentUser.uid).catch((error) => {
+            console.error('원격 장바구니 조회 실패:', error)
+            return []
+          })
+        : Promise.resolve([]),
+    ])
+      .then(async ([catalog, remoteCart]) => {
         if (isCancelled) return
 
         const localCart = getCart()
@@ -544,14 +538,31 @@ const Cart = () => {
           }
         })
 
-        const nextItems = getCartItems(mergedCart)
+        const nextItems = getCartItems(mergedCart, catalog)
+        setProductCatalog(catalog)
         setItems(nextItems)
         setSelectedIds(nextItems.map((item) => item.id))
-        saveCart(mergedCart)
-        await syncRemoteCart(currentUser.uid, mergedCart)
+        const normalizedCart = nextItems.map((item) => ({
+          productId: item.id,
+          quantity: item.quantity,
+        }))
+        saveCart(normalizedCart)
+
+        if (currentUser && !currentUser.isAnonymous) {
+          try {
+            await syncRemoteCart(currentUser.uid, normalizedCart)
+          } catch (error) {
+            console.error('원격 장바구니 동기화 실패:', error)
+          }
+        }
       })
       .catch((error) => {
-        console.error('장바구니 동기화 실패:', error)
+        console.error('장바구니 상품 조회 실패:', error)
+        if (!isCancelled) {
+          setItems([])
+          setProductCatalog([])
+          setCartLoadError('장바구니 상품 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.')
+        }
       })
       .finally(() => {
         if (!isCancelled) setIsRemoteCartReady(true)
@@ -560,7 +571,7 @@ const Cart = () => {
     return () => {
       isCancelled = true
     }
-  }, [currentUser])
+  }, [currentUser, isAuthReady])
 
   useEffect(() => {
     if (!isRemoteCartReady) return
@@ -591,6 +602,25 @@ const Cart = () => {
 
   const isEmpty =
     items.length === 0
+
+  const recommendations = useMemo(
+    () => productCatalog
+      .filter((product) => (
+        product.status === 'selling'
+        && !items.some((item) => normalizeProductId(item.id) === normalizeProductId(product.productId || product.id))
+      ))
+      .slice(0, 3)
+      .map((product) => ({
+        id: product.productId || product.id,
+        name: product.productName,
+        price: Number(product.price) || 0,
+        discount: getDiscountAmount(product),
+        imageUrl: resolveImage(product.imageUrl),
+        status: product.status,
+        stock: Number(product.stock) || 0,
+      })),
+    [items, productCatalog],
+  )
 
   const isAllSelected =
     items.length > 0 &&
@@ -843,8 +873,6 @@ const Cart = () => {
               option:
                 '추천 상품',
 
-              discount: 0,
-
                quantity: 1,
             },
           ]
@@ -985,7 +1013,15 @@ const Cart = () => {
             styles.cartArea
           }
         >
-          {isEmpty ? (
+          {!isRemoteCartReady ? (
+            <div className={styles.emptyCard} role="status">
+              <strong>장바구니 상품 정보를 불러오는 중입니다.</strong>
+            </div>
+          ) : cartLoadError ? (
+            <div className={styles.emptyCard} role="alert">
+              <strong>{cartLoadError}</strong>
+            </div>
+          ) : isEmpty ? (
             <div
               className={
                 styles.emptyCard
@@ -1297,7 +1333,7 @@ const Cart = () => {
                 styles.recommendationList
               }
             >
-               {mockRecommendations.map(
+               {recommendations.map(
                 (product) => (
                   <article
                     className={

@@ -5,10 +5,10 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { ORDER_STATUS } from '../../constants/orderStatus'
 import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
 import { auth, db } from '../../firebase/firebase'
-import { addDocument, getCollection, getDocument, updateDocument } from '../../firebase/firestore'
+import { addDocument, getCollection, updateDocument } from '../../firebase/firestore'
 import { PATHS } from '../../routes/paths'
 import { getCart, saveCart, syncRemoteCart } from '../../utils/cartStorage'
-import { products as catalogProducts } from '../../data/products'
+import { products as fallbackProducts } from '../../data/products'
 import cartTopOrnament from '../../assets/images/mypage/cartTopOrnament.svg'
 import cartStepOrnament from '../../assets/images/mypage/cartStepOrnament.svg'
 import styles from './Checkout.module.scss'
@@ -65,28 +65,30 @@ const getDiscountAmount = (product) => {
   return Math.round(price * (discountRate / 100))
 }
 
-const getCatalogProduct = (productId) => {
-  const normalizedId = String(productId ?? '').replace(/^liq-/, 'liq_')
-
-  return catalogProducts.find((product) => (
-    String(product.productId ?? '').replace(/^liq-/, 'liq_') === normalizedId
-  ))
-}
-
 const getValidatedOrderItems = async (items) => {
-  const firestoreProducts = await Promise.all(
-    items.map(async (item) => {
-      try {
-        return await getDocument('products', item.id)
-      } catch {
-        return null
-      }
-    }),
-  )
+  let firestoreProducts = []
 
-  return firestoreProducts.map((firestoreProduct, index) => {
-    const requestedItem = items[index]
-    const product = firestoreProduct || getCatalogProduct(requestedItem.id)
+  try {
+    firestoreProducts = await getCollection('products')
+  } catch (error) {
+    console.error('Firestore 상품 조회 실패, 기준 상품 데이터로 대체합니다:', error)
+  }
+
+  const firestoreProductIds = new Set(
+    firestoreProducts.map((product) => String(product.productId || product.id).replace(/^liq-/, 'liq_')),
+  )
+  const productCatalog = [
+    ...firestoreProducts,
+    ...fallbackProducts.filter((product) => (
+      !firestoreProductIds.has(String(product.productId).replace(/^liq-/, 'liq_'))
+    )),
+  ]
+
+  return items.map((requestedItem) => {
+    const requestedProductId = String(requestedItem.id ?? '').replace(/^liq-/, 'liq_')
+    const product = productCatalog.find((item) => (
+      String(item.productId || item.id).replace(/^liq-/, 'liq_') === requestedProductId
+    ))
     const quantity = Math.floor(Number(requestedItem.quantity))
 
     if (!product) throw new Error('상품 정보를 찾을 수 없습니다.')

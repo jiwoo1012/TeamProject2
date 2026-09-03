@@ -16,6 +16,8 @@
 // ========================================
 
 .adminBody {
+  position: relative;
+
   width: 100%;
 
   flex: 1;
@@ -130,25 +132,34 @@
   transition:
     color 0.2s ease;
 
-  &:hover {
+  &:hover:not(.active) {
     color: #fff;
   }
 }
 
 
-.menuDot {
-  width: 7px;
-  height: 7px;
+.menuIcon {
+  width: 18px;
+  height: 18px;
 
   flex-shrink: 0;
 
-  border-radius: 50%;
-
-  background:
-    rgba(255, 255, 255, 0.72);
-
   transition:
-    background 0.2s ease;
+    color 0.2s ease;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+}
+
+
+.mobileMenuButton,
+.mobileCloseButton,
+.mobileBackdrop,
+.mobileUtilityArea {
+  display: none;
 }
 
 
@@ -162,8 +173,12 @@
 
   font-weight: 600;
 
-  .menuDot {
-    background: #6ea39d;
+  &:hover {
+    color: #386b67;
+  }
+
+  .menuIcon {
+    color: #4d7e7b;
   }
 }
 
@@ -383,44 +398,208 @@
 @media (max-width: 768px) {
 
   .adminBody {
-    grid-template-columns:
-      68px
-      minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .sidebar {
-    width: 68px;
+    position: fixed;
+    inset: 0 0 0 auto;
+    z-index: 120;
+
+    width: min(280px, calc(100vw - 56px));
+    height: 100dvh;
 
     padding:
-      22px
-      10px
-      16px;
+      64px
+      18px
+      20px;
 
     border-radius:
-      0
       20px
       0
-      0;
+      0
+      20px;
+
+    box-sizing: border-box;
+    visibility: hidden;
+    transform: translateX(105%);
+    transition:
+      transform 0.28s ease,
+      visibility 0.28s ease;
+    pointer-events: none;
+    box-shadow: -12px 0 30px rgba(28, 56, 53, 0.18);
+  }
+
+  .sidebarOpen {
+    visibility: visible;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .mobileMenuButton {
+    position: fixed;
+    top: 9px;
+    right: 16px;
+    z-index: 110;
+
+    width: 42px;
+    height: 42px;
+    padding: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    border: 1px solid rgba(77, 126, 123, 0.24);
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(35, 79, 75, 0.1);
+    cursor: pointer;
+
+    span {
+      width: 19px;
+      height: 2px;
+      border-radius: 2px;
+      background: #3b6f6b;
+    }
+  }
+
+  .mobileBackdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 115;
+
+    width: 100%;
+    height: 100%;
+    padding: 0;
+
+    display: block;
+
+    border: 0;
+    background: rgba(25, 35, 33, 0.32);
+    cursor: pointer;
+  }
+
+  .mobileCloseButton {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+
+    width: 36px;
+    height: 36px;
+    padding: 0;
+
+    display: block;
+
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    cursor: pointer;
+
+    span {
+      position: absolute;
+      top: 17px;
+      left: 9px;
+      width: 16px;
+      height: 2px;
+      border-radius: 2px;
+      background: #fff;
+
+      &:first-child {
+        transform: rotate(45deg);
+      }
+
+      &:last-child {
+        transform: rotate(-45deg);
+      }
+    }
+  }
+
+  .mobileUtilityArea {
+    display: grid;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.24);
+  }
+
+  .mobileUtilityTitle {
+    padding: 0 10px;
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+  }
+
+  .mobileSiteLinks {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .mobileSiteLinks a {
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 12px;
+    text-decoration: none;
+  }
+
+  .mobileLogoutButton {
+    position: absolute;
+    right: 18px;
+    bottom: 76px;
+    left: 18px;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .mobileLogoutButton svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentcolor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
   }
 
   .menuItem {
-    padding: 0;
+    padding: 0 18px;
 
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .menuLabel {
-    display: none;
+    display: inline;
   }
 
   .accountBadge {
-    padding: 0;
+    padding: 0 14px;
 
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .accountEmail {
-    display: none;
+    display: block;
   }
 
   .contentViewport {
@@ -431,7 +610,7 @@
     margin: 0 auto;
 
     padding:
-      24px
+      74px
       0
       40px;
   }
