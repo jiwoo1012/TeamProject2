@@ -1,26 +1,115 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import brandBottle from '../../assets/images/brand/O-brand01.png'
 import brandStage from '../../assets/images/brand/O-brand02.png'
-import storyTable from '../../assets/images/main/hero/main-hero-table-sunset.webp'
-import senseTaste from '../../assets/images/main/ai-recommendation/happy-day-black-liquor.png'
-import sensePairing from '../../assets/images/main/ai-recommendation/happy-day-grilled-pollock.png'
-import senseScent from '../../assets/images/main/ai-recommendation/sweet-craving-orange-liquor.png'
-import senseWarmth from '../../assets/images/main/hero/main-hero-table.webp'
+import senseLight from '../../assets/images/brand/rand-light-in-glass.webp'
+import senseAroma from '../../assets/images/brand/brand-aroma.webp'
+import senseTaste from '../../assets/images/brand/brand-taste.webp'
+import sensePairing from '../../assets/images/brand/brand-pairing.webp'
+import senseGlassware from '../../assets/images/brand/brand-glassware.webp'
 import makdong from '../../assets/characters/M007_Poses01.png'
 import useSectionWheelSnap from './useSectionWheelSnap'
 import useStickyBrandHeader from './useStickyBrandHeader'
 import styles from './BrandIntro.module.scss'
 
+const senseItems = [
+  {
+    number: '01',
+    image: senseLight,
+    alt: '저녁빛이 비치는 주안상',
+    title: '잔에 담긴 빛',
+    description: '맑게 빛나는 약주부터 부드럽게 흐려진 탁주까지, 술이 가진 고유한 색은 오늘의 분위기를 먼저 보여줍니다. 같은 쌀로 빚어도 발효와 여과의 방식에 따라 잔 속 빛깔은 저마다 다르게 피어납니다.',
+  },
+  {
+    number: '02',
+    image: senseAroma,
+    alt: '은은한 향을 품은 전통주',
+    title: '코끝에 머무는 향',
+    description: '쌀의 은은한 단향과 과실의 산뜻함, 누룩의 깊은 향. 자작은 술의 향을 어렵지 않은 말로 풀어드립니다. 코끝에 스치는 첫 향부터 잔을 비운 뒤에도 은은히 남는 여운까지 함께 짚어드립니다.',
+  },
+  {
+    number: '03',
+    image: senseTaste,
+    alt: '검은 병에 담긴 전통주',
+    title: '입안에 남는 맛',
+    description: '달콤함과 산뜻함, 담백함과 깊은 여운. 맛의 특징을 알기 쉽게 정리해 편안한 선택을 돕습니다. 처음 닿는 맛과 삼킨 뒤 남는 뒷맛까지 살펴, 오늘 당신에게 어울리는 한 잔을 더 가까이 안내합니다.',
+  },
+  {
+    number: '04',
+    image: sensePairing,
+    alt: '전통주와 함께 즐기는 구운 안주',
+    title: '함께할 때 완성되는 한입',
+    description: '좋은 술도 무엇과 함께 먹느냐에 따라 달라집니다. 술과 안주가 서로를 돋보이게 하는 작은 한 상을 제안합니다. 짝을 잘 만난 한 잔과 한입은 서로의 맛을 한층 더 깊게 만들어줍니다.',
+  },
+  {
+    number: '05',
+    image: senseGlassware,
+    alt: '전통주와 안주가 차려진 따뜻한 식탁',
+    title: '손끝에 닿는 잔',
+    description: '같은 술도 어떤 잔에 따르느냐에 따라 경험이 달라집니다. 도자기와 유리의 촉감까지 취향에 맞게 연결합니다. 손끝에 닿는 감촉 하나로도 오늘의 한 잔은 더 특별한 순간이 됩니다.',
+  },
+]
+
 const BrandIntro = () => {
   const secondSectionRef = useRef(null)
   const bottleRef = useRef(null)
   const stageRef = useRef(null)
+  const [activeSenseIndex, setActiveSenseIndex] = useState(0)
+  const [senseTrackIndex, setSenseTrackIndex] = useState(1)
+  const [isSenseTransitionEnabled, setIsSenseTransitionEnabled] = useState(true)
+
+  const activeSense = senseItems[activeSenseIndex]
+  const senseTrackItems = [senseItems.at(-1), ...senseItems, senseItems[0]]
+
+  const handleSenseChange = (nextIndex) => {
+    setActiveSenseIndex(nextIndex)
+    setSenseTrackIndex(nextIndex + 1)
+  }
+
+  const handlePreviousSense = () => {
+    const previousIndex = (activeSenseIndex - 1 + senseItems.length) % senseItems.length
+    setActiveSenseIndex(previousIndex)
+    setSenseTrackIndex((currentIndex) => currentIndex - 1)
+  }
+
+  const handleNextSense = () => {
+    const nextIndex = (activeSenseIndex + 1) % senseItems.length
+    setActiveSenseIndex(nextIndex)
+    setSenseTrackIndex((currentIndex) => currentIndex + 1)
+  }
+
+  const handleSenseTransitionEnd = () => {
+    const lastTrackIndex = senseItems.length + 1
+    if (senseTrackIndex !== 0 && senseTrackIndex !== lastTrackIndex) return
+
+    // 양 끝의 복제 이미지에 도착하면 애니메이션 없이 실제 이미지 위치로 정렬한다.
+    setIsSenseTransitionEnabled(false)
+    setSenseTrackIndex(senseTrackIndex === 0 ? senseItems.length : 1)
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => setIsSenseTransitionEnabled(true))
+    })
+  }
 
   useStickyBrandHeader()
   useSectionWheelSnap([{ ref: secondSectionRef }])
+
+  useEffect(() => {
+    // 사용자가 모션 감소를 설정한 경우 자동 슬라이드를 실행하지 않는다.
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) return undefined
+
+    // 다섯 감각 슬라이드를 5초마다 다음 항목으로 자동 전환한다.
+    const intervalId = window.setInterval(() => {
+      setActiveSenseIndex((currentIndex) => (currentIndex + 1) % senseItems.length)
+      setSenseTrackIndex((currentIndex) => currentIndex + 1)
+    }, 5000)
+
+    // 페이지를 벗어날 때 interval을 제거해 중복 실행과 메모리 누수를 방지한다.
+    return () => window.clearInterval(intervalId)
+  }, [])
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger)
@@ -41,8 +130,8 @@ const BrandIntro = () => {
       if (!desktop) return undefined
 
       const landingScale = 1
-      const bottleLandingY = '4svh'
-      const stageLandingY = '12svh'
+      const bottleLandingY = '-2svh' // 술병
+      const stageLandingY = '8svh' // 나뭇가지
 
       if (reduce) {
         gsap.set(stage, { yPercent: 0, y: stageLandingY })
@@ -125,15 +214,21 @@ const BrandIntro = () => {
         <ol className={styles.reasonList}>
           <li>
             <strong>지역의 풍경</strong>
-            <p>술이 태어난 고장의 계절과 풍토를 한 잔 안에서 만납니다.</p>
+            <p>술이 태어난 고장의 계절과 풍토를 한 잔 안에서 만납니다. 봄볕과 장마, 
+            서늘한 가을바람까지 그 땅이 지나온 시간이 잔 속에 스며듭니다. 
+            같은 쌀이라도 자란 곳에 따라 전혀 다른 향과 빛깔을 품게 되는 이유입니다.</p>
           </li>
           <li>
             <strong>우리의 재료</strong>
-            <p>쌀과 과실, 꽃과 약초가 가진 고유한 맛과 향을 발견합니다.</p>
+            <p>쌀과 과실, 꽃과 약초가 가진 고유한 맛과 향을 발견합니다. 
+            같은 재료도 어떤 손을 거치고 어떤 시간을 지나느냐에 따라 전혀 다른 표정을 짓습니다. 
+            자작은 그 섬세한 차이를 놓치지 않고 술 한 잔에 담아냅니다.</p>
           </li>
           <li>
             <strong>빚는 사람</strong>
-            <p>오랜 시간 술을 지켜온 사람들의 손길과 마음을 전합니다.</p>
+            <p>오랜 시간 술을 지켜온 사람들의 손길과 마음을 전합니다. 
+            발효의 속도를 서두르지 않고 기다릴 줄 아는 인내가 그 안에 함께 담겨 있습니다. 
+            그 정성이 쌓여야 비로소 한 잔의 깊은 맛이 완성됩니다.</p>
           </li>
         </ol>
       </section>
@@ -179,53 +274,61 @@ const BrandIntro = () => {
       <section className={styles.senses} aria-labelledby="senses-title">
         <header className={styles.sensesHeading}>
           <h2 id="senses-title">
-            한 상을 이루는
-            <br />
-            다섯 가지 감각
+            한 상을 이루는{' '}
+            <span className={styles.sensesAccent}>
+              <span>다</span>
+              <span>섯</span>
+            </span>{' '}
+            가지 감각
           </h2>
         </header>
 
-        <div className={styles.senseCards}>
-          <article className={styles.senseCard}>
-            <img src={storyTable} alt="저녁빛이 비치는 주안상" />
-            <div className={styles.senseText}>
-              <span>01</span>
-              <h3>잔에 담긴 빛</h3>
-              <p>맑게 빛나는 약주부터 부드럽게 흐려진 탁주까지, 술이 가진 고유한 색은 오늘의 분위기를 먼저 보여줍니다.</p>
+        <div className={styles.senseSlider}>
+          <div className={styles.senseCards} aria-live="polite">
+            <article className={styles.senseCard}>
+              <div className={styles.senseImageFrame}>
+                <div
+                  className={`${styles.senseImageTrack} ${isSenseTransitionEnabled ? '' : styles.isTransitionDisabled}`}
+                  style={{ transform: `translateX(-${senseTrackIndex * 100}%)` }}
+                  onTransitionEnd={handleSenseTransitionEnd}
+                >
+                  {senseTrackItems.map((item, index) => (
+                    <img
+                      key={`${item.number}-${index}`}
+                      src={item.image}
+                      alt={index === senseTrackIndex ? item.alt : ''}
+                      aria-hidden={index !== senseTrackIndex}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div className={styles.senseText}>
+                <span>{activeSense.number}</span>
+                <h3>{activeSense.title}</h3>
+                <p>{activeSense.description}</p>
+              </div>
+            </article>
+            <div className={styles.senseControlButtons} aria-label="다섯 가지 감각 슬라이드 조작">
+              <button type="button" onClick={handlePreviousSense} aria-label="이전 감각 보기">
+                <span aria-hidden="true">←</span>
+              </button>
+              <div className={styles.sensePagination}>
+                {senseItems.map((item, index) => (
+                  <button
+                    key={item.number}
+                    type="button"
+                    className={index === activeSenseIndex ? styles.isActive : undefined}
+                    onClick={() => handleSenseChange(index)}
+                    aria-label={`${item.number} ${item.title} 보기`}
+                    aria-current={index === activeSenseIndex ? 'true' : undefined}
+                  />
+                ))}
+              </div>
+              <button type="button" onClick={handleNextSense} aria-label="다음 감각 보기">
+                <span aria-hidden="true">→</span>
+              </button>
             </div>
-          </article>
-          <article className={styles.senseCard}>
-            <img src={senseScent} alt="은은한 향을 품은 전통주" />
-            <div className={styles.senseText}>
-              <span>02</span>
-              <h3>코끝에 머무는 향</h3>
-              <p>쌀의 은은한 단향과 과실의 산뜻함, 누룩의 깊은 향. 자작은 술의 향을 어렵지 않은 말로 풀어드립니다.</p>
-            </div>
-          </article>
-          <article className={styles.senseCard}>
-            <img src={senseTaste} alt="검은 병에 담긴 전통주" />
-            <div className={styles.senseText}>
-              <span>03</span>
-              <h3>입안에 남는 맛</h3>
-              <p>달콤함과 산뜻함, 담백함과 깊은 여운. 맛의 특징을 알기 쉽게 정리해 편안한 선택을 돕습니다.</p>
-            </div>
-          </article>
-          <article className={styles.senseCard}>
-            <img src={sensePairing} alt="전통주와 함께 즐기는 구운 안주" />
-            <div className={styles.senseText}>
-              <span>04</span>
-              <h3>함께할 때 완성되는 한입</h3>
-              <p>좋은 술도 무엇과 함께 먹느냐에 따라 달라집니다. 술과 안주가 서로를 돋보이게 하는 작은 한 상을 제안합니다.</p>
-            </div>
-          </article>
-          <article className={styles.senseCard}>
-            <img src={senseWarmth} alt="전통주와 안주가 차려진 따뜻한 식탁" />
-            <div className={styles.senseText}>
-              <span>05</span>
-              <h3>손끝에 닿는 잔</h3>
-              <p>같은 술도 어떤 잔에 따르느냐에 따라 경험이 달라집니다. 도자기와 유리의 촉감까지 취향에 맞게 연결합니다.</p>
-            </div>
-          </article>
+          </div>
         </div>
       </section>
 
@@ -233,8 +336,10 @@ const BrandIntro = () => {
         <div className={styles.messageInner}>
           <h2 id="brand-message-title">
             자작은 혼자 마시는 시간을
-            <br />
-            외로운 시간이 아닌 나를 돌보는 시간으로 바꿉니다.
+            <br className={styles.desktopBreak} />
+            {' '}외로운 시간이 아닌
+            <br className={styles.desktopBreak} />
+            {' '}나를 돌보는 시간으로 바꿉니다.
           </h2>
           <p className={styles.messageDescription}>
             술을 많이 마시게 하는 것이 아니라, 나에게 맞는 술을 천천히 이해하고

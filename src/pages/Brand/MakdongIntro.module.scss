@@ -166,14 +166,6 @@
   padding-block: $space-5 $space-3;
 }
 
-.characterIntro h1 {
-  margin: 0;
-  font-family: $font-family-display;
-  font-size: clamp(4.3rem, 6.2vw, 6.8rem);
-  letter-spacing: -0.055em;
-  line-height: 0.9;
-}
-
 .characterGuideTitle {
   margin: 0;
   font-family: $font-family-display;
@@ -769,10 +761,6 @@
     min-height: clamp(560px, 70vh, 650px);
   }
 
-  .characterIntro h1 {
-    font-size: clamp(3.7rem, 7vw, 5.2rem);
-  }
-
   .characterGuideTitle {
     font-size: clamp(3.7rem, 7vw, 5.2rem);
   }
@@ -908,10 +896,6 @@
     min-height: auto;
     align-content: start;
     padding: 0;
-  }
-
-  .characterIntro h1 {
-    font-size: clamp(4rem, 20vw, 5.7rem);
   }
 
   .characterGuideTitle {
