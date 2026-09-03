@@ -1,5 +1,1008 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 0 5% 4rem; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+// ==========================================
+// 테마 토큰
+// ==========================================
+$bg-canvas: #f8f6f2;
+$bg-surface: #ffffff;
+$primary: #3b5f54;
+$primary-hover: #2e4b42;
+$primary-subtle: #edf3f0;
+
+$text-title: #222524;
+$text-body: #4a504d;
+$text-caption: #7a827e;
+$border-color: #e8e6df;
+
+$danger: #b24840;
+$danger-subtle: #fbeeed;
+$warning: #c8812c;
+$warning-subtle: #fdf5ea;
+
+$shadow-sm: 0 2px 8px rgba(34, 37, 36, 0.04);
+$shadow-md: 0 6px 18px rgba(34, 37, 36, 0.06);
+$radius-card: 14px;
+$radius-control: 8px;
+
+.page {
+  padding: 32px 40px;
+  background-color: $bg-canvas;
+  min-height: 100vh;
+  color: $text-body;
+  box-sizing: border-box;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+// 툴바 (새로고침 회전 모션 추가)
+.pageToolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+
+  h1 {
+    font-size: 30px;
+    font-weight: 700;
+    color: $text-title;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: $text-body;
+    background: $bg-surface;
+    border: 1px solid $border-color;
+    border-radius: $radius-control;
+    box-shadow: $shadow-sm;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      transition: transform 0.25s ease;
+    }
+
+    &:hover:not(:disabled) {
+      background: #fdfcf9;
+      color: $primary;
+      border-color: lighten($primary, 20%);
+
+      svg {
+        transform: rotate(90deg);
+      }
+    }
+
+    &.refreshing {
+      opacity: 0.75;
+      cursor: wait;
+
+      svg {
+        animation: spinRefresh 0.6s linear infinite;
+      }
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+}
+
+@keyframes spinRefresh {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// 전통 문양 선
+.ornamentLine {
+  width: 100%;
+  display: block;
+  margin: 1rem 0 1.8rem;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 32px;
+    display: block;
+    object-fit: fill;
+  }
+}
+
+// ==========================================
+// 상단 요약 카드 (클릭형 필터 버튼)
+// ==========================================
+.summaryArea {
+  margin-bottom: 24px;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.summaryCard {
+  background: $bg-surface;
+  border: 1px solid $border-color;
+  border-radius: $radius-card;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 94px;
+  box-sizing: border-box;
+  box-shadow: $shadow-sm;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+    border-color: lighten($primary, 20%);
+  }
+
+  &.activeCard {
+    border-color: $primary;
+    background: #fdfefd;
+    box-shadow: 0 0 0 1.5px $primary, $shadow-sm;
+  }
+}
+
+.summaryIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: $primary-subtle;
+  color: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  i {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 15px;
+  }
+
+  &.lowStock {
+    background: $warning-subtle;
+    color: $warning;
+  }
+
+  &.hidden {
+    background: $danger-subtle;
+    color: $danger;
+  }
+}
+
+.summaryContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  flex: 1;
+
+  h3 {
+    font-size: 13px;
+    font-weight: 500;
+    color: $text-caption;
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 24px;
+    color: $text-title;
+    font-weight: 700;
+    line-height: 1.2;
+
+    span {
+      font-size: 14px;
+      font-weight: 400;
+      color: $text-caption;
+      margin-left: 3px;
+    }
+  }
+
+  small {
+    font-size: 12px;
+    color: $text-caption;
+    margin-top: 2px;
+  }
+}
+
+// ==========================================
+// 메인 그리드 (좌 1fr : 우 360px)
+// ==========================================
+.managementGrid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 20px;
+  align-items: start;
+}
+
+.mainSection {
+  background: $bg-surface;
+  border: 1px solid $border-color;
+  border-radius: $radius-card;
+  padding: 24px;
+  box-shadow: $shadow-sm;
+}
+
+.filterBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.searchField {
+  flex: 1;
+  min-width: 240px;
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  svg {
+    position: absolute;
+    left: 12px;
+    width: 16px;
+    height: 16px;
+    stroke: $text-caption;
+  }
+
+  input {
+    width: 100%;
+    height: 40px;
+    padding: 0 14px 0 36px;
+    background: #fbfaf8;
+    border: 1px solid $border-color;
+    border-radius: $radius-control;
+    font-size: 13px;
+    color: $text-title;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      background: $bg-surface;
+    }
+  }
+}
+
+.selectField select {
+  height: 40px;
+  padding: 0 32px 0 12px;
+  background: #fbfaf8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a827e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 10px center;
+  border: 1px solid $border-color;
+  border-radius: $radius-control;
+  font-size: 13px;
+  color: $text-body;
+  appearance: none;
+  cursor: pointer;
+}
+
+.resetButton {
+  height: 40px;
+  padding: 0 14px;
+  background: transparent;
+  border: 1px solid $border-color;
+  border-radius: $radius-control;
+  font-size: 13px;
+  color: $text-caption;
+  cursor: pointer;
+
+  &:hover {
+    background: #f5f4ef;
+    color: $text-title;
+  }
+}
+
+.sectionHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  .titleWrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: $text-title;
+      margin: 0;
+    }
+
+    span {
+      font-size: 13px;
+      color: $primary;
+      font-weight: 600;
+    }
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+
+    .bulkButton {
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      background: #fff;
+      border: 1px solid $danger;
+      color: $danger;
+      cursor: pointer;
+    }
+
+    .registerButton {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      background: $primary;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background: $primary-hover;
+      }
+    }
+  }
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+
+  th {
+    padding: 12px 14px;
+    background: #faf8f5;
+    color: $text-caption;
+    font-weight: 600;
+    border-bottom: 1px solid $border-color;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f0eee8;
+    color: $text-body;
+    vertical-align: middle;
+  }
+
+  tr.clickableRow {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: #faf7f2;
+    }
+
+    &.selectedRow {
+      background-color: $primary-subtle;
+
+      td {
+        border-bottom-color: darken($primary-subtle, 4%);
+      }
+    }
+  }
+}
+
+.productCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .thumbPlaceholder {
+    width: 36px;
+    height: 36px;
+    background: #eae7df;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .pName {
+    font-weight: 600;
+    color: $text-title;
+  }
+}
+
+.lowStockText {
+  color: $danger;
+  font-weight: 700;
+
+  small {
+    font-weight: 500;
+  }
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+
+  &.selling { background: $primary-subtle; color: $primary; }
+  &.soldout { background: $warning-subtle; color: $warning; }
+  &.hidden { background: $danger-subtle; color: $danger; }
+}
+
+.editBtn {
+  padding: 6px 12px;
+  background: $bg-surface;
+  border: 1px solid $border-color;
+  border-radius: 6px;
+  font-size: 12px;
+  color: $text-title;
+  cursor: pointer;
+
+  &:hover {
+    background: $primary;
+    color: #fff;
+    border-color: $primary;
+  }
+}
+
+// ==========================================
+// 우측 패널 [상품 수정]
+// ==========================================
+.editPanel {
+  background: $bg-surface;
+  border: 1px solid $border-color;
+  border-radius: $radius-card;
+  padding: 20px;
+  box-shadow: $shadow-sm;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.panelTopHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f0eee8;
+  margin-bottom: 16px;
+
+  h2 {
+    font-size: 17px;
+    font-weight: 700;
+    color: $text-title;
+    margin: 0;
+  }
+
+  button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: $text-caption;
+    cursor: pointer;
+    line-height: 1;
+
+    &:hover { color: $text-title; }
+  }
+}
+
+.selectedProductCard {
+  display: flex;
+  gap: 14px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #f2efe8;
+  margin-bottom: 18px;
+
+  .cardThumb {
+    width: 76px;
+    height: 76px;
+    background: #eae7df;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .cardInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    overflow: hidden;
+
+    h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: $text-title;
+      margin: 0 0 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    dl {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 11px;
+
+      div {
+        display: flex;
+        gap: 8px;
+        dt { color: $text-caption; width: 44px; }
+        dd { margin: 0; color: $text-body; font-weight: 500; }
+      }
+    }
+
+    .tagGroup {
+      display: flex;
+      gap: 4px;
+      margin-top: 4px;
+
+      .miniBadge {
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: #f2efe9;
+        color: $text-caption;
+
+        &.selling { background: $primary-subtle; color: $primary; font-weight: 600; }
+        &.soldout { background: $warning-subtle; color: $warning; font-weight: 600; }
+        &.hidden { background: $danger-subtle; color: $danger; font-weight: 600; }
+      }
+    }
+  }
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sectionBarTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: $text-title;
+  margin: 0 0 4px;
+  position: relative;
+  padding-left: 8px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 2px;
+    bottom: 2px;
+    width: 3px;
+    background: $primary;
+    border-radius: 2px;
+  }
+}
+
+.formRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+
+  label { color: $text-body; font-weight: 500; }
+
+  input, select {
+    width: 140px;
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid $border-color;
+    border-radius: 5px;
+    font-size: 12px;
+    background: #fbfaf8;
+    color: $text-title;
+
+    &:focus { outline: none; border-color: $primary; }
+  }
+
+  .staticText {
+    font-size: 12px;
+    color: $text-caption;
+  }
+}
+
+.formFieldBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label { font-size: 12px; font-weight: 500; color: $text-body; }
+
+  textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    font-size: 12px;
+    background: #fbfaf8;
+    resize: none;
+    box-sizing: border-box;
+
+    &:focus { outline: none; border-color: $primary; }
+  }
+}
+
+.chipGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  .chip {
+    font-size: 11px;
+    background: #f4f2eb;
+    color: $text-body;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #e8e4da;
+  }
+
+  .chipAddBtn {
+    width: 24px;
+    height: 24px;
+    border: 1px dashed $border-color;
+    border-radius: 4px;
+    background: none;
+    cursor: pointer;
+    font-size: 13px;
+    color: $text-caption;
+  }
+}
+
+.albumRow {
+  display: flex;
+  gap: 6px;
+
+  .mainImgBox, .subImgBox, .uploadPlusBox {
+    width: 58px;
+    height: 58px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    box-sizing: border-box;
+    font-size: 10px;
+  }
+
+  .mainImgBox {
+    background: #eae7df;
+    color: #636b67;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .subImgBox {
+    background: #eae7df;
+    color: #8c9490;
+    position: relative;
+
+    button {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: rgba(0, 0, 0, 0.4);
+      color: #fff;
+      border: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      font-size: 10px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+    }
+  }
+
+  .uploadPlusBox {
+    border: 1px dashed $border-color;
+    background: #faf8f4;
+    color: $text-caption;
+    cursor: pointer;
+
+    span { font-size: 14px; }
+    small { font-size: 9px; }
+  }
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+
+  .metricBox {
+    background: #f4f2ec;
+    border-radius: 6px;
+    padding: 8px 10px;
+
+    span {
+      font-size: 10px;
+      color: $text-caption;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    p {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      strong {
+        font-size: 13px;
+        color: $text-title;
+      }
+    }
+  }
+}
+
+.dotGrey {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #a9b0ab;
+}
+
+.nextActionWrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+
+  .nextBtn {
+    background: none;
+    border: none;
+    color: $primary;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 6px 0;
+
+    &:hover { text-decoration: underline; }
+  }
+}
+
+.stepFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+
+  .prevBtn {
+    background: none;
+    border: none;
+    color: $primary;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 6px 0;
+
+    &:hover { text-decoration: underline; }
+  }
+
+  .finalActions {
+    display: flex;
+    gap: 8px;
+
+    .deleteBtn {
+      height: 34px;
+      padding: 0 12px;
+      border: 1px solid $danger;
+      color: $danger;
+      background: #fff;
+      border-radius: 5px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .saveBtn {
+      height: 34px;
+      padding: 0 16px;
+      background: $primary;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+
+      &:hover { background: $primary-hover; }
+    }
+  }
+}
+
+// ==========================================
+// 평상시 통계 패널 (우측)
+// ==========================================
+.analyticsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.analyticsCard {
+  background: $bg-surface;
+  border: 1px solid $border-color;
+  border-radius: $radius-card;
+  padding: 20px;
+  box-shadow: $shadow-sm;
+}
+
+.analyticsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+
+  h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: $text-title;
+    margin: 0;
+  }
+
+  span {
+    font-size: 11px;
+    color: #a0a6a2;
+    font-weight: 600;
+  }
+}
+
+.statusOverview {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.statusDonut {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: conic-gradient($primary var(--active-rate, 70%), #e8e6df 0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 66px;
+    height: 66px;
+    border-radius: 50%;
+    background: $bg-surface;
+  }
+
+  span, strong { position: relative; z-index: 1; }
+  span { font-size: 11px; color: $text-caption; }
+  strong { font-size: 15px; color: $text-title; }
+}
+
+.statusOverview ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+
+    span:nth-child(2) {
+      margin-left: 6px;
+      color: $text-body;
+      flex: 1;
+    }
+  }
+}
+
+.dotSelling { width: 8px; height: 8px; border-radius: 50%; background: $primary; }
+.dotLow { width: 8px; height: 8px; border-radius: 50%; background: $warning; }
+.dotHidden { width: 8px; height: 8px; border-radius: 50%; background: $danger; }
+
+.activityBars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+
+    span { width: 75px; color: $text-caption; flex-shrink: 0; }
+    i {
+      flex: 1;
+      height: 6px;
+      background: #f0eee8;
+      border-radius: 4px;
+      overflow: hidden;
+
+      b { display: block; height: 100%; background: $primary; }
+    }
+    strong { width: 35px; text-align: right; }
+  }
+}
+
+.analyticsCaption {
+  margin: 16px 0 0;
+  font-size: 11px;
+  color: #a5aca7;
+  text-align: right;
+}
+
+// 토스트
+.toast {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  background: #2b302d;
+  color: #ffffff;
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: $shadow-md;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  z-index: 1000;
+
+  button {
+    background: none;
+    border: none;
+    color: #9ea4a0;
+    cursor: pointer;
+    font-size: 16px;
+  }
+}

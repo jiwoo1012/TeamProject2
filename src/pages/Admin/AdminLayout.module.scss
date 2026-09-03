@@ -1,365 +1,438 @@
-@use '../../styles/variables' as v;
-
-$admin-container-max: 1440px;
-
-.page {
-  min-height: 55vh;
-  padding: v.$space-16 0 v.$space-16;
-  background: v.$color-bg;
-  color: v.$color-text-primary;
-}
-
-/* =========================
-   관리자 페이지 제목
-========================= */
-
-.pageHeader {
-  width: calc(100% - #{v.$side-margin-desktop * 2});
-  max-width: $admin-container-max;
-  margin: 0 auto v.$space-3;
-}
-
-.title {
-  margin: 0;
-  font-size: v.$font-size-2xl;
-  font-weight: v.$font-weight-bold;
-  line-height: v.$line-height-tight;
-}
-
-.description {
-  margin: v.$space-2 0 0;
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-sm;
-  line-height: v.$line-height-base;
-}
-
-.ornamentArea {
-  position: relative;
-  width: calc(100% - #{v.$side-margin-desktop * 2});
-  max-width: $admin-container-max;
-  margin: 0 auto v.$space-8;
-}
-
-.topOrnament {
-  display: block;
+.adminApp {
   width: 100%;
-  height: auto;
-  transform: scaleX(1.05);
-  transform-origin: left center;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #f8f7f3;
+
+  overflow: hidden;
 }
 
-/* =========================
-   전체 Layout
-========================= */
 
-.layout {
-  display: grid;
-  width: calc(100% - #{v.$side-margin-desktop * 2});
-  max-width: $admin-container-max;
-  min-height: 0;
+// ========================================
+// Header 아래 전체 영역
+// ========================================
+
+.adminBody {
+  width: 100%;
+
   flex: 1;
-  margin-inline: auto;
+  min-height: 0;
+
+  display: grid;
+
   grid-template-columns:
-    calc(v.$grid-gutter * 9)
+    230px
     minmax(0, 1fr);
 
-  gap: v.$space-6;
-  align-items: stretch;
+  overflow: hidden;
 }
 
-/* =========================
-   Sidebar
-========================= */
+
+// ========================================
+// Sidebar
+// ========================================
 
 .sidebar {
-  position: sticky;
-  top: v.$space-6;
-  align-self: start;
+  width: 230px;
+  height: 100%;
+
+  padding:
+    32px
+    18px
+    22px;
+
   display: flex;
-  min-height: 62vh;
   flex-direction: column;
-  justify-content: space-between;
-  margin-top: calc(v.$space-16 * -1);
+
+  background: #588984;
+
+  border-radius:
+    0
+    34px
+    0
+    0;
+
+  overflow: hidden;
 }
 
-@media (min-width: v.$breakpoint-desktop-min) {
-  .sidebar {
-    width: calc(v.$grid-gutter * 10);
-    transform: translateX(
-      min(0px, calc((#{$admin-container-max + (v.$side-margin-desktop * 6)} - 100vw) / 2))
-    );
-  }
-}
+
+// ========================================
+// Navigation
+// ========================================
 
 .navigation {
+  position: relative;
+
+  width: 100%;
+
   display: flex;
   flex-direction: column;
-  gap: v.$space-4;
+
+  gap: 6px;
 }
 
-/* 기본 = 비활성 메뉴 */
+
+.moveBox {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 46px;
+
+  z-index: 0;
+
+  border-radius: 9px;
+
+  background: #fff;
+
+  pointer-events: none;
+
+  box-shadow:
+    0 3px 12px
+    rgba(35, 79, 75, 0.08);
+}
+
+
+// ========================================
+// Sidebar Menu
+// ========================================
+
 .menuItem {
+  position: relative;
+
+  z-index: 1;
+
+  width: 100%;
+  height: 46px;
+
+  padding: 0 18px;
+
   display: flex;
   align-items: center;
-  gap: v.$space-4;
 
-  width: 86%;
-  min-height: 48px;
-  padding: 0 v.$space-3;
+  gap: 13px;
 
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-xl;
+  border-radius: 9px;
 
-  background: v.$color-white;
-  color: v.$color-text-muted;
+  color: rgba(255, 255, 255, 0.9);
 
-  font-size: v.$font-size-sm;
   text-decoration: none;
 
-  box-shadow: v.$shadow-sm;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
 
   transition:
-    width v.$transition-fast,
-    transform v.$transition-fast,
-    background-color v.$transition-fast,
-    color v.$transition-fast,
-    border-color v.$transition-fast,
-    box-shadow v.$transition-fast;
+    color 0.2s ease;
+
+  &:hover {
+    color: #fff;
+  }
 }
+
 
 .menuDot {
-  width: v.$space-3;
-  height: v.$space-3;
-  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
 
-  border-radius: v.$radius-pill;
-  background: v.$color-surface;
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.72);
+
+  transition:
+    background 0.2s ease;
 }
 
-@media (hover: hover) and (pointer: fine) and (min-width: 768px) {
-  .menuItem:not(.active):hover {
-    color: v.$color-primary;
+
+.menuLabel {
+  white-space: nowrap;
+}
+
+
+.active {
+  color: #386b67;
+
+  font-weight: 600;
+
+  .menuDot {
+    background: #6ea39d;
   }
 }
 
-.menuItem:focus-visible,
-.logoutButton:focus-visible {
-  outline: 2px solid v.$color-primary-light;
-  outline-offset: 2px;
-}
 
-/* 활성 메뉴 */
-.active {
+// ========================================
+// 관리자 계정
+// ========================================
+
+.accountArea {
   width: 100%;
 
-  border-color: v.$color-primary;
-  background: v.$color-primary;
-  color: v.$color-white;
-  font-weight: v.$font-weight-semibold;
+  margin-top: auto;
 }
 
-.active .menuDot {
-  background: v.$color-white;
-}
 
-/* =========================
-   Logout
-========================= */
+.accountBadge {
+  width: 100%;
+  height: 40px;
 
-.logoutButton {
-  position: absolute;
-  right: 0;
-  bottom: calc(100% + v.$space-3);
+  padding: 0 14px;
+
   display: flex;
-  height: 36px;
   align-items: center;
-  gap: v.$space-3;
-  justify-content: center;
-  padding: 0 v.$space-2;
 
-  border: 0;
-  background: transparent;
+  gap: 9px;
 
-  color: v.$color-text-muted;
-  font: inherit;
+  border-radius: 21px;
 
-  cursor: pointer;
+  background:
+    rgba(255, 255, 255, 0.96);
 }
 
-.logoutIcon {
-  width: v.$space-6;
-  height: v.$space-6;
 
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.accountAvatar {
+  width: 15px;
+  height: 15px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #dfe2de;
 }
 
-/* =========================
-   Outlet Content
-========================= */
+
+.accountEmail {
+  min-width: 0;
+
+  overflow: hidden;
+
+  color: #626761;
+
+  font-size: 10px;
+  font-weight: 500;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+// ========================================
+// 페이지 변경 영역
+// ========================================
 
 .content {
-  width: 100%;
-  max-width: none;
   min-width: 0;
-  box-sizing: border-box;
-  padding: 0 v.$space-2 0 v.$space-4;
+  min-height: 0;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  background: #f8f7f3;
 }
 
-/* =========================
-   Tablet
-========================= */
+
+// ========================================
+// 실제 페이지가 들어가는 공통 영역
+// ========================================
+
+.contentViewport {
+  width: calc(100% - 96px);
+
+  max-width: 1380px;
+
+  // 항상 오른쪽 관리자 영역 기준 중앙 정렬
+  margin: 0 auto;
+
+  padding:
+    40px
+    0
+    72px;
+}
+
+
+// ========================================
+// Scrollbar
+// ========================================
+
+.content {
+  scrollbar-width: thin;
+
+  scrollbar-color:
+    rgba(90, 130, 125, 0.22)
+    transparent;
+
+  &::-webkit-scrollbar {
+    width: 7px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+
+    background:
+      rgba(90, 130, 125, 0.22);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background:
+      rgba(90, 130, 125, 0.38);
+  }
+}
+
+
+// ========================================
+// Desktop
+// ========================================
 
 @media (max-width: 1500px) {
-  .title { font-size: v.$font-size-3xl; }
-  .description { font-size: v.$font-size-md; }
 
-  .layout {
-    grid-template-columns: calc(v.$grid-gutter * 9) minmax(0, 1fr);
-    gap: v.$space-8;
-  }
-
-  .menuItem {
-    min-height: 52px;
-    padding-inline: v.$space-4;
-    font-size: v.$font-size-sm;
-  }
-}
-
-@media (max-width: v.$breakpoint-tablet-max) {
-  .sidebar { margin-top: 0; }
-
-  .pageHeader {
-    width: calc(100% - #{v.$side-margin-tablet * 2});
-  }
-
-  .ornamentArea {
-    width: calc(100% - #{v.$side-margin-tablet * 2});
-    margin: 0 auto v.$space-6;
-  }
-
-  .layout {
-    width: calc(100% - #{v.$side-margin-tablet * 2});
+  .adminBody {
     grid-template-columns:
-      calc(v.$grid-gutter * 8)
+      210px
       minmax(0, 1fr);
-
-    gap: v.$space-8;
-  }
-
-  .content {
-    width: 100%;
-    padding-left: v.$space-4;
-  }
-}
-
-/* =========================
-   Mobile
-========================= */
-
-@media (max-width: v.$breakpoint-mobile-max) {
-  .page {
-    display: block;
-    height: auto;
-    padding: v.$space-8 0 v.$space-12;
-    overflow: visible;
-  }
-
-  .pageHeader {
-    width: auto;
-    margin-bottom: v.$space-6;
-    margin-inline: v.$side-margin-mobile;
-  }
-
-  .ornamentArea {
-    display: flex;
-    width: auto;
-    justify-content: flex-end;
-    margin: 0 v.$side-margin-mobile v.$space-5;
-  }
-
-  .topOrnament {
-    display: none;
-  }
-
-  .title {
-    font-size: v.$font-size-3xl;
-  }
-
-  .layout {
-    display: block;
-    width: 100%;
-    margin-inline: 0;
   }
 
   .sidebar {
-    position: static;
-    top: auto;
-    align-self: auto;
-    min-height: auto;
-    margin-bottom: v.$space-8;
-    padding: 0 v.$side-margin-mobile;
-  }
+    width: 210px;
 
-  .navigation {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: v.$space-2;
-    padding: v.$space-2;
-    border: 1px solid color-mix(in srgb, v.$color-border 72%, transparent);
-    border-radius: v.$radius-lg;
-    background: color-mix(in srgb, v.$color-surface 18%, v.$color-white);
-  }
-
-  .moveBox {
-    display: none;
+    padding:
+      30px
+      16px
+      22px;
   }
 
   .menuItem {
-    width: 100%;
-    min-height: v.$space-12;
-    padding: 0 v.$space-3;
+    padding: 0 16px;
 
-    border-left: 1px solid v.$color-border;
-    border-radius: v.$radius-md;
-
-    box-shadow: none;
-    font-size: v.$font-size-sm;
-    line-height: 1.2;
-    white-space: nowrap;
+    font-size: 13px;
   }
 
-  .menuItem:first-of-type {
-    grid-column: 1 / -1;
-  }
+  .contentViewport {
+    width: calc(100% - 72px);
 
-  .menuDot {
-    width: v.$space-3;
-    height: v.$space-3;
-  }
+    max-width: 1280px;
 
-  .active {
-    width: 100%;
-    border-color: v.$color-primary;
-  }
+    // 기존 margin: 0 40px 제거
+    margin: 0 auto;
 
-  .logoutButton {
-    position: static;
-  }
-
-  .content {
-    height: auto;
-    width: auto;
-    max-width: none;
-    margin: 0 v.$side-margin-mobile;
-    padding-left: 0;
-    overflow: visible;
+    padding:
+      36px
+      0
+      60px;
   }
 }
 
-.loginIcon {
-  transform: scaleX(-1);
+
+// ========================================
+// Tablet
+// ========================================
+
+@media (max-width: 1100px) {
+
+  .adminBody {
+    grid-template-columns:
+      175px
+      minmax(0, 1fr);
+  }
+
+  .sidebar {
+    width: 175px;
+
+    padding:
+      28px
+      15px
+      20px;
+  }
+
+  .menuItem {
+    padding: 0 14px;
+
+    font-size: 12px;
+  }
+
+  .contentViewport {
+    width: calc(100% - 48px);
+
+    max-width: none;
+
+    margin: 0 auto;
+
+    padding:
+      30px
+      0
+      50px;
+  }
+}
+
+
+// ========================================
+// Mobile
+// ========================================
+
+@media (max-width: 768px) {
+
+  .adminBody {
+    grid-template-columns:
+      68px
+      minmax(0, 1fr);
+  }
+
+  .sidebar {
+    width: 68px;
+
+    padding:
+      22px
+      10px
+      16px;
+
+    border-radius:
+      0
+      20px
+      0
+      0;
+  }
+
+  .menuItem {
+    padding: 0;
+
+    justify-content: center;
+  }
+
+  .menuLabel {
+    display: none;
+  }
+
+  .accountBadge {
+    padding: 0;
+
+    justify-content: center;
+  }
+
+  .accountEmail {
+    display: none;
+  }
+
+  .contentViewport {
+    width: calc(100% - 32px);
+
+    max-width: none;
+
+    margin: 0 auto;
+
+    padding:
+      24px
+      0
+      40px;
+  }
 }
