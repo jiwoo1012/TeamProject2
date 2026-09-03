@@ -472,9 +472,55 @@
 }
 
 .message h2 {
-  max-width: 60rem;
+  max-width: 65rem;
   font-size: clamp(1.9rem, 2.9vw, 3.4rem);
   line-height: 1.55;
+}
+
+.messageBrand {
+  position: relative;
+  display: inline-block;
+  margin-right: 0.08em;
+  font-family: $font-family-display;
+  font-size: 1.5em;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+
+.messageBrand::after {
+  position: absolute;
+  right: 0.12em;
+  bottom: -0.16em;
+  left: 0.12em;
+  height: 0.2em;
+  background: rgba($color-white, 0.52);
+  clip-path: polygon(
+    0 58%,
+    5% 38%,
+    20% 30%,
+    48% 36%,
+    76% 24%,
+    94% 35%,
+    100% 48%,
+    95% 65%,
+    72% 72%,
+    45% 64%,
+    18% 75%,
+    4% 68%
+  );
+  content: '';
+  transform: rotate(-1deg);
+}
+
+.messageQuote {
+  display: inline-block;
+  margin-inline: 0.08em;
+  font-family: $font-family-base;
+  font-size: 0.45em;
+  font-weight: 400;
+  vertical-align: 0.55em;
+  opacity: 0.7;
 }
 
 .messageDescription {
@@ -489,57 +535,123 @@
 // Closing: 막동이 소개와 브랜드 핵심 가치
 // ---------------------------------------------------------------------
 .closing {
-  padding-block: clamp($space-20, 12vh, $space-24);
+  display: flex;
+  min-height: 100svh;
+  padding-block: clamp($space-12, 7svh, $space-20);
+  align-items: center;
   background: $color-bg;
 }
 
 .closingInner {
   @include container;
   display: grid;
+  max-width: 1000px;
   // PC에서는 막동이 영역(왼쪽)과 가치 목록(오른쪽)을 나란히 배치한다.
-  grid-template-columns: minmax(300px, 0.85fr) minmax(480px, 1.15fr);
-  gap: clamp($space-16, 8vw, $space-20);
-  align-items: end;
+  grid-template-columns: minmax(270px, 0.9fr) minmax(460px, 1.1fr);
+  gap: clamp($space-8, 4vw, $space-12);
+  align-items: stretch;
 }
 
 .closingIntro h2 {
-  margin: 0 0 $space-8;
-  font-size: clamp(2.3rem, 3.6vw, 3.9rem);
-  line-height: 1.35;
+  margin: 0 0 $space-5;
+  font-size: clamp(1.9rem, 2.8vw, 3rem);
+  line-height: 1.25;
+  letter-spacing: -0.04em;
 }
 
-.makdongVisual {
-  // 막동이 이미지가 들어가는 세로형 프레임
-  @include flex-center;
-  overflow: hidden;
-  width: min(100%, 420px);
-  border-radius: $radius-md;
-  aspect-ratio: 0.78 / 1;
-  background: $color-surface;
+.closingTitleAccent {
+  position: relative;
+  display: inline-block;
+  margin-inline: -0.08em;
+  padding-inline: 0.08em;
+}
+
+.closingTitleLine {
+  display: inline-flex;
+  gap: 0.18em;
   align-items: flex-end;
 }
 
-.makdongVisual img {
-  width: 112%;
-  max-height: 94%;
+.closingPawMark {
+  width: 1.15em;
+  height: 1.15em;
+  margin-bottom: 0.08em;
+  object-fit: contain;
+  opacity: 0.58;
+  mix-blend-mode: multiply;
+  transform: rotate(10deg);
+}
+
+.closingIntroText {
+  margin: 0 0 $space-4;
+  color: $color-text-secondary;
+  font-size: clamp(0.86rem, 1vw, 0.98rem);
+  line-height: 1.8;
+}
+
+.makdongVisual {
+  // 막동이와 자연 장식을 담는 아치형 비주얼
+  @include flex-center;
+  position: relative;
+  width: min(100%, 29svh, 290px);
+  border-radius: 50% 50% $radius-xl $radius-xl;
+  aspect-ratio: 1 / 1;
+  background: rgba($color-surface, 0.42);
+  align-items: flex-end;
+}
+
+.makdongCharacter {
+  position: relative;
+  z-index: 1;
+  width: auto;
+  height: 96%;
   object-fit: contain;
   object-position: bottom;
+  left: 15%;
+  bottom: -3%;
+}
+
+.makdongDecoration {
+  position: absolute;
+  z-index: 2;
+  bottom: -2%;
+  left: -10%;
+  width: 27%;
+  height: auto;
+  pointer-events: none;
 }
 
 .shopLink {
   // '막동이 이야기 보기' 버튼
   @include flex-center;
   display: inline-flex;
-  min-height: 3.25rem;
-  margin: $space-8 0 0 $space-5;
-  padding: 0 $space-6;
+  min-height: 2.75rem;
+  margin: $space-8 auto 0;
+  padding: 0 $space-5;
   border-radius: $radius-pill;
   background: $color-primary;
   color: $color-white;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
   text-decoration: none;
   transition: background-color 180ms ease, transform 180ms ease;
+}
+
+.closingIntro {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.closingIntro .makdongVisual,
+.closingIntro .shopLink {
+  align-self: center;
+}
+
+.shopLink span {
+  margin-left: $space-3;
+  font-size: 1.2em;
+  font-weight: $font-weight-regular;
 }
 
 .shopLink:hover,
@@ -554,32 +666,85 @@
 }
 
 .closingValues {
-  // 오른쪽 브랜드 가치 목록
+  // 오른쪽 브랜드 가치를 데스크톱에서 2 x 2 카드로 배치한다.
   display: grid;
-  gap: 0;
-  margin: 0 0 $space-2;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: $space-3;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .closingValues li {
-  padding: $space-6 0;
-  border-bottom: 1px solid $color-border;
+  position: relative;
+  display: flex;
+  padding: clamp($space-4, 1.7vw, $space-5);
+  border: 1px solid rgba($color-taupe, 0.24);
+  border-radius: $radius-xl;
+  background: rgba($color-white, 0.72);
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  transition: background-color $transition-base ease, box-shadow $transition-base ease, transform $transition-base ease;
 }
 
-.closingValues li:first-child {
-  border-top: 1px solid $color-border;
+.closingValues li:hover {
+  background: $color-white;
+  box-shadow: $shadow-sm;
+  transform: translateY(-3px);
+}
+
+.closingNumber {
+  @include flex-center;
+  position: absolute;
+  top: $space-4;
+  left: $space-4;
+  width: 2.25rem;
+  border: 1px solid $color-primary;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  color: $color-primary;
+  font-size: 0.72rem;
+  font-weight: $font-weight-bold;
+  line-height: 1;
+}
+
+.closingIllustration {
+  @include flex-center;
+  width: clamp(4.5rem, 6vw, 5.5rem);
+  margin-bottom: $space-3;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  background: rgba($color-surface, 0.32);
+}
+
+.closingIllustration img {
+  width: 82%;
+  height: 82%;
+  object-fit: contain;
 }
 
 .closingValues h3 {
-  font-size: clamp(1.1rem, 1.35vw, 1.4rem);
+  font-size: clamp(1rem, 1.2vw, 1.22rem);
   font-weight: 700;
 }
 
+.closingValues h3::after {
+  display: block;
+  width: $space-8;
+  height: 1px;
+  margin: $space-3 auto 0;
+  background: $color-taupe;
+  content: '';
+}
+
 .closingValues p {
+  max-width: 19rem;
   margin: $space-3 0 0;
   color: $color-text-secondary;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   line-height: 1.7;
 }
 
@@ -601,7 +766,9 @@
   .curationSteps li:not(:last-child)::after { right: -0.75rem; }
   .stepIcon { width: 4.5rem; }
   .senseCard { gap: $space-8; }
-  .closingInner { grid-template-columns: 0.8fr 1.2fr; gap: $space-12; }
+  .closingInner { grid-template-columns: 0.85fr 1.15fr; gap: $space-12; }
+  .closingValues { grid-template-columns: 1fr; gap: $space-4; }
+  .closingValues li { padding: $space-5; }
 }
 
 @include mobile {
@@ -672,21 +839,30 @@
   // Message: 모바일 화면에 맞춰 높이와 글자 크기를 축소
   .message { min-height: 60svh; padding-block: $space-20; }
   .message h2 { font-size: clamp(1.6rem, 7.2vw, 2.2rem); line-height: 1.55; }
+  .messageBrand { font-size: 1.35em; }
   .messageDescription { margin-top: $space-8; font-size: 0.9rem; line-height: 1.8; }
 
   // Closing: 좌우 배치를 한 열로 쌓는다.
-  .closing { padding-block: $space-24 $space-30; }
-  .closingInner { grid-template-columns: 1fr; gap: $space-16; }
-  .closingIntro h2 { margin-bottom: $space-8; font-size: clamp(2.3rem, 11vw, 3.2rem); }
-  .makdongVisual { width: 100%; max-width: 420px; margin: 0 auto; }
+  .closing {
+    display: block;
+    min-height: auto;
+    padding-block: $space-16 $space-20;
+  }
+  .closingInner { grid-template-columns: 1fr; gap: $space-10; }
+  .closingIntro h2 { margin-bottom: $space-5; font-size: clamp(1.9rem, 9vw, 2.5rem); }
+  .makdongVisual { width: 100%; max-width: 290px; margin: 0 auto; }
   .shopLink { width: fit-content; margin: $space-6 auto 0; }
-  .closingValues { gap: $space-4; }
-  .closingValues li { padding: $space-5 0; }
+  .closingValues { grid-template-columns: 1fr; gap: $space-4; }
+  .closingValues li { padding: $space-5; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   // 동작 줄이기 설정에서는 버튼 hover 애니메이션도 제거한다.
   .shopLink {
+    transition: none;
+  }
+
+  .closingValues li {
     transition: none;
   }
 }
