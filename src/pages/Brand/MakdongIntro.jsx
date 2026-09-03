@@ -150,7 +150,7 @@ const MakdongIntro = () => {
             <h2 className={styles.characterGuideTitle}>MAKDONG</h2>
             <p className={styles.characterName}>막동이</p>
             <p className={styles.characterRole}>
-              오늘 당신의 한 잔을 함께 골라줄<br />
+              오늘 을 함께 골라줄<br />
               자작의 작은 큐레이터, 막동이를 소개합니다.
             </p>
             <p className={styles.characterSummary}>
