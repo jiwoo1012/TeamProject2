@@ -3,7 +3,67 @@
 .page {
   display: grid;
   gap: v.$space-6;
-  color: v.$color-text-primary;
+  min-height: 100%;
+  padding: v.$space-8 v.$space-10;
+  box-sizing: border-box;
+  background: #f8f6f2;
+  color: #4a504d;
+}
+
+.pageToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.$space-4;
+}
+
+.pageToolbar h1 {
+  margin: 0;
+  color: #222524;
+  font-size: 30px;
+  font-weight: v.$font-weight-bold;
+  line-height: v.$line-height-tight;
+  letter-spacing: -0.02em;
+}
+
+.refreshButton {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: v.$space-2;
+  padding: 0 v.$space-4;
+  border-radius: v.$radius-md;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+}
+
+.refreshButton svg {
+  width: 15px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.refreshButton:hover:not(:disabled) {
+  border-color: v.$color-primary;
+  color: v.$color-primary;
+}
+
+.refreshButton:disabled {
+  cursor: wait;
+  opacity: .6;
+}
+
+.topOrnament {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: -#{v.$space-5};
+  pointer-events: none;
 }
 
 .page h3,
@@ -36,7 +96,7 @@
 }
 
 .introCard {
-  display: flex;
+  display: none;
   min-height: 134px;
   align-items: center;
   justify-content: space-between;
@@ -80,6 +140,10 @@
   font-weight: v.$font-weight-semibold;
 }
 
+.summaryArea {
+  margin-top: -#{v.$space-3};
+}
+
 .summaryGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -87,47 +151,74 @@
 }
 
 .summaryCard {
-  position: relative;
   display: flex;
-  min-height: 116px;
-  flex-direction: column;
-  justify-content: center;
+  min-height: 128px;
+  align-items: center;
+  gap: v.$space-4;
   padding: v.$space-5;
-  overflow: hidden;
   border: 1px solid v.$color-border;
   border-radius: v.$radius-lg;
   background: v.$color-white;
+  text-align: left;
 }
 
-.summaryCard::before {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  background: color-mix(in srgb, v.$color-primary 72%, v.$color-primary-light);
-  content: '';
+.summaryCard:hover {
+  border-color: color-mix(in srgb, v.$color-primary 55%, v.$color-border);
+  box-shadow: v.$shadow-sm;
 }
 
-.alertCard::before {
-  background: v.$color-error;
+.summaryIcon {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, v.$color-primary 10%, v.$color-white);
+  color: v.$color-primary;
 }
 
-.summaryCard span,
-.summaryCard small {
+.summaryIcon svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.summaryIconRating { background: color-mix(in srgb, v.$color-primary-light 12%, v.$color-white); color: v.$color-primary-light; }
+.summaryIconReport { background: color-mix(in srgb, v.$color-error 10%, v.$color-white); color: v.$color-error; }
+.summaryIconHidden { background: color-mix(in srgb, v.$color-warning 11%, v.$color-white); color: v.$color-warning; }
+
+.summaryContent {
+  display: grid;
+  min-width: 0;
+  gap: v.$space-1;
+}
+
+.summaryContent small,
+.summaryContent i {
   color: v.$color-text-muted;
   font-size: v.$font-size-xs;
+  font-style: normal;
 }
 
-.summaryCard strong {
-  margin: v.$space-1 0;
+.summaryContent strong {
   color: v.$color-primary;
-  font-size: v.$font-size-3xl;
+  font-size: 30px;
+  font-weight: v.$font-weight-bold;
   line-height: 1.2;
 }
 
-.alertCard strong {
-  color: v.$color-error;
+.summaryContent strong em {
+  margin-left: v.$space-1;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+  font-style: normal;
+  font-weight: v.$font-weight-semibold;
 }
 
 .mockNotice {
@@ -1431,6 +1522,7 @@
 }
 
 @media (max-width: v.$breakpoint-tablet-max) {
+  .page { padding: v.$space-6; }
   .reviewWorkspace { grid-template-columns: 1fr; }
   .attentionQueue { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .attentionQueue header { grid-column: 1 / -1; }
@@ -1445,6 +1537,25 @@
 }
 
 @media (max-width: v.$breakpoint-mobile-max) {
+  .page { gap: v.$space-5; padding: 0 0 v.$space-8; }
+  .pageToolbar { padding: 0 v.$space-5; }
+  .pageToolbar h1 { font-size: v.$font-size-2xl; }
+  .refreshButton { min-height: 36px; padding: 0 v.$space-3; font-size: v.$font-size-xs; }
+  .topOrnament { display: none; }
+  .summaryArea,
+  .mockNotice,
+  .reviewWorkspace,
+  .filterBar,
+  .managementGrid,
+  .batchActionBar,
+  .demoNotice { margin-right: v.$space-5; margin-left: v.$space-5; }
+  .summaryArea { margin-top: 0; }
+  .summaryGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: v.$space-3; }
+  .summaryCard { min-height: 116px; align-items: flex-start; gap: v.$space-3; padding: v.$space-4; }
+  .summaryIcon { width: 38px; height: 38px; }
+  .summaryIcon svg { width: 18px; height: 18px; }
+  .summaryContent strong { font-size: v.$font-size-2xl; }
+  .summaryContent i { font-size: 11px; line-height: 1.35; }
   .trendCard { padding: v.$space-4; }
   .trendCard > header { flex-direction: column; }
   .trendCard header dl { width: 100%; justify-content: space-between; }
@@ -1542,7 +1653,7 @@
   .visibilityContent { gap: v.$space-4; }
   .insightGrid { grid-template-columns: 1fr; }
   .introCard > button { width: 100%; }
-  .summaryGrid, .filterBar { grid-template-columns: 1fr; }
+  .filterBar { grid-template-columns: 1fr; }
   .searchField { grid-column: auto; }
   .detailPanel { padding: v.$space-4; }
   .demoNotice { text-align: left; }

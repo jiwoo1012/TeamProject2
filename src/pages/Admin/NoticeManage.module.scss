@@ -109,9 +109,8 @@ $radius-control: 8px;
 
   img {
     width: 100%;
-    height: 32px;
+    height: auto;
     display: block;
-    object-fit: fill;
   }
 }
 
@@ -119,12 +118,14 @@ $radius-control: 8px;
 // 상단 요약 카드 (4 Column)
 // ==========================================
 .summaryArea {
+  width: 100%;
   margin-bottom: 24px;
 }
 
 .summaryGrid {
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -142,6 +143,7 @@ $radius-control: 8px;
   transition: all 0.2s ease;
   cursor: pointer;
   text-align: left;
+  min-width: 0;
 
   &:hover {
     transform: translateY(-2px);
@@ -169,8 +171,8 @@ $radius-control: 8px;
 
   i { font-style: normal; font-weight: 700; font-size: 15px; }
 
-  &.progress { background: $primary-subtle; color: $primary; }
-  &.scheduled { background: $info-subtle; color: $info; }
+  &.progress, &.published { background: $primary-subtle; color: $primary; }
+  &.scheduled, &.draft { background: $info-subtle; color: $info; }
   &.important { background: $warning-subtle; color: $warning; }
 }
 
@@ -194,7 +196,7 @@ $radius-control: 8px;
 // ==========================================
 .managementGrid {
   display: grid;
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: minmax(0, 1fr) 350px;
   gap: 20px;
   align-items: start;
 }
@@ -257,10 +259,15 @@ $radius-control: 8px;
 }
 
 .dataTable {
-  width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;
+  width: 100%;
+  min-width: 920px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  text-align: left;
+  font-size: 13px;
 
   th { padding: 12px 14px; background: #faf8f5; color: $text-caption; font-weight: 600; border-bottom: 1px solid $border-color; white-space: nowrap; }
-  td { padding: 12px 14px; border-bottom: 1px solid #f0eee8; color: $text-body; vertical-align: middle; }
+  td { padding: 12px 14px; border-bottom: 1px solid #f0eee8; color: $text-body; vertical-align: middle; overflow: hidden; }
 
   tr.clickableRow {
     cursor: pointer; transition: background-color 0.15s ease;
@@ -269,15 +276,42 @@ $radius-control: 8px;
   }
 }
 
+.selectColumn { width: 40px; }
+.idColumn { width: 96px; }
+.titleColumn { width: auto; }
+.categoryColumn { width: 58px; }
+.dateColumn { width: 114px; }
+.statusColumn { width: 76px; }
+.pinColumn { width: 70px; }
+.targetColumn { width: 86px; }
+.viewsColumn { width: 54px; }
+.manageColumn { width: 82px; }
+
+.noticeIdCell strong {
+  display: block;
+  overflow: hidden;
+  color: $text-title;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.noticeDateCell {
+  color: $text-body;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 .noticeTitleText {
   font-weight: 600; color: $text-title; display: inline-block; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;
 }
 
 .statusBadge {
   display: inline-block; padding: 3px 7px; border-radius: 5px; font-size: 10px; font-weight: 700;
-  &.progress { background: $primary-subtle; color: $primary; }
+  &.progress, &.published { background: $primary-subtle; color: $primary; }
   &.scheduled { background: $info-subtle; color: $info; }
-  &.hidden { background: $danger-subtle; color: $danger; }
+  &.hidden, &.draft { background: $danger-subtle; color: $danger; }
 }
 
 .importantBadge {
@@ -505,5 +539,41 @@ $radius-control: 8px;
     color: #9ea4a0;
     cursor: pointer;
     font-size: 16px;
+  }
+}
+
+@media (max-width: 1240px) {
+  .managementGrid {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+}
+
+@media (max-width: 980px) {
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .managementGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .ornamentLine {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 24px 16px;
+  }
+
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .mainSection {
+    padding: 16px;
   }
 }

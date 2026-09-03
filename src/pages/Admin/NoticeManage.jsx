@@ -1,98 +1,62 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { auth } from '../../firebase/firebase'
+import { subscribeToAuthState } from '../../firebase/auth'
+import {
+  addDocument,
+  deleteDocument,
+  getCollection,
+  updateDocument,
+} from '../../firebase/firestore'
 import adminTopOrnament from '../../assets/images/admin/adminTopOrnament.svg'
 import styles from './NoticeManage.module.scss'
 
-// ========================================
-// 초기 공지사항 데이터 (세로 높이 균형을 위해 6개로 보강)
-// ========================================
-const initialNotices = [
-  {
-    id: 'NOTICE-01',
-    title: '추석 연휴 배송 지연 및 고객센터 운영 안내',
-    category: '배송',
-    status: 'progress',
-    isImportant: true,
-    author: '운영자',
-    createdAt: '2025.10.12 10:30',
-    scheduledAt: '2025.10.13 11:50',
-    target: '전체 회원',
-    views: 2205,
-    content: '안녕하세요, 전통주 플랫폼 자작(JAJAK)입니다. 다가오는 추석 연휴 기간 택배사 휴무로 인해 9월 28일 오후 2시 이후 주문 건은 연휴 이후 순차 발송됩니다.',
-  },
-  {
-    id: 'NOTICE-02',
-    title: '신규 전통주 AI 추천 서비스 "막동이" 오픈 이벤트',
-    category: '이벤트',
-    status: 'scheduled',
-    isImportant: true,
-    author: '마케팅팀',
-    createdAt: '2025.10.11 14:00',
-    scheduledAt: '2025.10.15 09:00',
-    target: '전체 회원',
-    views: 1874,
-    content: '나만의 취향에 맞는 전통주를 찾아주는 AI 큐레이션 서비스 "막동이"가 정식 오픈합니다. 오픈 기념 첫 추천 이용 시 10% 할인 쿠폰을 드립니다!',
-  },
-  {
-    id: 'NOTICE-03',
-    title: '개인정보 처리방침 개정 안내 (제 4조 관련)',
-    category: '정책',
-    status: 'progress',
-    isImportant: false,
-    author: '법무팀',
-    createdAt: '2025.10.05 09:15',
-    scheduledAt: '-',
-    target: '전체 회원',
-    views: 940,
-    content: '자작 서비스를 이용해 주시는 회원 여러분께 감사드리며, 개정된 개인정보 처리방침에 대해 안내해 드립니다.',
-  },
-  {
-    id: 'NOTICE-04',
-    title: '시스템 정기 점검에 따른 서비스 일시 중단 안내',
-    category: '시스템',
-    status: 'hidden',
-    isImportant: false,
-    author: '개발팀',
-    createdAt: '2025.09.28 18:00',
-    scheduledAt: '-',
-    target: '로그인 회원',
-    views: 520,
-    content: '더 안정적인 서비스 제공을 위한 서버 DB 증설 및 최적화 점검이 진행됩니다.',
-  },
-  {
-    id: 'NOTICE-05',
-    title: '10월 전통주 시음회 참가자 선정 결과 발표',
-    category: '기타',
-    status: 'progress',
-    isImportant: false,
-    author: '운영자',
-    createdAt: '2025.09.20 11:00',
-    scheduledAt: '-',
-    target: '전체 회원',
-    views: 1120,
-    content: '10월 문경 둘렛길 전통주 시음회 이벤트에 당첨되신 총 20분의 회원님들을 발표합니다.',
-  },
-  {
-    id: 'NOTICE-06',
-    title: '가을 시즌 한정 전통주 기획전 오픈 안내',
-    category: '이벤트',
-    status: 'progress',
-    isImportant: false,
-    author: 'MD팀',
-    createdAt: '2025.09.15 09:00',
-    scheduledAt: '-',
-    target: '전체 회원',
-    views: 3150,
-    content: '선선한 가을 날씨와 가장 잘 어울리는 가을 한정 전통주 10선을 만나보세요.',
-  },
-]
-
 const statusLabels = {
-  progress: '게시 중',
-  scheduled: '예약',
-  hidden: '숨김',
+  published: '게시 중',
+  draft: '숨김',
 }
 
 const categories = ['전체 분류', '배송', '이벤트', '정책', '시스템', '기타']
+
+const toDate = (value) => value?.toDate?.() || (value ? new Date(value) : null)
+
+const formatDateTime = (value) => {
+  const date = toDate(value)
+  if (!date || Number.isNaN(date.getTime())) return '-'
+
+  return new Intl.DateTimeFormat('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(date)
+}
+
+const formatDate = (value) => {
+  const date = toDate(value)
+  if (!date || Number.isNaN(date.getTime())) return '-'
+
+  return new Intl.DateTimeFormat('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date)
+}
+
+const formatNoticeId = (noticeId = '') => {
+  if (noticeId.length <= 8) return noticeId
+  return `${noticeId.slice(0, 3)}…${noticeId.slice(-4)}`
+}
+
+const normalizeNotice = (notice) => ({
+  ...notice,
+  status: notice.status === 'published' ? 'published' : 'draft',
+  isPinned: Boolean(notice.isPinned),
+  authorName: notice.authorName || '관리자',
+  target: notice.target || '전체 회원',
+  views: Number(notice.views || 0),
+})
 
 const RefreshIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -102,13 +66,17 @@ const RefreshIcon = () => (
 )
 
 const NoticeManage = () => {
-  const [notices, setNotices] = useState(initialNotices)
+  const [notices, setNotices] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('전체 분류')
   const [statusFilter, setStatusFilter] = useState('all')
   const [activeCardKey, setActiveCardKey] = useState('total')
   const [selectedIds, setSelectedIds] = useState([])
   const [selectedNoticeId, setSelectedNoticeId] = useState(null)
+  const [isCreating, setIsCreating] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
   const [isRefreshing, setIsRefreshing] = useState(false)
 
@@ -120,14 +88,48 @@ const NoticeManage = () => {
   const selectedNotice = notices.find((n) => n.id === selectedNoticeId) || null
   const [draftTitle, setDraftTitle] = useState('')
   const [draftCategory, setDraftCategory] = useState('배송')
-  const [draftStatus, setDraftStatus] = useState('progress')
-  const [draftIsImportant, setDraftIsImportant] = useState(false)
+  const [draftStatus, setDraftStatus] = useState('published')
+  const [draftIsPinned, setDraftIsPinned] = useState(false)
   const [draftContent, setDraftContent] = useState('')
+
+  const loadNotices = async () => {
+    setIsLoading(true)
+    setLoadError('')
+
+    try {
+      const noticeDocs = await getCollection('notices')
+      setNotices(
+        noticeDocs
+          .map(normalizeNotice)
+          .sort((a, b) => (toDate(b.createdAt)?.getTime() || 0) - (toDate(a.createdAt)?.getTime() || 0)),
+      )
+      setSelectedIds([])
+    } catch (error) {
+      console.error('공지사항 조회 실패:', error)
+      setLoadError('공지사항을 불러오지 못했습니다. 관리자 권한을 확인해주세요.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    const unsubscribe = subscribeToAuthState((user) => {
+      if (user) {
+        loadNotices()
+      } else {
+        setNotices([])
+        setLoadError('관리자 로그인 후 공지사항을 관리할 수 있습니다.')
+        setIsLoading(false)
+      }
+    })
+
+    return unsubscribe
+  }, [])
 
   // 외부 빈 공간 클릭 시 통계 패널로 복귀
   useEffect(() => {
     const handleOutsideClick = (e) => {
-      if (!selectedNoticeId) return
+      if (!selectedNoticeId && !isCreating) return
       if (
         (panelRef.current && panelRef.current.contains(e.target)) ||
         (tableRef.current && tableRef.current.contains(e.target))
@@ -135,33 +137,36 @@ const NoticeManage = () => {
         return
       }
       setSelectedNoticeId(null)
+      setIsCreating(false)
     }
 
     document.addEventListener('mousedown', handleOutsideClick)
     return () => document.removeEventListener('mousedown', handleOutsideClick)
-  }, [selectedNoticeId])
+  }, [isCreating, selectedNoticeId])
 
   // 새로고침 핸들러
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setIsRefreshing(true)
-    setNotices(initialNotices)
+    await loadNotices()
+    setSelectedNoticeId(null)
+    setIsCreating(false)
+    setIsRefreshing(false)
+    setToastMessage('공지사항 목록을 새로고침했습니다.')
     setTimeout(() => {
-      setIsRefreshing(false)
-      setToastMessage('공지사항 목록을 새로고침했습니다.')
-      setTimeout(() => setToastMessage(''), 2500)
-    }, 600)
+      setToastMessage('')
+    }, 2500)
   }
 
   // 지표 계산
   const totalCount = notices.length
-  const progressCount = notices.filter((n) => n.status === 'progress').length
-  const scheduledCount = notices.filter((n) => n.status === 'scheduled').length
-  const importantCount = notices.filter((n) => n.isImportant).length
+  const publishedCount = notices.filter((n) => n.status === 'published').length
+  const draftCount = notices.filter((n) => n.status === 'draft').length
+  const importantCount = notices.filter((n) => n.isPinned).length
 
   const summaryCards = [
     { key: 'total', label: '전체 공지', value: totalCount, unit: '건', caption: '등록된 전체 공지' },
-    { key: 'progress', label: '게시 중', value: progressCount, unit: '건', caption: '현재 노출 중인 공지' },
-    { key: 'scheduled', label: '예약 게시', value: scheduledCount, unit: '건', caption: '발행 대기 중인 공지' },
+    { key: 'published', label: '게시 중', value: publishedCount, unit: '건', caption: '현재 노출 중인 공지' },
+    { key: 'draft', label: '숨김', value: draftCount, unit: '건', caption: '현재 비공개 공지' },
     { key: 'important', label: '중요 공지', value: importantCount, unit: '건', caption: '상단 고정 공지' },
   ]
 
@@ -172,8 +177,8 @@ const NoticeManage = () => {
     setCategoryFilter('전체 분류')
 
     if (key === 'total') setStatusFilter('all')
-    else if (key === 'progress') setStatusFilter('progress')
-    else if (key === 'scheduled') setStatusFilter('scheduled')
+    else if (key === 'published') setStatusFilter('published')
+    else if (key === 'draft') setStatusFilter('draft')
     else if (key === 'important') setStatusFilter('important')
   }
 
@@ -188,10 +193,9 @@ const NoticeManage = () => {
       const matchesCategory = categoryFilter === '전체 분류' || n.category === categoryFilter
 
       let matchesStatus = true
-      if (statusFilter === 'progress') matchesStatus = n.status === 'progress'
-      else if (statusFilter === 'scheduled') matchesStatus = n.status === 'scheduled'
-      else if (statusFilter === 'hidden') matchesStatus = n.status === 'hidden'
-      else if (statusFilter === 'important') matchesStatus = n.isImportant
+      if (statusFilter === 'published') matchesStatus = n.status === 'published'
+      else if (statusFilter === 'draft') matchesStatus = n.status === 'draft'
+      else if (statusFilter === 'important') matchesStatus = n.isPinned
 
       return matchesQuery && matchesCategory && matchesStatus
     })
@@ -207,42 +211,106 @@ const NoticeManage = () => {
   }
 
   const openEditPanel = (notice) => {
+    setIsCreating(false)
     setSelectedNoticeId(notice.id)
     setDraftTitle(notice.title)
     setDraftCategory(notice.category)
     setDraftStatus(notice.status)
-    setDraftIsImportant(notice.isImportant)
+    setDraftIsPinned(notice.isPinned)
     setDraftContent(notice.content)
   }
 
-  const handleSaveEdit = () => {
-    if (!selectedNotice) return
-    setNotices((prev) =>
-      prev.map((n) =>
-        n.id === selectedNotice.id
-          ? {
-              ...n,
-              title: draftTitle,
-              category: draftCategory,
-              status: draftStatus,
-              isImportant: draftIsImportant,
-              content: draftContent,
-            }
-          : n
-      )
-    )
+  const openCreatePanel = () => {
     setSelectedNoticeId(null)
-    setToastMessage('공지사항이 성공적으로 수정되었습니다.')
-    setTimeout(() => setToastMessage(''), 3000)
+    setIsCreating(true)
+    setDraftTitle('')
+    setDraftCategory('배송')
+    setDraftStatus('draft')
+    setDraftIsPinned(false)
+    setDraftContent('')
   }
 
-  const handleDeleteNotice = () => {
+  const handleSaveEdit = async () => {
+    if (!selectedNotice && !isCreating) return
+
+    const title = draftTitle.trim()
+    const content = draftContent.trim()
+    if (!title || !content) {
+      setToastMessage('제목과 본문을 입력해주세요.')
+      return
+    }
+
+    const noticeData = {
+      title,
+      content,
+      category: draftCategory,
+      status: draftStatus,
+      isPinned: draftIsPinned,
+      authorId: selectedNotice?.authorId || auth.currentUser?.uid || '',
+      authorName: selectedNotice?.authorName || auth.currentUser?.displayName || '관리자',
+      target: '전체 회원',
+      views: selectedNotice?.views || 0,
+    }
+
+    setIsSaving(true)
+    try {
+      if (isCreating) {
+        await addDocument('notices', noticeData)
+      } else {
+        await updateDocument('notices', selectedNotice.id, noticeData)
+      }
+
+      await loadNotices()
+      setSelectedNoticeId(null)
+      setIsCreating(false)
+      setToastMessage(isCreating ? '공지사항이 등록되었습니다.' : '공지사항이 수정되었습니다.')
+      setTimeout(() => setToastMessage(''), 3000)
+    } catch (error) {
+      console.error('공지사항 저장 실패:', error)
+      setToastMessage('공지사항을 저장하지 못했습니다. 관리자 권한을 확인해주세요.')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleDeleteNotice = async () => {
     if (!selectedNotice) return
     if (window.confirm(`'${selectedNotice.title}' 공지를 정말 삭제하시겠습니까?`)) {
-      setNotices((prev) => prev.filter((n) => n.id !== selectedNotice.id))
-      setSelectedNoticeId(null)
-      setToastMessage('공지사항이 삭제되었습니다.')
+      setIsSaving(true)
+      try {
+        await deleteDocument('notices', selectedNotice.id)
+        setNotices((prev) => prev.filter((n) => n.id !== selectedNotice.id))
+        setSelectedNoticeId(null)
+        setToastMessage('공지사항이 삭제되었습니다.')
+        setTimeout(() => setToastMessage(''), 3000)
+      } catch (error) {
+        console.error('공지사항 삭제 실패:', error)
+        setToastMessage('공지사항을 삭제하지 못했습니다. 관리자 권한을 확인해주세요.')
+      } finally {
+        setIsSaving(false)
+      }
+    }
+  }
+
+  const handleBulkHide = async () => {
+    if (selectedIds.length === 0 || isSaving) return
+
+    setIsSaving(true)
+    try {
+      await Promise.all(
+        selectedIds.map((noticeId) => updateDocument('notices', noticeId, { status: 'draft' })),
+      )
+      setNotices((current) => current.map((notice) => (
+        selectedIds.includes(notice.id) ? { ...notice, status: 'draft' } : notice
+      )))
+      setSelectedIds([])
+      setToastMessage('선택한 공지를 숨김 처리했습니다.')
       setTimeout(() => setToastMessage(''), 3000)
+    } catch (error) {
+      console.error('공지사항 일괄 숨김 실패:', error)
+      setToastMessage('선택한 공지를 숨김 처리하지 못했습니다.')
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -329,9 +397,8 @@ const NoticeManage = () => {
                 }}
               >
                 <option value="all">전체 상태</option>
-                <option value="progress">게시 중</option>
-                <option value="scheduled">예약 게시</option>
-                <option value="hidden">숨김</option>
+                <option value="published">게시 중</option>
+                <option value="draft">숨김</option>
                 <option value="important">중요 공지만</option>
               </select>
             </label>
@@ -359,11 +426,11 @@ const NoticeManage = () => {
             </div>
             <div className={styles.actions}>
               {selectedIds.length > 0 && (
-                <button type="button" className={styles.bulkButton}>
+                <button type="button" className={styles.bulkButton} onClick={handleBulkHide} disabled={isSaving}>
                   선택 {selectedIds.length}개 숨김 처리
                 </button>
               )}
-              <button type="button" className={styles.registerButton}>
+              <button type="button" className={styles.registerButton} onClick={openCreatePanel}>
                 + 새 공지 등록
               </button>
             </div>
@@ -372,6 +439,18 @@ const NoticeManage = () => {
           {/* 테이블 영역 */}
           <div className={styles.tableWrap} ref={tableRef}>
             <table className={styles.dataTable}>
+              <colgroup>
+                <col className={styles.selectColumn} />
+                <col className={styles.idColumn} />
+                <col className={styles.titleColumn} />
+                <col className={styles.categoryColumn} />
+                <col className={styles.dateColumn} />
+                <col className={styles.statusColumn} />
+                <col className={styles.pinColumn} />
+                <col className={styles.targetColumn} />
+                <col className={styles.viewsColumn} />
+                <col className={styles.manageColumn} />
+              </colgroup>
               <thead>
                 <tr>
                   <th style={{ width: 40 }}>
@@ -393,6 +472,15 @@ const NoticeManage = () => {
                 </tr>
               </thead>
               <tbody>
+                {isLoading && (
+                  <tr><td colSpan="10">공지사항을 불러오는 중입니다.</td></tr>
+                )}
+                {!isLoading && loadError && (
+                  <tr><td colSpan="10">{loadError}</td></tr>
+                )}
+                {!isLoading && !loadError && filteredNotices.length === 0 && (
+                  <tr><td colSpan="10">등록된 공지사항이 없습니다.</td></tr>
+                )}
                 {filteredNotices.map((n) => (
                   <tr
                     key={n.id}
@@ -407,22 +495,22 @@ const NoticeManage = () => {
                         onClick={(e) => e.stopPropagation()}
                       />
                     </td>
-                    <td>
-                      <strong>{n.id}</strong>
+                    <td className={styles.noticeIdCell}>
+                      <strong title={n.id}>{formatNoticeId(n.id)}</strong>
                     </td>
                     <td>
                       <span className={styles.noticeTitleText}>{n.title}</span>
                     </td>
                     <td>{n.category}</td>
-                    <td>{n.createdAt.split(' ')[0]}</td>
+                    <td className={styles.noticeDateCell}>{formatDate(n.createdAt)}</td>
                     <td>
                       <span className={`${styles.statusBadge} ${styles[n.status]}`}>
                         {statusLabels[n.status]}
                       </span>
                     </td>
                     <td>
-                      <span className={n.isImportant ? styles.importantBadge : styles.normalBadge}>
-                        {n.isImportant ? '중요' : '일반'}
+                      <span className={n.isPinned ? styles.importantBadge : styles.normalBadge}>
+                        {n.isPinned ? '중요' : '일반'}
                       </span>
                     </td>
                     <td>{n.target}</td>
@@ -447,11 +535,11 @@ const NoticeManage = () => {
         </section>
 
         {/* 우측 패널 (공지 상세 및 수정 vs 평상시 통계 패널) */}
-        {selectedNotice ? (
+        {(selectedNotice || isCreating) ? (
           <aside className={styles.editPanel} ref={panelRef} aria-labelledby="notice-detail-title">
             <header className={styles.panelTopHeader}>
-              <h2 id="notice-detail-title">공지 상세 보기</h2>
-              <button type="button" onClick={() => setSelectedNoticeId(null)} aria-label="닫기">
+              <h2 id="notice-detail-title">{isCreating ? '새 공지 등록' : '공지 상세 보기'}</h2>
+              <button type="button" onClick={() => { setSelectedNoticeId(null); setIsCreating(false) }} aria-label="닫기">
                 ×
               </button>
             </header>
@@ -467,8 +555,8 @@ const NoticeManage = () => {
                 <label className={styles.importantCheckLabel}>
                   <input
                     type="checkbox"
-                    checked={draftIsImportant}
-                    onChange={(e) => setDraftIsImportant(e.target.checked)}
+                    checked={draftIsPinned}
+                    onChange={(e) => setDraftIsPinned(e.target.checked)}
                   />
                   <span>중요 고정</span>
                 </label>
@@ -477,7 +565,7 @@ const NoticeManage = () => {
               <dl className={styles.metaDl}>
                 <div>
                   <dt>공지 ID</dt>
-                  <dd>{selectedNotice.id}</dd>
+                  <dd>{selectedNotice?.id || '등록 후 자동 생성'}</dd>
                 </div>
                 <div>
                   <dt>분류</dt>
@@ -497,27 +585,26 @@ const NoticeManage = () => {
                   <dt>게시 상태</dt>
                   <dd>
                     <select value={draftStatus} onChange={(e) => setDraftStatus(e.target.value)}>
-                      <option value="progress">게시 중</option>
-                      <option value="scheduled">예약</option>
-                      <option value="hidden">숨김</option>
+                      <option value="published">게시 중</option>
+                      <option value="draft">숨김</option>
                     </select>
                   </dd>
                 </div>
                 <div>
                   <dt>작성일</dt>
-                  <dd>{selectedNotice.createdAt}</dd>
+                  <dd>{formatDateTime(selectedNotice?.createdAt)}</dd>
                 </div>
                 <div>
-                  <dt>게시일</dt>
-                  <dd>{selectedNotice.scheduledAt}</dd>
+                  <dt>최근 수정</dt>
+                  <dd>{formatDateTime(selectedNotice?.updatedAt || selectedNotice?.createdAt)}</dd>
                 </div>
                 <div>
                   <dt>노출 대상</dt>
-                  <dd>{selectedNotice.target}</dd>
+                  <dd>{selectedNotice?.target || '전체 회원'}</dd>
                 </div>
                 <div>
                   <dt>조회수</dt>
-                  <dd>{selectedNotice.views.toLocaleString()}</dd>
+                  <dd>{Number(selectedNotice?.views || 0).toLocaleString()}</dd>
                 </div>
               </dl>
             </div>
@@ -533,11 +620,13 @@ const NoticeManage = () => {
             </div>
 
             <div className={styles.stepFooter}>
-              <button type="button" className={styles.deleteBtn} onClick={handleDeleteNotice}>
-                공지 삭제
-              </button>
-              <button type="button" className={styles.saveBtn} onClick={handleSaveEdit}>
-                저장하기
+              {!isCreating && (
+                <button type="button" className={styles.deleteBtn} onClick={handleDeleteNotice} disabled={isSaving}>
+                  공지 삭제
+                </button>
+              )}
+              <button type="button" className={styles.saveBtn} onClick={handleSaveEdit} disabled={isSaving}>
+                {isSaving ? '저장 중...' : isCreating ? '등록하기' : '저장하기'}
               </button>
             </div>
           </aside>
@@ -552,7 +641,7 @@ const NoticeManage = () => {
               <div className={styles.statusOverview}>
                 <div
                   className={styles.statusDonut}
-                  style={{ '--active-rate': `${Math.round((progressCount / totalCount) * 100 || 0)}%` }}
+                  style={{ '--active-rate': `${Math.round((publishedCount / totalCount) * 100 || 0)}%` }}
                 >
                   <span>전체</span>
                   <strong>{totalCount}건</strong>
@@ -561,12 +650,12 @@ const NoticeManage = () => {
                   <li>
                     <span className={styles.dotProgress} />
                     <span>게시 중</span>
-                    <strong>{progressCount}건</strong>
+                    <strong>{publishedCount}건</strong>
                   </li>
                   <li>
                     <span className={styles.dotScheduled} />
-                    <span>예약 게시</span>
-                    <strong>{scheduledCount}건</strong>
+                    <span>숨김</span>
+                    <strong>{draftCount}건</strong>
                   </li>
                   <li>
                     <span className={styles.dotImportant} />

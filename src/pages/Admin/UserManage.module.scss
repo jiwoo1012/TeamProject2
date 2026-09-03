@@ -24,6 +24,8 @@ $radius-control: 8px;
 // 공통 레이아웃
 // ==========================================
 .page {
+  width: 100%;
+  min-width: 0;
   padding: 32px 40px;
   background-color: $bg-canvas;
   min-height: 100vh;
@@ -114,9 +116,8 @@ $radius-control: 8px;
 
   img {
     width: 100%;
-    height: 32px;
+    height: auto;
     display: block;
-    object-fit: fill;
   }
 }
 
@@ -129,7 +130,7 @@ $radius-control: 8px;
 
 .summaryGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -147,6 +148,7 @@ $radius-control: 8px;
   box-shadow: $shadow-sm;
   transition: all 0.2s ease;
   cursor: pointer;
+  min-width: 0;
 
   &:hover {
     transform: translateY(-2px);
@@ -192,6 +194,7 @@ $radius-control: 8px;
   justify-content: center;
   gap: 2px;
   flex: 1;
+  min-width: 0;
 
   h3 {
     font-size: 13px;
@@ -227,7 +230,7 @@ $radius-control: 8px;
 // ==========================================
 .managementGrid {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: minmax(0, 1fr) 340px;
   gap: 20px;
   align-items: start;
 }
@@ -236,6 +239,7 @@ $radius-control: 8px;
 // 회원 목록 섹션 (Main Content)
 // ==========================================
 .memberSection {
+  min-width: 0;
   background: $bg-surface;
   border: 1px solid $border-color;
   border-radius: $radius-card;
@@ -455,10 +459,15 @@ $radius-control: 8px;
   button {
     min-width: 32px;
     height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border: 1px solid $border-color;
     background: $bg-surface;
     border-radius: 6px;
     font-size: 13px;
+    line-height: 1;
     color: $text-body;
     cursor: pointer;
     transition: all 0.15s;
@@ -878,5 +887,263 @@ $radius-control: 8px;
     cursor: pointer;
     font-size: 16px;
     &:hover { color: #fff; }
+  }
+}
+
+// ==========================================
+// 반응형
+// ==========================================
+@media (max-width: 1180px) {
+  .page {
+    padding: 24px;
+  }
+
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .managementGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .page {
+    padding: 0 0 32px;
+  }
+
+  .pageToolbar {
+    gap: 12px;
+
+    h1 {
+      font-size: 24px;
+    }
+
+    button {
+      height: 36px;
+      padding: 0 12px;
+      font-size: 12px;
+    }
+  }
+
+  .ornamentLine {
+    display: none;
+  }
+
+  .summaryArea {
+    margin-bottom: 18px;
+  }
+
+  .summaryGrid {
+    gap: 10px;
+  }
+
+  .summaryCard {
+    min-height: 124px;
+    padding: 14px 12px;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .summaryIcon {
+    width: 38px;
+    height: 38px;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .summaryContent {
+    h3 {
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    p {
+      font-size: 22px;
+
+      span {
+        font-size: 12px;
+      }
+    }
+
+    small {
+      font-size: 11px;
+      line-height: 1.35;
+    }
+  }
+
+  .memberSection,
+  .analyticsCard,
+  .detailPanel {
+    padding: 16px;
+  }
+
+  .filterBar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .searchField {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
+
+  .selectField {
+    min-width: 0;
+
+    select {
+      width: 100%;
+    }
+  }
+
+  .resetButton {
+    width: 100%;
+  }
+
+  .tableWrap {
+    overflow: visible;
+  }
+
+  .memberTable {
+    display: block;
+
+    thead {
+      display: none;
+    }
+
+    tbody {
+      display: grid;
+      gap: 10px;
+    }
+
+    tr {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 18px;
+      padding: 18px 16px 16px;
+      border: 1px solid $border-color;
+      border-radius: 10px;
+      background: $bg-surface;
+    }
+
+    td {
+      min-width: 0;
+      min-height: 42px;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      color: $text-title;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+      border-bottom: 0;
+
+      &::before {
+        color: $text-caption;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1.2;
+      }
+
+      &:nth-child(1)::before { content: '회원 ID'; }
+      &:nth-child(2)::before { content: '이름'; }
+      &:nth-child(3)::before { content: '이메일'; }
+      &:nth-child(4)::before { content: '가입일'; }
+      &:nth-child(5)::before { content: '최근 로그인'; }
+      &:nth-child(6)::before { content: '상태'; }
+      &:nth-child(7)::before { content: '권한'; }
+
+      &:nth-child(8) {
+        grid-column: 1 / -1;
+      }
+
+      > span:not(.statusBadge):not(.roleBadge) {
+        display: block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .memberTable {
+    .statusBadge,
+    .roleBadge {
+      width: auto;
+      padding: 5px 9px;
+      font-size: 12px;
+      line-height: 1;
+    }
+  }
+
+  .viewButton {
+    width: 100%;
+    min-height: 40px;
+    font-size: 13px;
+  }
+
+  .pagination {
+    margin-top: 18px;
+  }
+
+  .analyticsColumn,
+  .detailPanel {
+    gap: 12px;
+  }
+
+  .statusOverview {
+    gap: 16px;
+  }
+
+  .profileSummary {
+    align-items: flex-start;
+
+    > div {
+      min-width: 0;
+
+      span,
+      small {
+        overflow-wrap: anywhere;
+      }
+    }
+  }
+
+  .accountFields label {
+    gap: 12px;
+
+    select {
+      width: min(150px, 55%);
+    }
+  }
+
+  .activityCards {
+    grid-template-columns: 1fr;
+  }
+
+  .toast {
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 390px) {
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryCard {
+    min-height: 104px;
+    align-items: center;
   }
 }
