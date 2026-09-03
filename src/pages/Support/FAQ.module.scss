@@ -161,7 +161,7 @@
 
 // 우측 하단 플로팅 1:1 문의하기 버튼
 .floatingButton {
-  position: fixed;
+  position: absolute;
   right: v.$space-8;
   bottom: v.$space-8;
   display: inline-flex;
