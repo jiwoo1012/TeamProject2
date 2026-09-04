@@ -1,193 +1,309 @@
 import { useEffect, useState } from 'react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router-dom'
 
-import { PATHS } from '../../routes/paths'
-import {
-  logout,
-  subscribeToAuthState,
-} from '../../firebase/auth'
-
-import mypageTopOrnament from '../../assets/images/mypage/mypageTopOrnament.svg'
+import { subscribeToAuthState } from '../../firebase/auth'
 
 import styles from './MyPageLayout.module.scss'
 
 
-const menuItems = [
-  {
-    label: '홈',
-    to: PATHS.mypage,
-    end: true,
-  },
-  {
-    label: '회원 정보',
-    to: 'profile',
-  },
+const QuickIcon = ({ type }) => {
+  const icons = {
+    order: (
+      <>
+        <path d="M6 3h12v18H6z" />
+        <path d="M9 7h6M9 11h6M9 15h4" />
+      </>
+    ),
+
+    point: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M10 8h3a3 3 0 0 1 0 6h-3z" />
+        <path d="M10 14v3" />
+      </>
+    ),
+
+    wishlist: (
+      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+    ),
+
+    repeat: (
+      <>
+        <path d="M4 7h11a4 4 0 0 1 4 4" />
+        <path d="m16 4 3 3-3 3" />
+        <path d="M20 17H9a4 4 0 0 1-4-4" />
+        <path d="m8 20-3-3 3-3" />
+      </>
+    ),
+  }
+
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {icons[type]}
+    </svg>
+  )
+}
+
+
+const quickMenus = [
   {
     label: '주문 내역',
     to: 'orders',
+    icon: 'order',
+    value: '10',
   },
   {
-    label: '찜 목록',
+    label: '포인트',
+    to: 'points',
+    icon: 'point',
+    value: '10,325 P',
+  },
+  {
+    label: '찜',
     to: 'wishlist',
+    icon: 'wishlist',
+    value: '10',
   },
   {
-    label: 'AI 추천 기록',
-    to: 'ai-history',
+    label: '자주 구매',
+    to: 'frequent',
+    icon: 'repeat',
+    value: '10',
   },
+]
+
+
+const menuGroups = [
   {
-    label: '이벤트 참여 내역',
-    to: 'events',
+    title: '내 정보 관리',
+    items: [
+      {
+        label: '배송지 관리',
+        to: 'addresses',
+      },
+      {
+        label: '회원 정보 관리',
+        to: 'profile',
+      },
+    ],
+  },
+
+  {
+    title: '쇼핑',
+    items: [
+      {
+        label: '취소 · 반품 · 교환 내역',
+        to: 'claims',
+      },
+      {
+        label: '문의 내역',
+        to: 'inquiries',
+      },
+    ],
+  },
+
+  {
+    title: 'AI 큐레이터',
+    items: [
+      {
+        label: 'AI 추천 기록',
+        to: 'ai-history',
+      },
+      {
+        label: '내 취향 분석',
+        to: 'preference',
+      },
+    ],
+  },
+
+  {
+    title: '이벤트',
+    items: [
+      {
+        label: '이벤트 참여 내역',
+        to: 'events',
+      },
+      {
+        label: '이벤트 당첨 내역',
+        to: 'event-winnings',
+      },
+    ],
   },
 ]
 
 
 const MyPageLayout = () => {
-  const navigate = useNavigate()
-
   const [currentUser, setCurrentUser] = useState(null)
 
+  useEffect(() => {
+    const unsubscribe = subscribeToAuthState(setCurrentUser)
 
-  useEffect(
-    () => subscribeToAuthState(setCurrentUser),
-    []
-  )
-
-
-  const handleLogout = async () => {
-    try {
-      await logout()
-
-      navigate(PATHS.home, {
-        replace: true,
-        state: {
-          skipJourney: true,
-        },
-      })
-    } catch (error) {
-      console.error(
-        '로그아웃 실패:',
-        error
-      )
-    }
-  }
+    return unsubscribe
+  }, [])
 
 
-  const handleAccountAction = () => {
-    if (!currentUser) {
-      navigate(PATHS.login)
-      return
-    }
+  const userName =
+    currentUser?.displayName ||
+    currentUser?.email?.split('@')[0] ||
+    '홍길동'
 
-    handleLogout()
-  }
+  const userEmail =
+    currentUser?.email ||
+    'jajak@jajak.com'
 
 
   return (
     <section className={styles.page}>
-
-      <header className={styles.pageHeader}>
-        <div>
-          <h1 className={styles.title}>
-            마이페이지
-          </h1>
-
-          <p className={styles.description}>
-            나의 자작 시간을 확인해보세요.
-          </p>
-        </div>
-      </header>
-
-
-      <div className={styles.ornamentArea}>
-
-        <img
-          className={styles.topOrnament}
-          src={mypageTopOrnament}
-          alt=""
-        />
-
-        <button
-          className={styles.logoutButton}
-          type="button"
-          onClick={handleAccountAction}
-          aria-label={
-            currentUser
-              ? '로그아웃'
-              : '로그인'
-          }
-        >
-          <svg
-            className={`${styles.logoutIcon} ${
-              !currentUser ? styles.loginIcon : ''
-            }`}
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5" />
-            <path d="M14 8l4 4-4 4" />
-            <path d="M18 12H8" />
-          </svg>
-
-          <span>
-            {currentUser
-              ? '로그아웃'
-              : '로그인'}
-          </span>
-        </button>
-
-      </div>
-
-
       <div className={styles.layout}>
 
+        {/* 왼쪽 사이드바 */}
         <aside className={styles.sidebar}>
 
+          {/* 프로필 */}
+          <div className={styles.profileArea}>
+            <div className={styles.profileTop}>
+              <div className={styles.profileImage}>
+                <span>
+                  {userName.charAt(0)}
+                </span>
+              </div>
+
+              <div className={styles.profileInfo}>
+                <div className={styles.nameRow}>
+                  <strong className={styles.userName}>
+                    {userName}
+                  </strong>
+
+                  <span className={styles.levelText}>
+                    나리님
+                  </span>
+                </div>
+
+                <p className={styles.email}>
+                  {userEmail}
+                </p>
+              </div>
+            </div>
+
+
+            <div className={styles.membershipInfo}>
+              <span className={styles.membershipBadge}>
+                <span
+                  className={styles.badgeDot}
+                  aria-hidden="true"
+                />
+
+                일반 회원
+              </span>
+
+              <span className={styles.nextLevel}>
+                다음 등급까지
+                <strong> 1,289P</strong>
+              </span>
+            </div>
+
+
+            <div className={styles.progressArea}>
+              <div className={styles.progressTrack}>
+                <span
+                  className={styles.progressBar}
+                  style={{ width: '60%' }}
+                />
+              </div>
+
+              <span className={styles.progressText}>
+                1,289 / 2,000P
+              </span>
+            </div>
+          </div>
+
+
+          {/* 자주 찾는 메뉴 */}
+          <div className={styles.quickSection}>
+            <h2 className={styles.sectionTitle}>
+              자주 찾는 메뉴
+            </h2>
+
+            <div className={styles.quickMenuList}>
+              {quickMenus.map((item) => (
+                <NavLink
+                  key={item.label}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `${styles.quickMenuItem} ${
+                      isActive ? styles.active : ''
+                    }`
+                  }
+                >
+                  <span className={styles.quickMenuLeft}>
+                    <span className={styles.quickIcon}>
+                      <QuickIcon type={item.icon} />
+                    </span>
+
+                    <span>
+                      {item.label}
+                    </span>
+                  </span>
+
+                  <span className={styles.quickValue}>
+                    {item.value}
+                  </span>
+                </NavLink>
+              ))}
+            </div>
+          </div>
+
+
+          {/* 카테고리 메뉴 */}
           <nav
             className={styles.navigation}
             aria-label="마이페이지 메뉴"
           >
-            {menuItems.map(
-              ({
-                label,
-                to,
-                end,
-              }) => (
-                <NavLink
-                  key={label}
-                  to={to}
-                  end={end}
-                  className={({
-                    isActive,
-                  }) =>
-                    `${styles.menuItem} ${
-                      isActive
-                        ? styles.active
-                        : ''
-                    }`
-                  }
-                >
-                  <span
-                    className={styles.menuDot}
-                    aria-hidden="true"
-                  />
+            {menuGroups.map((group) => (
+              <div
+                className={styles.menuGroup}
+                key={group.title}
+              >
+                <h2 className={styles.groupTitle}>
+                  {group.title}
+                </h2>
 
-                  <span>
-                    {label}
-                  </span>
-                </NavLink>
-              )
-            )}
+                <div className={styles.groupMenu}>
+                  {group.items.map((item) => (
+                    <NavLink
+                      key={item.label}
+                      to={item.to}
+                      className={({ isActive }) =>
+                        `${styles.menuItem} ${
+                          isActive ? styles.active : ''
+                        }`
+                      }
+                    >
+                      {item.label}
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
+            ))}
           </nav>
 
         </aside>
 
 
+        {/* 오른쪽 콘텐츠 */}
         <main className={styles.content}>
           <Outlet />
         </main>
 
       </div>
-
     </section>
   )
 }

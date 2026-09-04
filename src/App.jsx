@@ -49,8 +49,14 @@ import ProfileEdit from './pages/MyPage/ProfileEdit'
 import OrderHistory from './pages/MyPage/OrderHistory'
 import OrderDetail from './pages/MyPage/OrderDetail'
 import WishList from './pages/MyPage/WishList'
+import PointHistory from './pages/MyPage/PointHistory'
+import FrequentPurchase from './pages/MyPage/FrequentPurchase'
+import AddressBook from './pages/MyPage/AddressBook'
+import ClaimHistory from './pages/MyPage/ClaimHistory'
+import InquiryHistory from './pages/MyPage/InquiryHistory'
 import AiHistory from './pages/MyPage/AiHistory'
 import EventHistory from './pages/MyPage/EventHistory'
+import EventWinningHistory from './pages/MyPage/EventWinningHistory'
 import MyPageErrorContent from './pages/MyPage/MyPageErrorContent'
 
 // Event
@@ -92,13 +98,17 @@ const App = () => {
   const location =
     useLocation()
 
-  const [showSplash, setShowSplash] =
-    useState(() => {
-      return (
-        window.location.pathname === '/' &&
-        sessionStorage.getItem(SPLASH_SEEN_KEY) !== 'true'
-      )
-    })
+  const [
+    showSplash,
+    setShowSplash,
+  ] = useState(() => {
+    return (
+      window.location.pathname === '/' &&
+      sessionStorage.getItem(
+        SPLASH_SEEN_KEY
+      ) !== 'true'
+    )
+  })
 
   const [
     isAdultVerified,
@@ -111,8 +121,13 @@ const App = () => {
     )
   })
 
+
   const handleSplashComplete = () => {
-    sessionStorage.setItem(SPLASH_SEEN_KEY, 'true')
+    sessionStorage.setItem(
+      SPLASH_SEEN_KEY,
+      'true'
+    )
+
     setShowSplash(false)
   }
 
@@ -144,8 +159,15 @@ const App = () => {
       '/admin'
     )
 
+
   if (showSplash) {
-    return <SplashIntro onComplete={handleSplashComplete} />
+    return (
+      <SplashIntro
+        onComplete={
+          handleSplashComplete
+        }
+      />
+    )
   }
 
 
@@ -519,12 +541,17 @@ const App = () => {
             }
           >
 
+            {/* 마이페이지 홈 */}
+
             <Route
               index
               element={
                 <MyHome />
               }
             />
+
+
+            {/* 회원 정보 관리 */}
 
             <Route
               path="profile"
@@ -533,12 +560,38 @@ const App = () => {
               }
             />
 
+
+            {/* 배송지 관리 */}
+
+            <Route
+              path="addresses"
+              element={
+                <AddressBook />
+              }
+            />
+
+
+            {/* 포인트 */}
+
+            <Route
+              path="points"
+              element={
+                <PointHistory />
+              }
+            />
+
+
+            {/* 주문 내역 */}
+
             <Route
               path="orders"
               element={
                 <OrderHistory />
               }
             />
+
+
+            {/* 주문 상세 */}
 
             <Route
               path="orders/:orderId"
@@ -547,12 +600,48 @@ const App = () => {
               }
             />
 
+
+            {/* 찜 */}
+
             <Route
               path="wishlist"
               element={
                 <WishList />
               }
             />
+
+
+            {/* 자주 구매 */}
+
+            <Route
+              path="frequent"
+              element={
+                <FrequentPurchase />
+              }
+            />
+
+
+            {/* 취소 · 반품 · 교환 내역 */}
+
+            <Route
+              path="claims"
+              element={
+                <ClaimHistory />
+              }
+            />
+
+
+            {/* 문의 내역 */}
+
+            <Route
+              path="inquiries"
+              element={
+                <InquiryHistory />
+              }
+            />
+
+
+            {/* AI 추천 기록 */}
 
             <Route
               path="ai-history"
@@ -561,12 +650,39 @@ const App = () => {
               }
             />
 
+
+            {/* 내 취향 분석
+                기존 AI 취향 분석 페이지 사용 */}
+
+            <Route
+              path="preference"
+              element={
+                <AiPreference />
+              }
+            />
+
+
+            {/* 이벤트 참여 내역 */}
+
             <Route
               path="events"
               element={
                 <EventHistory />
               }
             />
+
+
+            {/* 이벤트 당첨 내역 */}
+
+            <Route
+              path="event-winnings"
+              element={
+                <EventWinningHistory />
+              }
+            />
+
+
+            {/* 마이페이지 에러 */}
 
             <Route
               path="error"
@@ -694,7 +810,9 @@ const App = () => {
       ======================================== */}
 
       <AdultModal
-        isOpen={shouldShowAdultModal}
+        isOpen={
+          shouldShowAdultModal
+        }
         onVerify={
           handleAdultVerify
         }

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { collection, getDocs, query, serverTimestamp, where } from 'firebase/firestore'
 import ProductCard from '../../components/ui/ProductCard/ProductCard'
+import { products as productReferenceData } from '../../data/products'
 import { fetchProducts, getManagedProducts } from '../../services/productCatalog'
 import pairings from '../../data/pairings.json'
 import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
@@ -70,6 +71,10 @@ const getStylingImages = (imageUrl = '') => {
     .sort(([pathA], [pathB]) => pathA.localeCompare(pathB, 'ko', { numeric: true }))
     .map(([, source]) => source)
 }
+
+const getReferenceImageUrl = (product) =>
+  productReferenceData.find((item) => item.productId === product?.productId)?.imageUrl
+    ?? product?.imageUrl
 
 const withImage = (product) =>
   product && {
@@ -207,12 +212,19 @@ const ProductDetail = () => {
   }, [productId, products])
 
   const productDetailImages = useMemo(
-    () => getDetailImages(product?.imageUrl),
+    () => {
+      const localImages = getDetailImages(getReferenceImageUrl(product))
+      if (!product?.detailImageUrls?.length) return localImages
+      return Array.from(
+        { length: Math.max(3, localImages.length) },
+        (_, index) => product.detailImageUrls[index] || localImages[index]
+      ).filter(Boolean)
+    },
     [product]
   )
 
   const productStylingImages = useMemo(
-    () => getStylingImages(product?.imageUrl),
+    () => getStylingImages(getReferenceImageUrl(product)),
     [product]
   )
 

@@ -1,0 +1,500 @@
+.page {
+  width: 100%;
+  min-width: 0;
+}
+
+
+/* =========================
+   CARD
+========================= */
+
+.claimCard {
+  width: 100%;
+  min-height: 480px;
+
+  padding:
+    30px
+    30px
+    32px;
+
+  background: #fff;
+
+  border-radius: 18px;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.pageHeader {
+  min-height: 38px;
+
+  display: flex;
+  align-items: center;
+
+  h2 {
+    margin: 0;
+
+    color: #493d33;
+
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+}
+
+
+.titleDivider {
+  width: 100%;
+  height: 1px;
+
+  margin:
+    4px
+    0
+    17px;
+
+  background: #625d56;
+}
+
+
+/* =========================
+   FILTER
+========================= */
+
+.filterBar {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  width: 100%;
+  height: 27px;
+
+  overflow: hidden;
+
+  border-radius: 20px;
+
+  background: #e9f1eb;
+}
+
+
+.filterButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+
+  border-radius: 20px;
+
+  background: transparent;
+
+  color: #778078;
+
+  font-size: 8px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+
+.activeFilter {
+  background: #4f8378;
+
+  color: #fff;
+}
+
+
+/* =========================
+   EMPTY
+========================= */
+
+.emptyState {
+  min-height: 300px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding-bottom: 10px;
+
+  color: #393934;
+
+  text-align: center;
+
+  p {
+    margin: 14px 0 0;
+
+    color: #49453f;
+
+    font-size: 10px;
+    font-weight: 600;
+  }
+}
+
+
+.emptyIcon {
+  width: 62px;
+  height: 62px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #282b27;
+
+  svg {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+
+/* =========================
+   LOADING / ERROR
+========================= */
+
+.stateBox {
+  min-height: 300px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #99938b;
+
+  font-size: 9px;
+}
+
+
+/* =========================
+   CLAIM LIST
+========================= */
+
+.claimList {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  margin-top: 22px;
+}
+
+
+.claimItem {
+  overflow: hidden;
+
+  border: 1px solid #e1dcd5;
+
+  border-radius: 8px;
+
+  background: #fff;
+}
+
+
+.itemTop {
+  min-height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 14px;
+
+  padding:
+    8px
+    13px;
+
+  border-bottom:
+    1px solid
+    #eeeae4;
+
+  > div {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+  }
+
+  time {
+    color: #a7a199;
+
+    font-size: 7px;
+  }
+}
+
+
+/* =========================
+   CLAIM BADGE
+========================= */
+
+.claimBadge {
+  min-width: 37px;
+  height: 19px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    8px;
+
+  border-radius: 20px;
+
+  font-size: 7px;
+  font-weight: 700;
+}
+
+
+.cancel {
+  background: #f2e9e6;
+
+  color: #95685f;
+}
+
+
+.return {
+  background: #eee9df;
+
+  color: #866f51;
+}
+
+
+.exchange {
+  background: #e7f0ed;
+
+  color: #5e897f;
+}
+
+
+/* =========================
+   DETAIL LINK
+========================= */
+
+.detailLink {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 3px;
+
+  color: #8d877f;
+
+  font-size: 7px;
+  font-weight: 500;
+
+  text-decoration: none;
+
+  span {
+    font-size: 11px;
+  }
+
+  &:hover {
+    color: #5d897f;
+  }
+}
+
+
+/* =========================
+   CLAIM BODY
+========================= */
+
+.itemBody {
+  display: grid;
+
+  grid-template-columns:
+    48px
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 12px;
+
+  min-height: 70px;
+
+  padding:
+    10px
+    13px;
+}
+
+
+.productImage {
+  width: 48px;
+  height: 48px;
+
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 4px;
+
+  background: #dedede;
+
+  img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+  }
+
+  span {
+    color: #aaa49c;
+
+    font-size: 7px;
+    font-weight: 600;
+  }
+}
+
+
+.productInfo {
+  min-width: 0;
+
+  strong {
+    display: block;
+
+    overflow: hidden;
+
+    margin-bottom: 4px;
+
+    color: #4c463f;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  > span {
+    display: block;
+
+    color: #88827a;
+
+    font-size: 7px;
+  }
+
+  p {
+    margin:
+      4px
+      0
+      0;
+
+    overflow: hidden;
+
+    color: #aaa49c;
+
+    font-size: 6px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+
+.statusBadge {
+  min-width: 60px;
+  height: 22px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    9px;
+
+  border:
+    1px solid
+    #bdd0ca;
+
+  border-radius: 20px;
+
+  color: #658b82;
+
+  font-size: 7px;
+  font-weight: 600;
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 1024px) {
+  .claimCard {
+    padding:
+      26px
+      24px
+      30px;
+  }
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 767px) {
+  .claimCard {
+    min-height: auto;
+
+    padding:
+      22px
+      16px
+      26px;
+
+    border-radius: 14px;
+  }
+
+
+  .pageHeader {
+    h2 {
+      font-size: 19px;
+    }
+  }
+
+
+  .filterBar {
+    height: 30px;
+  }
+
+
+  .emptyState {
+    min-height: 260px;
+  }
+
+
+  .itemBody {
+    grid-template-columns:
+      44px
+      minmax(0, 1fr);
+
+    gap: 10px;
+  }
+
+
+  .productImage {
+    width: 44px;
+    height: 44px;
+  }
+
+
+  .statusBadge {
+    grid-column: 2;
+
+    justify-self: flex-end;
+  }
+}

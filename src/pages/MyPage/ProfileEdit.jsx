@@ -1,8 +1,21 @@
-import { useEffect, useMemo, useState } from 'react'
-import { updatePassword, updateProfile } from 'firebase/auth'
-import { subscribeToAuthState, getCurrentUserData } from '../../firebase/auth'
-import { addDocument, deleteDocument, getCollection, updateDocument } from '../../firebase/firestore'
-import orderHistoryMakdong from '../../assets/images/mypage/orderHistory-makdong-wave.png'
+import { useEffect, useState } from 'react'
+import {
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+  updateProfile,
+} from 'firebase/auth'
+import { serverTimestamp } from 'firebase/firestore'
+
+import {
+  getCurrentUserData,
+  subscribeToAuthState,
+} from '../../firebase/auth'
+
+import {
+  updateDocument,
+} from '../../firebase/firestore'
+
 import profileAvatarMakdongDefault from '../../assets/images/mypage/profileAvatar-makdong-default.png'
 import profileAvatarMakdongCheers from '../../assets/images/mypage/profileAvatar-makdong-cheers.png'
 import profileAvatarMakdongJeon from '../../assets/images/mypage/profileAvatar-makdong-jeon.png'
@@ -11,568 +24,1584 @@ import profileAvatarMakdongTipsy from '../../assets/images/mypage/profileAvatar-
 import profileAvatarMakdongSleepy from '../../assets/images/mypage/profileAvatar-makdong-sleepy.png'
 import profileAvatarMakdongServing from '../../assets/images/mypage/profileAvatar-makdong-serving.png'
 import profileAvatarMakdongRainy from '../../assets/images/mypage/profileAvatar-makdong-rainy.png'
+
 import styles from './ProfileEdit.module.scss'
 
+
+const VERIFY_VALID_TIME = 10 * 60 * 1000
+
+
 const avatarPresets = [
-  { id: 'profile-makdong-default', label: '막둥이 기본 프로필', src: profileAvatarMakdongDefault },
-  { id: 'profile-makdong-cheers', label: '술잔을 든 막둥이', src: profileAvatarMakdongCheers },
-  { id: 'profile-makdong-jeon', label: '전을 든 막둥이', src: profileAvatarMakdongJeon },
-  { id: 'profile-makdong-pouch', label: '복주머니 막둥이', src: profileAvatarMakdongPouch },
-  { id: 'profile-makdong-tipsy', label: '살짝 취한 막둥이', src: profileAvatarMakdongTipsy },
-  { id: 'profile-makdong-sleepy', label: '잠든 막둥이', src: profileAvatarMakdongSleepy },
-  { id: 'profile-makdong-serving', label: '한 상 대령 막둥이', src: profileAvatarMakdongServing },
-  { id: 'profile-makdong-rainy', label: '비 오는 날 막둥이', src: profileAvatarMakdongRainy },
+  {
+    id: 'profile-makdong-default',
+    src: profileAvatarMakdongDefault,
+    label: '기본 막동이',
+  },
+  {
+    id: 'profile-makdong-cheers',
+    src: profileAvatarMakdongCheers,
+    label: '건배 막동이',
+  },
+  {
+    id: 'profile-makdong-jeon',
+    src: profileAvatarMakdongJeon,
+    label: '전 막동이',
+  },
+  {
+    id: 'profile-makdong-pouch',
+    src: profileAvatarMakdongPouch,
+    label: '보자기 막동이',
+  },
+  {
+    id: 'profile-makdong-tipsy',
+    src: profileAvatarMakdongTipsy,
+    label: '취한 막동이',
+  },
+  {
+    id: 'profile-makdong-sleepy',
+    src: profileAvatarMakdongSleepy,
+    label: '졸린 막동이',
+  },
+  {
+    id: 'profile-makdong-serving',
+    src: profileAvatarMakdongServing,
+    label: '서빙 막동이',
+  },
+  {
+    id: 'profile-makdong-rainy',
+    src: profileAvatarMakdongRainy,
+    label: '비 오는 날 막동이',
+  },
 ]
 
-const getAvatarStorageKey = (uid) => `jajak_profile_avatar_${uid}`
 
-const getMemberLabel = (role) => {
-  if (role === 'admin') return '관리자'
-  return '일반 회원'
-}
+const getAvatarStorageKey = (uid) =>
+  `jajak_profile_avatar_${uid}`
 
-const genderLabels = { male: '남자', female: '여자', unset: '미선택' }
 
-const EmptyProfileCard = () => (
-  <article className={`${styles.infoCard} ${styles.emptyCard}`}>
-    <span className={styles.emptyIcon} aria-hidden="true" />
-    <h2>등록된 정보가 없습니다.</h2>
-    <p>회원 정보를 입력하고<br />나만의 자작 시간을 시작해보세요.</p>
-    <button type="button" className={styles.editProfileButton}>회원 정보 등록</button>
-  </article>
-)
+const getInitialForm = (user, userData) => ({
+  newPassword: '',
+  newPasswordConfirm: '',
 
-const EmptyDeliveryCard = ({ onAdd }) => (
-  <article className={`${styles.infoCard} ${styles.emptyCard}`}>
-    <span className={`${styles.emptyIcon} ${styles.deliveryEmptyIcon}`} aria-hidden="true">
-      <svg viewBox="0 0 64 64" fill="none">
-        <path d="M32 56S14 41.4 14 28a18 18 0 1 1 36 0c0 13.4-18 28-18 28Z" />
-        <circle cx="32" cy="28" r="6" />
-      </svg>
-    </span>
-    <h2>등록된 배송지가 없습니다.</h2>
-    <p>자주 사용하는 배송지를 추가하면<br />더 빠르게 주문할 수 있어요.</p>
-    <button type="button" className={styles.addAddressButton} onClick={onAdd}><span aria-hidden="true">+</span> 새 배송지 추가</button>
-  </article>
-)
+  name:
+    userData?.nickname ||
+    user?.displayName ||
+    '',
+
+  email:
+    user?.email ||
+    userData?.email ||
+    '',
+
+  phone:
+    userData?.phone ||
+    '',
+
+  gender:
+    userData?.gender ||
+    '',
+
+  birthDate:
+    userData?.birthDate ||
+    '',
+
+  benefitConsent:
+  Boolean(userData?.benefitConsent),
+
+marketingConsent:
+  Boolean(userData?.marketingConsent),
+
+marketingSms:
+  Boolean(userData?.marketingSms),
+
+marketingEmail:
+  Boolean(userData?.marketingEmail),
+})
+
 
 const ProfileEdit = () => {
-  const [viewMode, setViewMode] = useState('summary')
-  const [firebaseUser, setFirebaseUser] = useState(null)
-  const [userData, setUserData] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [loadError, setLoadError] = useState('')
-  const [isSaving, setIsSaving] = useState(false)
-  const [saveError, setSaveError] = useState('')
-  const [passwordError, setPasswordError] = useState('')
-  const [selectedAvatarId, setSelectedAvatarId] = useState('pose03')
-  const [addresses, setAddresses] = useState([])
-  const [editingAddressId, setEditingAddressId] = useState(null)
-  const [addressError, setAddressError] = useState('')
+  const [currentUser, setCurrentUser] =
+    useState(null)
+
+  const [userData, setUserData] =
+    useState(null)
+
+  const [isLoading, setIsLoading] =
+    useState(true)
+
+  const [isEditing, setIsEditing] =
+    useState(false)
+
+  const [
+    isPasswordModalOpen,
+    setIsPasswordModalOpen,
+  ] = useState(false)
+
+  const [
+    verifyPassword,
+    setVerifyPassword,
+  ] = useState('')
+
+  const [
+    verifyError,
+    setVerifyError,
+  ] = useState('')
+
+  const [
+    isVerifying,
+    setIsVerifying,
+  ] = useState(false)
+
+  const [
+    verifiedAt,
+    setVerifiedAt,
+  ] = useState(null)
+
+  const [form, setForm] =
+    useState(() =>
+      getInitialForm(null, null)
+    )
+
+  const [
+    selectedAvatarId,
+    setSelectedAvatarId,
+  ] = useState(
+    'profile-makdong-default'
+  )
+
+  const [notice, setNotice] =
+    useState('')
+
+  const [formError, setFormError] =
+    useState('')
+
+  const [isSaving, setIsSaving] =
+    useState(false)
+
+
+  /* =========================
+     회원 정보 불러오기
+  ========================= */
 
   useEffect(() => {
-    const unsubscribe = subscribeToAuthState(async (user) => {
-      setFirebaseUser(user)
-      setLoadError('')
+    let isActive = true
 
-      if (!user) {
-        setUserData(null)
-        setAddresses([])
-        setSelectedAvatarId('pose03')
-        setIsLoading(false)
+
+    const unsubscribe =
+      subscribeToAuthState(
+        async (user) => {
+          if (!isActive) {
+            return
+          }
+
+
+          setCurrentUser(user)
+
+
+          if (!user) {
+            setUserData(null)
+
+            setIsLoading(false)
+
+            return
+          }
+
+
+          setIsLoading(true)
+
+
+          try {
+            const data =
+              await getCurrentUserData(
+                user.uid
+              )
+
+
+            if (!isActive) {
+              return
+            }
+
+
+            setUserData(data)
+
+            setForm(
+              getInitialForm(
+                user,
+                data
+              )
+            )
+
+
+            const savedAvatarId =
+              localStorage.getItem(
+                getAvatarStorageKey(
+                  user.uid
+                )
+              )
+
+
+            if (
+              avatarPresets.some(
+                (avatar) =>
+                  avatar.id ===
+                  savedAvatarId
+              )
+            ) {
+              setSelectedAvatarId(
+                savedAvatarId
+              )
+            }
+          } catch (error) {
+            console.error(
+              '회원 정보 조회 실패:',
+              error
+            )
+
+            if (isActive) {
+              setUserData(null)
+
+              setForm(
+                getInitialForm(
+                  user,
+                  null
+                )
+              )
+            }
+          } finally {
+            if (isActive) {
+              setIsLoading(false)
+            }
+          }
+        }
+      )
+
+
+    return () => {
+      isActive = false
+
+      unsubscribe()
+    }
+  }, [])
+
+
+  const memberName =
+    userData?.nickname ||
+    currentUser?.displayName ||
+    currentUser?.email?.split(
+      '@'
+    )[0] ||
+    '회원'
+
+
+  const currentAvatar =
+    avatarPresets.find(
+      (avatar) =>
+        avatar.id ===
+        selectedAvatarId
+    ) ||
+    avatarPresets[0]
+
+
+  /* =========================
+     알림
+  ========================= */
+
+  const showNotice = (
+    message
+  ) => {
+    setNotice(message)
+
+    window.setTimeout(
+      () => {
+        setNotice('')
+      },
+      1800
+    )
+  }
+
+
+  /* =========================
+     비밀번호 인증 열기
+  ========================= */
+
+  const handleOpenEdit = () => {
+    setVerifyPassword('')
+    setVerifyError('')
+
+    setIsPasswordModalOpen(true)
+  }
+
+
+  const handleCloseVerifyModal =
+    () => {
+      if (isVerifying) {
         return
       }
 
-      const savedAvatarId = localStorage.getItem(getAvatarStorageKey(user.uid))
-      if (avatarPresets.some((avatar) => avatar.id === savedAvatarId)) {
-        setSelectedAvatarId(savedAvatarId)
-      } else {
-        setSelectedAvatarId('pose03')
+      setVerifyPassword('')
+      setVerifyError('')
+
+      setIsPasswordModalOpen(false)
+    }
+
+
+  /* =========================
+     Firebase 재인증
+  ========================= */
+
+  const handleVerifyPassword =
+    async () => {
+      if (
+        !currentUser ||
+        !currentUser.email
+      ) {
+        setVerifyError(
+          '로그인 정보를 확인할 수 없습니다.'
+        )
+
+        return
       }
+
+
+      if (!verifyPassword.trim()) {
+        setVerifyError(
+          '비밀번호를 입력해주세요.'
+        )
+
+        return
+      }
+
 
       try {
-        const [data, addressDocs] = await Promise.all([
-          getCurrentUserData(user.uid),
-          getCollection(`users/${user.uid}/addresses`),
-        ])
-        setUserData(data)
-        setAddresses(addressDocs)
+        setIsVerifying(true)
+
+        setVerifyError('')
+
+
+        const credential =
+          EmailAuthProvider.credential(
+            currentUser.email,
+            verifyPassword
+          )
+
+
+        await reauthenticateWithCredential(
+          currentUser,
+          credential
+        )
+
+
+        /* 인증 성공 */
+        setVerifiedAt(
+          Date.now()
+        )
+
+        setVerifyPassword('')
+
+        setIsPasswordModalOpen(
+          false
+        )
+
+
+        setForm(
+          getInitialForm(
+            currentUser,
+            userData
+          )
+        )
+
+
+        setFormError('')
+
+        setIsEditing(true)
       } catch (error) {
-        console.error('회원정보 조회 실패:', error)
-        setUserData(null)
-        setLoadError('회원정보를 불러오지 못했습니다.')
+        console.error(
+          '비밀번호 재인증 실패:',
+          error
+        )
+
+
+        if (
+          error.code ===
+            'auth/invalid-credential' ||
+          error.code ===
+            'auth/wrong-password'
+        ) {
+          setVerifyError(
+            '비밀번호가 일치하지 않습니다.'
+          )
+        } else if (
+          error.code ===
+          'auth/too-many-requests'
+        ) {
+          setVerifyError(
+            '인증 시도가 너무 많습니다. 잠시 후 다시 시도해주세요.'
+          )
+        } else {
+          setVerifyError(
+            '본인 인증에 실패했습니다. 다시 확인해주세요.'
+          )
+        }
       } finally {
-        setIsLoading(false)
+        setIsVerifying(false)
       }
-    })
-
-    return unsubscribe
-  }, [])
-
-  const profileDetails = useMemo(
-    () => [
-      {
-        label: '이름',
-        value: userData?.nickname || firebaseUser?.displayName || '등록되지 않음',
-      },
-      {
-        label: '이메일',
-        value: userData?.email || firebaseUser?.email || '등록되지 않음',
-      },
-      { label: '휴대폰', value: userData?.phone || '등록되지 않음' },
-      { label: '생년월일', value: userData?.birthDate || '등록되지 않음' },
-      { label: '성별', value: genderLabels[userData?.gender] || '미선택' },
-    ],
-    [firebaseUser, userData],
-  )
-
-  const memberName = firebaseUser
-    ? userData?.nickname ||
-      firebaseUser?.displayName ||
-      firebaseUser?.email?.split('@')[0] ||
-      '회원'
-    : ''
-
-  const memberLabel = getMemberLabel(userData?.role)
-  const points = Number(userData?.points ?? 0)
-
-  const hasProfile = Boolean(firebaseUser)
-  const hasAddresses = addresses.length > 0
-  const isProfileForm = viewMode === 'profileForm'
-  const isPasswordForm = viewMode === 'passwordForm'
-  const isAddressForm = viewMode === 'addressForm'
-  const selectedAvatar = avatarPresets.find((avatar) => avatar.id === selectedAvatarId) || avatarPresets[2]
-
-  const handleAvatarPreset = (avatarId) => {
-    if (!firebaseUser) return
-
-    setSelectedAvatarId(avatarId)
-    localStorage.setItem(getAvatarStorageKey(firebaseUser.uid), avatarId)
-  }
-
-  const handleProfileComplete = async (event) => {
-    event.preventDefault()
-
-    if (!firebaseUser) {
-      setSaveError('로그인 후 회원정보를 수정할 수 있습니다.')
-      return
     }
 
-    const formData = new FormData(event.currentTarget)
-    const nickname = String(formData.get('nickname') || '').trim()
-    const phone = String(formData.get('phone') || '').trim()
-    const birthDate = String(formData.get('birthDate') || '')
-    const gender = String(formData.get('gender') || 'unset')
 
-    if (!nickname) {
-      setSaveError('이름을 입력해주세요.')
-      return
-    }
+  /* =========================
+     입력값 변경
+  ========================= */
 
-    setIsSaving(true)
-    setSaveError('')
+  const handleChange =
+    (event) => {
+      const {
+        name,
+        value,
+        type,
+        checked,
+      } = event.target
 
-    try {
-      await updateDocument('users', firebaseUser.uid, { nickname, phone, birthDate, gender })
-      await updateProfile(firebaseUser, { displayName: nickname })
-      setUserData((current) => ({ ...current, nickname, phone, birthDate, gender }))
-      setViewMode('summary')
-    } catch (error) {
-      console.error('회원정보 수정 실패:', error)
-      setSaveError('회원정보 수정에 실패했습니다.')
-    } finally {
-      setIsSaving(false)
-    }
-  }
 
-  const handlePasswordComplete = async (event) => {
-    event.preventDefault()
+      setForm(
+        (current) => ({
+          ...current,
 
-    if (!firebaseUser) {
-      setPasswordError('로그인 후 비밀번호를 변경할 수 있습니다.')
-      return
-    }
-
-    const formData = new FormData(event.currentTarget)
-    const newPassword = String(formData.get('newPassword') || '')
-
-    if (newPassword.length < 6) {
-      setPasswordError('비밀번호는 6자 이상 입력해주세요.')
-      return
-    }
-
-    setIsSaving(true)
-    setPasswordError('')
-
-    try {
-      await updatePassword(firebaseUser, newPassword)
-      setViewMode('summary')
-    } catch (error) {
-      console.error('비밀번호 변경 실패:', error)
-
-      if (error?.code === 'auth/requires-recent-login') {
-        setPasswordError('보안을 위해 다시 로그인한 뒤 비밀번호를 변경해주세요.')
-      } else if (error?.code === 'auth/weak-password') {
-        setPasswordError('더 안전한 비밀번호를 입력해주세요.')
-      } else {
-        setPasswordError('비밀번호 변경에 실패했습니다.')
-      }
-    } finally {
-      setIsSaving(false)
-    }
-  }
-
-  const openAddressForm = (address = null) => {
-    setEditingAddressId(address?.id || null)
-    setAddressError('')
-    setViewMode('addressForm')
-  }
-
-  const handleEditCancel = () => {
-    setSaveError('')
-    setPasswordError('')
-    setAddressError('')
-    setEditingAddressId(null)
-    setViewMode('summary')
-  }
-
-  const handleAddressComplete = async (event) => {
-    event.preventDefault()
-    if (!firebaseUser) return
-
-    const formData = new FormData(event.currentTarget)
-    const isDefault = formData.get('isDefault') === 'on'
-    const address = {
-      label: String(formData.get('label') || '').trim(),
-      recipient: String(formData.get('recipient') || '').trim(),
-      phone: String(formData.get('phone') || '').trim(),
-      address: String(formData.get('address') || '').trim(),
-      detailAddress: String(formData.get('detailAddress') || '').trim(),
-      isDefault,
-    }
-
-    if (!address.label || !address.recipient || !address.phone || !address.address) {
-      setAddressError('배송지명, 받으실 분, 휴대폰 번호와 주소를 입력해주세요.')
-      return
-    }
-
-    setIsSaving(true)
-
-    try {
-      if (editingAddressId) {
-        await updateDocument(`users/${firebaseUser.uid}/addresses`, editingAddressId, address)
-        if (isDefault) {
-          await Promise.all(
-            addresses
-              .filter((item) => item.id !== editingAddressId && item.isDefault)
-              .map((item) => updateDocument(`users/${firebaseUser.uid}/addresses`, item.id, { isDefault: false })),
-          )
-        }
-        setAddresses((current) => current.map((item) => (
-          item.id === editingAddressId
-            ? { ...item, ...address }
-            : isDefault
-              ? { ...item, isDefault: false }
-              : item
-        )))
-      } else {
-        const id = await addDocument(`users/${firebaseUser.uid}/addresses`, address)
-        if (isDefault) {
-          await Promise.all(
-            addresses
-              .filter((item) => item.isDefault)
-              .map((item) => updateDocument(`users/${firebaseUser.uid}/addresses`, item.id, { isDefault: false })),
-          )
-        }
-        setAddresses((current) => [
-          ...current.map((item) => (isDefault ? { ...item, isDefault: false } : item)),
-          { id, ...address },
-        ])
-      }
-      setViewMode('summary')
-    } catch (error) {
-      console.error('배송지 저장 실패:', error)
-      setAddressError('배송지를 저장하지 못했습니다. 잠시 후 다시 시도해주세요.')
-    } finally {
-      setIsSaving(false)
-    }
-  }
-
-  const handleAddressDelete = async (addressId) => {
-    if (!firebaseUser) return
-    if (!window.confirm('이 배송지를 삭제하시겠습니까?')) return
-
-    try {
-      await deleteDocument(`users/${firebaseUser.uid}/addresses`, addressId)
-      setAddresses((current) => current.filter((address) => address.id !== addressId))
-    } catch (error) {
-      console.error('배송지 삭제 실패:', error)
-      setAddressError('배송지를 삭제하지 못했습니다. 잠시 후 다시 시도해주세요.')
-    }
-  }
-
-  const renderProfileCard = () => {
-    if (!hasProfile) return <EmptyProfileCard />
-
-    if (isProfileForm) {
-      return (
-        <form className={`${styles.infoCard} ${styles.formCard}`} onSubmit={handleProfileComplete}>
-          <h2>기본 정보</h2>
-          <section className={styles.avatarPicker} aria-labelledby="avatar-picker-title">
-            <div className={styles.avatarPickerHeading}>
-              <h3 id="avatar-picker-title">프로필 캐릭터</h3>
-              <p>이 브라우저에서만 적용됩니다.</p>
-            </div>
-            <div className={styles.avatarPresetList}>
-              {avatarPresets.map((avatar) => (
-                <button
-                  key={avatar.id}
-                  type="button"
-                  className={selectedAvatarId === avatar.id ? styles.avatarPresetActive : ''}
-                  aria-pressed={selectedAvatarId === avatar.id}
-                  aria-label={`${avatar.label} 적용`}
-                  onClick={() => handleAvatarPreset(avatar.id)}
-                >
-                  <img src={avatar.src} alt="" />
-                </button>
-              ))}
-            </div>
-          </section>
-          <div className={styles.fieldList}>
-            {profileDetails.map(({ label, value }) => {
-              const isNickname = label === '이름'
-              const fieldName = {
-                휴대폰: 'phone',
-                생년월일: 'birthDate',
-                성별: 'gender',
-              }[label]
-
-              return (
-                <label key={label} className={styles.formRow}>
-                  <span>{label}</span>
-                  {label === '성별' ? (
-                    <select aria-label={label} name={fieldName} defaultValue={userData?.gender || 'unset'}>
-                      <option value="male">남자</option>
-                      <option value="female">여자</option>
-                      <option value="unset">미선택</option>
-                    </select>
-                  ) : (
-                    <input
-                      aria-label={label}
-                      name={isNickname || fieldName ? (isNickname ? 'nickname' : fieldName) : undefined}
-                      type={label === '생년월일' ? 'date' : 'text'}
-                      defaultValue={fieldName && value === '등록되지 않음' ? '' : value}
-                      readOnly={!isNickname && !fieldName}
-                    />
-                  )}
-                </label>
-              )
-            })}
-          </div>
-          {saveError && <p role="alert">{saveError}</p>}
-          <div className={styles.formActions}>
-            <button type="button" className={styles.cancelButton} onClick={handleEditCancel}>취소</button>
-            <button type="submit" className={styles.completeButton} disabled={isSaving}>
-              {isSaving ? '저장 중...' : '수정 완료'}
-            </button>
-          </div>
-        </form>
+          [name]:
+            type === 'checkbox'
+              ? checked
+              : value,
+        })
       )
     }
 
-    if (isPasswordForm) {
+
+  const handleMarketingConsent = (event) => {
+  const checked = event.target.checked
+
+  setForm((current) => ({
+    ...current,
+
+    marketingConsent: checked,
+
+    // 광고 수신 동의를 해제하면
+    // 문자 / 이메일도 같이 해제
+    marketingSms: checked
+      ? current.marketingSms
+      : false,
+
+    marketingEmail: checked
+      ? current.marketingEmail
+      : false,
+  }))
+}
+
+
+  /* =========================
+     프로필 이미지 변경
+  ========================= */
+
+  const handleSaveAvatar = () => {
+    if (!currentUser) {
+      return
+    }
+
+
+    localStorage.setItem(
+      getAvatarStorageKey(
+        currentUser.uid
+      ),
+      selectedAvatarId
+    )
+
+
+    window.dispatchEvent(
+      new Event(
+        'jajak-profile-avatar-change'
+      )
+    )
+
+
+    showNotice(
+      '프로필 이미지가 변경되었습니다.'
+    )
+  }
+
+
+  /* =========================
+     인증 유효성 검사
+  ========================= */
+
+  const isVerificationValid =
+    () => {
+      if (!verifiedAt) {
+        return false
+      }
+
+
       return (
-        <form className={`${styles.infoCard} ${styles.formCard} ${styles.passwordCard}`} onSubmit={handlePasswordComplete}>
-          <h2>비밀번호 변경</h2>
-          <div className={styles.fieldList}>
-            {profileDetails.slice(0, 2).map(({ label, value }) => (
-              <div key={label} className={styles.formRow}>
-                <span>{label}</span>
-                <strong>{value}</strong>
-              </div>
-            ))}
-            <label className={styles.formRow}>
-              <span>비밀번호</span>
-              <input
-                aria-label="비밀번호"
-                name="newPassword"
-                type="password"
-                minLength="6"
-                autoComplete="new-password"
-                placeholder="새 비밀번호를 입력해주세요"
-              />
-            </label>
-          </div>
-          {passwordError && <p role="alert">{passwordError}</p>}
-          <div className={styles.formActions}>
-            <button type="button" className={styles.cancelButton} onClick={handleEditCancel}>취소</button>
-            <button type="submit" className={styles.completeButton} disabled={isSaving}>
-              {isSaving ? '변경 중...' : '변경 완료'}
-            </button>
-          </div>
-        </form>
+        Date.now() -
+          verifiedAt <
+        VERIFY_VALID_TIME
       )
     }
 
+
+  /* =========================
+     회원 정보 저장
+  ========================= */
+
+  const handleSubmit =
+    async (event) => {
+      event.preventDefault()
+
+
+      /*
+       * 인증을 거치지 않았거나
+       * 인증 시간이 만료된 경우
+       * 저장 자체를 막는다.
+       */
+      if (
+        !isVerificationValid()
+      ) {
+        setIsEditing(false)
+
+        setVerifiedAt(null)
+
+        setVerifyPassword('')
+
+        setVerifyError(
+          '보안을 위해 비밀번호를 다시 확인해주세요.'
+        )
+
+        setIsPasswordModalOpen(
+          true
+        )
+
+        return
+      }
+
+
+      if (!currentUser) {
+        setFormError(
+          '로그인 정보를 확인할 수 없습니다.'
+        )
+
+        return
+      }
+
+
+      const trimmedName =
+        form.name.trim()
+
+      const trimmedPhone =
+        form.phone.trim()
+
+
+      if (!trimmedName) {
+        setFormError(
+          '이름을 입력해주세요.'
+        )
+
+        return
+      }
+
+
+      if (
+        form.newPassword &&
+        form.newPassword.length < 6
+      ) {
+        setFormError(
+          '새 비밀번호는 6자 이상 입력해주세요.'
+        )
+
+        return
+      }
+
+
+      if (
+        form.newPassword !==
+        form.newPasswordConfirm
+      ) {
+        setFormError(
+          '새 비밀번호가 서로 일치하지 않습니다.'
+        )
+
+        return
+      }
+
+
+      if (
+        form.marketingConsent &&
+        !form.marketingSms &&
+        !form.marketingEmail
+      ) {
+        setFormError(
+          '마케팅 수신 방법을 하나 이상 선택해주세요.'
+        )
+
+        return
+      }
+
+
+      try {
+        setIsSaving(true)
+
+        setFormError('')
+
+
+        /* Firebase Auth 이름 변경 */
+        if (
+          currentUser.displayName !==
+          trimmedName
+        ) {
+          await updateProfile(
+            currentUser,
+            {
+              displayName:
+                trimmedName,
+            }
+          )
+        }
+
+
+        /*
+         * 비밀번호 입력했을 때만 변경.
+         * 위에서 재인증을 통과한 사용자만
+         * 여기까지 들어올 수 있다.
+         */
+        if (form.newPassword) {
+          await updatePassword(
+            currentUser,
+            form.newPassword
+          )
+        }
+
+
+        /* Firestore 회원 정보 변경 */
+        const nextUserData = {
+          nickname:
+            trimmedName,
+
+          email:
+            currentUser.email,
+
+          phone:
+            trimmedPhone,
+
+          gender:
+            form.gender,
+
+          birthDate:
+            form.birthDate,
+
+          marketingConsent:
+            form.marketingConsent,
+
+          marketingSms:
+            form.marketingConsent
+              ? form.marketingSms
+              : false,
+
+          marketingEmail:
+            form.marketingConsent
+              ? form.marketingEmail
+              : false,
+
+          updatedAt:
+            serverTimestamp(),
+        }
+
+
+        await updateDocument(
+          'users',
+          currentUser.uid,
+          nextUserData
+        )
+
+
+        setUserData(
+          (current) => ({
+            ...current,
+            ...nextUserData,
+
+            updatedAt:
+              new Date(),
+          })
+        )
+
+
+        /*
+         * 수정이 끝나면 인증 상태 폐기.
+         * 다시 수정하려면 재인증 필요.
+         */
+        setVerifiedAt(null)
+
+        setIsEditing(false)
+
+
+        setForm(
+          (current) => ({
+            ...current,
+
+            newPassword: '',
+
+            newPasswordConfirm:
+              '',
+          })
+        )
+
+
+        showNotice(
+          '회원 정보가 수정되었습니다.'
+        )
+      } catch (error) {
+        console.error(
+          '회원 정보 수정 실패:',
+          error
+        )
+
+
+        if (
+          error.code ===
+          'auth/requires-recent-login'
+        ) {
+          setVerifiedAt(null)
+
+          setIsEditing(false)
+
+          setVerifyError(
+            '보안을 위해 비밀번호를 다시 확인해주세요.'
+          )
+
+          setIsPasswordModalOpen(
+            true
+          )
+
+          return
+        }
+
+
+        if (
+          error.code ===
+          'auth/weak-password'
+        ) {
+          setFormError(
+            '비밀번호 보안 수준이 너무 낮습니다.'
+          )
+
+          return
+        }
+
+
+        setFormError(
+          '회원 정보 수정 중 오류가 발생했습니다.'
+        )
+      } finally {
+        setIsSaving(false)
+      }
+    }
+
+
+  const handleCancelEdit = () => {
+    setIsEditing(false)
+
+    setVerifiedAt(null)
+
+    setFormError('')
+
+    setForm(
+      getInitialForm(
+        currentUser,
+        userData
+      )
+    )
+  }
+
+
+  if (isLoading) {
     return (
-      <article className={styles.infoCard}>
-        <h2>기본 정보</h2>
-        <p className={styles.infoDescription}>회원 계정 정보를 확인하고 관리할 수 있습니다.</p>
-        <dl className={styles.detailList}>
-          {profileDetails.map(({ label, value }) => (
-            <div key={label} className={styles.detailRow}>
-              <dt>{label}</dt>
-              <dd
-                className={value === '등록되지 않음' ? styles.unregisteredValue : ''}
-                title={value}
-              >
-                {value}
-              </dd>
-            </div>
-          ))}
-        </dl>
-        <button
-          type="button"
-          className={styles.editProfileButton}
-          onClick={() => {
-            setSaveError('')
-            setViewMode('profileForm')
-          }}
+      <section
+        className={styles.page}
+      >
+        <div
+          className={
+            styles.profileCard
+          }
         >
-          회원 정보 수정
-        </button>
-      </article>
-    )
-  }
-
-  const renderDeliveryCard = () => {
-    const editingAddress = addresses.find((address) => address.id === editingAddressId)
-
-    if (!hasAddresses && !isAddressForm) return <EmptyDeliveryCard onAdd={() => openAddressForm()} />
-
-    if (isAddressForm) {
-      return (
-        <form key={editingAddressId || 'new'} className={`${styles.infoCard} ${styles.formCard} ${styles.deliveryFormCard}`} onSubmit={handleAddressComplete}>
-          <h2>배송지 관리</h2>
-          <div className={styles.fieldList}>
-            <label className={styles.formRow}><span>배송지 이름</span><input name="label" aria-label="배송지 이름" defaultValue={editingAddress?.label || ''} placeholder="이름을 입력해주세요" /></label>
-            <label className={styles.formRow}><span>받으실 분</span><input name="recipient" aria-label="받으실 분" defaultValue={editingAddress?.recipient || ''} placeholder="성함을 입력해주세요" /></label>
-            <label className={styles.formRow}><span>주소</span><input name="address" aria-label="주소" defaultValue={editingAddress?.address || ''} placeholder="주소를 입력해주세요" /></label>
-            <label className={styles.formRow}><span>상세 주소</span><input name="detailAddress" aria-label="상세 주소" defaultValue={editingAddress?.detailAddress || ''} placeholder="상세 주소를 입력해주세요" /></label>
-            <label className={styles.formRow}><span>휴대폰</span><input name="phone" aria-label="휴대폰" inputMode="tel" defaultValue={editingAddress?.phone || ''} placeholder="휴대폰 번호를 입력해주세요" /></label>
-          </div>
-          <label className={styles.defaultCheck}>
-            <input
-              type="checkbox"
-              name="isDefault"
-              defaultChecked={editingAddress ? Boolean(editingAddress.isDefault) : addresses.length === 0}
-            />
-            <span className={styles.checkMark} aria-hidden="true">✓</span>
-            기본 배송지로 지정
-          </label>
-          {addressError && <p role="alert">{addressError}</p>}
-          <div className={styles.formActions}>
-            <button type="button" className={styles.cancelButton} onClick={handleEditCancel}>취소</button>
-            <button type="submit" className={styles.completeButton} disabled={isSaving}>
-              {isSaving ? '저장 중...' : '배송지 저장'}
-            </button>
-          </div>
-        </form>
-      )
-    }
-
-    return (
-      <article className={`${styles.infoCard} ${styles.deliveryCard}`}>
-        <h2>배송지 관리</h2>
-        <p className={styles.infoDescription}>주문에 사용할 배송지를 확인하고 관리할 수 있습니다.</p>
-        <div className={styles.addressList}>
-          {addresses.map((address) => (
-            <section key={address.id} className={styles.addressItem}>
-              <div className={styles.addressCopy}>
-                <div className={styles.addressHeading}>
-                  {address.isDefault && <span className={styles.defaultBadge}>기본 배송지</span>}
-                  <strong>{address.label}</strong>
-                </div>
-                <p><span>받는 분</span>{address.recipient}</p>
-                <p><span>연락처</span>{address.phone}</p>
-                <p title={`${address.address} ${address.detailAddress}`}><span>주소</span>{address.address} {address.detailAddress}</p>
-              </div>
-              <div className={styles.addressActions}>
-                <button type="button" className={address.isDefault ? styles.smallOutlineButton : styles.smallPrimaryButton} onClick={() => openAddressForm(address)}>수정</button>
-                {!address.isDefault && <button type="button" className={styles.smallOutlineButton} onClick={() => handleAddressDelete(address.id)}>삭제</button>}
-              </div>
-            </section>
-          ))}
+          <p
+            className={
+              styles.loading
+            }
+          >
+            회원 정보를 불러오는
+            중입니다...
+          </p>
         </div>
-        <button type="button" className={styles.addAddressButton} onClick={() => openAddressForm()}><span aria-hidden="true">+</span> 새 배송지 추가</button>
-      </article>
+      </section>
     )
   }
+
 
   return (
-   <section className={styles.page} aria-labelledby="profile-title">
-  {isLoading && <p role="status">회원정보를 불러오는 중입니다.</p>}
-  {!isLoading && loadError && <p role="alert">{loadError}</p>}
+    <section
+      className={styles.page}
+      aria-labelledby="profile-title"
+    >
 
-  <div className={styles.profileBanner}>
-        <button
-          type="button"
-          className={styles.avatar}
-          disabled={!firebaseUser}
-          aria-label="프로필 캐릭터 수정"
-          onClick={() => {
-            setSaveError('')
-            setViewMode('profileForm')
-          }}
+      <div
+        className={
+          styles.profileCard
+        }
+      >
+
+        {/* =====================
+            TITLE
+        ===================== */}
+
+        <header
+          className={
+            styles.pageHeader
+          }
         >
-          {firebaseUser ? <img src={selectedAvatar.src} alt="" /> : <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="24" r="11" /><path d="M13 55c1-12 9-19 19-19s18 7 19 19" /></svg>}
-        </button>
-        <div className={styles.bannerCopy}>
-          <h2 id="profile-title">
-            {firebaseUser ? (
-              <><span className={styles.memberName}>{memberName} 님,</span> 반갑습니다.</>
-            ) : (
-              '로그인 후 이용해주세요.'
-            )}
+          <h2
+            id="profile-title"
+          >
+            회원 정보 관리
           </h2>
-          <p>{firebaseUser ? '자작의 회원정보를 관리해보세요.' : '로그인 후 회원정보를 확인할 수 있습니다.'}</p>
-          <div className={styles.memberMeta}>
-            <span className={styles.memberBadge}>{firebaseUser ? memberLabel : '-'}</span>
-            <span>보유 포인트</span>
-            <strong>{firebaseUser ? points.toLocaleString('ko-KR') : 0}P</strong>
+        </header>
+
+
+        <div
+          className={
+            styles.titleDivider
+          }
+        />
+
+
+        {/* =====================
+            기본 화면
+        ===================== */}
+
+        {!isEditing ? (
+          <>
+            <button
+              type="button"
+              className={
+                styles.editMenu
+              }
+              onClick={
+                handleOpenEdit
+              }
+            >
+              <span>
+                개인 정보 수정
+              </span>
+
+              <span
+                className={
+                  styles.menuArrow
+                }
+                aria-hidden="true"
+              >
+                ›
+              </span>
+            </button>
+
+
+            <div
+              className={
+                styles.sectionDivider
+              }
+            />
+
+
+            <section
+              className={
+                styles.avatarSection
+              }
+              aria-labelledby="avatar-title"
+            >
+              <h3
+                id="avatar-title"
+              >
+                프로필 바꾸기
+              </h3>
+
+
+              <div
+                className={
+                  styles.currentProfile
+                }
+              >
+                <div
+                  className={
+                    styles.currentAvatar
+                  }
+                >
+                  <img
+                    src={
+                      currentAvatar.src
+                    }
+                    alt=""
+                  />
+                </div>
+
+
+                <div>
+                  <strong>
+                    {memberName}
+                  </strong>
+
+                  <span>
+                    나리님
+                  </span>
+
+                  <p>
+                    {currentUser?.email}
+                  </p>
+                </div>
+              </div>
+
+
+              <div
+                className={
+                  styles.avatarPicker
+                }
+              >
+                {avatarPresets.map(
+                  (avatar) => (
+                    <button
+                      key={
+                        avatar.id
+                      }
+                      type="button"
+                      aria-label={
+                        avatar.label
+                      }
+                      aria-pressed={
+                        selectedAvatarId ===
+                        avatar.id
+                      }
+                      className={`${styles.avatarOption} ${
+                        selectedAvatarId ===
+                        avatar.id
+                          ? styles.selectedAvatar
+                          : ''
+                      }`}
+                      onClick={() =>
+                        setSelectedAvatarId(
+                          avatar.id
+                        )
+                      }
+                    >
+                      <img
+                        src={
+                          avatar.src
+                        }
+                        alt=""
+                      />
+                    </button>
+                  )
+                )}
+              </div>
+
+
+              <div
+                className={
+                  styles.avatarActions
+                }
+              >
+                <button
+                  type="button"
+                  className={
+                    styles.primarySmallButton
+                  }
+                  onClick={
+                    handleSaveAvatar
+                  }
+                >
+                  수정 완료
+                </button>
+              </div>
+            </section>
+          </>
+        ) : (
+
+          /* =====================
+              개인정보 수정 화면
+          ===================== */
+
+          <form
+            className={
+              styles.editForm
+            }
+            onSubmit={
+              handleSubmit
+            }
+          >
+            <h3>
+              개인 정보 수정
+            </h3>
+
+
+            <div
+              className={
+                styles.formRows
+              }
+            >
+
+              {/* 아이디 */}
+
+              <label
+                className={
+                  styles.formRow
+                }
+              >
+                <span>
+                  아이디
+                </span>
+
+                <input
+                  type="text"
+                  value={
+                    currentUser?.email ||
+                    ''
+                  }
+                  readOnly
+                />
+              </label>
+
+
+              {/* 새 비밀번호 */}
+
+              <label
+                className={
+                  styles.formRow
+                }
+              >
+                <span>
+                  새 비밀번호
+                </span>
+
+                <input
+                  type="password"
+                  name="newPassword"
+                  value={
+                    form.newPassword
+                  }
+                  placeholder="새 비밀번호를 입력해주세요"
+                  autoComplete="new-password"
+                  onChange={
+                    handleChange
+                  }
+                />
+              </label>
+
+
+              {/* 새 비밀번호 확인 */}
+
+              <label
+                className={
+                  styles.formRow
+                }
+              >
+                <span>
+                  새 비밀번호 확인
+                </span>
+
+                <input
+                  type="password"
+                  name="newPasswordConfirm"
+                  value={
+                    form.newPasswordConfirm
+                  }
+                  placeholder="새 비밀번호를 다시 입력해주세요"
+                  autoComplete="new-password"
+                  onChange={
+                    handleChange
+                  }
+                />
+              </label>
+
+
+              {/* 이름 */}
+
+              <label
+                className={
+                  styles.formRow
+                }
+              >
+                <span>
+                  이름
+                </span>
+
+                <input
+                  type="text"
+                  name="name"
+                  value={
+                    form.name
+                  }
+                  onChange={
+                    handleChange
+                  }
+                />
+              </label>
+
+
+              {/* 이메일 */}
+
+              <label
+                className={
+                  styles.formRow
+                }
+              >
+                <span>
+                  이메일
+                </span>
+
+                <input
+                  type="email"
+                  name="email"
+                  value={
+                    form.email
+                  }
+                  readOnly
+                />
+              </label>
+
+
+              {/* 휴대폰 */}
+
+              <label
+                className={
+                  styles.formRow
+                }
+              >
+                <span>
+                  휴대폰
+                </span>
+
+                <input
+                  type="tel"
+                  name="phone"
+                  value={
+                    form.phone
+                  }
+                  placeholder="010-1234-5678"
+                  onChange={
+                    handleChange
+                  }
+                />
+              </label>
+
+
+              {/* 성별 */}
+
+              <div
+                className={
+                  styles.formRow
+                }
+              >
+                <span>
+                  성별
+                </span>
+
+                <div
+                  className={
+                    styles.radioGroup
+                  }
+                >
+                  <label>
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="male"
+                      checked={
+                        form.gender ===
+                        'male'
+                      }
+                      onChange={
+                        handleChange
+                      }
+                    />
+
+                    <span>
+                      남자
+                    </span>
+                  </label>
+
+
+                  <label>
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="female"
+                      checked={
+                        form.gender ===
+                        'female'
+                      }
+                      onChange={
+                        handleChange
+                      }
+                    />
+
+                    <span>
+                      여자
+                    </span>
+                  </label>
+
+
+                  <label>
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="none"
+                      checked={
+                        form.gender ===
+                        'none'
+                      }
+                      onChange={
+                        handleChange
+                      }
+                    />
+
+                    <span>
+                      선택 안 함
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+
+              {/* 생년월일 */}
+
+              <label
+                className={
+                  styles.formRow
+                }
+              >
+                <span>
+                  생년월일
+                </span>
+
+                <input
+                  type="date"
+                  name="birthDate"
+                  value={
+                    form.birthDate
+                  }
+                  onChange={
+                    handleChange
+                  }
+                />
+              </label>
+
+            </div>
+
+
+            <section className={styles.marketingSection}>
+  <h4>
+    약관 및 마케팅 수신 동의
+  </h4>
+
+  {/* 이벤트/혜택 정보 활용 동의 */}
+  <label className={styles.marketingMain}>
+    <input
+      type="checkbox"
+      name="benefitConsent"
+      checked={form.benefitConsent}
+      onChange={handleChange}
+    />
+
+    <span>
+      이벤트 및 혜택 정보 활용을 위한 수집, 이용
+      <em>(선택)</em>
+    </span>
+  </label>
+
+
+  {/* 광고성 정보 수신 동의 */}
+  <label className={styles.marketingMain}>
+    <input
+      type="checkbox"
+      checked={form.marketingConsent}
+      onChange={handleMarketingConsent}
+    />
+
+    <span>
+      광고성 정보 수신
+      <em>(선택)</em>
+    </span>
+  </label>
+
+
+  {/* 광고 수신 동의했을 때만 표시 */}
+  {form.marketingConsent && (
+    <div className={styles.marketingChannels}>
+      <label>
+        <input
+          type="checkbox"
+          name="marketingSms"
+          checked={form.marketingSms}
+          onChange={handleChange}
+        />
+
+        <span>
+          문자
+        </span>
+      </label>
+
+
+      <label>
+        <input
+          type="checkbox"
+          name="marketingEmail"
+          checked={form.marketingEmail}
+          onChange={handleChange}
+        />
+
+        <span>
+          이메일
+        </span>
+      </label>
+    </div>
+  )}
+</section>
+
+
+            {formError && (
+              <p
+                className={
+                  styles.formError
+                }
+                role="alert"
+              >
+                {formError}
+              </p>
+            )}
+
+
+            <div
+              className={
+                styles.formActions
+              }
+            >
+              <button
+                type="button"
+                className={
+                  styles.cancelEditButton
+                }
+                onClick={
+                  handleCancelEdit
+                }
+              >
+                취소
+              </button>
+
+
+              <button
+                type="submit"
+                className={
+                  styles.submitButton
+                }
+                disabled={
+                  isSaving
+                }
+              >
+                {isSaving
+                  ? '수정 중...'
+                  : '회원 정보 수정'}
+              </button>
+            </div>
+
+          </form>
+        )}
+
+
+        {/* =====================
+            비밀번호 재확인 팝업
+        ===================== */}
+
+        {isPasswordModalOpen && (
+          <div
+            className={
+              styles.modalBackdrop
+            }
+            onMouseDown={(
+              event
+            ) => {
+              if (
+                event.target ===
+                event.currentTarget
+              ) {
+                handleCloseVerifyModal()
+              }
+            }}
+          >
+
+            <div
+              className={
+                styles.passwordModal
+              }
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="password-modal-title"
+            >
+
+              <button
+                type="button"
+                className={
+                  styles.modalClose
+                }
+                aria-label="닫기"
+                onClick={
+                  handleCloseVerifyModal
+                }
+              >
+                ×
+              </button>
+
+
+              <h3
+                id="password-modal-title"
+              >
+                비밀번호 재확인
+              </h3>
+
+
+              <p
+                className={
+                  styles.modalDescription
+                }
+              >
+                회원님의 정보를 안전하게
+                보호하기 위해 비밀번호를
+                다시 한번 확인해주세요.
+              </p>
+
+
+              <div
+                className={
+                  styles.verifyRows
+                }
+              >
+
+                <div
+                  className={
+                    styles.verifyRow
+                  }
+                >
+                  <span>
+                    아이디
+                  </span>
+
+                  <strong>
+                    {currentUser?.email ||
+                      '-'}
+                  </strong>
+                </div>
+
+
+                <label
+                  className={
+                    styles.verifyRow
+                  }
+                >
+                  <span>
+                    비밀번호
+                  </span>
+
+                  <input
+                    type="password"
+                    value={
+                      verifyPassword
+                    }
+                    autoFocus
+                    autoComplete="current-password"
+                    onChange={(
+                      event
+                    ) => {
+                      setVerifyPassword(
+                        event.target.value
+                      )
+
+                      if (
+                        verifyError
+                      ) {
+                        setVerifyError(
+                          ''
+                        )
+                      }
+                    }}
+                    onKeyDown={(
+                      event
+                    ) => {
+                      if (
+                        event.key ===
+                        'Enter'
+                      ) {
+                        event.preventDefault()
+
+                        handleVerifyPassword()
+                      }
+                    }}
+                  />
+                </label>
+
+              </div>
+
+
+              {verifyError && (
+                <p
+                  className={
+                    styles.verifyError
+                  }
+                  role="alert"
+                >
+                  {verifyError}
+                </p>
+              )}
+
+
+              <button
+                type="button"
+                className={
+                  styles.verifyButton
+                }
+                disabled={
+                  isVerifying
+                }
+                onClick={
+                  handleVerifyPassword
+                }
+              >
+                {isVerifying
+                  ? '확인 중...'
+                  : '확인'}
+              </button>
+
+            </div>
+
           </div>
-        </div>
-        <div className={styles.bannerActions}>
-          <button
-            type="button"
-            className={styles.outlineButton}
-            disabled={!firebaseUser}
-            onClick={() => {
-              setSaveError('')
-              setViewMode('profileForm')
-            }}
+        )}
+
+
+        {notice && (
+          <p
+            className={
+              styles.notice
+            }
+            role="status"
           >
-            정보 수정
-          </button>
-          <button
-            type="button"
-            className={styles.primaryButton}
-            disabled={!firebaseUser}
-            onClick={() => {
-              setPasswordError('')
-              setViewMode('passwordForm')
-            }}
-          >
-            비밀번호 변경
-          </button>
-        </div>
-        <div className={styles.mascotPlaceholder} aria-hidden="true">
-          <img className={styles.mascotImage} src={orderHistoryMakdong} alt="" />
-        </div>
+            {notice}
+          </p>
+        )}
+
       </div>
-      <div className={styles.infoGrid}>{renderProfileCard()}{renderDeliveryCard()}</div>
+
     </section>
   )
 }
+
 
 export default ProfileEdit
