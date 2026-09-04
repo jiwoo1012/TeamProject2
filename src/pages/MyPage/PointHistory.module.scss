@@ -1,0 +1,537 @@
+.page {
+  width: 100%;
+  min-width: 0;
+}
+
+
+/* =========================
+   CARD
+========================= */
+
+.pointCard {
+  width: 100%;
+  min-height: 520px;
+
+  padding:
+    30px
+    30px
+    32px;
+
+  background: #fff;
+
+  border-radius: 18px;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.pageHeader {
+  min-height: 38px;
+
+  display: flex;
+  align-items: center;
+
+  h2 {
+    margin: 0;
+
+    color: #42372e;
+
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+}
+
+
+.titleDivider {
+  width: 100%;
+  height: 1px;
+
+  margin:
+    4px
+    0
+    18px;
+
+  background: #625d56;
+}
+
+
+/* =========================
+   POINT SUMMARY
+========================= */
+
+.pointSummary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  min-height: 95px;
+
+  padding:
+    19px
+    22px;
+
+  border-radius: 10px;
+
+  background: #e8f2ed;
+}
+
+
+.mainPoint {
+  flex-shrink: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  span {
+    color: #5f6e67;
+
+    font-size: 9px;
+    font-weight: 600;
+  }
+
+  strong {
+    display: flex;
+    align-items: baseline;
+
+    gap: 5px;
+
+    color: #353831;
+
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  em {
+    color: #6f7a73;
+
+    font-size: 9px;
+    font-style: normal;
+    font-weight: 600;
+  }
+}
+
+
+.summaryInfo {
+  display: flex;
+  align-items: center;
+
+  gap: 25px;
+
+  > div {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 4px;
+
+    & + div::before {
+      content: '';
+
+      position: absolute;
+
+      top: 2px;
+      bottom: 2px;
+      left: -13px;
+
+      width: 1px;
+
+      background:
+        rgba(
+          98,
+          124,
+          113,
+          0.15
+        );
+    }
+  }
+
+  span {
+    color: #87928c;
+
+    font-size: 7px;
+    font-weight: 500;
+  }
+
+  strong {
+    color: #67726c;
+
+    font-size: 8px;
+    font-weight: 700;
+  }
+}
+
+
+/* =========================
+   HISTORY
+========================= */
+
+.historySection {
+  margin-top: 30px;
+}
+
+
+.historyHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  margin-bottom: 10px;
+
+  h3 {
+    margin: 0;
+
+    color: #48423b;
+
+    font-size: 11px;
+    font-weight: 700;
+  }
+}
+
+
+/* =========================
+   FILTER
+========================= */
+
+.filters {
+  display: flex;
+  align-items: center;
+}
+
+
+.filterButton {
+  min-width: 44px;
+  height: 22px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    10px;
+
+  border:
+    1px solid
+    #b8cec7;
+
+  background: #fff;
+
+  color: #73837d;
+
+  font-size: 7px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+
+  &:first-child {
+    border-radius:
+      4px
+      0
+      0
+      4px;
+  }
+
+  &:last-child {
+    border-radius:
+      0
+      4px
+      4px
+      0;
+  }
+
+  & + & {
+    border-left: 0;
+  }
+}
+
+
+.activeFilter {
+  border-color: #60978b;
+
+  background: #60978b;
+
+  color: #fff;
+}
+
+
+/* =========================
+   LIST
+========================= */
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+
+.historyItem {
+  display: grid;
+
+  grid-template-columns:
+    92px
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  min-height: 58px;
+
+  padding:
+    10px
+    14px;
+
+  border:
+    1px solid
+    #ddd8d1;
+
+  border-radius: 6px;
+
+  background: #fff;
+}
+
+
+.pointAmount {
+  display: flex;
+  align-items: baseline;
+
+  gap: 3px;
+
+  strong {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  span {
+    font-size: 7px;
+    font-weight: 600;
+  }
+}
+
+
+.earn {
+  color: #496f66;
+}
+
+
+.use {
+  color: #675b54;
+}
+
+
+.historyInfo {
+  min-width: 0;
+
+  strong {
+    display: block;
+
+    overflow: hidden;
+
+    margin-bottom: 5px;
+
+    color: #514b44;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+
+.historyMeta {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  color: #aaa49c;
+
+  font-size: 6px;
+}
+
+
+/* =========================
+   EMPTY / LOADING
+========================= */
+
+.stateBox {
+  min-height: 130px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    #e5e0da;
+
+  border-radius: 7px;
+
+  color: #99938b;
+
+  font-size: 9px;
+}
+
+
+.emptyState {
+  min-height: 190px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    #e5e0da;
+
+  border-radius: 7px;
+
+  text-align: center;
+
+  strong {
+    margin:
+      9px
+      0
+      5px;
+
+    color: #504a43;
+
+    font-size: 11px;
+  }
+
+  p {
+    margin: 0;
+
+    color: #a69f97;
+
+    font-size: 8px;
+    line-height: 1.6;
+  }
+}
+
+
+.emptyIcon {
+  width: 31px;
+  height: 31px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #e7f0ec;
+
+  color: #669186;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 1024px) {
+  .pointCard {
+    padding:
+      26px
+      24px
+      30px;
+  }
+
+
+  .pointSummary {
+    gap: 20px;
+  }
+
+
+  .summaryInfo {
+    gap: 18px;
+  }
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 767px) {
+  .pointCard {
+    min-height: auto;
+
+    padding:
+      22px
+      16px
+      26px;
+
+    border-radius: 14px;
+  }
+
+
+  .pageHeader {
+    h2 {
+      font-size: 19px;
+    }
+  }
+
+
+  .pointSummary {
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 20px;
+  }
+
+
+  .summaryInfo {
+    width: 100%;
+
+    justify-content: space-between;
+  }
+
+
+  .mainPoint {
+    strong {
+      font-size: 23px;
+    }
+  }
+
+
+  .historyHeader {
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 10px;
+  }
+
+
+  .historyItem {
+    grid-template-columns:
+      78px
+      minmax(0, 1fr);
+
+    padding:
+      10px
+      11px;
+  }
+}
