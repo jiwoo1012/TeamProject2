@@ -175,11 +175,7 @@ $radius-control: 8px;
   justify-content: center;
   flex-shrink: 0;
 
-  i {
-    font-style: normal;
-    font-weight: 700;
-    font-size: 15px;
-  }
+  img { width: 25px; height: 25px; object-fit: contain; }
 
   &.lowStock {
     background: $warning-subtle;
@@ -376,6 +372,30 @@ $radius-control: 8px;
 
 .tableWrap {
   overflow-x: auto;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 20px;
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    box-sizing: border-box;
+    line-height: 1;
+    border: 1px solid $border-color;
+    border-radius: 50%;
+    color: $text-body;
+    background: $bg-surface;
+    cursor: pointer;
+    &:disabled { opacity: .35; cursor: default; }
+    &.activePage { color: #fff; background: $primary; border-color: $primary; }
+  }
 }
 
 .dataTable {
@@ -869,6 +889,18 @@ $radius-control: 8px;
   }
 }
 
+.panelFooterActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 14px;
+  border-top: 1px solid $border-color;
+
+  .deleteBtn { height: 34px; padding: 0 14px; color: $danger; background: #fff; border: 1px solid $danger; border-radius: 5px; cursor: pointer; }
+  .saveBtn { height: 34px; padding: 0 18px; color: #fff; background: $primary; border: 0; border-radius: 5px; font-weight: 600; cursor: pointer; }
+}
+
 // ==========================================
 // 평상시 통계 패널 (우측)
 // ==========================================
@@ -917,7 +949,7 @@ $radius-control: 8px;
   width: 90px;
   height: 90px;
   border-radius: 50%;
-  background: conic-gradient($primary var(--active-rate, 70%), #e8e6df 0);
+  background: conic-gradient($primary 0 var(--selling-rate, 0%), $warning var(--selling-rate, 0%) var(--low-rate, 0%), $danger var(--low-rate, 0%) 100%);
   display: flex;
   flex-direction: column;
   align-items: center;

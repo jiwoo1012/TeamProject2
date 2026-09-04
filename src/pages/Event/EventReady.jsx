@@ -1,4 +1,6 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
+import { subscribeToAuthState } from '../../firebase/auth'
 import eventsData from '../../data/events.json'
 import { PATHS } from '../../routes/paths'
 import backgroundImage from '../../assets/images/eventPage/background2.jpg'
@@ -48,6 +50,27 @@ const formatDate = (date) => {
 const EventReady = () => {
   const { eventType } = useParams()
   const config = EVENT_READY_CONFIG[eventType]
+  const loginNoticeTimerRef = useRef(null)
+  const [currentUser, setCurrentUser] = useState(undefined)
+  const [loginNotice, setLoginNotice] = useState('')
+
+  useEffect(() => {
+    const unsubscribe = subscribeToAuthState(setCurrentUser)
+
+    return () => {
+      unsubscribe()
+      window.clearTimeout(loginNoticeTimerRef.current)
+    }
+  }, [])
+
+  const handleStart = (eventObject) => {
+    if (currentUser && !currentUser.isAnonymous) return
+
+    eventObject.preventDefault()
+    window.clearTimeout(loginNoticeTimerRef.current)
+    setLoginNotice('로그인 후 이벤트에 참여할 수 있어요.')
+    loginNoticeTimerRef.current = window.setTimeout(() => setLoginNotice(''), 2600)
+  }
 
   if (!config) return <Navigate to={PATHS.events} replace />
 
@@ -92,7 +115,7 @@ const EventReady = () => {
             </div>
           </dl>
 
-          <Link className={styles.startButton} to={config.destination}>
+          <Link className={styles.startButton} to={config.destination} onClick={handleStart}>
             {config.buttonText}<span aria-hidden="true">›</span>
           </Link>
 
@@ -119,6 +142,14 @@ const EventReady = () => {
           ))}
         </ol>
       </section>
+
+      {loginNotice && (
+        <div className={styles.loginNotice} role="alert">
+          <span aria-hidden="true">!</span>
+          <strong>{loginNotice}</strong>
+          <Link to={PATHS.login}>로그인하러 가기 <span aria-hidden="true">›</span></Link>
+        </div>
+      )}
     </main>
   )
 }
