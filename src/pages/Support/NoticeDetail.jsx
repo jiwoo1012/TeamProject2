@@ -7,13 +7,28 @@ import styles from './NoticeDetail.module.scss'
 
 const formatDate = (timestamp) => {
   const date = timestamp?.toDate?.()
-  return date ? new Intl.DateTimeFormat('ko-CA').format(date) : '-'
+  if (!date) return '-'
+
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}. ${month}. ${day}.`
 }
 
 const sortNotices = (list) => [...list].sort((a, b) => {
   if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1
   return (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0)
 })
+
+// 카테고리별 뱃지 색상 구분 (NoticeList.jsx와 동일)
+const CATEGORY_BADGE_CLASS = {
+  소식: 'categoryNews',
+  배송: 'categoryDelivery',
+  이벤트: 'categoryEvent',
+  서비스: 'categoryService',
+  점검: 'categoryMaintenance',
+}
 
 const NoticeDetail = () => {
   const { noticeId } = useParams()
@@ -75,6 +90,7 @@ const NoticeDetail = () => {
                 <h2>{notice.title}</h2>
                 <div>
                   {notice.isPinned && <span className={styles.pinBadge}>공지</span>}
+                  {notice.category && <span className={`${styles.categoryBadge} ${styles[CATEGORY_BADGE_CLASS[notice.category]] || ''}`}>{notice.category}</span>}
                   <span className={styles.divider}>|</span>
                   <time>{formatDate(notice.createdAt)}</time>
                 </div>

@@ -1,5 +1,541 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 4rem 5%; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+@use '../../styles/variables' as v;
+
+.page {
+  min-height: 55vh;
+  padding: v.$space-16 5%;
+}
+
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.titleRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0 0 v.$space-8;
+}
+
+.content h1 {
+  margin: 0;
+  font-size: v.$font-size-3xl;
+  color: v.$color-text-primary;
+}
+
+.status {
+  padding: v.$space-8 0;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+  text-align: center;
+}
+
+// 비로그인 초기 선택 화면
+.choiceBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: v.$space-8;
+  padding: v.$space-24 0;
+  text-align: center;
+}
+
+.choiceMessage {
+  margin: 0;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-regular;
+  line-height: v.$line-height-relaxed;
+
+  strong {
+    font-weight: v.$font-weight-bold;
+  }
+}
+
+.choiceButtons {
+  display: flex;
+  gap: v.$space-4;
+}
+
+.loginButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 v.$space-8;
+  border: none;
+  border-radius: v.$radius-pill;
+  background: v.$color-taupe;
+  color: v.$color-white;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+}
+
+.guestButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 v.$space-8;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-pill;
+  background: v.$color-white;
+  color: v.$color-taupe;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+}
+
+.historyLink {
+  background: none;
+  border: none;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-medium;
+}
+
+.backLink {
+  display: inline-flex;
+  margin-bottom: v.$space-5;
+  background: none;
+  border: none;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+}
+
+// 문의 등록 폼 (박스 없이, 라벨은 왼쪽 정렬)
+.inquiryForm {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-6;
+  margin-top: v.$space-20;
+  margin-bottom: v.$space-10;
+}
+
+.formRow {
+  display: flex;
+  align-items: flex-start;
+  gap: v.$space-6;
+
+  > span {
+    flex-shrink: 0;
+    width: 100px;
+    padding-top: v.$space-3;
+    font-size: v.$font-size-sm;
+    font-weight: v.$font-weight-medium;
+    color: v.$color-text-primary;
+  }
+}
+
+.fieldControl {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-2;
+  min-width: 0;
+
+  select,
+  input,
+  textarea {
+    width: 100%;
+    padding: v.$space-3 v.$space-4;
+    border: 1px solid v.$color-border;
+    border-radius: v.$radius-md;
+    font-size: v.$font-size-sm;
+    font-family: inherit;
+
+    &:focus {
+      outline: none;
+      border-color: v.$color-primary;
+    }
+  }
+
+  textarea {
+    resize: none;
+  }
+}
+
+.formRow select {
+  appearance: none;
+  padding-right: v.$space-8;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%238C7E6F' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right v.$space-4 center;
+  background-size: 14px;
+}
+
+.charCount {
+  align-self: flex-end;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+  font-style: normal;
+}
+
+.fieldHint {
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+  font-style: normal;
+}
+
+// 첨부 파일 (UI만 구현, 업로드/저장 로직 없음)
+.fileInputRow {
+  display: flex;
+  align-items: center;
+  gap: v.$space-3;
+}
+
+.fileButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 120px;
+  padding: 0 v.$space-5;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-md;
+  background: color-mix(in srgb, v.$color-surface 50%, v.$color-white);
+  color: v.$color-text-primary;
+  font-size: v.$font-size-sm;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: color-mix(in srgb, v.$color-surface 50%, v.$color-white);
+    border-color: color-mix(in srgb, v.$color-surface 50%, v.$color-white);
+  }
+}
+
+.fileStatus {
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+}
+
+.formError {
+  margin: 0;
+  color: v.$color-error;
+  font-size: v.$font-size-sm;
+}
+
+.submitButton {
+  align-self: center;
+  width: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 v.$space-8;
+  border: none;
+  border-radius: v.$radius-md;
+  background: v.$color-primary;
+  color: v.$color-white;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:not(:disabled):hover {
+    opacity: 0.9;
+  }
+}
+
+// 문의 접수 완료 팝업 (Signup 성공 모달과 크기/톤 통일)
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: v.$space-4;
+}
+
+.modalBox {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  min-height: 480px;
+  padding: v.$space-10 v.$space-8;
+  border-radius: v.$radius-lg;
+  background: v.$color-white;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: v.$space-4;
+}
+
+.modalClose {
+  position: absolute;
+  top: v.$space-4;
+  right: v.$space-4;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  line-height: 1;
+
+  img {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.modalIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.modalTitle {
+  margin: 0;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-3xl;
+  font-weight: v.$font-weight-bold;
+}
+
+.modalDesc {
+  margin: 0;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+  line-height: v.$line-height-relaxed;
+}
+
+.modalDivider {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  background: v.$color-primary;
+  border: none;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    background: v.$color-white;
+    border: 1px solid v.$color-primary;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+}
+
+.modalContact {
+  position: relative;
+  background: rgba(v.$color-bg, 0.4);
+  border-radius: v.$radius-md;
+  padding: v.$space-6 v.$space-5 v.$space-4 170px;
+  width: 100%;
+  margin: 0;
+  text-align: left;
+}
+
+.modalContactIcon {
+  position: absolute;
+  top: 20px;
+  left: 70px;
+  width: 90px;
+  height: 90px;
+}
+
+.modalContactText {
+  margin: 0;
+  font-size: v.$font-size-md;
+  font-weight: v.$font-weight-bold;
+  line-height: v.$line-height-relaxed;
+  color: v.$color-text-primary;
+}
+
+.modalContactHighlight {
+  color: v.$color-primary;
+  font-weight: v.$font-weight-semibold;
+}
+
+.modalConfirm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: v.$radius-md;
+  background: v.$color-primary;
+  color: v.$color-white;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-semibold;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.modalNotice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: v.$space-1;
+  margin: 0;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
+
+// 문의 내역
+.inquiryHistory h2 {
+  margin: 0 0 v.$space-4;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-semibold;
+  color: v.$color-text-primary;
+}
+
+.empty {
+  padding: v.$space-8 0;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+  text-align: center;
+}
+
+.inquiryList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-3;
+}
+
+.inquiryItem {
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-md;
+  overflow: hidden;
+}
+
+.inquiryHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: v.$space-3;
+  padding: v.$space-4;
+  background: v.$color-white;
+  text-align: left;
+  font-size: v.$font-size-sm;
+}
+
+.statusBadge {
+  flex-shrink: 0;
+  padding: v.$space-1 v.$space-3;
+  border-radius: v.$radius-pill;
+  background: v.$color-surface;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-medium;
+}
+
+.answered {
+  background: v.$color-primary;
+  color: v.$color-white;
+}
+
+.inquiryCategory {
+  flex-shrink: 0;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
+
+.inquiryTitle {
+  flex: 1;
+  color: v.$color-text-primary;
+  font-weight: v.$font-weight-medium;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inquiryBody {
+  padding: v.$space-4;
+  border-top: 1px solid v.$color-border;
+  background: v.$color-surface;
+}
+
+.inquiryContent {
+  margin: 0 0 v.$space-3;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-sm;
+  white-space: pre-wrap;
+}
+
+.answerBox {
+  padding: v.$space-3 v.$space-4;
+  border-radius: v.$radius-md;
+  background: v.$color-white;
+
+  strong {
+    display: block;
+    margin-bottom: v.$space-1;
+    color: v.$color-primary;
+    font-size: v.$font-size-xs;
+  }
+
+  p {
+    margin: 0;
+    color: v.$color-text-primary;
+    font-size: v.$font-size-sm;
+    white-space: pre-wrap;
+  }
+}
+
+.waitingNotice {
+  margin: 0;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
+
+@media (max-width: v.$breakpoint-mobile-max) {
+  .choiceButtons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .loginButton,
+  .guestButton {
+    width: 100%;
+  }
+
+  .titleRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: v.$space-2;
+  }
+
+  .formRow {
+    display: flex;
+    align-items: flex-start;
+    gap: v.$space-6;
+
+  > span {
+    flex-shrink: 0;
+    width: 100px;
+    padding-top: v.$space-3;
+    font-size: v.$font-size-md;
+    font-weight: v.$font-weight-medium;
+    color: v.$color-text-primary;
+  }
+}
+}
