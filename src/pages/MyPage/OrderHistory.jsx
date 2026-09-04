@@ -160,6 +160,9 @@ const OrderHistory = () => {
   const [periodMonths, setPeriodMonths] =
     useState('all')
 
+  const [searchKeyword, setSearchKeyword] =
+    useState('')
+
   const [currentPage, setCurrentPage] =
     useState(1)
 
@@ -363,6 +366,20 @@ const OrderHistory = () => {
     useMemo(() => {
       return orders.filter(
         (order) => {
+          const normalizedKeyword =
+            searchKeyword.trim().toLowerCase()
+
+          const matchesKeyword =
+            !normalizedKeyword ||
+            order.id.toLowerCase().includes(normalizedKeyword) ||
+            order.items.some((item) =>
+              String(item.name || '').toLowerCase().includes(normalizedKeyword)
+            )
+
+          if (!matchesKeyword) {
+            return false
+          }
+
           const matchesStatus =
             activeFilter ===
               'all' ||
@@ -411,6 +428,7 @@ const OrderHistory = () => {
       orders,
       activeFilter,
       periodMonths,
+      searchKeyword,
     ])
 
 
@@ -611,23 +629,22 @@ const OrderHistory = () => {
           }
         >
 
-          <div
-            className={
-              styles.controlMessage
-            }
-          >
-            <span
-              className={
-                styles.controlDot
-              }
-              aria-hidden="true"
+          <label className={styles.searchField}>
+            <span className={styles.srOnly}>주문번호 또는 상품명 검색</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m16 16 4 4" />
+            </svg>
+            <input
+              type="search"
+              value={searchKeyword}
+              placeholder="주문번호 · 상품명 검색"
+              onChange={(event) => {
+                setSearchKeyword(event.target.value)
+                setCurrentPage(1)
+              }}
             />
-
-            <span>
-              나의 주문 내역을
-              확인해보세요
-            </span>
-          </div>
+          </label>
 
 
           <label
@@ -811,6 +828,7 @@ const OrderHistory = () => {
                       }
                       aria-label="주문 상세 보기"
                     >
+                      <span>주문 상세</span>
                       <ArrowIcon />
                     </Link>
 
@@ -916,7 +934,7 @@ const OrderHistory = () => {
 
                             {item.productId && (
                               <Link
-                                to={`/product/${item.productId}`}
+                                to={`/shop/${item.productId}`}
                                 className={
                                   styles.iconButton
                                 }

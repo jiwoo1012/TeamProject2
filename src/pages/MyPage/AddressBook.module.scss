@@ -12,12 +12,9 @@
   position: relative;
 
   width: 100%;
-  min-height: 520px;
+  min-height: 0;
 
-  padding:
-    30px
-    30px
-    32px;
+  padding: 32px;
 
   background: #fff;
 
@@ -48,7 +45,7 @@
 
     color: #493d33;
 
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 700;
     line-height: 1.3;
   }
@@ -58,7 +55,7 @@
 
     color: #9b958d;
 
-    font-size: 8px;
+    font-size: 14px;
     font-weight: 500;
   }
 }
@@ -71,7 +68,7 @@
   margin:
     4px
     0
-    20px;
+    28px;
 
   background: #625d56;
 }
@@ -82,15 +79,17 @@
 ========================= */
 
 .defaultSection {
+  margin-top: 2px;
+
   h3 {
     margin:
       0
       0
-      9px;
+      13px;
 
     color: #4c463f;
 
-    font-size: 11px;
+    font-size: 16px;
     font-weight: 700;
   }
 }
@@ -98,22 +97,23 @@
 
 .defaultAddress {
   width: 100%;
-  min-height: 67px;
+  min-height: 70px;
 
   display: flex;
   align-items: center;
+  justify-content: flex-start;
 
-  gap: 18px;
+  gap: 14px;
 
   padding:
     12px
-    18px;
+    22px;
 
-  border: 1px solid #6f9e94;
+  border: 1px solid #5d9086;
 
   border-radius: 7px;
 
-  background: #fff;
+  background: #fbfefd;
 
   text-align: left;
 
@@ -123,6 +123,12 @@
 
 .checkIcon,
 .itemCheck {
+  width: 18px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   flex-shrink: 0;
 
   color: #69978d;
@@ -135,10 +141,12 @@
 .addressInfo {
   min-width: 0;
 
+  text-align: left;
+
   strong {
     color: #4d4740;
 
-    font-size: 10px;
+    font-size: 15px;
     font-weight: 700;
   }
 
@@ -149,13 +157,19 @@
     gap: 10px;
 
     margin:
-      5px
+      6px
       0
       0;
 
     color: #aaa49c;
 
-    font-size: 7px;
+    font-size: 12px;
+
+    span {
+      padding-left: 10px;
+
+      border-left: 1px solid #e2ddd5;
+    }
   }
 }
 
@@ -173,7 +187,7 @@
 
   color: #9d9790;
 
-  font-size: 8px;
+  font-size: 12px;
 }
 
 
@@ -188,16 +202,16 @@
 
   gap: 8px;
 
-  margin:
-    18px
-    0
-    12px;
+  margin: 22px 0 16px;
 }
 
 
 .addressTab {
-  min-width: 62px;
-  height: 27px;
+  min-width: 70px;
+  height: 36px;
+  min-height: 36px !important;
+
+  box-sizing: border-box;
 
   display: inline-flex;
   align-items: center;
@@ -209,15 +223,15 @@
     0
     13px;
 
-  border: 0;
+  border: 1px solid transparent;
 
   border-radius: 20px;
 
-  background: #e0dfdc;
+  background: #f0efec;
 
   color: #7e7971;
 
-  font-size: 8px;
+  font-size: 13px;
   font-weight: 600;
 
   cursor: pointer;
@@ -235,6 +249,8 @@
 
 
 .activeTab {
+  border-color: #5e978b;
+
   background: #5e978b;
 
   color: #fff;
@@ -246,8 +262,13 @@
 
 
 .addCircleButton {
-  width: 27px;
-  height: 27px;
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px !important;
+  flex: 0 0 36px;
+
+  box-sizing: border-box;
 
   display: flex;
   align-items: center;
@@ -255,21 +276,34 @@
 
   padding: 0;
 
-  border: 0;
+  border: 1px solid #d7d3cc;
 
   border-radius: 50%;
 
-  background: #e1e0dd;
+  background: #f4f2ee;
 
-  color: #777169;
+  color: #5f756e;
 
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1;
 
   cursor: pointer;
 
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+
   &:hover {
-    background: #d7d5d1;
+    border-color: #7fa59c;
+
+    background: #e7f2ec;
+
+    color: #3f756d;
+
+    transform: rotate(90deg);
   }
 }
 
@@ -282,7 +316,7 @@
   display: flex;
   flex-direction: column;
 
-  gap: 8px;
+  gap: 14px;
 }
 
 
@@ -297,11 +331,11 @@
 
   gap: 12px;
 
-  min-height: 60px;
+  min-height: 76px;
 
   padding:
-    10px
-    14px;
+    14px
+    18px;
 
   border:
     1px solid
@@ -316,16 +350,19 @@
 
 .selectedItem {
   border-color: #c4d7d2;
+  background: #fbfefd;
 }
 
 
 .addressSelect {
+  width: 100%;
   min-width: 0;
 
   display: flex;
   align-items: center;
+  justify-content: flex-start;
 
-  gap: 16px;
+  gap: 14px;
 
   padding: 0;
 
@@ -343,13 +380,34 @@
   display: flex;
   align-items: center;
 
-  gap: 6px;
+  gap: 7px;
+}
+
+
+.addressLabel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 42px;
+  height: 20px;
+
+  padding: 0 7px;
+
+  border-radius: 10px;
+
+  background: #f0f5f2;
+
+  color: #578278;
+
+  font-size: 11px;
+  font-weight: 700;
 }
 
 
 .defaultBadge {
-  min-width: 26px;
-  height: 14px;
+  min-width: 38px;
+  height: 22px;
 
   display: inline-flex;
   align-items: center;
@@ -357,15 +415,17 @@
 
   padding:
     0
-    5px;
+    9px;
 
   border-radius: 10px;
+
+  border: 1px solid #bed4ce;
 
   background: #e5f0ec;
 
   color: #5e8c82;
 
-  font-size: 6px;
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -374,10 +434,12 @@
   display: flex;
   align-items: center;
 
-  gap: 9px;
+  gap: 2px;
 
   button {
-    padding: 0;
+    min-height: 28px;
+
+    padding: 0 8px;
 
     border: 0;
 
@@ -385,13 +447,46 @@
 
     color: #9c968e;
 
-    font-size: 7px;
+    font-size: 13px;
+    font-weight: 600;
 
     cursor: pointer;
 
     &:hover {
       color: #5e8b81;
     }
+
+    & + button {
+      border-left: 1px solid #e6e1da;
+    }
+  }
+}
+
+
+.itemActions .setDefaultButton {
+  min-height: 32px;
+
+  box-sizing: border-box;
+
+  padding: 0 12px;
+
+  border: 1px solid #9ebbb3;
+  border-radius: 8px;
+
+  background: #fff;
+
+  color: #4d7e7b;
+
+  font-size: 12px;
+
+  &:hover {
+    border-color: #4d7e7b;
+
+    background: #e7f2ec;
+  }
+
+  & + button {
+    border-left: 0;
   }
 }
 
@@ -402,13 +497,13 @@
 
 .addAddressButton {
   width: 100%;
-  height: 31px;
+  height: 38px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  margin-top: 9px;
+  margin-top: 16px;
 
   border:
     1px solid
@@ -420,7 +515,7 @@
 
   color: #575149;
 
-  font-size: 8px;
+  font-size: 13px;
   font-weight: 700;
 
   cursor: pointer;
@@ -462,7 +557,7 @@
   > span {
     color: #5d564f;
 
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 700;
   }
 
@@ -483,7 +578,7 @@
 
     color: #514b44;
 
-    font-size: 8px;
+    font-size: 12px;
 
     &::placeholder {
       color: #9f978d;
@@ -524,7 +619,7 @@
   > span:last-child {
     color: #62776f;
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 600;
   }
 
@@ -603,7 +698,7 @@
 
   border-radius: 5px;
 
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 600;
 
   cursor: pointer;
@@ -654,7 +749,7 @@
 
   color: #a65f55;
 
-  font-size: 8px;
+  font-size: 12px;
 }
 
 
@@ -674,7 +769,7 @@
 
   color: #99938b;
 
-  font-size: 9px;
+  font-size: 12px;
 }
 
 
@@ -696,7 +791,7 @@
 
     color: #514b44;
 
-    font-size: 11px;
+    font-size: 13px;
   }
 
   p {
@@ -707,7 +802,7 @@
 
     color: #aaa49c;
 
-    font-size: 8px;
+    font-size: 12px;
   }
 
   button {
@@ -722,7 +817,7 @@
 
     color: #fff;
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 600;
 
     cursor: pointer;
@@ -778,7 +873,7 @@
 
   color: #fff;
 
-  font-size: 9px;
+  font-size: 12px;
 
   transform:
     translateX(-50%);

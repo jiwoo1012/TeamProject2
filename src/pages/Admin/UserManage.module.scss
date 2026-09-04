@@ -648,6 +648,8 @@ $radius-control: 8px;
         height: 100%;
         background: $primary;
         border-radius: 4px;
+
+        transition: width 280ms ease-out;
       }
     }
 
@@ -658,6 +660,13 @@ $radius-control: 8px;
     }
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .activityBars b {
+    transition: none;
+  }
+}
+
 
 .analyticsCaption {
   margin: 16px 0 0 0;

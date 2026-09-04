@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import {
   EmailAuthProvider,
   reauthenticateWithCredential,
-  updatePassword,
   updateProfile,
 } from 'firebase/auth'
 import { serverTimestamp } from 'firebase/firestore'
@@ -16,73 +15,14 @@ import {
   updateDocument,
 } from '../../firebase/firestore'
 
-import profileAvatarMakdongDefault from '../../assets/images/mypage/profileAvatar-makdong-default.png'
-import profileAvatarMakdongCheers from '../../assets/images/mypage/profileAvatar-makdong-cheers.png'
-import profileAvatarMakdongJeon from '../../assets/images/mypage/profileAvatar-makdong-jeon.png'
-import profileAvatarMakdongPouch from '../../assets/images/mypage/profileAvatar-makdong-pouch.png'
-import profileAvatarMakdongTipsy from '../../assets/images/mypage/profileAvatar-makdong-tipsy.png'
-import profileAvatarMakdongSleepy from '../../assets/images/mypage/profileAvatar-makdong-sleepy.png'
-import profileAvatarMakdongServing from '../../assets/images/mypage/profileAvatar-makdong-serving.png'
-import profileAvatarMakdongRainy from '../../assets/images/mypage/profileAvatar-makdong-rainy.png'
-
 import styles from './ProfileEdit.module.scss'
+import { getAvatarStorageKey, profileAvatars as avatarPresets } from './profileAvatars'
 
 
 const VERIFY_VALID_TIME = 10 * 60 * 1000
 
 
-const avatarPresets = [
-  {
-    id: 'profile-makdong-default',
-    src: profileAvatarMakdongDefault,
-    label: '기본 막동이',
-  },
-  {
-    id: 'profile-makdong-cheers',
-    src: profileAvatarMakdongCheers,
-    label: '건배 막동이',
-  },
-  {
-    id: 'profile-makdong-jeon',
-    src: profileAvatarMakdongJeon,
-    label: '전 막동이',
-  },
-  {
-    id: 'profile-makdong-pouch',
-    src: profileAvatarMakdongPouch,
-    label: '보자기 막동이',
-  },
-  {
-    id: 'profile-makdong-tipsy',
-    src: profileAvatarMakdongTipsy,
-    label: '취한 막동이',
-  },
-  {
-    id: 'profile-makdong-sleepy',
-    src: profileAvatarMakdongSleepy,
-    label: '졸린 막동이',
-  },
-  {
-    id: 'profile-makdong-serving',
-    src: profileAvatarMakdongServing,
-    label: '서빙 막동이',
-  },
-  {
-    id: 'profile-makdong-rainy',
-    src: profileAvatarMakdongRainy,
-    label: '비 오는 날 막동이',
-  },
-]
-
-
-const getAvatarStorageKey = (uid) =>
-  `jajak_profile_avatar_${uid}`
-
-
 const getInitialForm = (user, userData) => ({
-  newPassword: '',
-  newPasswordConfirm: '',
-
   name:
     userData?.nickname ||
     user?.displayName ||
@@ -92,30 +32,6 @@ const getInitialForm = (user, userData) => ({
     user?.email ||
     userData?.email ||
     '',
-
-  phone:
-    userData?.phone ||
-    '',
-
-  gender:
-    userData?.gender ||
-    '',
-
-  birthDate:
-    userData?.birthDate ||
-    '',
-
-  benefitConsent:
-  Boolean(userData?.benefitConsent),
-
-marketingConsent:
-  Boolean(userData?.marketingConsent),
-
-marketingSms:
-  Boolean(userData?.marketingSms),
-
-marketingEmail:
-  Boolean(userData?.marketingEmail),
 })
 
 
@@ -475,27 +391,6 @@ const ProfileEdit = () => {
     }
 
 
-  const handleMarketingConsent = (event) => {
-  const checked = event.target.checked
-
-  setForm((current) => ({
-    ...current,
-
-    marketingConsent: checked,
-
-    // 광고 수신 동의를 해제하면
-    // 문자 / 이메일도 같이 해제
-    marketingSms: checked
-      ? current.marketingSms
-      : false,
-
-    marketingEmail: checked
-      ? current.marketingEmail
-      : false,
-  }))
-}
-
-
   /* =========================
      프로필 이미지 변경
   ========================= */
@@ -593,50 +488,10 @@ const ProfileEdit = () => {
       const trimmedName =
         form.name.trim()
 
-      const trimmedPhone =
-        form.phone.trim()
-
 
       if (!trimmedName) {
         setFormError(
           '이름을 입력해주세요.'
-        )
-
-        return
-      }
-
-
-      if (
-        form.newPassword &&
-        form.newPassword.length < 6
-      ) {
-        setFormError(
-          '새 비밀번호는 6자 이상 입력해주세요.'
-        )
-
-        return
-      }
-
-
-      if (
-        form.newPassword !==
-        form.newPasswordConfirm
-      ) {
-        setFormError(
-          '새 비밀번호가 서로 일치하지 않습니다.'
-        )
-
-        return
-      }
-
-
-      if (
-        form.marketingConsent &&
-        !form.marketingSms &&
-        !form.marketingEmail
-      ) {
-        setFormError(
-          '마케팅 수신 방법을 하나 이상 선택해주세요.'
         )
 
         return
@@ -664,19 +519,6 @@ const ProfileEdit = () => {
         }
 
 
-        /*
-         * 비밀번호 입력했을 때만 변경.
-         * 위에서 재인증을 통과한 사용자만
-         * 여기까지 들어올 수 있다.
-         */
-        if (form.newPassword) {
-          await updatePassword(
-            currentUser,
-            form.newPassword
-          )
-        }
-
-
         /* Firestore 회원 정보 변경 */
         const nextUserData = {
           nickname:
@@ -684,28 +526,6 @@ const ProfileEdit = () => {
 
           email:
             currentUser.email,
-
-          phone:
-            trimmedPhone,
-
-          gender:
-            form.gender,
-
-          birthDate:
-            form.birthDate,
-
-          marketingConsent:
-            form.marketingConsent,
-
-          marketingSms:
-            form.marketingConsent
-              ? form.marketingSms
-              : false,
-
-          marketingEmail:
-            form.marketingConsent
-              ? form.marketingEmail
-              : false,
 
           updatedAt:
             serverTimestamp(),
@@ -729,6 +549,10 @@ const ProfileEdit = () => {
           })
         )
 
+        window.dispatchEvent(
+          new Event('jajak-profile-change')
+        )
+
 
         /*
          * 수정이 끝나면 인증 상태 폐기.
@@ -737,18 +561,6 @@ const ProfileEdit = () => {
         setVerifiedAt(null)
 
         setIsEditing(false)
-
-
-        setForm(
-          (current) => ({
-            ...current,
-
-            newPassword: '',
-
-            newPasswordConfirm:
-              '',
-          })
-        )
 
 
         showNotice(
@@ -775,18 +587,6 @@ const ProfileEdit = () => {
 
           setIsPasswordModalOpen(
             true
-          )
-
-          return
-        }
-
-
-        if (
-          error.code ===
-          'auth/weak-password'
-        ) {
-          setFormError(
-            '비밀번호 보안 수준이 너무 낮습니다.'
           )
 
           return
@@ -1050,80 +850,6 @@ const ProfileEdit = () => {
               }
             >
 
-              {/* 아이디 */}
-
-              <label
-                className={
-                  styles.formRow
-                }
-              >
-                <span>
-                  아이디
-                </span>
-
-                <input
-                  type="text"
-                  value={
-                    currentUser?.email ||
-                    ''
-                  }
-                  readOnly
-                />
-              </label>
-
-
-              {/* 새 비밀번호 */}
-
-              <label
-                className={
-                  styles.formRow
-                }
-              >
-                <span>
-                  새 비밀번호
-                </span>
-
-                <input
-                  type="password"
-                  name="newPassword"
-                  value={
-                    form.newPassword
-                  }
-                  placeholder="새 비밀번호를 입력해주세요"
-                  autoComplete="new-password"
-                  onChange={
-                    handleChange
-                  }
-                />
-              </label>
-
-
-              {/* 새 비밀번호 확인 */}
-
-              <label
-                className={
-                  styles.formRow
-                }
-              >
-                <span>
-                  새 비밀번호 확인
-                </span>
-
-                <input
-                  type="password"
-                  name="newPasswordConfirm"
-                  value={
-                    form.newPasswordConfirm
-                  }
-                  placeholder="새 비밀번호를 다시 입력해주세요"
-                  autoComplete="new-password"
-                  onChange={
-                    handleChange
-                  }
-                />
-              </label>
-
-
               {/* 이름 */}
 
               <label
@@ -1169,204 +895,7 @@ const ProfileEdit = () => {
                 />
               </label>
 
-
-              {/* 휴대폰 */}
-
-              <label
-                className={
-                  styles.formRow
-                }
-              >
-                <span>
-                  휴대폰
-                </span>
-
-                <input
-                  type="tel"
-                  name="phone"
-                  value={
-                    form.phone
-                  }
-                  placeholder="010-1234-5678"
-                  onChange={
-                    handleChange
-                  }
-                />
-              </label>
-
-
-              {/* 성별 */}
-
-              <div
-                className={
-                  styles.formRow
-                }
-              >
-                <span>
-                  성별
-                </span>
-
-                <div
-                  className={
-                    styles.radioGroup
-                  }
-                >
-                  <label>
-                    <input
-                      type="radio"
-                      name="gender"
-                      value="male"
-                      checked={
-                        form.gender ===
-                        'male'
-                      }
-                      onChange={
-                        handleChange
-                      }
-                    />
-
-                    <span>
-                      남자
-                    </span>
-                  </label>
-
-
-                  <label>
-                    <input
-                      type="radio"
-                      name="gender"
-                      value="female"
-                      checked={
-                        form.gender ===
-                        'female'
-                      }
-                      onChange={
-                        handleChange
-                      }
-                    />
-
-                    <span>
-                      여자
-                    </span>
-                  </label>
-
-
-                  <label>
-                    <input
-                      type="radio"
-                      name="gender"
-                      value="none"
-                      checked={
-                        form.gender ===
-                        'none'
-                      }
-                      onChange={
-                        handleChange
-                      }
-                    />
-
-                    <span>
-                      선택 안 함
-                    </span>
-                  </label>
-                </div>
-              </div>
-
-
-              {/* 생년월일 */}
-
-              <label
-                className={
-                  styles.formRow
-                }
-              >
-                <span>
-                  생년월일
-                </span>
-
-                <input
-                  type="date"
-                  name="birthDate"
-                  value={
-                    form.birthDate
-                  }
-                  onChange={
-                    handleChange
-                  }
-                />
-              </label>
-
             </div>
-
-
-            <section className={styles.marketingSection}>
-  <h4>
-    약관 및 마케팅 수신 동의
-  </h4>
-
-  {/* 이벤트/혜택 정보 활용 동의 */}
-  <label className={styles.marketingMain}>
-    <input
-      type="checkbox"
-      name="benefitConsent"
-      checked={form.benefitConsent}
-      onChange={handleChange}
-    />
-
-    <span>
-      이벤트 및 혜택 정보 활용을 위한 수집, 이용
-      <em>(선택)</em>
-    </span>
-  </label>
-
-
-  {/* 광고성 정보 수신 동의 */}
-  <label className={styles.marketingMain}>
-    <input
-      type="checkbox"
-      checked={form.marketingConsent}
-      onChange={handleMarketingConsent}
-    />
-
-    <span>
-      광고성 정보 수신
-      <em>(선택)</em>
-    </span>
-  </label>
-
-
-  {/* 광고 수신 동의했을 때만 표시 */}
-  {form.marketingConsent && (
-    <div className={styles.marketingChannels}>
-      <label>
-        <input
-          type="checkbox"
-          name="marketingSms"
-          checked={form.marketingSms}
-          onChange={handleChange}
-        />
-
-        <span>
-          문자
-        </span>
-      </label>
-
-
-      <label>
-        <input
-          type="checkbox"
-          name="marketingEmail"
-          checked={form.marketingEmail}
-          onChange={handleChange}
-        />
-
-        <span>
-          이메일
-        </span>
-      </label>
-    </div>
-  )}
-</section>
 
 
             {formError && (
