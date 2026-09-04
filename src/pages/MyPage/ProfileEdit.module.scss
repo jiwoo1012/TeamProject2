@@ -1,1108 +1,1138 @@
-@use '../../styles/variables' as v;
-
-/*
- * ProfileEdit
- * - PC Figma 기준 외곽 치수 유지
- * - typography/color/radius는 팀 variables 토큰 우선 사용
- * - 공통 MyPageLayout / sidebar는 건드리지 않음
- */
 .page {
-  position: relative;
   width: 100%;
-  padding-bottom: v.$space-10;
-  color: v.$color-text-primary;
-  font-family: v.$font-family-base;
-}
-
-.page button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  min-width: 0;
 }
 
 
+/* =========================
+   CARD
+========================= */
 
-.profileBanner {
+.profileCard {
   position: relative;
-  display: grid;
-  /* 주문내역 요약 패널과 동일한 민트 배경 폭 */
-  width: 100%;
-  height: 201px;
-  grid-template-columns: 118px minmax(0, 1fr) auto 132px;
-  align-items: center;
-  gap: v.$space-6;
-  overflow: visible;
-  padding: 0 v.$space-6 0 38px;
-  border: 1px solid v.$color-border;
-  border-radius: 27px;
-  background: rgb(77 126 123 / 40%);
-}
 
-.avatar {
-  display: grid;
-  width: 118px;
-  height: 118px;
-  flex: 0 0 118px;
-  place-items: center;
-  padding: v.$space-2;
+  width: 100%;
+  min-height: 560px;
+
+  padding:
+    30px
+    30px
+    28px;
+
   overflow: hidden;
+
+  background: #fff;
+
+  border-radius: 18px;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.pageHeader {
+  min-height: 38px;
+
+  display: flex;
+  align-items: center;
+
+  h2 {
+    margin: 0;
+
+    color: #45392e;
+
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+}
+
+
+.titleDivider {
+  width: 100%;
+  height: 1px;
+
+  margin:
+    4px
+    0
+    17px;
+
+  background: #625d56;
+}
+
+
+/* =========================
+   개인정보 수정 메뉴
+========================= */
+
+.editMenu {
+  width: 100%;
+  min-height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding:
+    0
+    2px;
+
   border: 0;
-  border-radius: v.$radius-pill;
-  background: v.$color-white;
-  box-sizing: border-box;
+
+  background: transparent;
+
+  color: #474139;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  text-align: left;
+
   cursor: pointer;
-  transition: box-shadow v.$transition-fast, transform v.$transition-fast;
+
+  transition:
+    color 0.2s ease;
+
+  &:hover {
+    color: #58877c;
+  }
 }
 
-.avatar:hover:not(:disabled) {
-  transform: translateY(-2px);
+
+.menuArrow {
+  padding-right: 4px;
+
+  color: #777169;
+
+  font-size: 21px;
+  font-weight: 300;
 }
 
-.avatar:focus-visible {
-  outline: 3px solid v.$color-primary-light;
-  outline-offset: 3px;
-}
 
-.avatar:disabled {
-  cursor: default;
-}
-
-.avatar svg {
-  width: 74px;
-  height: 74px;
-  fill: #c5c5c5;
-}
-
-.avatar img {
+.sectionDivider {
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  height: 1px;
+
+  margin-bottom: 15px;
+
+  background: #ece7e0;
 }
 
-.bannerCopy {
-  position: relative;
-  z-index: 2;
-  min-width: 0;
-  margin-left: 0;
+
+/* =========================
+   PROFILE AVATAR
+========================= */
+
+.avatarSection {
+  h3 {
+    margin:
+      0
+      0
+      12px;
+
+    color: #494139;
+
+    font-size: 14px;
+    font-weight: 700;
+  }
 }
 
-.bannerCopy h2 {
-  margin: 0;
-  color: v.$color-text-primary;
-  font-size: 29.2px;
-  font-weight: v.$font-weight-bold;
-  line-height: v.$line-height-tight;
-}
 
-.memberName {
-  font-size: 36.5px;
-}
-
-.bannerCopy p {
-  margin: v.$space-2 0 v.$space-3;
-  color: v.$color-text-primary;
-  font-size: 20px;
-  font-weight: v.$font-weight-regular;
-  line-height: v.$line-height-base;
-}
-
-.memberMeta {
+.currentProfile {
   display: flex;
-  width: max-content;
   align-items: center;
-  gap: v.$space-2;
-  margin-top: v.$space-2;
-  color: v.$color-text-primary;
-  font-size: v.$font-size-xs;
-  line-height: v.$line-height-base;
+
+  gap: 10px;
+
+  margin-bottom: 13px;
+
+  padding-left: 8px;
+
+  > div:last-child {
+    min-width: 0;
+  }
+
+  strong {
+    color: #4c463f;
+
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  span {
+    margin-left: 4px;
+
+    color: #9b958d;
+
+    font-size: 7px;
+  }
+
+  p {
+    margin:
+      2px
+      0
+      0;
+
+    color: #a7a199;
+
+    font-size: 7px;
+  }
 }
 
-.memberMeta strong {
-  color: v.$color-text-primary;
-  font-weight: v.$font-weight-bold;
-}
 
-.memberBadge {
-  position: relative;
-  display: inline-flex;
-  min-height: 24px;
+.currentAvatar {
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  overflow: hidden;
+
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: v.$space-1;
-  padding: 0 v.$space-2;
-  border-radius: v.$radius-pill;
-  background: rgb(255 255 255 / 78%);
-  color: v.$color-text-muted;
-  font-size: v.$font-size-xs;
-  font-weight: v.$font-weight-medium;
-  line-height: 1;
+
+  border-radius: 50%;
+
+  background: #a7c3bf;
+
+  img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+  }
 }
 
-.memberBadge::before {
-  width: v.$space-3;
-  height: v.$space-3;
-  flex: 0 0 auto;
-  border-radius: v.$radius-pill;
-  background: v.$color-primary;
-  content: '';
-}
 
-.memberBadge::after {
-  position: absolute;
-  top: 50%;
-  left: 12px;
-  width: 4px;
-  height: 7px;
-  border-radius: 100% 0 100% 0;
-  background: v.$color-white;
-  content: '';
-  transform: translate(-50%, -50%) rotate(35deg);
-}
-
-.bannerActions {
-  position: relative;
-  z-index: 3;
-  display: flex;
-  gap: v.$space-3;
-}
-
-/* reset.scss의 button { text-align: inherit; } 때문에 반드시 컴포넌트에서 중앙 정렬 */
-.outlineButton,
-.primaryButton,
-.editProfileButton,
-.addAddressButton,
-.smallPrimaryButton,
-.smallOutlineButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid transparent;
-  font-family: v.$font-family-base;
-  font-weight: v.$font-weight-semibold;
-  line-height: 1;
-  text-align: center;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.outlineButton,
-.primaryButton {
-  width: 113px;
-  height: 37px;
-  padding: 0;
-  border-radius: v.$radius-lg;
-  font-size: v.$font-size-sm;
-}
-
-.outlineButton {
-  border-color: v.$color-white;
-  background: v.$color-white;
-  color: v.$color-text-primary;
-}
-
-.primaryButton {
-  background: v.$color-primary;
-  color: v.$color-white;
-}
-
-/* 막동이 최종 이미지가 나오기 전 임시 캐릭터 */
-.mascot {
-  position: absolute;
-  right: -45px;
-  bottom: -8px;
-  z-index: 2;
-  width: 168px;
-  height: 152px;
-  pointer-events: none;
-}
-
-.mascotPlaceholder {
-  position: relative;
-  z-index: 2;
-  width: 132px;
-  height: 190px;
-  align-self: end;
-  justify-self: end;
-  pointer-events: none;
-}
-
-.mascotImage {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: right bottom;
-}
-
-.mascotFace,
-.earLeft,
-.earRight {
-  position: absolute;
-  display: block;
-  background: v.$color-surface;
-}
-
-.mascotFace {
-  right: v.$space-2;
-  bottom: 5px;
-  width: 112px;
-  height: 102px;
-  border: 3px solid v.$color-taupe;
-  border-radius: 48% 48% 42% 42%;
-}
-
-.earLeft,
-.earRight {
-  top: 19px;
-  width: 48px;
-  height: 48px;
-  border: 3px solid v.$color-taupe;
-  border-radius: 70% 70% 16% 70%;
-}
-
-.earLeft {
-  left: 27px;
-  transform: rotate(-24deg);
-}
-
-.earRight {
-  right: 6px;
-  transform: rotate(24deg) scaleX(-1);
-}
-
-.eyeLeft,
-.eyeRight,
-.nose {
-  position: absolute;
-  display: block;
-  border-radius: v.$radius-pill;
-  background: v.$color-text-primary;
-}
-
-.eyeLeft,
-.eyeRight {
-  top: 39px;
-  width: v.$space-2;
-  height: v.$space-3;
-}
-
-.eyeLeft {
-  left: 30px;
-}
-
-.eyeRight {
-  right: 30px;
-}
-
-.nose {
-  bottom: v.$space-6;
-  left: calc(50% - v.$space-1);
-  width: v.$space-2;
-  height: 7px;
-}
-
-.infoGrid {
-  display: grid;
-  width: 100%;
-  grid-template-columns: minmax(320px, 0.85fr) minmax(0, 1.15fr);
-  align-items: stretch;
-  gap: v.$space-6;
-  margin-top: v.$space-10;
-}
-
-.infoCard {
-  display: flex;
-  min-height: 520px;
-  min-width: 0;
-  flex-direction: column;
-  padding: v.$space-6 v.$space-8 v.$space-8;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-lg;
-  background: v.$color-white;
-}
-
-.infoCard:first-child {
-  min-height: 520px;
-}
+/* =========================
+   AVATAR PICKER
+========================= */
 
 .avatarPicker {
-  margin: v.$space-4 0 v.$space-5;
-  padding: v.$space-4;
-  border: 1px solid color-mix(in srgb, v.$color-primary 20%, v.$color-border);
-  border-radius: v.$radius-lg;
-  background: color-mix(in srgb, v.$color-primary 6%, v.$color-white);
-}
-
-.avatarPickerHeading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: v.$space-3;
-}
-
-.avatarPickerHeading h3,
-.avatarPickerHeading p {
-  margin: 0;
-}
-
-.avatarPickerHeading h3 {
-  color: v.$color-text-primary;
-  font-size: v.$font-size-sm;
-}
-
-.avatarPickerHeading p {
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-xs;
-}
-
-.avatarPresetList {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: v.$space-2;
-  margin-top: v.$space-3;
+
+  grid-template-columns:
+    repeat(
+      5,
+      minmax(0, 1fr)
+    );
+
+  gap: 8px;
+
+  padding:
+    14px
+    12px;
+
+  border: 1px solid #e2ded8;
+
+  border-radius: 5px;
+
+  background: #fff;
 }
 
-.avatarPresetList button {
-  display: grid;
-  aspect-ratio: 1;
-  place-items: center;
-  padding: v.$space-1;
-  overflow: hidden;
-  border: 1px solid transparent;
-  border-radius: v.$radius-md;
-  background: v.$color-white;
-}
 
-.avatarPresetList button:hover,
-.avatarPresetList button:focus-visible,
-.avatarPresetActive {
-  border-color: v.$color-primary !important;
-  background: color-mix(in srgb, v.$color-primary 12%, v.$color-white) !important;
-}
-
-.avatarPresetList button:focus-visible {
-  outline: 2px solid v.$color-primary-light;
-  outline-offset: 2px;
-}
-
-.avatarPresetList img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.infoCard:first-child h2 {
-  margin-bottom: v.$space-1;
-  font-size: v.$font-size-xl;
-  font-weight: v.$font-weight-bold;
-}
-
-/* Figma: 카드 제목 아래 구분선 */
-.infoCard h2 {
-  margin: 0;
-  padding-bottom: v.$space-3;
-  border-bottom: 1px solid v.$color-border;
-  color: v.$color-text-primary;
-  font-size: v.$font-size-lg;
-  font-weight: v.$font-weight-bold;
-  line-height: v.$line-height-tight;
-}
-
-.infoDescription {
-  margin: v.$space-3 0 v.$space-2;
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-sm;
-  line-height: v.$line-height-base;
-}
-
-/* Figma: 이름/이메일/휴대폰/생년월일 사이 구분선 */
-.detailList {
-  display: grid;
-  margin: 0;
-}
-
-.detailRow {
-  display: grid;
-  min-height: 60px;
-  grid-template-columns: 88px minmax(0, 1fr);
-  align-items: center;
-  border-bottom: 1px solid v.$color-border;
-  font-size: v.$font-size-md;
-  line-height: v.$line-height-base;
-}
-
-.detailRow:last-child {
-  border-bottom: 0;
-}
-
-.detailRow dt {
-  color: v.$color-text-muted;
-  font-weight: v.$font-weight-regular;
-}
-
-.detailRow dd {
-  min-width: 0;
-  overflow: hidden;
-  margin: 0;
-  color: v.$color-text-primary;
-  font-weight: v.$font-weight-semibold;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.detailRow .unregisteredValue {
-  display: inline-flex;
-  width: max-content;
-  min-height: 24px;
-  align-items: center;
-  padding: 0 v.$space-2;
-  border-radius: v.$radius-pill;
-  background: color-mix(in srgb, v.$color-surface 55%, v.$color-white);
-  color: v.$color-text-muted;
-  font-size: v.$font-size-xs;
-  font-weight: v.$font-weight-regular;
-}
-
-.editProfileButton {
-  min-width: 136px;
-  height: 44px;
-  align-self: flex-end;
-  margin-top: auto;
-  border-radius: v.$radius-lg;
-  background: v.$color-primary;
-  color: v.$color-white;
-  font-size: v.$font-size-md;
-}
-
-.deliveryCard {
+.avatarOption {
   position: relative;
-  height: auto;
-  min-height: 520px;
-  padding: v.$space-6 v.$space-8 v.$space-8;
-}
 
-.addressList {
-  display: grid;
-  margin-top: v.$space-5;
-}
+  aspect-ratio: 1 / 1;
 
-.addressItem {
-  display: flex;
-  min-width: 0;
-  min-height: 116px;
-  align-items: center;
-  justify-content: space-between;
-  gap: v.$space-4;
-  padding: v.$space-4 0;
-  border-bottom: 1px solid v.$color-border;
-}
-
-.addressItem:last-child {
-  border-bottom: 0;
-}
-
-.addressCopy {
-  min-width: 0;
-}
-
-.addressHeading {
-  display: flex;
-  min-height: 24px;
-  align-items: center;
-  gap: v.$space-2;
-}
-
-.addressHeading strong {
-  color: v.$color-text-primary;
-  font-size: v.$font-size-md;
-  font-weight: v.$font-weight-semibold;
-  line-height: v.$line-height-tight;
-}
-
-.defaultBadge {
-  display: inline-flex;
-  height: 24px;
-  align-items: center;
-  justify-content: center;
-  padding: 0 v.$space-2;
-  border-radius: v.$radius-sm;
-  background: v.$color-primary;
-  color: v.$color-white;
-  font-size: v.$font-size-xs;
-  font-weight: v.$font-weight-semibold;
-  line-height: 1;
-}
-
-.addressCopy p {
-  display: flex;
-  max-width: 420px;
-  align-items: baseline;
-  gap: v.$space-2;
-  margin: v.$space-1 0 0;
   overflow: hidden;
-  color: v.$color-text-muted;
-  font-size: v.$font-size-sm;
-  font-weight: v.$font-weight-regular;
-  line-height: v.$line-height-base;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 
-.addressCopy p span {
-  width: 48px;
-  flex: 0 0 48px;
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-xs;
-}
-
-.addressActions {
-  display: flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: v.$space-2;
-}
-
-.smallPrimaryButton,
-.smallOutlineButton {
-  width: 58px;
-  height: 24px;
   padding: 0;
-  border-radius: v.$radius-sm;
-  font-size: v.$font-size-xs;
-  font-weight: v.$font-weight-medium;
-}
 
-.smallPrimaryButton {
-  background: v.$color-primary;
-  color: v.$color-white;
-}
+  border: 2px solid transparent;
 
-.smallOutlineButton {
-  border-color: v.$color-primary;
-  background: v.$color-white;
-  color: v.$color-text-primary;
-}
+  border-radius: 6px;
 
-.addAddressButton {
-  width: 236px;
-  height: 50px;
-  align-self: center;
-  margin-top: auto;
-  margin-right: 0;
-  border-radius: v.$radius-lg;
-  background: v.$color-primary;
-  color: v.$color-white;
-  font-size: v.$font-size-md;
-}
+  background: #d3d3d3;
 
-.addAddressButton span {
-  margin-right: v.$space-1;
-}
+  cursor: pointer;
 
-.outlineButton:hover,
-.smallOutlineButton:hover {
-  border-color: v.$color-primary;
-  color: v.$color-primary;
-}
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
 
-.primaryButton:hover,
-.editProfileButton:hover,
-.addAddressButton:hover,
-.smallPrimaryButton:hover {
-  background: v.$color-primary-light;
-}
-
-.outlineButton:focus-visible,
-.primaryButton:focus-visible,
-.editProfileButton:focus-visible,
-.addAddressButton:focus-visible,
-.smallPrimaryButton:focus-visible,
-.smallOutlineButton:focus-visible {
-  outline: 2px solid v.$color-primary-light;
-  outline-offset: 2px;
-}
-
-@media (max-width: v.$breakpoint-tablet-max) {
-  .topOrnament,
-  .profileBanner,
-  .infoGrid {
+  img {
     width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
   }
 
-  .profileBanner {
-    min-height: 220px;
-    height: auto;
-    grid-template-columns: 96px minmax(0, 1fr) 104px;
-    grid-template-rows: auto auto;
-    gap: v.$space-3 v.$space-5;
-    padding: v.$space-6;
-  }
-
-  .avatar {
-    width: 96px;
-    height: 96px;
-    grid-row: 1 / 3;
-  }
-
-  .bannerCopy {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .bannerActions {
-    right: auto;
-    grid-column: 2;
-    grid-row: 2;
-    justify-self: start;
-  }
-
-  .mascotPlaceholder {
-    width: 104px;
-    height: 184px;
-    grid-column: 3;
-    grid-row: 1 / 3;
-  }
-
-  .mascot {
-    right: -20px;
-    transform: scale(0.88);
-    transform-origin: right bottom;
-  }
-
-  .infoGrid {
-    grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.15fr);
-    gap: v.$space-5;
-  }
-
-  .infoCard:first-child,
-  .deliveryCard {
-    height: auto;
-    min-height: 480px;
+  &:hover {
+    transform:
+      translateY(-1px);
   }
 }
 
-@media (max-width: v.$breakpoint-mobile-max) {
-  .page {
-    padding-bottom: v.$space-6;
-  }
 
-  .topOrnament {
-    display: none;
-  }
+.selectedAvatar {
+  border-color: #5c9085;
 
-  .profileBanner {
-    display: grid;
-    min-height: 0;
-    grid-template-columns: 64px minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    gap: v.$space-4;
-    padding: v.$space-5;
-    border-radius: v.$radius-xl;
-  }
+  &::after {
+    content: '✓';
 
-  .avatar {
-    width: 64px;
-    height: 64px;
-    flex-basis: 64px;
-    grid-column: 1;
-    grid-row: 1;
-  }
+    position: absolute;
 
-  .avatar svg {
-    width: 44px;
-    height: 44px;
-  }
+    top: 3px;
+    right: 3px;
 
-  .avatarPickerHeading {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: v.$space-1;
-  }
+    width: 15px;
+    height: 15px;
 
-  .bannerCopy {
-    grid-column: 2;
-    grid-row: 1;
-    margin-left: 0;
-  }
-
-  .bannerCopy h2 {
-    font-size: v.$font-size-xl;
-  }
-
-  .memberName {
-    font-size: v.$font-size-3xl;
-  }
-
-  .bannerCopy p {
-    font-size: v.$font-size-sm;
-  }
-
-  .memberMeta {
-    flex-wrap: wrap;
-    gap: v.$space-2;
-  }
-
-  .bannerActions {
-    position: static;
     display: flex;
-    grid-column: 1 / -1;
-    width: 100%;
-    gap: v.$space-2;
-    margin-top: v.$space-1;
-    padding-right: 0;
-  }
+    align-items: center;
+    justify-content: center;
 
-  .outlineButton,
-  .primaryButton {
-    width: auto;
-    min-width: 0;
-    height: 42px;
-    flex: 1;
-  }
+    border-radius: 50%;
 
-  .mascot {
-    right: 6px;
-    bottom: 5px;
-    transform: scale(0.47);
-    transform-origin: right bottom;
-  }
+    background: #56897e;
 
-  .mascotPlaceholder {
-    display: none;
-  }
+    color: #fff;
 
-  .infoGrid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: v.$space-5;
-    margin-top: v.$space-5;
-  }
-
-  .infoCard,
-  .infoCard:first-child,
-  .deliveryCard {
-    height: auto;
-    min-height: 0;
-    padding: v.$space-6 v.$space-5;
-  }
-
-  .infoCard h2 {
-    font-size: v.$font-size-lg;
-  }
-
-  .detailRow {
-    min-height: 58px;
-    grid-template-columns: 92px minmax(0, 1fr);
-    font-size: v.$font-size-sm;
-  }
-
-  .editProfileButton {
-    width: 100%;
-    height: 50px;
-    margin-top: v.$space-8;
-    font-size: v.$font-size-md;
-  }
-
-  .addressList {
-    margin-top: v.$space-3;
-  }
-
-  .addressItem {
-    min-height: 0;
-    align-items: flex-start;
-    flex-direction: column;
-    padding: v.$space-5 0;
-  }
-
-  .addressCopy p {
-    max-width: none;
-    overflow: visible;
-    white-space: normal;
-  }
-
-  .addressActions {
-    align-self: flex-end;
-  }
-
-  .addAddressButton {
-    width: 100%;
-    height: 48px;
-    margin-top: v.$space-8;
-    margin-right: 0;
+    font-size: 8px;
+    font-weight: 700;
   }
 }
 
-/* Profile editing states */
-.formCard {
-  min-height: 552px;
+
+.avatarActions {
+  display: flex;
+  justify-content: flex-end;
+
+  margin-top: 14px;
 }
 
-.fieldList {
-  display: grid;
-  margin: 0;
+
+.primarySmallButton {
+  min-width: 72px;
+  height: 29px;
+
+  padding:
+    0
+    13px;
+
+  border: 0;
+
+  border-radius: 5px;
+
+  background: #5a9085;
+
+  color: #fff;
+
+  font-size: 9px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease;
+
+  &:hover {
+    background: #4c7e74;
+  }
 }
+
+
+/* =========================
+   EDIT FORM
+========================= */
+
+.editForm {
+  padding:
+    1px
+    12px
+    0;
+
+  h3 {
+    margin:
+      0
+      0
+      19px;
+
+    color: #4a433c;
+
+    font-size: 12px;
+    font-weight: 700;
+  }
+}
+
+
+.formRows {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
 
 .formRow {
   display: grid;
-  min-height: 68px;
-  grid-template-columns: 104px minmax(0, 1fr);
+
+  grid-template-columns:
+    104px
+    minmax(0, 1fr);
+
   align-items: center;
-  gap: v.$space-4;
-  border-bottom: 1px solid v.$color-border;
-  color: v.$color-text-muted;
-  font-size: v.$font-size-md;
-  font-weight: v.$font-weight-medium;
+
+  gap: 12px;
+
+  > span:first-child {
+    color: #615a53;
+
+    font-size: 9px;
+    font-weight: 700;
+  }
+
+  input[type='text'],
+  input[type='password'],
+  input[type='email'],
+  input[type='tel'],
+  input[type='date'] {
+    width: 100%;
+    height: 34px;
+
+    padding:
+      0
+      12px;
+
+    border:
+      1px solid
+      #ddd8d1;
+
+    border-radius: 4px;
+
+    outline: none;
+
+    background: #fff;
+
+    color: #555049;
+
+    font-size: 9px;
+
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &::placeholder {
+      color: #bab5ae;
+    }
+
+    &:focus {
+      border-color: #7da298;
+
+      box-shadow:
+        0 0 0 2px
+        rgba(
+          98,
+          145,
+          133,
+          0.08
+        );
+    }
+
+    &:read-only {
+      background: #faf9f7;
+
+      color: #77716a;
+    }
+  }
 }
 
-.formRow input,
-.formRow select {
-  width: 100%;
-  height: 30px;
-  padding: 0 v.$space-3;
-  border: 0;
-  border-radius: v.$radius-md;
-  outline: 0;
-  background: color-mix(in srgb, v.$color-border 40%, v.$color-white);
-  color: v.$color-text-primary;
-  font: inherit;
-  font-weight: v.$font-weight-medium;
+
+/* =========================
+   성별 RADIO
+========================= */
+
+.radioGroup {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+
+  min-height: 34px;
+
+  label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    cursor: pointer;
+
+    span {
+      color: #69635c;
+      font-size: 9px;
+      font-weight: 400;
+    }
+  }
+
+  input[type='radio'] {
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 14px;
+    height: 14px;
+
+    flex-shrink: 0;
+
+    margin: 0;
+
+    border: 1px solid #aaa49c;
+    border-radius: 50%;
+
+    background: #fff;
+
+    cursor: pointer;
+
+    position: relative;
+
+    &:checked {
+      border-color: #5b8d82;
+
+      &::after {
+        content: '';
+
+        position: absolute;
+
+        top: 50%;
+        left: 50%;
+
+        width: 7px;
+        height: 7px;
+
+        border-radius: 50%;
+
+        background: #5b8d82;
+
+        transform: translate(-50%, -50%);
+      }
+    }
+  }
 }
 
-.formRow input::placeholder {
-  color: v.$color-text-muted;
+/* =========================
+   마케팅 동의
+========================= */
+
+.marketingSection {
+  margin-top: 24px;
+
+  h4 {
+    margin: 0 0 12px;
+
+    color: #4e4740;
+
+    font-size: 10px;
+    font-weight: 700;
+  }
 }
 
-.formRow strong {
-  color: v.$color-text-primary;
-  font-weight: v.$font-weight-semibold;
-}
 
-.formRow input:focus-visible {
-  outline: 2px solid v.$color-primary-light;
-  outline-offset: 2px;
-}
+.marketingMain {
+  display: flex;
+  align-items: center;
 
-.completeButton {
-  width: 263px;
-  height: 56px;
-  align-self: center;
-  margin-top: v.$space-6;
-  border: 0;
-  border-radius: v.$radius-lg;
-  background: v.$color-taupe;
-  color: v.$color-white;
-  font: inherit;
-  font-size: v.$font-size-lg;
-  font-weight: v.$font-weight-semibold;
+  gap: 8px;
+
+  min-height: 26px;
+
   cursor: pointer;
+
+  span {
+    color: #6d675f;
+
+    font-size: 8px;
+    font-weight: 400;
+  }
+
+  em {
+    margin-left: 3px;
+
+    color: #a39d95;
+
+    font-style: normal;
+  }
+
+  input[type='checkbox'] {
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 14px;
+    height: 14px;
+
+    flex-shrink: 0;
+
+    margin: 0;
+
+    border: 1px solid #aaa49c;
+    border-radius: 50%;
+
+    background: #fff;
+
+    cursor: pointer;
+
+    position: relative;
+
+    &:checked {
+      border-color: #5b8d82;
+      background: #5b8d82;
+
+      &::after {
+        content: '';
+
+        position: absolute;
+
+        left: 4px;
+        top: 2px;
+
+        width: 4px;
+        height: 7px;
+
+        border-right: 1.5px solid #fff;
+        border-bottom: 1.5px solid #fff;
+
+        transform: rotate(45deg);
+      }
+    }
+  }
 }
+
+
+/* 문자 / 이메일 */
+
+.marketingChannels {
+  display: flex;
+  align-items: center;
+
+  gap: 24px;
+
+  padding: 5px 0 0 24px;
+
+  label {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 7px;
+
+    cursor: pointer;
+  }
+
+  span {
+    color: #716b64;
+
+    font-size: 8px;
+  }
+
+  input[type='checkbox'] {
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 14px;
+    height: 14px;
+
+    flex-shrink: 0;
+
+    margin: 0;
+
+    border: 1px solid #aaa49c;
+    border-radius: 50%;
+
+    background: #fff;
+
+    cursor: pointer;
+
+    position: relative;
+
+    &:checked {
+      border-color: #5b8d82;
+      background: #5b8d82;
+
+      &::after {
+        content: '';
+
+        position: absolute;
+
+        left: 4px;
+        top: 2px;
+
+        width: 4px;
+        height: 7px;
+
+        border-right: 1.5px solid #fff;
+        border-bottom: 1.5px solid #fff;
+
+        transform: rotate(45deg);
+      }
+    }
+  }
+}
+
+/* =========================
+   FORM BUTTON
+========================= */
 
 .formActions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: v.$space-3;
-  margin-top: auto;
-  padding-top: v.$space-6;
-}
-
-.formActions .completeButton,
-.cancelButton {
-  width: 132px;
-  height: 48px;
-  align-self: auto;
-  margin-top: 0;
-  border-radius: v.$radius-lg;
-  font: inherit;
-  font-size: v.$font-size-md;
-  font-weight: v.$font-weight-semibold;
-  cursor: pointer;
-}
-
-.formActions .completeButton {
-  background: v.$color-primary;
-}
-
-.cancelButton {
-  border: 1px solid v.$color-border;
-  background: v.$color-white;
-  color: v.$color-text-secondary;
-}
-
-.cancelButton:hover {
-  border-color: v.$color-primary;
-  color: v.$color-primary;
-}
-
-.cancelButton:focus-visible,
-.completeButton:focus-visible {
-  outline: 2px solid v.$color-primary-light;
-  outline-offset: 2px;
-}
-
-.completeButton:disabled {
-  cursor: wait;
-  opacity: 0.65;
-}
-
-.passwordCard {
-  min-height: 497px;
-}
-
-.passwordCard .formRow input {
-  padding: 0 v.$space-2;
-  font-size: v.$font-size-xs;
-  letter-spacing: -0.02em;
-}
-
-.deliveryFormCard {
-  min-height: 632px;
-  padding-right: v.$space-10;
-}
-
-.deliveryFormCard .formRow input {
-  width: min(100%, 240px);
-}
-
-.defaultCheck {
-  display: inline-flex;
-  align-items: center;
-  gap: v.$space-2;
-  margin-top: v.$space-4;
-  color: v.$color-primary;
-  font-size: v.$font-size-sm;
-  font-weight: v.$font-weight-medium;
-  cursor: pointer;
-}
-
-.defaultCheck input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: 0;
-  opacity: 0;
-}
-
-.checkMark {
-  display: grid;
-  width: v.$space-4;
-  height: v.$space-4;
-  flex: 0 0 auto;
-  place-items: center;
-  border: 1px solid v.$color-primary;
-  border-radius: v.$radius-pill;
-  background: v.$color-white;
-  color: transparent;
-  font-size: 10px;
-  font-weight: v.$font-weight-bold;
-  line-height: 1;
-}
-
-.defaultCheck input:checked + .checkMark {
-  background: v.$color-primary;
-  color: v.$color-white;
-}
-
-.defaultCheck input:focus-visible + .checkMark {
-  outline: 2px solid v.$color-primary-light;
-  outline-offset: 2px;
-}
-
-.emptyCard {
-  min-height: 707px;
-  align-items: center;
   justify-content: center;
-  padding: v.$space-10;
+
+  gap: 8px;
+
+  margin-top: 24px;
+}
+
+
+.submitButton,
+.cancelEditButton {
+  min-width: 134px;
+  height: 34px;
+
+  padding:
+    0
+    16px;
+
+  border-radius: 4px;
+
+  font-size: 9px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+
+.submitButton {
+  border: 1px solid #5a8e83;
+
+  background: #5a8e83;
+
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: #4c7d73;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+
+    cursor: default;
+  }
+}
+
+
+.cancelEditButton {
+  border: 1px solid #d9d4cc;
+
+  background: #fff;
+
+  color: #716a63;
+
+  &:hover {
+    background: #f8f6f2;
+  }
+}
+
+
+.formError {
+  margin:
+    14px
+    0
+    0;
+
+  color: #a95f56;
+
+  font-size: 8px;
+
   text-align: center;
 }
 
-.emptyIcon {
+
+/* =========================
+   PASSWORD MODAL
+========================= */
+
+.modalBackdrop {
+  position: absolute;
+
+  z-index: 30;
+
+  inset: 0;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  padding-top: 126px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.48
+    );
+
+  backdrop-filter:
+    blur(0.5px);
+}
+
+
+.passwordModal {
   position: relative;
-  display: grid;
-  width: 134px;
-  height: 134px;
-  place-items: center;
-  margin-bottom: v.$space-10;
-  border-radius: v.$radius-pill;
-  background: color-mix(in srgb, v.$color-primary 45%, v.$color-white);
-}
 
-.deliveryEmptyIcon svg {
-  width: 62px;
-  height: 62px;
-  stroke: v.$color-white;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2.5;
-}
+  width: calc(100% - 58px);
+  max-width: 390px;
 
-.emptyCard h2 {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  color: v.$color-text-primary;
-  font-size: v.$font-size-2xl;
-}
+  padding:
+    23px
+    27px
+    20px;
 
-.emptyCard p {
-  margin: v.$space-6 0 v.$space-10;
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-md;
-  line-height: v.$line-height-relaxed;
-}
+  border-radius: 15px;
 
-.emptyCard .editProfileButton,
-.emptyCard .addAddressButton {
-  margin-top: 0;
-  margin-right: 0;
-}
+  background: #e7f2e9;
 
-@media (max-width: v.$breakpoint-mobile-max) {
-  .formCard,
-  .passwordCard,
-  .deliveryFormCard,
-  .emptyCard {
-    min-height: 0;
+  box-shadow:
+    0 6px 22px
+    rgba(
+      80,
+      89,
+      77,
+      0.08
+    );
+
+  h3 {
+    margin:
+      0
+      0
+      5px;
+
+    color: #4c4b43;
+
+    font-size: 13px;
+    font-weight: 700;
   }
+}
+
+
+.modalClose {
+  position: absolute;
+
+  top: 10px;
+  right: 14px;
+
+  width: 23px;
+  height: 23px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #7a7d74;
+
+  font-size: 17px;
+
+  cursor: pointer;
+}
+
+
+.modalDescription {
+  margin:
+    0
+    0
+    20px;
+
+  color: #7c8179;
+
+  font-size: 7px;
+  line-height: 1.5;
+}
+
+
+/* =========================
+   VERIFY FORM
+========================= */
+
+.verifyRows {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+
+.verifyRow {
+  display: grid;
+
+  grid-template-columns:
+    72px
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: 10px;
+
+  > span {
+    color: #595a53;
+
+    font-size: 9px;
+    font-weight: 700;
+  }
+
+  strong {
+    color: #73766f;
+
+    font-size: 8px;
+    font-weight: 500;
+  }
+
+  input {
+    width: 100%;
+    height: 29px;
+
+    padding:
+      0
+      10px;
+
+    border: 1px solid #dce4dc;
+
+    border-radius: 4px;
+
+    outline: none;
+
+    background: #fff;
+
+    color: #54564f;
+
+    font-size: 9px;
+
+    &:focus {
+      border-color: #78a498;
+    }
+  }
+}
+
+
+.verifyError {
+  margin:
+    10px
+    0
+    0;
+
+  color: #a15e54;
+
+  font-size: 7px;
+
+  text-align: center;
+}
+
+
+.verifyButton {
+  width: 174px;
+  height: 32px;
+
+  display: block;
+
+  margin:
+    18px
+    auto
+    0;
+
+  border: 1px solid #60998b;
+
+  border-radius: 5px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.35
+    );
+
+  color: #507d73;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: #5d9186;
+
+    color: #fff;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+
+    cursor: default;
+  }
+}
+
+
+/* =========================
+   NOTICE
+========================= */
+
+.notice {
+  position: fixed;
+
+  z-index: 1000;
+
+  left: 50%;
+  bottom: 40px;
+
+  margin: 0;
+
+  padding:
+    10px
+    17px;
+
+  border-radius: 30px;
+
+  background:
+    rgba(
+      55,
+      51,
+      47,
+      0.9
+    );
+
+  color: #fff;
+
+  font-size: 10px;
+
+  transform:
+    translateX(-50%);
+}
+
+
+/* =========================
+   LOADING
+========================= */
+
+.loading {
+  min-height: 420px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0;
+
+  color: #99938b;
+
+  font-size: 10px;
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 1024px) {
+
+  .profileCard {
+    padding:
+      26px
+      24px;
+  }
+
 
   .formRow {
-    min-height: 0;
+    grid-template-columns:
+      90px
+      minmax(0, 1fr);
+  }
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 767px) {
+
+  .profileCard {
+    min-height: auto;
+
+    padding:
+      22px
+      16px
+      26px;
+
+    border-radius: 14px;
+  }
+
+
+  .pageHeader {
+    h2 {
+      font-size: 19px;
+    }
+  }
+
+
+  .avatarPicker {
+    grid-template-columns:
+      repeat(
+        4,
+        minmax(0, 1fr)
+      );
+  }
+
+
+  .editForm {
+    padding: 0;
+  }
+
+
+  .formRow {
     grid-template-columns: 1fr;
-    gap: v.$space-2;
-    padding: v.$space-3 0;
-    font-size: v.$font-size-sm;
+
+    gap: 6px;
   }
 
-  .formRow input,
-  .formRow select {
-    height: 42px;
+
+  .radioGroup {
+    gap: 15px;
   }
 
-  .deliveryFormCard .formRow input {
-    width: 100%;
-  }
 
   .formActions {
+    flex-direction: column-reverse;
+  }
+
+
+  .submitButton,
+  .cancelEditButton {
     width: 100%;
-    gap: v.$space-2;
-    padding-top: v.$space-6;
   }
 
-  .formActions .completeButton,
-  .cancelButton {
-    width: auto;
-    height: 48px;
-    flex: 1;
+
+  .modalBackdrop {
+    padding:
+      110px
+      14px
+      0;
   }
 
-  .emptyCard {
-    padding: v.$space-12 v.$space-5;
-  }
 
-  .emptyIcon {
-    width: 96px;
-    height: 96px;
-    margin-bottom: v.$space-6;
+  .passwordModal {
+    width: 100%;
   }
 }

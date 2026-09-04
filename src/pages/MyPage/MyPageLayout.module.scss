@@ -1,369 +1,435 @@
-@use '../../styles/variables' as v;
-
 .page {
-  min-height: 55vh;
-  padding: v.$space-16 0 v.$space-16;
-  background: v.$color-bg;
-  color: v.$color-text-primary;
-}
-
-/* =========================
-   페이지 상단 제목
-========================= */
-
-.pageHeader {
-  display: flex;
-  width: calc(100% - #{v.$side-margin-desktop * 2});
-  max-width: v.$container-max;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin: 0 auto v.$space-3;
-}
-
-.ornamentArea {
-  position: relative;
-  width: calc(100% - #{v.$side-margin-desktop * 2});
-  max-width: v.$container-max;
-  margin: 0 auto v.$space-8;
-}
-
-.topOrnament {
-  display: block;
   width: 100%;
-  height: auto;
-  transform: scaleX(1.05);
-  transform-origin: left center;
+  min-height: 100vh;
+  padding: 60px 0 100px;
+  background: #f8f7f3;
 }
 
-.title {
-  margin: 0;
-  font-size: v.$font-size-2xl;
-  font-weight: v.$font-weight-bold;
-  line-height: v.$line-height-tight;
-}
-
-.description {
-  margin: v.$space-2 0 0;
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-sm;
-  line-height: v.$line-height-base;
-}
-
-/* =========================
-   MyPage 전체 Layout
-========================= */
 
 .layout {
-  display: grid;
-  width: calc(100% - #{v.$side-margin-desktop * 2});
-  max-width: v.$container-max;
-  margin-inline: auto;
-  grid-template-columns:
-    calc(v.$grid-gutter * 9) minmax(0, 1fr);
+  width: calc(100% - 80px);
+  max-width: 1280px;
+  margin: 0 auto;
 
-  gap: v.$space-6;
-  align-items: stretch;
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
 }
 
+
 /* =========================
-   Sidebar
+   SIDEBAR
 ========================= */
 
 .sidebar {
-  position: sticky;
-  top: v.$space-6;
-  align-self: start;
-  display: flex;
-  min-height: 62vh;
-  flex-direction: column;
+  padding: 34px 28px 42px;
+
+  background: #fff;
+  border-radius: 20px;
+
+  min-height: 760px;
 }
 
-@media (min-width: v.$breakpoint-desktop-min) {
-  .sidebar {
-    width: calc(v.$grid-gutter * 11);
-    transform: translateX(
-      min(0px, calc((#{v.$container-max + (v.$side-margin-desktop * 6)} - 100vw) / 2))
-    );
-  }
-}
-
-.navigation {
-  display: flex;
-  flex-direction: column;
-  gap: v.$space-4;
-}
-
-/* 기본 = 비활성 메뉴 */
-.menuItem {
-  display: flex;
-  align-items: center;
-  gap: v.$space-4;
-
-  width: 86%;
-
-  min-height: 48px;
-  padding: 0 v.$space-3;
-
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-xl;
-
-  background: v.$color-white;
-  color: v.$color-text-muted;
-
-  font-size: v.$font-size-sm;
-  text-decoration: none;
-
-  box-shadow: v.$shadow-sm;
-
-  transition:
-    width v.$transition-fast,
-    transform v.$transition-fast,
-    background-color v.$transition-fast,
-    color v.$transition-fast,
-    border-color v.$transition-fast,
-    box-shadow v.$transition-fast;
-}
-
-/* 활성 메뉴만 길게 */
-.active {
-  width: 100%;
-  min-height: 48px;
-
-  border-color: v.$color-primary;
-  background: v.$color-primary;
-  color: v.$color-white;
-  font-weight: v.$font-weight-semibold;
-
-  box-shadow: 0 3px 6px rgb(0 0 0 / 12%);
-}
-
-.menuDot {
-  width: v.$space-4;
-  height: v.$space-4;
-  flex: 0 0 auto;
-
-  border-radius: v.$radius-pill;
-  background: v.$color-surface;
-}
-
-@media (hover: hover) and (pointer: fine) and (min-width: 768px) {
-  .menuItem:not(.active):hover {
-    color: v.$color-primary;
-  }
-}
-
-.menuItem:focus-visible,
-.logoutButton:focus-visible {
-  outline: 2px solid v.$color-primary-light;
-  outline-offset: 2px;
-}
-
-.active {
-  border-color: v.$color-primary;
-  background: v.$color-primary;
-  color: v.$color-white;
-  font-weight: v.$font-weight-semibold;
-}
-
-.active .menuDot {
-  background: v.$color-white;
-}
 
 /* =========================
-   Logout
+   PROFILE
 ========================= */
 
-.logoutButton {
-  position: absolute;
-  right: 0;
-  bottom: calc(100% + v.$space-3);
+.profileArea {
+  padding-bottom: 34px;
+}
+
+.profileTop {
   display: flex;
-  height: 36px;
   align-items: center;
-  gap: v.$space-3;
+  gap: 16px;
+}
+
+.profileImage {
+  width: 62px;
+  height: 62px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 0 v.$space-2;
 
-  border: 0;
-  background: transparent;
+  border-radius: 50%;
 
-  color: v.$color-text-muted;
-  font: inherit;
+  background: #abc4c3;
 
-  cursor: pointer;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
 }
 
-.logoutButton:hover {
-  color: v.$color-primary;
-}
-
-.logoutIcon {
-  width: v.$space-6;
-  height: v.$space-6;
-
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.loginIcon {
-  transform: scaleX(-1);
-}
-
-/* =========================
-   Outlet Content
-========================= */
-
-.content {
-  padding: 0 0 0 v.$space-4;
-  width: 100%;
-  max-width: none;
+.profileInfo {
   min-width: 0;
 }
 
-/* =========================
-   Tablet
-========================= */
+.nameRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
 
-@media (max-width: 1500px) {
-  .title { font-size: v.$font-size-3xl; }
-  .description { font-size: v.$font-size-md; }
+.userName {
+  color: #292621;
 
-  .layout {
-    grid-template-columns: calc(v.$grid-gutter * 9) minmax(0, 1fr);
-    gap: v.$space-8;
-  }
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+}
 
-  .content {
-    width: 100%;
-    padding: 0 0 0 v.$space-4;
-  }
+.levelText {
+  color: #9a958d;
 
-  .menuItem,
-  .active {
-    width: 100%;
-    min-height: 52px;
-  }
+  font-size: 11px;
+  font-weight: 500;
+}
 
-  .menuItem {
-    padding-inline: v.$space-4;
-    font-size: v.$font-size-sm;
+.email {
+  margin-top: 4px;
+
+  color: #a29d96;
+
+  font-size: 12px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.membershipInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 18px;
+}
+
+.membershipBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  padding: 5px 9px;
+
+  border-radius: 20px;
+
+  background: #e7f2ec;
+
+  color: #40715e;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.badgeDot {
+  width: 10px;
+  height: 10px;
+
+  display: inline-block;
+
+  border-radius: 50%;
+  background: #4b8873;
+
+  position: relative;
+
+  &::after {
+    content: '';
+
+    position: absolute;
+
+    width: 4px;
+    height: 2px;
+
+    left: 3px;
+    top: 3px;
+
+    border-left: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+
+    transform: rotate(-45deg);
   }
 }
 
-@media (max-width: v.$breakpoint-tablet-max) {
-  .pageHeader {
-    width: calc(100% - #{v.$side-margin-tablet * 2});
+.nextLevel {
+  color: #858078;
+
+  font-size: 9px;
+  white-space: nowrap;
+
+  strong {
+    color: #554f47;
+    font-weight: 600;
   }
-
-  .ornamentArea {
-    width: calc(100% - v.$side-margin-tablet * 2);
-    margin: 0 auto v.$space-8;
-  }
-
-  .layout {
-    width: calc(100% - #{v.$side-margin-tablet * 2});
-    grid-template-columns:
-      calc(v.$grid-gutter * 8) minmax(0, 1fr);
-
-    gap: v.$space-8;
-  }
-
-  .content {
-    width: 100%;
-    padding: 0 0 0 v.$space-4;
-  }
-
 }
 
+
+.progressArea {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin-top: 9px;
+}
+
+.progressTrack {
+  flex: 1;
+  height: 7px;
+
+  overflow: hidden;
+
+  border-radius: 20px;
+  background: #d8d8d5;
+}
+
+.progressBar {
+  display: block;
+
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: #519888;
+}
+
+.progressText {
+  color: #8c877f;
+
+  font-size: 8px;
+  white-space: nowrap;
+}
+
+
 /* =========================
-   Mobile
+   COMMON SECTION
 ========================= */
 
-@media (max-width: v.$breakpoint-mobile-max) {
+.sectionTitle,
+.groupTitle {
+  color: #918c84;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  margin: 0 0 12px;
+}
+
+
+/* =========================
+   QUICK MENU
+========================= */
+
+.quickSection {
+  margin-top: 28px;
+}
+
+.quickMenuList {
+  display: flex;
+  flex-direction: column;
+}
+
+.quickMenuItem {
+  min-height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 2px;
+
+  color: #39352f;
+
+  text-decoration: none;
+
+  border-radius: 8px;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    background: #f8f6f1;
+  }
+
+  &.active {
+    color: #8a5d26;
+
+    .quickIcon {
+      color: #8a5d26;
+    }
+  }
+}
+
+.quickMenuLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.quickIcon {
+  width: 20px;
+  height: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #6f6b64;
+
+  svg {
+    width: 19px;
+    height: 19px;
+  }
+}
+
+.quickValue {
+  color: #39352f;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+/* =========================
+   NORMAL MENU
+========================= */
+
+.navigation {
+  margin-top: 38px;
+}
+
+.menuGroup {
+  & + & {
+    margin-top: 36px;
+  }
+}
+
+.groupMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.menuItem {
+  display: block;
+
+  padding: 7px 2px;
+
+  border-radius: 7px;
+
+  color: #38342e;
+
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+
+  text-decoration: none;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
+
+  &:hover {
+    color: #855b2a;
+    background: #faf8f4;
+  }
+
+  &.active {
+    color: #855b2a;
+    font-weight: 700;
+  }
+}
+
+
+/* 아직 페이지 연결 안 된 메뉴 */
+.disabled {
+  cursor: default;
+
+  &:hover {
+    background: transparent;
+    color: inherit;
+  }
+}
+
+
+/* =========================
+   CONTENT
+========================= */
+
+.content {
+  min-width: 0;
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 1024px) {
   .page {
-    padding: v.$space-8 0 v.$space-12;
-  }
-
-  .pageHeader {
-    width: auto;
-    margin-bottom: v.$space-6;
-    margin-inline: v.$side-margin-mobile;
-  }
-
-  .ornamentArea {
-    display: flex;
-    width: auto;
-    justify-content: flex-end;
-    margin: 0 v.$side-margin-mobile v.$space-5;
-  }
-
-  .topOrnament {
-    display: none;
-  }
-
-  .title {
-    font-size: v.$font-size-3xl;
-  }
-
-  .description {
-    font-size: v.$font-size-md;
+    padding: 40px 0 70px;
   }
 
   .layout {
-    display: block;
-    width: 100%;
-    margin-inline: 0;
-  }
+    width: calc(100% - 48px);
 
-  .content {
-    padding: 0;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 18px;
   }
 
   .sidebar {
-    position: static;
-    top: auto;
-    align-self: auto;
+    padding: 28px 22px 36px;
+  }
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 767px) {
+  .page {
+    padding: 20px 0 60px;
+  }
+
+  .layout {
+    width: calc(100% - 32px);
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 20px;
+  }
+
+  .sidebar {
+    width: 100%;
     min-height: auto;
-    margin-bottom: v.$space-8;
-    padding: 0 v.$side-margin-mobile;
+
+    padding: 24px 20px;
+
+    border-radius: 16px;
   }
 
   .navigation {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: v.$space-2;
+    margin-top: 30px;
   }
 
-  .menuItem {
-    min-height: v.$space-12;
-    padding: 0 v.$space-3;
-
-    border-left: 1px solid v.$color-border;
-    border-radius: v.$radius-md;
-
-    font-size: v.$font-size-sm;
-  }
-
-  .menuDot {
-    width: v.$space-3;
-    height: v.$space-3;
-  }
-
-  .active {
-    border-color: v.$color-primary;
-    min-height: v.$space-12;
-  }
-
-  .logoutButton {
-    position: static;
+  .menuGroup {
+    & + & {
+      margin-top: 28px;
+    }
   }
 
   .content {
-    width: auto;
-    max-width: none;
-    margin: 0 v.$side-margin-mobile;
+    width: 100%;
   }
 }
