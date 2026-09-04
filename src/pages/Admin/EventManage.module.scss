@@ -188,6 +188,12 @@ $radius-control: 8px;
   }
 }
 
+.managementButtons { display: flex; gap: 8px; }
+.winnerButton {
+  height: 38px; padding: 0 18px; color: $primary; background: $bg-surface; border: 1px solid $primary; border-radius: $radius-control; font-size: 13px; font-weight: 600; cursor: pointer;
+  &:hover { color: #fff; background: $primary; }
+}
+
 // ==========================================
 // 상단 요약 카드 (4 Column)
 // ==========================================
@@ -240,7 +246,7 @@ $radius-control: 8px;
   justify-content: center;
   flex-shrink: 0;
 
-  i { font-style: normal; font-weight: 700; font-size: 15px; }
+  img { width: 25px; height: 25px; object-fit: contain; }
 
   &.pendingWinner { background: $info-subtle; color: $info; }
   &.unannounced { background: $danger-subtle; color: $danger; }
@@ -368,6 +374,8 @@ $radius-control: 8px;
 
     .evThumbPlaceholder {
       width: 52px; height: 52px; background: #eae7df; border-radius: 8px; flex-shrink: 0;
+      overflow: hidden;
+      img { width: 100%; height: 100%; object-fit: cover; }
     }
 
     .evTextInfo {
@@ -437,7 +445,7 @@ $radius-control: 8px;
 
 .selectedSummaryCard {
   display: flex; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid #f2efe8; margin-bottom: 14px;
-  .scThumb { width: 56px; height: 56px; background: #eae7df; border-radius: 8px; flex-shrink: 0; }
+  .scThumb { width: 76px; height: 56px; overflow: hidden; background: #eae7df; border-radius: 8px; flex-shrink: 0; img { width: 100%; height: 100%; object-fit: cover; } }
   .scInfo {
     display: flex; flex-direction: column; gap: 3px; flex: 1; overflow: hidden;
     h3 { font-size: 13px; font-weight: 700; color: $text-title; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -466,6 +474,12 @@ $radius-control: 8px;
 .detailFormBody {
   display: flex; flex-direction: column; gap: 12px;
 }
+
+.dateFields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.bannerUpload { display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 16 / 7; overflow: hidden; color: $text-caption; background: #f2efe9; border: 1px dashed $border-color; border-radius: 8px; cursor: pointer; img { width: 100%; height: 100%; object-fit: cover; } }
+.createButton { height: 40px; margin-top: 8px; color: #fff; background: $primary; border: 0; border-radius: $radius-control; font-size: 13px; font-weight: 700; cursor: pointer; &:hover { background: $primary-hover; } }
+.winnerManageBody { display: flex; flex-direction: column; gap: 10px; > p { margin: 0 0 6px; color: $text-caption; font-size: 12px; } }
+.winnerEventRow { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px; background: #fbfaf8; border: 1px solid $border-color; border-radius: 8px; span { min-width: 0; display: flex; flex-direction: column; gap: 3px; } strong { overflow: hidden; color: $text-title; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; } small { color: $text-caption; font-size: 11px; } button { flex-shrink: 0; padding: 6px 9px; color: $primary; background: #fff; border: 1px solid $primary; border-radius: 6px; font-size: 11px; cursor: pointer; } }
 
 .inputGroup {
   display: flex; flex-direction: column; gap: 4px; font-size: 12px;

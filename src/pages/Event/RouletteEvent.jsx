@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { doc, runTransaction, serverTimestamp } from 'firebase/firestore'
-import { subscribeToAuthState } from '../../firebase/auth'
-import { db } from '../../firebase/firebase'
+import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
 import { getCollection, getDocument } from '../../firebase/firestore'
+import { saveEventParticipation } from '../../services/eventParticipation'
 import { PATHS } from '../../routes/paths'
 import eventsData from '../../data/events.json'
 import backgroundImage from '../../assets/images/eventPage/background2.jpg'
@@ -13,6 +12,7 @@ import rouletteFront from '../../assets/images/eventPage/roulette1.png'
 import makdong from '../../assets/characters/M007_Poses07.png'
 import running2 from '../../assets/images/eventPage/running2.png'
 import running3 from '../../assets/images/eventPage/running3.png'
+import giftIcon from '../../assets/icons/gift.png'
 import fallbackGift from '../../assets/images/products/product24.png'
 import fallbackLiquor from '../../assets/images/products/product2.png'
 import fallbackFood from '../../assets/images/products/product19.png'
@@ -89,6 +89,7 @@ const RouletteEvent = () => {
   const currentRotationRef = useRef(0)
   const loginNoticeTimerRef = useRef(null)
   const [user, setUser] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [products, setProducts] = useState([])
   const [hasParticipated, setHasParticipated] = useState(false)
   const [isSpinning, setIsSpinning] = useState(false)
@@ -106,16 +107,21 @@ const RouletteEvent = () => {
       setUser(member)
 
       if (!member) {
+        setIsAdmin(false)
         setHasParticipated(false)
         return
       }
 
       try {
-        const participation = await getDocument(
-          'eventParticipations',
-          `${EVENT_ID}_${member.uid}`
-        )
-        if (active) setHasParticipated(Boolean(participation))
+        const [participation, memberData] = await Promise.all([
+          getDocument('eventParticipations', `${EVENT_ID}_${member.uid}`),
+          getCurrentUserData(member.uid),
+        ])
+        const admin = memberData?.role === 'admin'
+        if (active) {
+          setIsAdmin(admin)
+          setHasParticipated(Boolean(participation) && !admin)
+        }
       } catch {
         if (active) setErrorMessage('참여 정보를 불러오지 못했습니다.')
       }
@@ -175,32 +181,11 @@ const RouletteEvent = () => {
   const saveParticipation = async (prize) => {
     if (!user) throw new Error('LOGIN_REQUIRED')
 
-    const participationRef = doc(
-      db, 'eventParticipations', `${EVENT_ID}_${user.uid}`
-    )
-    const userRef = doc(db, 'users', user.uid)
-
-    await runTransaction(db, async (transaction) => {
-      const participationSnapshot = await transaction.get(participationRef)
-      if (participationSnapshot.exists()) throw new Error('ALREADY_PARTICIPATED')
-
-      if (prize.type === 'point') {
-        const userSnapshot = await transaction.get(userRef)
-        const currentPoints = Number(userSnapshot.data()?.points ?? 0)
-        transaction.update(userRef, { points: currentPoints + prize.points })
-      }
-
-      transaction.set(participationRef, {
-        eventId: EVENT_ID,
-        userId: user.uid,
-        eventTitle: EVENT_TITLE,
-        rewardType: prize.type,
-        rewardRank: prize.rank,
-        rewardName: prize.name,
-        rewardProductId: prize.productId ?? null,
-        rewardPoints: prize.points ?? null,
-        participatedAt: serverTimestamp(),
-      })
+    await saveEventParticipation({
+      eventId: EVENT_ID, eventTitle: EVENT_TITLE, rewardType: prize.type,
+      rewardRank: prize.rank, rewardName: prize.name,
+      rewardProductId: prize.productId ?? null,
+      rewardPoints: prize.points ?? 0, isWinner: true,
     })
   }
 
@@ -251,7 +236,7 @@ const RouletteEvent = () => {
 
     try {
       await Promise.all([saveParticipation(prize), animation])
-      setHasParticipated(true)
+      setHasParticipated(!isAdmin)
       setIsSaving(false)
       setIsSpinning(false)
       setResult(prizeWithImage)
@@ -301,7 +286,7 @@ const RouletteEvent = () => {
         </div>
 
         <aside className={styles.eventCard}>
-          <p className={styles.chanceRibbon}>회원당 1회 참여 가능!</p>
+          <p className={styles.chanceRibbon}>{isAdmin ? '관리자 무제한 참여 가능!' : '회원당 1회 참여 가능!'}</p>
           <h1>{EVENT_TITLE}</h1>
           <p className={styles.description}>{event.detailDescription}</p>
 
@@ -312,7 +297,7 @@ const RouletteEvent = () => {
             </div>
             <div>
               <dt>참여 가능 횟수</dt>
-              <dd>{hasParticipated ? '0 / 1' : '1 / 1'}</dd>
+              <dd>{isAdmin ? '제한 없음' : hasParticipated ? '0 / 1' : '1 / 1'}</dd>
             </div>
           </dl>
 
@@ -370,7 +355,7 @@ const RouletteEvent = () => {
         <div className={styles.modalBackdrop} role="presentation" onMouseDown={() => setResult(null)}>
           <section className={styles.resultModal} role="dialog" aria-modal="true" aria-labelledby="result-title" onMouseDown={(eventObject) => eventObject.stopPropagation()}>
             <button className={styles.closeButton} type="button" onClick={() => setResult(null)} aria-label="당첨 결과 닫기">×</button>
-            <div className={styles.giftIcon} aria-hidden="true" />
+            <img className={styles.giftIcon} src={giftIcon} alt="" />
             <h2 id="result-title">당첨을 축하드립니다!</h2>
             <div className={styles.resultPrize}>
               {result.type === 'product' ? (

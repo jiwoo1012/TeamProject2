@@ -1,9 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { collection, onSnapshot, query, where } from 'firebase/firestore'
+import { collection, collectionGroup, onSnapshot, query, where } from 'firebase/firestore'
 import adminTopOrnament from '../../assets/images/admin/adminTopOrnament.svg'
+import totalIcon from '../../assets/icons/box.png'
+import sellingIcon from '../../assets/icons/shopping.png'
+import lowStockIcon from '../../assets/icons/alert.png'
+import hiddenIcon from '../../assets/icons/X.png'
 import { products as productData } from '../../data/products'
 import { db } from '../../firebase/firebase'
-import { deleteDocument, updateDocument } from '../../firebase/firestore'
+import { deleteDocument, setDocument, updateDocument } from '../../firebase/firestore'
 import { fetchProducts } from '../../services/productCatalog'
 import styles from './ProductManage.module.scss'
 
@@ -14,6 +18,8 @@ const productImages = import.meta.glob('../../assets/images/products/*.{png,jpg,
 const productDetailImages = import.meta.glob('../../assets/images/products/productDetail/**/*.{png,jpg,jpeg,webp}', { eager: true, import: 'default' })
 const PRODUCT_OVERRIDES_KEY = 'jajak_admin_product_overrides'
 const DELETED_PRODUCTS_KEY = 'jajak_admin_deleted_products'
+const PRODUCTS_PER_PAGE = 8
+const PRODUCT_CATEGORIES = ['탁주', '약주', '청주', '증류주', '과실주', '리큐르', '안주', '잔', '선물 세트']
 
 const resolveProductImage = (imageUrl) => {
   if (/^(data:|https?:\/\/)/.test(imageUrl ?? '')) return imageUrl
@@ -36,6 +42,7 @@ const getReferenceImageUrl = (product) =>
     ?? product?.imageUrl
 
 const normalizeProduct = (product) => {
+  const reference = productData.find((item) => item.productId === product.productId) ?? {}
   const stock = Math.max(0, Number(product.stock ?? 0))
   const status = product.status === 'hidden'
     ? 'hidden'
@@ -53,8 +60,8 @@ const normalizeProduct = (product) => {
     status,
     displayStatus: product.status === 'hidden' ? 'hidden' : 'display',
     createdAt: product.createdAt ?? '-',
-    description: product.productDescription ?? '',
-    tags: product.flavorKeywords ?? [],
+    description: product.productDescription ?? reference.productDescription ?? '',
+    tags: [...new Set([...(reference.flavorKeywords ?? []), ...(product.flavorKeywords ?? [])])],
     views: Number(product.views ?? 0),
     likes: Number(product.likes ?? 0),
     reviews: Number(product.reviewCount ?? product.reviews ?? 0),
@@ -110,9 +117,12 @@ const ProductManage = () => {
   const [editStep, setEditStep] = useState(1)
   const [toastMessage, setToastMessage] = useState('')
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [panelMode, setPanelMode] = useState('analytics')
+  const [draftProductId, setDraftProductId] = useState('')
 
   const categories = useMemo(
-    () => ['전체 카테고리', ...new Set(products.map((product) => product.category).filter(Boolean))],
+    () => ['전체 카테고리', ...new Set([...PRODUCT_CATEGORIES, ...products.map((product) => product.category).filter(Boolean)])],
     [products],
   )
 
@@ -135,7 +145,7 @@ const ProductManage = () => {
   const [draftTag, setDraftTag] = useState('')
   const [draftImageUrl, setDraftImageUrl] = useState('')
   const [draftDetailImageUrls, setDraftDetailImageUrls] = useState([null, null, null])
-  const [liveMetrics, setLiveMetrics] = useState({ reviews: 0, rating: 0 })
+  const [liveMetrics, setLiveMetrics] = useState({ reviews: 0, rating: 0, likes: 0 })
 
   // 외부 빈 공간 클릭 시 통계 패널로 복귀
   useEffect(() => {
@@ -195,6 +205,7 @@ const ProductManage = () => {
   const totalCount = products.length
   const sellingCount = products.filter((p) => p.status === 'selling' && !isSoldOut(p)).length
   const lowStockCount = products.filter((p) => p.status !== 'hidden' && p.stock > 0 && p.stock <= 5).length
+  const regularSellingCount = Math.max(0, sellingCount - lowStockCount)
   const hiddenCount = products.filter((p) => p.status === 'hidden' || isSoldOut(p)).length
   const categoryCounts = useMemo(() => {
     const counts = new Map()
@@ -207,10 +218,10 @@ const ProductManage = () => {
   const largestCategoryCount = Math.max(...categoryCounts.map(([, count]) => count), 1)
 
   const summaryCards = [
-    { key: 'total', label: '전체 상품 수', value: totalCount, unit: '개', caption: '정상 등록 상품' },
-    { key: 'selling', label: '판매 중 상품', value: sellingCount, unit: '개', caption: `전체의 ${Math.round((sellingCount / totalCount) * 100 || 0)}%` },
-    { key: 'lowStock', label: '품절 임박 (5개 이하)', value: lowStockCount, unit: '개', caption: '즉시 발주 필요' },
-    { key: 'hidden', label: '품절 및 숨김', value: hiddenCount, unit: '개', caption: '노출 중단 관리' },
+    { key: 'total', label: '전체 상품 수', value: totalCount, unit: '개', caption: '정상 등록 상품', icon: totalIcon },
+    { key: 'selling', label: '판매 중 상품', value: sellingCount, unit: '개', caption: `전체의 ${Math.round((sellingCount / totalCount) * 100 || 0)}%`, icon: sellingIcon },
+    { key: 'lowStock', label: '품절 임박 (5개 이하)', value: lowStockCount, unit: '개', caption: '즉시 발주 필요', icon: lowStockIcon },
+    { key: 'hidden', label: '품절 및 숨김', value: hiddenCount, unit: '개', caption: '노출 중단 관리', icon: hiddenIcon },
   ]
 
   // 상단 카드 클릭 필터 연동
@@ -246,8 +257,14 @@ const ProductManage = () => {
     })
   }, [products, searchQuery, categoryFilter, statusFilter])
 
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE))
+  const paginatedProducts = filteredProducts.slice((currentPage - 1) * PRODUCTS_PER_PAGE, currentPage * PRODUCTS_PER_PAGE)
+
+  useEffect(() => setCurrentPage(1), [searchQuery, categoryFilter, statusFilter])
+  useEffect(() => setCurrentPage((page) => Math.min(page, totalPages)), [totalPages])
+
   const handleSelectAll = (e) => {
-    setSelectedIds(e.target.checked ? filteredProducts.map((p) => p.id) : [])
+    setSelectedIds(e.target.checked ? paginatedProducts.map((p) => p.id) : [])
   }
 
   const handleSelectRow = (id, e) => {
@@ -256,6 +273,7 @@ const ProductManage = () => {
   }
 
   const openEditPanel = (product) => {
+    setPanelMode('edit')
     setSelectedProductId(product.id)
     setEditStep(1)
     setDraftName(product.name)
@@ -271,20 +289,47 @@ const ProductManage = () => {
     setDraftDetailImageUrls(Array.from({ length: 3 }, (_, index) => product.detailImageUrls?.[index] ?? null))
   }
 
+  const openCreatePanel = () => {
+    setPanelMode('create')
+    setSelectedProductId(null)
+    setEditStep(1)
+    setDraftProductId('')
+    setDraftName('')
+    setDraftCategory('탁주')
+    setDraftPrice('')
+    setDraftStock('')
+    setDraftStatus('selling')
+    setDraftDisplayStatus('display')
+    setDraftDescription('')
+    setDraftTags([])
+    setDraftTag('')
+    setDraftImageUrl('')
+    setDraftDetailImageUrls([null, null, null])
+  }
+
   useEffect(() => {
     if (!selectedProductId) {
-      setLiveMetrics({ reviews: 0, rating: 0 })
+      setLiveMetrics({ reviews: 0, rating: 0, likes: 0 })
       return undefined
     }
     return onSnapshot(
       query(collection(db, 'reviews'), where('productId', '==', selectedProductId)),
       (snapshot) => {
         const ratings = snapshot.docs.map((item) => Number(item.data().rating)).filter(Number.isFinite)
-        setLiveMetrics({ reviews: snapshot.size, rating: ratings.length ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length : 0 })
+        setLiveMetrics((current) => ({ ...current, reviews: snapshot.size, rating: ratings.length ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length : 0 }))
       },
-      () => setLiveMetrics({ reviews: 0, rating: 0 }),
+      () => setLiveMetrics((current) => ({ ...current, reviews: 0, rating: 0 })),
     )
   }, [selectedProductId])
+
+  useEffect(() => {
+    if (!selectedProductId) return undefined
+    return onSnapshot(
+      query(collectionGroup(db, 'wishlist'), where('productId', '==', selectedProductId)),
+      (snapshot) => setLiveMetrics((current) => ({ ...current, likes: snapshot.size })),
+      () => setLiveMetrics((current) => ({ ...current, likes: selectedProduct?.likes ?? 0 })),
+    )
+  }, [selectedProductId, selectedProduct?.likes])
 
   const handleAddTag = () => {
     const nextTag = draftTag.trim()
@@ -387,6 +432,42 @@ const ProductManage = () => {
     }
   }
 
+  const handleCreateProduct = async () => {
+    const productId = draftProductId.trim()
+    if (!productId || !draftName.trim() || !draftPrice || draftStock === '') {
+      setToastMessage('상품 ID, 상품명, 가격, 재고를 모두 입력해주세요.')
+      return
+    }
+    if (products.some((product) => product.id === productId)) {
+      setToastMessage('이미 사용 중인 상품 ID입니다.')
+      return
+    }
+    const isLiquor = ['탁주', '약주', '청주', '증류주', '과실주', '리큐르'].includes(draftCategory)
+    const isAccessory = ['잔', '선물 세트'].includes(draftCategory)
+    const stock = Math.max(0, Number(draftStock))
+    try {
+      await setDocument('products', productId, {
+        productId,
+        productName: draftName.trim(),
+        productType: isLiquor ? '전통주' : (isAccessory ? '주류용품' : draftCategory),
+        liquorType: isLiquor ? draftCategory : null,
+        glassType: draftCategory === '선물 세트' ? '선물세트' : (draftCategory === '잔' ? '술잔' : null),
+        price: Number(draftPrice), stock,
+        status: draftDisplayStatus === 'hidden' ? 'hidden' : (stock === 0 ? 'soldout' : draftStatus),
+        productDescription: draftDescription.trim(), flavorKeywords: draftTags,
+        imageUrl: draftImageUrl, detailImageUrls: draftDetailImageUrls.filter(Boolean),
+        views: 0, likes: 0, reviewCount: 0, rating: 0,
+        createdAt: new Date().toISOString(),
+      })
+      setPanelMode('analytics')
+      setToastMessage(`${draftName.trim()} 상품이 등록되었습니다.`)
+      setTimeout(() => setToastMessage(''), 3000)
+    } catch (error) {
+      console.error('상품 등록 실패:', error)
+      setToastMessage('상품을 등록하지 못했습니다. 관리자 권한을 확인해주세요.')
+    }
+  }
+
   const resetFilters = () => {
     setSearchQuery('')
     setCategoryFilter('전체 카테고리')
@@ -426,7 +507,7 @@ const ProductManage = () => {
               onClick={() => handleCardClick(card.key)}
             >
               <span className={`${styles.summaryIcon} ${styles[card.key]}`} aria-hidden="true">
-                <i>{card.value}</i>
+                <img src={card.icon} alt="" />
               </span>
               <div className={styles.summaryContent}>
                 <h3>{card.label}</h3>
@@ -503,7 +584,7 @@ const ProductManage = () => {
                   선택 {selectedIds.length}개 판매 중지
                 </button>
               )}
-              <button type="button" className={styles.registerButton}>
+              <button type="button" className={styles.registerButton} onClick={openCreatePanel}>
                 + 새 상품 등록
               </button>
             </div>
@@ -518,7 +599,7 @@ const ProductManage = () => {
                     <input
                       type="checkbox"
                       onChange={handleSelectAll}
-                      checked={filteredProducts.length > 0 && selectedIds.length === filteredProducts.length}
+                      checked={paginatedProducts.length > 0 && paginatedProducts.every((product) => selectedIds.includes(product.id))}
                     />
                   </th>
                   <th>상품 코드</th>
@@ -532,7 +613,7 @@ const ProductManage = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredProducts.map((p) => (
+                {paginatedProducts.map((p) => (
                   <tr
                     key={p.id}
                     className={`${styles.clickableRow} ${selectedProductId === p.id ? styles.selectedRow : ''}`}
@@ -587,10 +668,59 @@ const ProductManage = () => {
               </tbody>
             </table>
           </div>
+          <nav className={styles.pagination} aria-label="상품 목록 페이지">
+            <button type="button" onClick={() => setCurrentPage((page) => Math.max(1, page - 1))} disabled={currentPage === 1} aria-label="이전 페이지">‹</button>
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+              <button key={page} type="button" className={currentPage === page ? styles.activePage : ''} onClick={() => setCurrentPage(page)} aria-current={currentPage === page ? 'page' : undefined}>{page}</button>
+            ))}
+            <button type="button" onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))} disabled={currentPage === totalPages} aria-label="다음 페이지">›</button>
+          </nav>
         </section>
 
         {/* 우측 패널 (상품 수정 vs 통계) */}
-        {selectedProduct ? (
+        {panelMode === 'create' ? (
+          <aside className={styles.editPanel} ref={panelRef} aria-labelledby="create-panel-title">
+            <header className={styles.panelTopHeader}>
+              <h2 id="create-panel-title">새 상품 등록</h2>
+              <button type="button" onClick={() => setPanelMode('analytics')} aria-label="닫기">×</button>
+            </header>
+            <div className={styles.formContainer}>
+              <section className={styles.formSection}>
+                <h4 className={styles.sectionBarTitle}>기본 정보</h4>
+                <div className={styles.formRow}><label htmlFor="create-product-id">상품 ID *</label><input id="create-product-id" value={draftProductId} onChange={(e) => setDraftProductId(e.target.value)} placeholder="product37" /></div>
+                <div className={styles.formRow}><label htmlFor="create-product-name">상품명 *</label><input id="create-product-name" value={draftName} onChange={(e) => setDraftName(e.target.value)} /></div>
+                <div className={styles.formRow}><label htmlFor="create-product-category">카테고리 *</label><select id="create-product-category" value={draftCategory} onChange={(e) => setDraftCategory(e.target.value)}>{PRODUCT_CATEGORIES.map((category) => <option key={category}>{category}</option>)}</select></div>
+              </section>
+              <section className={styles.formSection}>
+                <h4 className={styles.sectionBarTitle}>판매 정보</h4>
+                <div className={styles.formRow}><label htmlFor="create-product-price">가격 (원) *</label><input id="create-product-price" type="number" min="0" value={draftPrice} onChange={(e) => setDraftPrice(e.target.value)} /></div>
+                <div className={styles.formRow}><label htmlFor="create-product-stock">재고 (개) *</label><input id="create-product-stock" type="number" min="0" value={draftStock} onChange={(e) => setDraftStock(e.target.value)} /></div>
+                <div className={styles.formRow}><label htmlFor="create-product-status">판매 상태 *</label><select id="create-product-status" value={draftStatus} onChange={(e) => setDraftStatus(e.target.value)}><option value="selling">판매 중</option><option value="soldout">품절</option><option value="hidden">숨김</option></select></div>
+                <div className={styles.formRow}><label htmlFor="create-display-status">진열 상태 *</label><select id="create-display-status" value={draftDisplayStatus} onChange={(e) => setDraftDisplayStatus(e.target.value)}><option value="display">진열 중</option><option value="hidden">진열 안함</option></select></div>
+              </section>
+              <section className={styles.formSection}>
+                <h4 className={styles.sectionBarTitle}>상품 정보</h4>
+                <div className={styles.formFieldBlock}><label htmlFor="create-product-description">상품 설명 *</label><textarea id="create-product-description" rows="3" value={draftDescription} onChange={(e) => setDraftDescription(e.target.value)} /></div>
+                <div className={styles.formFieldBlock}>
+                  <label>맛 키워드</label>
+                  <div className={styles.chipGroup}>{draftTags.map((tag) => <span key={tag} className={styles.chip}>{tag}<button type="button" onClick={() => setDraftTags((current) => current.filter((item) => item !== tag))} aria-label={`${tag} 삭제`}>×</button></span>)}</div>
+                  <div className={styles.tagEditor}><input value={draftTag} onChange={(e) => setDraftTag(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddTag() } }} placeholder="맛 키워드 입력" /><button type="button" onClick={handleAddTag}>추가</button></div>
+                </div>
+                <div className={styles.formFieldBlock}>
+                  <label>상품 앨범</label>
+                  <div className={styles.albumRow}>
+                    <div className={styles.mainImgBox}>{draftImageUrl ? <img src={resolveProductImage(draftImageUrl)} alt="새 상품 대표" /> : <span>대표 이미지</span>}</div>
+                    {draftDetailImageUrls.map((url, index) => <div className={styles.subImgBox} key={index}>{url ? <img src={url} alt={`서브 이미지 ${index + 1}`} /> : <span>서브 {index + 1}</span>}</div>)}
+                    <button type="button" className={styles.uploadPlusBox} onClick={() => imageInputRef.current?.click()}><span>+</span><small>대표 등록</small></button>
+                    <input ref={imageInputRef} className={styles.srOnly} type="file" accept="image/*" onChange={handleImageChange} />
+                    {Array.from({ length: 3 }, (_, index) => <button type="button" className={styles.uploadPlusBox} key={index} onClick={() => detailImageInputRefs.current[index]?.click()}><span>+</span><small>서브 {index + 1}</small><input ref={(node) => { detailImageInputRefs.current[index] = node }} className={styles.srOnly} type="file" accept="image/*" onChange={(event) => handleImageChange(event, index)} /></button>)}
+                  </div>
+                </div>
+              </section>
+              <div className={styles.panelFooterActions}><button type="button" className={styles.deleteBtn} onClick={() => setPanelMode('analytics')}>취소</button><button type="button" className={styles.saveBtn} onClick={handleCreateProduct}>상품 등록</button></div>
+            </div>
+          </aside>
+        ) : selectedProduct ? (
           <aside className={styles.editPanel} ref={panelRef} aria-labelledby="edit-panel-title">
             <header className={styles.panelTopHeader}>
               <h2 id="edit-panel-title">상품 수정</h2>
@@ -768,7 +898,7 @@ const ProductManage = () => {
                       <span>찜하기 수</span>
                       <p>
                         <i className={styles.dotGrey} />
-                        <strong>{selectedProduct.likes.toLocaleString()}건</strong>
+                        <strong>{liveMetrics.likes.toLocaleString()}건</strong>
                       </p>
                     </div>
                     <div className={styles.metricBox}>
@@ -815,7 +945,10 @@ const ProductManage = () => {
               <div className={styles.statusOverview}>
                 <div
                   className={styles.statusDonut}
-                  style={{ '--active-rate': `${Math.round((sellingCount / totalCount) * 100 || 0)}%` }}
+                  style={{
+                    '--selling-rate': `${(regularSellingCount / Math.max(totalCount, 1)) * 100}%`,
+                    '--low-rate': `${((regularSellingCount + lowStockCount) / Math.max(totalCount, 1)) * 100}%`,
+                  }}
                 >
                   <span>전체</span>
                   <strong>{totalCount}개</strong>
@@ -824,7 +957,7 @@ const ProductManage = () => {
                   <li>
                     <span className={styles.dotSelling} />
                     <span>판매 중</span>
-                    <strong>{sellingCount}개</strong>
+                    <strong>{regularSellingCount}개</strong>
                   </li>
                   <li>
                     <span className={styles.dotLow} />

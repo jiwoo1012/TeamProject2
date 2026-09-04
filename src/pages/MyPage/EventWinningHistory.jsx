@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { subscribeToAuthState } from '../../firebase/auth'
-import { getDocument } from '../../firebase/firestore'
+import { getCollection } from '../../firebase/firestore'
+import { getUserEventParticipations } from '../../services/eventParticipation'
 
 import eventsData from '../../data/events.json'
 import { PATHS } from '../../routes/paths'
@@ -83,7 +84,7 @@ const getEventPath = (event) => {
 }
 
 
-const events = eventsData.map(
+const fallbackEvents = eventsData.map(
   ({ event }, index) => ({
     ...event,
 
@@ -106,14 +107,36 @@ const filterItems = [
     value: 'all',
   },
   {
-    label: '경품 실물 지급 완료',
-    value: 'completed',
+    label: '경품 지급 내역',
+    value: 'product',
   },
   {
-    label: '경품 실물 발송 예정',
-    value: 'pending',
+    label: '포인트 지급 내역',
+    value: 'point',
   },
 ]
+
+
+const getRewardLabel = (participation) => {
+  const points = Number(participation.rewardPoints || 0)
+
+  if (participation.eventId === 'event-2') {
+    const matchedCount = participation.rewardName?.match(/\d+/)?.[0] ?? '0'
+    return `${matchedCount}쌍 성공 - ${points.toLocaleString('ko-KR')}POINT`
+  }
+
+  if (participation.eventId === 'event-3') {
+    const correctCount = participation.rewardName?.match(/\d+/)?.[0] ?? '0'
+    return `${correctCount}문제 정답 - ${points.toLocaleString('ko-KR')}POINT`
+  }
+
+  if (participation.eventId === 'event-1' && participation.rewardType === 'point') {
+    const rank = Number(participation.rewardRank || 0)
+    return `${rank}등 - ${points.toLocaleString('ko-KR')}POINT`
+  }
+
+  return participation.rewardName || '이벤트 경품'
+}
 
 
 const getDeliveryGroup = (
@@ -191,6 +214,7 @@ const getActionLabel = (
 
 
 const EventWinningHistory = () => {
+  const [events, setEvents] = useState(fallbackEvents)
   const [
     currentUser,
     setCurrentUser,
@@ -230,6 +254,28 @@ const EventWinningHistory = () => {
     return unsubscribe
   }, [])
 
+  useEffect(() => {
+    let isMounted = true
+
+    getCollection('events')
+      .then((documents) => {
+        if (!isMounted || documents.length === 0) return
+
+        setEvents(documents.map((document) => ({
+          ...document,
+          bannerSrc: resolveBanner(document.image?.bannerUrl),
+          path: getEventPath(document),
+        })))
+      })
+      .catch((error) => {
+        console.error('이벤트 목록 조회 실패:', error)
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
 
   /* =========================
      이벤트 참여 기록 조회
@@ -258,23 +304,14 @@ const EventWinningHistory = () => {
     setLoadError('')
 
 
-    Promise.all(
-      events.map(
-        (event) =>
-          getDocument(
-            'eventParticipations',
-
-            `${event.id}_${currentUser.uid}`
-          )
-      )
-    )
+    getUserEventParticipations(currentUser.uid)
       .then((documents) => {
         if (!isMounted) {
           return
         }
 
         setParticipations(
-          documents.filter(Boolean)
+          documents
         )
       })
 
@@ -303,7 +340,7 @@ const EventWinningHistory = () => {
     return () => {
       isMounted = false
     }
-  }, [currentUser])
+  }, [currentUser, events])
 
 
   /* =========================
@@ -338,12 +375,6 @@ const EventWinningHistory = () => {
               )
 
 
-            const deliveryGroup =
-              getDeliveryGroup(
-                participation
-              )
-
-
             return {
               ...participation,
 
@@ -363,7 +394,13 @@ const EventWinningHistory = () => {
                 event?.path ||
                 PATHS.events,
 
-              deliveryGroup,
+              rewardGroup:
+                participation.rewardType === 'product'
+                  ? 'product'
+                  : 'point',
+
+              rewardLabel:
+                getRewardLabel(participation),
 
               actionLabel:
                 getActionLabel(
@@ -389,7 +426,7 @@ const EventWinningHistory = () => {
 
           return bTime - aTime
         })
-    }, [participations])
+    }, [participations, events])
 
 
   /* =========================
@@ -407,7 +444,7 @@ const EventWinningHistory = () => {
 
       return winningHistory.filter(
         (item) =>
-          item.deliveryGroup ===
+          item.rewardGroup ===
           activeFilter
       )
     }, [
@@ -612,16 +649,6 @@ const EventWinningHistory = () => {
                     </Link>
 
 
-                    <p>
-                      당첨 경품 ·{' '}
-                      <strong>
-                        {
-                          item.rewardName
-                        }
-                      </strong>
-                    </p>
-
-
                     <time>
                       당첨일{' '}
                       {formatDate(
@@ -635,14 +662,13 @@ const EventWinningHistory = () => {
 
                   <span
                     className={`${styles.deliveryBadge} ${
-                      item.deliveryGroup ===
-                      'completed'
+                      item.rewardGroup === 'product'
                         ? styles.completed
                         : styles.pending
                     }`}
                   >
                     {
-                      item.actionLabel
+                      item.rewardLabel
                     }
                   </span>
 

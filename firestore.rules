@@ -58,6 +58,24 @@ service cloud.firestore {
           ]);
     }
 
+    function canEarnEventPoints(userId) {
+      let participation = getAfter(
+        /databases/$(database)/documents/eventParticipations/$(request.resource.data.lastEventRewardId)
+      ).data;
+      return isOwner(userId)
+        && request.resource.data.points is int
+        && participation.userId == userId
+        && request.resource.data.lastEventRewardId
+          == participation.eventId + '_' + userId
+        && request.resource.data.points
+          == resource.data.points + participation.rewardPoints
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'points',
+          'lastEventRewardId',
+          'updatedAt'
+        ]);
+    }
+
 
     // ========================================
     // 배송지 검증
@@ -116,6 +134,7 @@ service cloud.firestore {
           && (
             keepsMemberAuthority()
             || canUsePoints()
+            || canEarnEventPoints(userId)
           )
         )
         || isAdmin();
@@ -174,6 +193,25 @@ service cloud.firestore {
 
         allow delete:
           if isOwner(userId);
+      }
+
+      match /pointHistory/{historyId} {
+        allow read:
+          if isOwner(userId);
+
+        allow create:
+          if isAdmin()
+          || (isOwner(userId)
+          && request.resource.data.type == 'earn'
+          && request.resource.data.amount is int
+          && request.resource.data.amount > 0
+          && historyId == 'event_' + request.resource.data.eventId + '_' + userId
+          && get(
+            /databases/$(database)/documents/eventParticipations/$(request.resource.data.eventId + '_' + userId)
+          ).data.rewardPoints == request.resource.data.amount);
+
+        allow update, delete:
+          if false;
       }
     }
 
@@ -427,8 +465,136 @@ service cloud.firestore {
       // 이벤트 결과 저장 / 포인트 지급 /
       // 당첨 정보 변경 등은
       // 클라이언트에서 직접 처리하지 않음
-      allow create, update, delete:
+      allow create:
+        if isAdmin()
+        || (signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && participationId
+          == request.resource.data.eventId + '_' + request.auth.uid
+        && request.resource.data.rewardPoints is int
+        && request.resource.data.rewardPoints >= 0
+        && (
+          (
+            request.resource.data.eventId == 'event-1'
+            && request.resource.data.rewardPoints in [0, 100, 1000, 5000]
+          )
+          || (
+            request.resource.data.eventId == 'event-2'
+            && request.resource.data.rewardPoints <= 2500
+            && request.resource.data.rewardPoints % 100 == 0
+          )
+          || (
+            request.resource.data.eventId == 'event-3'
+            && request.resource.data.rewardPoints <= 5000
+            && request.resource.data.rewardPoints % 500 == 0
+          )
+        ));
+
+      allow update, delete:
         if false;
+    }
+
+    // ========================================
+    // INQUIRIES
+    // ========================================
+
+    function isValidInquiryCreate() {
+      return request.resource.data.keys().hasAll([
+        'category',
+        'title',
+        'content',
+        'status',
+        'createdAt'
+      ])
+
+        && request.resource.data.category is string
+        && request.resource.data.category.size() > 0
+        && request.resource.data.category.size() <= 30
+
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 100
+
+        && request.resource.data.content is string
+        && request.resource.data.content.size() > 0
+        && request.resource.data.content.size() <= 2000
+
+        // 사용자가 임의로 답변 완료 상태로 등록하지 못하게 함
+        && request.resource.data.status == 'pending'
+
+        && request.resource.data.createdAt is timestamp;
+    }
+
+
+    match /inquiries/{inquiryId} {
+
+      // ========================================
+      // 문의 등록
+      // 회원 / 비회원 모두 가능
+      // ========================================
+
+      allow create:
+        if isValidInquiryCreate()
+
+        && (
+          // 로그인 회원
+          (
+            signedIn()
+
+            && request.resource.data.userId
+              == request.auth.uid
+          )
+
+          ||
+
+          // 비회원
+          (
+            !signedIn()
+
+            && (
+              !request.resource.data.keys().hasAny([
+                'userId'
+              ])
+
+              || request.resource.data.userId == null
+            )
+          )
+        );
+
+
+      // ========================================
+      // 문의 조회
+      // 회원: 자신의 문의만
+      // 관리자: 전체 문의
+      // ========================================
+
+      allow read:
+        if (
+          signedIn()
+
+          && resource.data.userId
+            == request.auth.uid
+        )
+
+        || isAdmin();
+
+
+      // ========================================
+      // 문의 답변 / 상태 수정
+      // 관리자만 가능
+      // ========================================
+
+      allow update:
+        if isAdmin();
+
+
+      // ========================================
+      // 문의 삭제
+      // 관리자만 가능
+      // ========================================
+
+      allow delete:
+        if isAdmin();
     }
 
 

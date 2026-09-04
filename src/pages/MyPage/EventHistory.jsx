@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { subscribeToAuthState } from '../../firebase/auth'
-import { getDocument } from '../../firebase/firestore'
+import { getCollection } from '../../firebase/firestore'
+import { getUserEventParticipations } from '../../services/eventParticipation'
 
 import eventsData from '../../data/events.json'
 import { PATHS } from '../../routes/paths'
@@ -92,7 +93,7 @@ const getEventPath = (event) => {
 }
 
 
-const events = eventsData.map(
+const fallbackEvents = eventsData.map(
   ({ event }, index) => ({
     ...event,
 
@@ -111,6 +112,7 @@ const events = eventsData.map(
 
 
 const EventHistory = () => {
+  const [events, setEvents] = useState(fallbackEvents)
   const [
     currentUser,
     setCurrentUser,
@@ -134,6 +136,28 @@ const EventHistory = () => {
       ),
     []
   )
+
+  useEffect(() => {
+    let isMounted = true
+
+    getCollection('events')
+      .then((documents) => {
+        if (!isMounted || documents.length === 0) return
+
+        setEvents(documents.map((document) => ({
+          ...document,
+          bannerSrc: resolveBanner(document.image?.bannerUrl),
+          path: getEventPath(document),
+        })))
+      })
+      .catch((error) => {
+        console.error('이벤트 목록 조회 실패:', error)
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
 
   useEffect(() => {
@@ -159,16 +183,7 @@ const EventHistory = () => {
     setIsLoading(true)
 
 
-    Promise.all(
-      events.map(
-        (event) =>
-          getDocument(
-            'eventParticipations',
-
-            `${event.id}_${currentUser.uid}`
-          )
-      )
-    )
+    getUserEventParticipations(currentUser.uid)
       .then(
         (documents) => {
           if (!isMounted) {
@@ -176,9 +191,7 @@ const EventHistory = () => {
           }
 
           setParticipations(
-            documents.filter(
-              Boolean
-            )
+            documents
           )
         }
       )
@@ -204,7 +217,7 @@ const EventHistory = () => {
     return () => {
       isMounted = false
     }
-  }, [currentUser])
+  }, [currentUser, events])
 
 
   /* =========================
@@ -218,7 +231,7 @@ const EventHistory = () => {
           (event) =>
             event.isActive
         ),
-      []
+      [events]
     )
 
 
@@ -289,23 +302,16 @@ const EventHistory = () => {
               )
             }
           ),
-      [participations]
+      [participations, events]
     )
 
 
   const winningHistory =
-    history.filter(
-      (item) =>
-        item.rewardType ===
-        'product'
-    )
+    history
 
 
   const activeParticipationCount =
-    history.filter(
-      (item) =>
-        item.isActive
-    ).length
+    0
 
 
   const summaryItems = [
@@ -464,9 +470,7 @@ const EventHistory = () => {
                 styles.activeList
               }
             >
-              {activeEvents
-                .slice(0, 2)
-                .map(
+              {activeEvents.map(
                   (event) => (
                     <article
                       className={
@@ -611,9 +615,7 @@ const EventHistory = () => {
                 styles.historyList
               }
             >
-              {history
-                .slice(0, 3)
-                .map(
+              {history.map(
                   (item) => (
                     <article
                       className={
