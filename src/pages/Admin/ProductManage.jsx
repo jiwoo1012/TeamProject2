@@ -31,6 +31,10 @@ const getLocalDetailImages = (imageUrl = '') => {
     .slice(0, 3)
 }
 
+const getReferenceImageUrl = (product) =>
+  productData.find((item) => item.productId === product?.productId)?.imageUrl
+    ?? product?.imageUrl
+
 const normalizeProduct = (product) => {
   const stock = Math.max(0, Number(product.stock ?? 0))
   const status = product.status === 'hidden'
@@ -726,7 +730,7 @@ const ProductManage = () => {
                         {draftImageUrl ? <img src={resolveProductImage(draftImageUrl)} alt="변경할 대표 상품" /> : <span>대표 이미지</span>}
                       </div>
                       {Array.from({ length: 3 }, (_, index) => {
-                        const localImages = getLocalDetailImages(selectedProduct.imageUrl)
+                        const localImages = getLocalDetailImages(getReferenceImageUrl(selectedProduct))
                         const preview = draftDetailImageUrls[index] || localImages[index]
                         return (
                           <div className={styles.subImgBox} key={index}>
