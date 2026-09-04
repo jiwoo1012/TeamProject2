@@ -1,5 +1,513 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 0 5% 4rem; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+// ==========================================
+// 테마 토큰 (어드민 전사 통일)
+// ==========================================
+$bg-canvas: #f8f6f2;
+$bg-surface: #ffffff;
+$primary: #3b5f54;
+$primary-hover: #2e4b42;
+$primary-subtle: #edf3f0;
+
+$text-title: #222524;
+$text-body: #4a504d;
+$text-caption: #7a827e;
+$border-color: #e8e6df;
+
+$danger: #b24840;
+$danger-subtle: #fbeeed;
+$warning: #c8812c;
+$warning-subtle: #fdf5ea;
+$info: #2b70ad;
+$info-subtle: #eef5fb;
+
+$shadow-sm: 0 2px 8px rgba(34, 37, 36, 0.04);
+$shadow-md: 0 6px 18px rgba(34, 37, 36, 0.06);
+$radius-card: 14px;
+$radius-control: 8px;
+
+.page {
+  padding: 32px 40px;
+  background-color: $bg-canvas;
+  min-height: 100vh;
+  color: $text-body;
+  box-sizing: border-box;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+// 툴바 (새로고침 회전 모션 포함)
+.pageToolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+
+  h1 {
+    font-size: 30px;
+    font-weight: 700;
+    color: $text-title;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: $text-body;
+    background: $bg-surface;
+    border: 1px solid $border-color;
+    border-radius: $radius-control;
+    box-shadow: $shadow-sm;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      transition: transform 0.25s ease;
+    }
+
+    &:hover:not(:disabled) {
+      background: #fdfcf9;
+      color: $primary;
+      border-color: lighten($primary, 20%);
+      svg { transform: rotate(90deg); }
+    }
+
+    &.refreshing {
+      opacity: 0.75;
+      cursor: wait;
+      svg { animation: spinRefresh 0.6s linear infinite; }
+    }
+  }
+}
+
+@keyframes spinRefresh {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.ornamentLine {
+  width: 100%;
+  display: block;
+  margin: 1rem 0 1.6rem;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+// ==========================================
+// 상단 탭 필터 및 등록 버튼 바
+// ==========================================
+.topFilterBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  .tabGroup {
+    display: flex;
+    gap: 8px;
+
+    button {
+      height: 38px;
+      padding: 0 16px;
+      background: $bg-surface;
+      border: 1px solid $border-color;
+      border-radius: $radius-control;
+      font-size: 13px;
+      font-weight: 500;
+      color: $text-body;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: $shadow-sm;
+      transition: all 0.15s ease;
+
+      span {
+        font-size: 11px;
+        background: #f0eee8;
+        padding: 1px 6px;
+        border-radius: 10px;
+        color: $text-caption;
+      }
+
+      &:hover {
+        background: #fdfcf9;
+        color: $text-title;
+      }
+
+      &.activeTab {
+        background: $primary;
+        color: #fff;
+        border-color: $primary;
+
+        span {
+          background: rgba(255, 255, 255, 0.2);
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  .registerButton {
+    height: 38px;
+    padding: 0 18px;
+    background: $primary;
+    color: #fff;
+    border: none;
+    border-radius: $radius-control;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: $shadow-sm;
+    transition: background-color 0.2s;
+
+    &:hover { background: $primary-hover; }
+  }
+}
+
+// ==========================================
+// 상단 요약 카드 (4 Column)
+// ==========================================
+.summaryArea {
+  margin-bottom: 24px;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.summaryCard {
+  background: $bg-surface;
+  border: 1px solid $border-color;
+  border-radius: $radius-card;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 94px;
+  box-sizing: border-box;
+  box-shadow: $shadow-sm;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+    border-color: lighten($primary, 20%);
+  }
+
+  &.activeCard {
+    border-color: $primary;
+    background: #fdfefd;
+    box-shadow: 0 0 0 1.5px $primary, $shadow-sm;
+  }
+}
+
+.summaryIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: $primary-subtle;
+  color: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  i { font-style: normal; font-weight: 700; font-size: 15px; }
+
+  &.pendingWinner { background: $info-subtle; color: $info; }
+  &.unannounced { background: $danger-subtle; color: $danger; }
+  &.todayClosing { background: $warning-subtle; color: $warning; }
+}
+
+.summaryContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  flex: 1;
+
+  h3 { font-size: 13px; font-weight: 500; color: $text-caption; margin: 0; }
+  p {
+    margin: 0; font-size: 24px; color: $text-title; font-weight: 700; line-height: 1.2;
+    span { font-size: 14px; font-weight: 400; color: $text-caption; margin-left: 3px; }
+  }
+  small { font-size: 12px; color: $text-caption; margin-top: 2px; }
+}
+
+// ==========================================
+// 메인 그리드 (좌 1fr : 우 400px)
+// ==========================================
+.managementGrid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 20px;
+  align-items: start;
+}
+
+.mainSection {
+  background: $bg-surface;
+  border: 1px solid $border-color;
+  border-radius: $radius-card;
+  padding: 24px;
+  box-shadow: $shadow-sm;
+}
+
+.filterBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.searchField {
+  flex: 1;
+  min-width: 220px;
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  svg { position: absolute; left: 12px; width: 16px; height: 16px; stroke: $text-caption; }
+  input {
+    width: 100%; height: 40px; padding: 0 14px 0 36px; background: #fbfaf8; border: 1px solid $border-color; border-radius: $radius-control; font-size: 13px; color: $text-title;
+    &:focus { outline: none; border-color: $primary; background: $bg-surface; }
+  }
+}
+
+.selectField select {
+  height: 40px; padding: 0 32px 0 12px; background: #fbfaf8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a827e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 10px center; border: 1px solid $border-color; border-radius: $radius-control; font-size: 13px; color: $text-body; appearance: none; cursor: pointer;
+}
+
+.resetButton {
+  height: 40px; padding: 0 14px; background: transparent; border: 1px solid $border-color; border-radius: $radius-control; font-size: 13px; color: $text-caption; cursor: pointer;
+  &:hover { background: #f5f4ef; color: $text-title; }
+}
+
+// ==========================================
+// 이벤트 카드 그리드 리스트
+// ==========================================
+.eventGridContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.emptyState {
+  padding: 60px 0; text-align: center; color: $text-caption; font-size: 14px;
+}
+
+.eventCard {
+  background: #fdfcf9;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: lighten($primary, 20%);
+    box-shadow: $shadow-sm;
+    transform: translateY(-1px);
+  }
+
+  &.selectedCard {
+    border-color: $primary;
+    background: $primary-subtle;
+    box-shadow: 0 0 0 1px $primary;
+  }
+
+  .cardHeaderRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .badges {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .evId { font-size: 11px; color: $text-caption; font-weight: 600; }
+  }
+
+  .cardBodyRow {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+
+    .evThumbPlaceholder {
+      width: 52px; height: 52px; background: #eae7df; border-radius: 8px; flex-shrink: 0;
+    }
+
+    .evTextInfo {
+      display: flex; flex-direction: column; gap: 2px; overflow: hidden;
+      h3 { font-size: 14px; font-weight: 700; color: $text-title; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      p { font-size: 12px; color: $text-body; margin: 0; }
+      small { font-size: 11px; color: $text-caption; }
+    }
+  }
+
+  .cardFooterRow {
+    display: flex;
+    gap: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #f0eee8;
+
+    .statPill {
+      display: flex; gap: 6px; font-size: 12px;
+      span { color: $text-caption; }
+      strong { color: $text-title; font-weight: 600; }
+    }
+  }
+
+  .cardActionRow {
+    display: flex; justify-content: flex-end;
+
+    .manageBtn {
+      padding: 4px 10px; background: #fff; border: 1px solid $border-color; border-radius: 6px; font-size: 11px; font-weight: 600; color: $text-body; cursor: pointer;
+      &:hover { background: $primary; color: #fff; border-color: $primary; }
+    }
+  }
+}
+
+.statusBadge {
+  display: inline-block; padding: 3px 7px; border-radius: 5px; font-size: 10px; font-weight: 700;
+  &.progress { background: $primary-subtle; color: $primary; }
+  &.upcoming { background: $info-subtle; color: $info; }
+  &.ended { background: #f0eee8; color: $text-caption; }
+}
+
+.dDayBadge {
+  font-size: 10px; font-weight: 700; color: $danger; background: $danger-subtle; padding: 3px 6px; border-radius: 5px;
+}
+
+// ==========================================
+// 우측 패널 (상세 보기 / 탭형 수정)
+// ==========================================
+.detailPanel {
+  background: $bg-surface;
+  border: 1px solid $border-color;
+  border-radius: $radius-card;
+  padding: 20px;
+  box-shadow: $shadow-sm;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.panelTopHeader {
+  display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: 1px solid #f0eee8; margin-bottom: 14px;
+  h2 { font-size: 16px; font-weight: 700; color: $text-title; margin: 0; }
+  button { background: none; border: none; font-size: 20px; color: $text-caption; cursor: pointer; line-height: 1; &:hover { color: $text-title; } }
+}
+
+.selectedSummaryCard {
+  display: flex; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid #f2efe8; margin-bottom: 14px;
+  .scThumb { width: 56px; height: 56px; background: #eae7df; border-radius: 8px; flex-shrink: 0; }
+  .scInfo {
+    display: flex; flex-direction: column; gap: 3px; flex: 1; overflow: hidden;
+    h3 { font-size: 13px; font-weight: 700; color: $text-title; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    dl {
+      margin: 0; display: flex; flex-direction: column; gap: 1px; font-size: 11px;
+      div { display: flex; gap: 6px; dt { color: $text-caption; width: 54px; } dd { margin: 0; color: $text-body; font-weight: 500; } }
+    }
+  }
+}
+
+// 상세 패널 내부 탭
+.detailTabNav {
+  display: flex; gap: 4px; border-bottom: 1px solid $border-color; margin-bottom: 16px; overflow-x: auto;
+  button {
+    background: none; border: none; padding: 8px 10px; font-size: 12px; font-weight: 500; color: $text-caption; cursor: pointer; white-space: nowrap; position: relative;
+    &:hover { color: $text-title; }
+    &.activeDetailTab {
+      color: $primary; font-weight: 700;
+      &::after {
+        content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: $primary;
+      }
+    }
+  }
+}
+
+.detailFormBody {
+  display: flex; flex-direction: column; gap: 12px;
+}
+
+.inputGroup {
+  display: flex; flex-direction: column; gap: 4px; font-size: 12px;
+  label { color: $text-caption; font-weight: 500; }
+  input, select, textarea {
+    width: 100%; padding: 8px 10px; border: 1px solid $border-color; border-radius: 6px; font-size: 12px; background: #fbfaf8; color: $text-title; box-sizing: border-box;
+    &:focus { outline: none; border-color: $primary; background: #fff; }
+  }
+  textarea { resize: none; }
+  .readOnlyText { font-size: 12px; color: $text-body; font-weight: 500; padding: 4px 0; }
+}
+
+.dummyTabContent {
+  padding: 40px 0; text-align: center; color: $text-caption; font-size: 13px; display: flex; flex-direction: column; gap: 6px;
+  strong { color: $text-title; }
+}
+
+.panelFooterActions {
+  display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 14px; border-top: 1px solid #f0eee8;
+  .deleteBtn { padding: 6px 12px; background: #fff; border: 1px solid $danger; color: $danger; border-radius: 6px; font-size: 12px; cursor: pointer; }
+  .saveBtn { padding: 6px 18px; background: $primary; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; &:hover { background: $primary-hover; } }
+}
+
+// 우측 가이드 패널
+.analyticsColumn {
+  display: flex; flex-direction: column; gap: 16px;
+}
+.analyticsCard {
+  background: $bg-surface; border: 1px solid $border-color; border-radius: $radius-card; padding: 20px; box-shadow: $shadow-sm;
+}
+.analyticsHeader {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;
+  h2 { font-size: 15px; font-weight: 700; color: $text-title; margin: 0; }
+  span { font-size: 11px; color: #a0a6a2; font-weight: 600; }
+}
+.guideBox {
+  font-size: 13px; color: $text-body; line-height: 1.5; display: flex; flex-direction: column; gap: 10px;
+  ul { padding-left: 16px; margin: 0; color: $text-caption; }
+}
+
+// 토스트
+.toast {
+  position: fixed; bottom: 32px; right: 32px; background: #2b302d; color: #ffffff; padding: 12px 18px; border-radius: 8px; box-shadow: $shadow-md; display: flex; align-items: center; gap: 12px; font-size: 13px; z-index: 1000;
+  button { background: none; border: none; color: #9ea4a0; cursor: pointer; font-size: 16px; }
+}

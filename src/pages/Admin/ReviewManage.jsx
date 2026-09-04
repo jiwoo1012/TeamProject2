@@ -3,6 +3,7 @@ import { Timestamp, collection, deleteDoc, doc, getDocs, serverTimestamp, update
 
 import { subscribeToAuthState } from '../../firebase/auth'
 import { db } from '../../firebase/firebase'
+import adminTopOrnament from '../../assets/images/admin/adminTopOrnament.svg'
 import styles from './ReviewManage.module.scss'
 
 const statusLabels = { visible: '노출 중', hidden: '숨김' }
@@ -10,6 +11,21 @@ const PAGE_SIZE = 10
 const toDate = (timestamp) => timestamp?.toDate?.() || null
 const toDateKey = (date) => [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-')
 const formatTrendDate = (date) => `${date.getMonth() + 1}.${date.getDate()}`
+
+function ReviewSummaryIcon({ type }) {
+  const icons = {
+    reviews: <><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3h9A2.5 2.5 0 0 1 19 5.5v7a2.5 2.5 0 0 1-2.5 2.5H11l-4 3v-3.2A2.5 2.5 0 0 1 5 12.5z" /><path d="M8.5 8h7M8.5 11h4.5" /></>,
+    rating: <path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6-5.4-2.9-5.4 2.9 1-6L3.2 9.4l6.1-.9z" />,
+    report: <><path d="M7 20V4m0 1h10l-1.8 3L17 11H7" /><path d="M11.2 7.2v1.7m0 2.1h.01" /></>,
+    hidden: <><path d="M3.5 3.5 20.5 20.5" /><path d="M10.6 6.1A10.8 10.8 0 0 1 21 12s-3.8 6-9 6a8.8 8.8 0 0 1-2.6-.4" /><path d="M6.2 8.2C4.6 9.4 3 12 3 12s3.8 6 9 6c.7 0 1.4-.1 2-.3" /><path d="M9.8 9.8a3.1 3.1 0 0 0 4.4 4.4" /></>,
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      {icons[type]}
+    </svg>
+  )
+}
 
 const mockReviews = [
   {
@@ -44,6 +60,66 @@ const mockReviews = [
     reportCount: 2,
     createdAt: Timestamp.fromDate(new Date('2026-08-27T18:45:00+09:00')),
     isMock: true,
+  },
+  {
+    id: 'mock-review-004', productId: 'liq_003', nickname: '달빛주막', rating: 5,
+    content: '선물용으로 주문했는데 패키지가 정갈하고 맛도 좋다는 이야기를 들었어요.', status: 'visible', reportCount: 0,
+    createdAt: Timestamp.fromDate(new Date('2026-08-26T11:20:00+09:00')), isMock: true,
+  },
+  {
+    id: 'mock-review-005', productId: 'food_002', nickname: '안주연구소', rating: 4,
+    content: '짭짤해서 막걸리와 잘 어울립니다. 재구매 의사 있어요.', status: 'visible', reportCount: 0,
+    createdAt: Timestamp.fromDate(new Date('2026-08-25T20:05:00+09:00')), isMock: true,
+  },
+  {
+    id: 'mock-review-006', productId: 'liq_009', nickname: '한잔의여유', rating: 3,
+    content: '향은 독특하고 좋지만 제 입맛에는 조금 드라이했어요.', status: 'visible', reportCount: 0,
+    createdAt: Timestamp.fromDate(new Date('2026-08-24T16:40:00+09:00')), isMock: true,
+  },
+  {
+    id: 'mock-review-007', productId: 'gift_001', nickname: '선물고민끝', rating: 5,
+    content: '명절 선물로 만족스럽습니다. 구성품 안내도 이해하기 쉬웠어요.', status: 'visible', reportCount: 0,
+    createdAt: Timestamp.fromDate(new Date('2026-08-22T10:15:00+09:00')), isMock: true,
+  },
+  {
+    id: 'mock-review-008', productId: 'liq_014', nickname: '소소한저녁', rating: 1,
+    content: '배송 지연 관련 안내가 늦어 아쉬웠습니다. 고객 응대 확인이 필요해 보여요.', status: 'hidden', reportCount: 3,
+    createdAt: Timestamp.fromDate(new Date('2026-08-21T13:50:00+09:00')), isMock: true,
+  },
+  {
+    id: 'mock-review-009', productId: 'food_006', nickname: '오늘의안주', rating: 4,
+    content: '양이 넉넉해서 여럿이 나눠 먹기 좋았습니다.', status: 'visible', reportCount: 0,
+    createdAt: Timestamp.fromDate(new Date('2026-08-20T19:25:00+09:00')), isMock: true,
+  },
+  {
+    id: 'mock-review-010', productId: 'liq_001', nickname: '전통주입문', rating: 5,
+    content: '처음 마셔보는 전통주였는데 부담 없이 즐기기 좋았습니다.', status: 'visible', reportCount: 0,
+    createdAt: Timestamp.fromDate(new Date('2026-08-19T08:45:00+09:00')), isMock: true,
+  },
+  {
+    id: 'mock-review-011', productId: 'glass_002', nickname: '홈바꾸미기', rating: 4,
+    content: '사진과 비슷하고 사용감이 좋아요. 포장이 단단했습니다.', status: 'visible', reportCount: 0,
+    createdAt: Timestamp.fromDate(new Date('2026-08-18T17:10:00+09:00')), isMock: true,
+  },
+  {
+    id: 'mock-review-012', productId: 'liq_007', nickname: '비오는날한잔', rating: 2,
+    content: '상품 설명과 향의 인상이 달라서 기대보다 아쉬웠습니다.', status: 'hidden', reportCount: 1,
+    createdAt: Timestamp.fromDate(new Date('2026-08-17T21:30:00+09:00')), isMock: true,
+  },
+  {
+    id: 'mock-review-013', productId: 'food_004', nickname: '맛있는기록', rating: 5,
+    content: '간편하게 곁들이기 좋고 가족들도 잘 먹었습니다.', status: 'visible', reportCount: 0,
+    createdAt: Timestamp.fromDate(new Date('2026-08-16T12:00:00+09:00')), isMock: true,
+  },
+  {
+    id: 'mock-review-014', productId: 'liq_011', nickname: '도수는적당히', rating: 3,
+    content: '맛은 괜찮았지만 병 라벨이 조금 훼손되어 도착했어요.', status: 'visible', reportCount: 1,
+    createdAt: Timestamp.fromDate(new Date('2026-08-15T15:35:00+09:00')), isMock: true,
+  },
+  {
+    id: 'mock-review-015', productId: 'gift_003', nickname: '자작단골', rating: 4,
+    content: '행사 때 구매했는데 가격 대비 구성이 알찹니다.', status: 'visible', reportCount: 0,
+    createdAt: Timestamp.fromDate(new Date('2026-08-14T09:10:00+09:00')), isMock: true,
   },
 ]
 
@@ -85,7 +161,11 @@ const ReviewManage = () => {
       const nextReviews = firestoreReviews.length > 0 ? firestoreReviews : mockReviews
       setReviews(nextReviews)
       setIsMockMode(firestoreReviews.length === 0)
-      setSelectedId((current) => current || nextReviews[0]?.id || null)
+      setSelectedId((current) => (
+        nextReviews.some((review) => review.id === current)
+          ? current
+          : nextReviews[0]?.id || null
+      ))
     } catch (error) {
       console.error('리뷰 목록 조회 실패:', error)
       setLoadError('리뷰 목록을 불러오지 못했습니다. 관리자 권한을 확인해주세요.')
@@ -187,7 +267,9 @@ const ReviewManage = () => {
     ))
   }
 
-  const selectedRealReviewIds = selectedIds.filter((reviewId) => !reviews.find((review) => review.id === reviewId)?.isMock)
+  const selectedRealReviewIds = selectedIds.filter(
+    (reviewId) => !reviews.find((review) => review.id === reviewId)?.isMock,
+  )
 
   const commitReviewBatches = async (reviewIds, applyOperation) => {
     for (let startIndex = 0; startIndex < reviewIds.length; startIndex += 450) {
@@ -201,7 +283,7 @@ const ReviewManage = () => {
 
   const updateSelectedReviewsVisibility = async (status) => {
     if (selectedRealReviewIds.length === 0) {
-      setToastMessage('로컬 목업 리뷰는 일괄 상태를 변경할 수 없습니다.')
+      setToastMessage('시연용 목업 리뷰는 상태를 변경하지 않습니다.')
       return
     }
 
@@ -229,7 +311,7 @@ const ReviewManage = () => {
   const deleteSelectedReviews = async () => {
     if (selectedRealReviewIds.length === 0) {
       setIsBatchDeleteConfirmOpen(false)
-      setToastMessage('로컬 목업 리뷰는 삭제할 수 없습니다.')
+      setToastMessage('시연용 목업 리뷰는 삭제하지 않습니다.')
       return
     }
 
@@ -254,7 +336,7 @@ const ReviewManage = () => {
 
   const toggleVisibility = async (review) => {
     if (review.isMock) {
-      setToastMessage('로컬 목업 리뷰는 상태를 변경할 수 없습니다.')
+      setToastMessage('시연용 목업 리뷰는 상태를 변경하지 않습니다.')
       return
     }
 
@@ -279,7 +361,7 @@ const ReviewManage = () => {
     if (!confirmReview) return
     if (confirmReview.isMock) {
       setConfirmReview(null)
-      setToastMessage('로컬 목업 리뷰는 삭제할 수 없습니다.')
+      setToastMessage('시연용 목업 리뷰는 삭제하지 않습니다.')
       return
     }
     setIsSaving(true)
@@ -301,7 +383,16 @@ const ReviewManage = () => {
 
   return (
     <section className={styles.page} aria-labelledby="review-manage-title">
-      <h2 id="review-manage-title" className={styles.srOnly}>리뷰 관리</h2>
+      <header className={styles.pageToolbar}>
+        <h1 id="review-manage-title">리뷰 관리</h1>
+        <button type="button" className={styles.refreshButton} onClick={loadReviews} disabled={isLoading}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0 2 5.3" /><path d="M20 4v7h-7" /></svg>
+          새로 고침
+        </button>
+      </header>
+
+      <img className={styles.topOrnament} src={adminTopOrnament} alt="" aria-hidden="true" />
+      <h2 className={styles.srOnly}>리뷰 관리</h2>
 
       <section className={styles.introCard} aria-labelledby="review-overview-title">
         <div>
@@ -312,7 +403,28 @@ const ReviewManage = () => {
         <button type="button" onClick={() => { setStatusFilter('all'); setSortOrder('reported') }}>신고 리뷰 확인</button>
       </section>
 
-      {isMockMode && <p className={styles.mockNotice}>화면 검토용 로컬 목업 리뷰를 표시하고 있습니다. 실제 리뷰가 등록되면 자동으로 교체됩니다.</p>}
+      <section className={styles.summaryArea} aria-label="리뷰 현황 요약">
+        <div className={styles.summaryGrid}>
+          <button type="button" className={styles.summaryCard} onClick={resetFilters}>
+            <span className={`${styles.summaryIcon} ${styles.summaryIconTotal}`}><ReviewSummaryIcon type="reviews" /></span>
+            <span className={styles.summaryContent}><small>전체 리뷰</small><strong>{reviews.length}<em>건</em></strong><i>등록된 상품 리뷰</i></span>
+          </button>
+          <button type="button" className={styles.summaryCard} onClick={() => { setRatingFilter('all'); setSortOrder('ratingHigh'); moveToFirstPage() }}>
+            <span className={`${styles.summaryIcon} ${styles.summaryIconRating}`}><ReviewSummaryIcon type="rating" /></span>
+            <span className={styles.summaryContent}><small>평균 별점</small><strong>{averageRating.toFixed(1)}<em>점</em></strong><i>전체 리뷰 기준</i></span>
+          </button>
+          <button type="button" className={styles.summaryCard} onClick={() => { setStatusFilter('all'); setSortOrder('reported'); moveToFirstPage() }}>
+            <span className={`${styles.summaryIcon} ${styles.summaryIconReport}`}><ReviewSummaryIcon type="report" /></span>
+            <span className={styles.summaryContent}><small>신고 접수</small><strong>{reportedCount}<em>건</em></strong><i>확인이 필요한 리뷰</i></span>
+          </button>
+          <button type="button" className={styles.summaryCard} onClick={() => { setStatusFilter('hidden'); moveToFirstPage() }}>
+            <span className={`${styles.summaryIcon} ${styles.summaryIconHidden}`}><ReviewSummaryIcon type="hidden" /></span>
+            <span className={styles.summaryContent}><small>숨김 리뷰</small><strong>{hiddenCount}<em>건</em></strong><i>현재 숨김 처리된 리뷰</i></span>
+          </button>
+        </div>
+      </section>
+
+      {isMockMode && <p className={styles.mockNotice}>시연용 목업 리뷰를 표시하고 있습니다. 실제 리뷰가 등록되면 자동으로 실제 데이터로 전환됩니다.</p>}
 
       <section className={styles.reviewWorkspace} aria-label="리뷰 운영 현황">
         <article className={styles.trendCard}>
@@ -429,7 +541,11 @@ const ReviewManage = () => {
             </div>
             </>
           ) : (
-            <div className={styles.emptyState}><strong>검색 결과가 없습니다.</strong><p>검색어나 필터 조건을 다시 확인해주세요.</p><button type="button" onClick={resetFilters}>필터 초기화</button></div>
+            <div className={styles.emptyState}>
+              <strong>{reviews.length === 0 ? '등록된 리뷰가 없습니다.' : '검색 결과가 없습니다.'}</strong>
+              <p>{reviews.length === 0 ? '상품 리뷰가 등록되면 이곳에서 관리할 수 있습니다.' : '검색어나 필터 조건을 다시 확인해주세요.'}</p>
+              {reviews.length > 0 && <button type="button" onClick={resetFilters}>필터 초기화</button>}
+            </div>
           )}
 
           {!isLoading && !loadError && filteredReviews.length > 0 && (
@@ -466,7 +582,7 @@ const ReviewManage = () => {
         </aside>
       </div>
 
-      <p className={styles.demoNotice}>{isMockMode ? '실제 리뷰가 없어 화면 확인용 로컬 목업 데이터를 표시하고 있습니다.' : '리뷰는 Firestore `reviews` 컬렉션과 연결되어 있습니다.'}</p>
+      <p className={styles.demoNotice}>{isMockMode ? '실제 리뷰가 없어 시연용 목업 데이터를 표시하고 있습니다.' : '리뷰는 Firestore `reviews` 컬렉션과 연결되어 있습니다.'}</p>
 
       {confirmReview && (
         <div className={styles.modalBackdrop} role="presentation" onMouseDown={() => setConfirmReview(null)}>

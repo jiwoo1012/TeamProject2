@@ -4,6 +4,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore'
 
 import { db } from '../../firebase/firebase'
 import Pagination from '../../components/ui/Pagination/Pagination'
+import searchIconImage from '../../assets/icons/searchIcon.png'
 import styles from './NoticeList.module.scss'
 
 const formatDate = (timestamp) => {
@@ -93,7 +94,16 @@ const NoticeList = () => {
             ))}
           </div>
 
-          <label><span className={styles.srOnly}>공지 검색</span><input type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="제목 또는 내용 검색" /></label>
+          <label className={styles.searchBox}>
+            <img src={searchIconImage} alt="" aria-hidden="true" />
+            <span className={styles.srOnly}>공지 검색</span>
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="제목 또는 내용 검색"
+            />
+          </label>
         </div>
 
         {isLoading ? <div className={styles.emptyState}>공지사항을 불러오는 중입니다.</div>

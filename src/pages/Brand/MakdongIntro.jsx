@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import sitting from '../../assets/characters/M007_Poses04.png'
 import front from '../../assets/characters/M007_Poses05.png'
 import makdongLookUp from '../../assets/images/brand/makdong-look-up-hands-behind.png'
+import makdongPawTrail from '../../assets/images/brand/makdong-paw-trail.png'
 import makdongTransition from '../../assets/images/brand/makdong01.png'
 import makdongSittingWave from '../../assets/images/brand/makdong-sitting-wave.png'
 import makdongSide from '../../assets/images/brand/mk_side.png'
@@ -95,6 +96,19 @@ const MakdongIntro = () => {
   return (
     <main className={styles.page}>
       <section className={styles.blankIntro} aria-label="막동이 소개 첫 화면">
+        <p className={styles.introClickGuide} aria-hidden="true">
+          막동이가 <strong>궁금</strong> 하다면<br />
+          살짝 눌러보세요!
+          <span className={styles.introClickAccent} />
+          <svg
+            className={styles.introClickArrow}
+            viewBox="0 0 72 56"
+            aria-hidden="true" 
+          >
+            <path d="M5 43c9-17 30-19 35-6 5 14-13 19-17 7-6-18 18-31 42-27" />
+            <path d="m56 10 10 7-8 10" />
+          </svg>
+        </p>
         <button
           className={styles.blankIntroLink}
           type="button"
@@ -118,6 +132,9 @@ const MakdongIntro = () => {
       >
         <h2 id="makdong-transition-title">MAKDONG</h2>
         <p className={styles.transitionTagline}>당신의 한 잔을 함께 고를 친구가 옵니다</p>
+        <span className={styles.transitionPawTrail} aria-hidden="true">
+          <img src={makdongPawTrail} alt="" />
+        </span>
 
         <div className={styles.flowRibbons} aria-hidden="true">
           <i />
@@ -150,7 +167,7 @@ const MakdongIntro = () => {
             <h2 className={styles.characterGuideTitle}>MAKDONG</h2>
             <p className={styles.characterName}>막동이</p>
             <p className={styles.characterRole}>
-              오늘 당신의 한 잔을 함께 골라줄<br />
+              오늘 을 함께 골라줄<br />
               자작의 작은 큐레이터, 막동이를 소개합니다.
             </p>
             <p className={styles.characterSummary}>

@@ -21,10 +21,99 @@
 // Blank intro — 추후 첫 화면 콘텐츠를 배치할 영역
 // ---------------------------------------------------------------------
 .blankIntro {
+  position: relative;
   display: grid;
   min-height: calc(100svh - 80px);
   background: $color-bg;
   place-items: center;
+}
+
+.introClickGuide {
+  position: absolute;
+  top: clamp(120px, 20vh, 190px);
+  left: calc(50% + clamp(152px, 13.5vw, 212px));
+  z-index: 3;
+  width: clamp(230px, 20vw, 285px);
+  margin: 0;
+  padding: $space-6;
+  color: rgba($color-taupe, 0.78);
+  font-size: clamp(0.95rem, 1.25vw, 1.15rem);
+  font-weight: $font-weight-bold;
+  letter-spacing: -0.02em;
+  line-height: 1.65;
+  text-align: center;
+  pointer-events: none;
+}
+
+.introClickGuide::before,
+.introClickGuide::after {
+  position: absolute;
+  inset: 4px 0;
+  border: 2px solid rgba($color-taupe, 0.48);
+  border-radius: 48% 52% 46% 54% / 52% 45% 55% 48%;
+  content: '';
+}
+
+.introClickGuide::after {
+  inset: 1px 3px 6px -2px;
+  border-color: rgba($color-taupe, 0.28);
+  transform: rotate(1.5deg);
+}
+
+.introClickGuide strong {
+  color: $color-primary;
+  font-weight: inherit;
+}
+
+.introClickAccent,
+.introClickAccent::before,
+.introClickAccent::after {
+  position: absolute;
+  width: 2px;
+  height: 13px;
+  border-radius: $radius-pill;
+  background: rgba($color-taupe, 0.68);
+  content: '';
+}
+
+.introClickAccent {
+  top: 2px;
+  right: 6px;
+  transform: rotate(18deg);
+}
+
+.introClickAccent::before {
+  top: 5px;
+  left: 9px;
+  height: 11px;
+  transform: rotate(28deg);
+}
+
+.introClickAccent::after {
+  top: 13px;
+  left: 15px;
+  height: 9px;
+  transform: rotate(52deg);
+}
+
+.introClickArrow {
+  position: absolute;
+  bottom: -42px;
+  left: -10px;
+  width: 68px;
+  height: auto;
+  overflow: visible;
+  color: rgba($color-taupe, 0.82);
+  pointer-events: none;
+  transform: rotate(180deg);
+}
+
+.introClickArrow path {
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
 }
 
 .blankIntroLink {
@@ -164,14 +253,6 @@
   min-height: clamp(600px, 72vh, 680px);
   align-content: center;
   padding-block: $space-5 $space-3;
-}
-
-.characterIntro h1 {
-  margin: 0;
-  font-family: $font-family-display;
-  font-size: clamp(4.3rem, 6.2vw, 6.8rem);
-  letter-spacing: -0.055em;
-  line-height: 0.9;
 }
 
 .characterGuideTitle {
@@ -396,12 +477,30 @@
 .transitionTagline {
   position: relative;
   z-index: 4;
-  margin-top: 14px;
+  margin-top: 50px;
   text-align: center;
   color: rgba(72, 62, 52, 0.72);
-  font-size: clamp(14px, 1.4vw, 17px);
+  font-size: clamp(14px, 1.4vw, 50px);
   font-weight: 500;
   letter-spacing: 0.02em;
+}
+
+.transitionPawTrail {
+  position: relative;
+  z-index: 4;
+  display: block;
+  overflow: hidden;
+  width: min(42vw, 560px);
+  height: clamp(42px, 5vw, 66px);
+  margin: -$space-2 auto 0;
+  pointer-events: none;
+}
+
+.transitionPawTrail img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform: translateY(-37.5%);
 }
 
 .flowRibbons i {
@@ -769,10 +868,6 @@
     min-height: clamp(560px, 70vh, 650px);
   }
 
-  .characterIntro h1 {
-    font-size: clamp(3.7rem, 7vw, 5.2rem);
-  }
-
   .characterGuideTitle {
     font-size: clamp(3.7rem, 7vw, 5.2rem);
   }
@@ -800,6 +895,15 @@
 @include mobile {
   .blankIntro {
     min-height: calc(100svh - 60px);
+  }
+
+  .introClickGuide {
+    top: $space-20;
+    left: auto;
+    right: -$space-2;
+    width: 210px;
+    padding: $space-5 $space-6;
+    font-size: 0.85rem;
   }
 
   .characterGuide {
@@ -850,6 +954,17 @@
   .blankCharacterSection h2 {
     font-size: clamp(3.4rem, 18vw, 6rem);
     letter-spacing: 0;
+  }
+
+  .transitionTagline {
+    margin-top: $space-8;
+    font-size: 0.9rem;
+  }
+
+  .transitionPawTrail {
+    width: min(88vw, 390px);
+    height: 46px;
+    margin-top: -$space-1;
   }
 
   .ceramicStillLife {
@@ -908,10 +1023,6 @@
     min-height: auto;
     align-content: start;
     padding: 0;
-  }
-
-  .characterIntro h1 {
-    font-size: clamp(4rem, 20vw, 5.7rem);
   }
 
   .characterGuideTitle {

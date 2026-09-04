@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { collection, getDocs, query, serverTimestamp, where } from 'firebase/firestore'
 import ProductCard from '../../components/ui/ProductCard/ProductCard'
-import { foods, products } from '../../data/products'
+import { fetchProducts, getManagedProducts } from '../../services/productCatalog'
 import pairings from '../../data/pairings.json'
 import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
 import { addDocument, deleteDocument, getCollection, setDocument, updateDocument } from '../../firebase/firestore'
@@ -38,7 +38,9 @@ const stylingImages = import.meta.glob(
 )
 
 const resolveProductImage = (imageUrl) =>
-  Object.entries(productImages).find(([path]) =>
+  /^(data:|https?:\/\/)/.test(imageUrl ?? '')
+    ? imageUrl
+    : Object.entries(productImages).find(([path]) =>
     path.endsWith(`/${imageUrl}`)
   )?.[1]
 
@@ -127,6 +129,16 @@ const ProductDetail = () => {
   const [purchasedOrders, setPurchasedOrders] = useState([])
   const [reviewOrderId, setReviewOrderId] = useState('')
   const [isReviewSaving, setIsReviewSaving] = useState(false)
+  const [products, setProducts] = useState(getManagedProducts)
+  const foods = useMemo(() => products.filter((item) => item.productType === '안주'), [products])
+
+  useEffect(() => {
+    let isMounted = true
+    fetchProducts().then((items) => {
+      if (isMounted) setProducts(items)
+    })
+    return () => { isMounted = false }
+  }, [])
 
   useEffect(() => () => {
     window.clearTimeout(noticeTimerRef.current)
@@ -192,7 +204,7 @@ const ProductDetail = () => {
           `product${productId}`
       )
     )
-  }, [productId])
+  }, [productId, products])
 
   const productDetailImages = useMemo(
     () => getDetailImages(product?.imageUrl),
@@ -360,7 +372,7 @@ const ProductDetail = () => {
         )
       )
       .filter(Boolean)
-  }, [product])
+  }, [product, products])
 
   const recommendedFoods = useMemo(() => {
     if (!product) return []
@@ -387,7 +399,7 @@ const ProductDetail = () => {
         item.productType === '안주' &&
         item.productId !== product.productId
     )
-  }, [product, relatedProducts])
+  }, [foods, product, relatedProducts])
 
   const pairPageCount = Math.max(
     1,
@@ -424,6 +436,8 @@ const ProductDetail = () => {
   const salePrice = Math.round(
     product.price * (1 - discountRate / 100)
   )
+  const isSoldOut = product.status === 'soldout' || Number(product.stock) <= 0
+  const isLowStock = !isSoldOut && Number(product.stock) > 0 && Number(product.stock) <= 5
 
   const stylingImageOne = productStylingImages[0] ?? productDetailImages[0] ?? product.imageSrc
   const stylingImageTwo = productStylingImages.at(-1) ?? productDetailImages.at(-1) ?? product.imageSrc
@@ -1036,7 +1050,7 @@ const ProductDetail = () => {
             {product.brandManufacturer}
           </p>
 
-          <h1>{product.productName}</h1>
+          <h1>{product.productName} {isLowStock && <small className={styles.lowStockLabel}>재고 임박</small>}</h1>
 
           <div className={styles.price}>
             {discountRate > 0 && (
@@ -1091,13 +1105,14 @@ const ProductDetail = () => {
 
 
             <button
-              className={styles.cartButton}
+              className={`${styles.cartButton} ${isSoldOut ? styles.soldOutButton : ''}`}
               type="button"
+              disabled={isSoldOut}
               onClick={() =>
                 handleAddToCart(product)
               }
             >
-              장바구니에 담기
+              {isSoldOut ? '품절' : '장바구니에 담기'}
             </button>
 
           </div>

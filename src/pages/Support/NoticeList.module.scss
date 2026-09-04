@@ -1,34 +1,683 @@
-@use '../../styles/variables' as v;
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
 
-.page { min-height: 70vh; padding-bottom: v.$space-20; background: v.$color-bg; }
-.hero { padding: v.$space-16 max(v.$side-margin-mobile, calc((100% - v.$container-max) / 2)); background: color-mix(in srgb, v.$color-surface 35%, v.$color-white); text-align: center; }
-.hero h1 { margin: v.$space-2 0; font-size: v.$font-size-4xl; }
-.hero p { margin: 0; color: v.$color-text-muted; }
-.content { width: min(960px, calc(100% - 40px)); margin: v.$space-12 auto 0; }
-.toolbar { display: flex; align-items: center; justify-content: space-between; gap: v.$space-4; margin-bottom: v.$space-5; }
-.toolbar h2 { margin: 0; font-size: v.$font-size-xl; }
-.toolbar em { color: v.$color-primary; font-size: v.$font-size-sm; font-style: normal; }
 
-.filterRow { display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: v.$space-4; margin-bottom: v.$space-6; }
-.filterRow input { width: 200px; flex-shrink: 0; height: 42px; box-sizing: border-box; padding: 0 v.$space-4; border: 1px solid v.$color-border; border-radius: v.$radius-md; background: v.$color-white; font: inherit; }
-.categoryTabs { display: flex; flex-wrap: wrap; gap: v.$space-2; }
-.categoryTabs button { min-height: 36px; padding: 0 v.$space-4; border: 1px solid v.$color-border; border-radius: v.$radius-pill; background: v.$color-white; color: v.$color-text-muted; font-size: v.$font-size-sm; transition: all v.$transition-fast; }
-.categoryTabs button:hover { border-color: v.$color-taupe; color: v.$color-taupe; }
-.activeTab { border-color: v.$color-taupe !important; background: v.$color-taupe !important; color: v.$color-white !important; }
-.list { border-top: 2px solid v.$color-text-primary; }
-.noticeItem { display: flex; align-items: center; justify-content: space-between; gap: v.$space-6; padding: v.$space-5 v.$space-4; border-bottom: 1px solid v.$color-border; color: inherit; text-decoration: none; transition: background-color v.$transition-fast; }
-.noticeItem:hover { background: color-mix(in srgb, v.$color-primary 6%, v.$color-white); }
-.noticeItem strong { font-size: v.$font-size-md; }
-.noticeItem p { max-width: 650px; margin: v.$space-2 0 0; overflow: hidden; color: v.$color-text-muted; font-size: v.$font-size-sm; text-overflow: ellipsis; white-space: nowrap; }
-.noticeItem time { flex: 0 0 auto; color: v.$color-text-muted; font-size: v.$font-size-sm; }
-.pinBadge { display: inline-flex; min-height: 36px; align-items: center; margin-right: v.$space-2; padding: 0 v.$space-4; border-radius: v.$radius-pill; background: color-mix(in srgb, v.$color-warning 14%, v.$color-white); color: v.$color-warning; font-size: v.$font-size-sm; font-weight: v.$font-weight-bold; }
-.categoryBadge { display: inline-flex; min-height: 22px; align-items: center; margin-right: v.$space-2; padding: 0 v.$space-2; border-radius: v.$radius-pill; background: color-mix(in srgb, v.$color-taupe 16%, v.$color-white); color: v.$color-taupe; font-size: v.$font-size-sm; font-weight: v.$font-weight-medium; }
-.categoryNews { background: color-mix(in srgb, v.$color-primary-light 20%, v.$color-white); color: v.$color-primary-light; }
-.categoryDelivery { background: color-mix(in srgb, v.$color-taupe 16%, v.$color-white); color: v.$color-taupe; }
-.categoryEvent { background: color-mix(in srgb, v.$color-primary 16%, v.$color-white); color: v.$color-primary; }
-.categoryService { background: color-mix(in srgb, v.$color-primary 30%, v.$color-taupe); color: v.$color-white; }
-.categoryMaintenance { background: color-mix(in srgb, v.$color-taupe 55%, v.$color-text-primary); color: v.$color-white; }
-.emptyState { min-height: 240px; display: grid; place-items: center; border-top: 2px solid v.$color-text-primary; color: v.$color-text-muted; }
-.paginationWrap { display: flex; justify-content: center; margin-top: v.$space-8; }
-.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
-@media (max-width: v.$breakpoint-mobile-max) { .hero { padding-top: v.$space-12; padding-bottom: v.$space-12; } .hero h1 { font-size: v.$font-size-3xl; } .filterRow { align-items: stretch; flex-direction: column; } .filterRow input { width: 100%; } .noticeItem { align-items: flex-start; flex-direction: column; gap: v.$space-2; } }
+/* ========================================
+   NOTICE LIST
+======================================== */
+
+.page {
+  width: 100%;
+  min-height: 100vh;
+
+  background: $color-bg;
+  color: $color-text-primary;
+}
+
+
+/* ========================================
+   HERO
+======================================== */
+
+.hero {
+  width: calc(100% - (#{$side-margin-desktop} * 2));
+  max-width: 1040px;
+
+  margin: 0 auto;
+
+  /* 기존보다 위 여백 확대 */
+  padding-top: $space-20;
+
+  box-sizing: border-box;
+
+  h1 {
+    margin: 0;
+
+    color: $color-text-primary;
+
+    font-family: $font-family-display;
+
+    /* 기존 32px → 40px */
+    font-size: $font-size-4xl;
+
+    font-weight: $font-weight-semibold;
+    line-height: $line-height-tight;
+    letter-spacing: -1px;
+  }
+
+  p {
+    display: none;
+  }
+}
+
+
+/* ========================================
+   CONTENT
+======================================== */
+
+.content {
+  width: calc(100% - (#{$side-margin-desktop} * 2));
+  max-width: 1040px;
+
+  margin: 0 auto;
+
+  /* 제목과 필터 사이 간격도 조금 확보 */
+  padding:
+    $space-8
+    0
+    $space-24;
+
+  box-sizing: border-box;
+}
+
+
+/* ========================================
+   TOOLBAR
+======================================== */
+
+.toolbar {
+  display: none;
+}
+
+
+/* ========================================
+   FILTER + SEARCH
+======================================== */
+
+.filterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+
+  padding-bottom: $space-4;
+
+  /* 여기 선 하나만 유지 */
+  border-bottom:
+    1px solid
+    rgba($color-text-primary, 0.5);
+}
+
+
+/* ========================================
+   CATEGORY TABS
+======================================== */
+
+.categoryTabs {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+
+  button {
+    min-width: 58px;
+    height: 38px;
+
+    padding: 0 $space-4;
+
+    border: 0;
+    border-radius: $radius-pill;
+
+    background: transparent;
+    color: $color-text-primary;
+
+    font-family: $font-family-base;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+
+    transition:
+      color $transition-fast ease,
+      background $transition-fast ease;
+
+    &:hover {
+      background:
+        rgba($color-surface, 0.35);
+    }
+  }
+}
+
+
+.categoryTabs .activeTab {
+  background: #a99f91;
+  color: $color-white;
+
+  font-weight: $font-weight-medium;
+
+  &:hover {
+    background: #a99f91;
+  }
+}
+
+
+/* ========================================
+   SEARCH
+======================================== */
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+
+  width: 250px;
+  height: 42px;
+
+  padding: 0 $space-4;
+  box-sizing: border-box;
+
+  border:
+    1px solid
+    rgba($color-text-primary, 0.5);
+
+  border-radius: $radius-md;
+
+  background: transparent;
+
+  transition:
+    border-color $transition-fast ease,
+    background $transition-fast ease,
+    box-shadow $transition-fast ease,
+    transform $transition-fast ease;
+
+  &:hover {
+    border-color:
+      rgba($color-text-primary, 0.75);
+  }
+
+  &:focus-within {
+    border-color: $color-primary;
+
+    background:
+      rgba($color-white, 0.92);
+
+    box-shadow:
+      0 0 0 3px rgba($color-primary, 0.14),
+      0 6px 18px rgba(44, 35, 27, 0.1);
+
+    transform: translateY(-1px);
+  }
+
+  img {
+    flex-shrink: 0;
+
+    width: 15px;
+    height: 15px;
+
+    object-fit: contain;
+
+    opacity: 0.65;
+
+    transition:
+      opacity $transition-fast ease,
+      transform $transition-fast ease;
+  }
+
+  input {
+    width: 100%;
+    min-width: 0;
+
+    padding: 0;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+
+    color: $color-text-primary;
+
+    font-size: $font-size-xs;
+
+    &::placeholder {
+      color: $color-text-muted;
+    }
+
+    &::-webkit-search-cancel-button {
+      cursor: pointer;
+    }
+  }
+
+  &:focus-within img {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+
+/* ========================================
+   NOTICE LIST
+======================================== */
+
+.list {
+  width: 100%;
+  margin-top: $space-6;
+}
+
+
+.noticeItem {
+  position: relative;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    140px;
+
+  align-items: center;
+
+  width: 100%;
+  min-height: 68px;
+
+  padding:
+    $space-3
+    $space-1;
+
+  box-sizing: border-box;
+
+  border-bottom:
+    1px solid
+    rgba($color-border, 0.85);
+
+  text-decoration: none;
+
+  transition:
+    background $transition-fast ease;
+
+  > div {
+    display: flex;
+    align-items: center;
+
+    min-width: 0;
+  }
+
+  &:hover {
+    background:
+      rgba($color-surface, 0.12);
+
+    strong {
+      color: $color-text-secondary;
+    }
+  }
+
+  time {
+    justify-self: end;
+
+    padding-right: $space-2;
+
+    color: $color-text-muted;
+
+    font-size: $font-size-xs;
+    font-weight: $font-weight-regular;
+
+    white-space: nowrap;
+  }
+
+  strong {
+    min-width: 0;
+
+    margin-left: $space-5;
+
+    color: $color-text-primary;
+
+    font-size: $font-size-sm;
+    font-weight: $font-weight-regular;
+
+    line-height: 1.4;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    transition:
+      color $transition-fast ease;
+  }
+
+  p {
+    display: none;
+  }
+}
+
+
+/* ========================================
+   CATEGORY BADGE
+======================================== */
+
+.categoryBadge,
+.pinBadge {
+  flex-shrink: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 58px;
+  height: 30px;
+
+  padding: 0 $space-3;
+
+  box-sizing: border-box;
+
+  border-radius: $radius-pill;
+
+  font-size: $font-size-xs;
+  font-weight: $font-weight-regular;
+
+  line-height: 1;
+}
+
+
+.pinBadge {
+  margin-right: $space-2;
+
+  background:
+    rgba($color-warning, 0.16);
+
+  color: $color-text-secondary;
+}
+
+
+.categoryNews {
+  background: #f2eee8;
+  color: #77695c;
+}
+
+
+.categoryDelivery {
+  background: #f5ead7;
+  color: #826d4f;
+}
+
+
+.categoryEvent {
+  background: #e8efe4;
+  color: #5f725c;
+}
+
+
+.categoryService {
+  background: #f0ece6;
+  color: #75695d;
+}
+
+
+.categoryMaintenance {
+  background: #f3eee7;
+  color: #75695d;
+}
+
+
+/* ========================================
+   PAGINATION
+======================================== */
+
+.paginationWrap {
+  display: flex;
+  justify-content: center;
+
+  width: 100%;
+
+  margin-top: $space-12;
+}
+
+
+/* ========================================
+   EMPTY / ERROR / LOADING
+======================================== */
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 260px;
+
+  /*
+    filterRow 아래에서 바로 시작.
+    기존 border-top 삭제해서
+    상단 선이 두 개 생기는 현상 제거.
+  */
+  margin-top: 0;
+
+  border-top: 0;
+
+  border-bottom:
+    1px solid
+    rgba($color-border, 0.85);
+
+  color: $color-text-muted;
+
+  font-size: $font-size-sm;
+  text-align: center;
+}
+
+
+/* ========================================
+   ACCESSIBILITY
+======================================== */
+
+.srOnly {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  padding: 0;
+  margin: -1px;
+
+  overflow: hidden;
+
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+
+  border: 0;
+}
+
+
+/* ========================================
+   TABLET
+======================================== */
+
+@include tablet {
+  .hero,
+  .content {
+    width:
+      calc(
+        100% -
+        (#{$side-margin-tablet} * 2)
+      );
+
+    max-width: 920px;
+  }
+
+
+  .hero {
+    padding-top: $space-16;
+
+    h1 {
+      font-size: 36px;
+    }
+  }
+
+
+  .content {
+    padding:
+      $space-8
+      0
+      $space-20;
+  }
+
+
+  .categoryTabs {
+    gap: $space-1;
+
+    button {
+      min-width: 52px;
+      padding: 0 $space-3;
+    }
+  }
+
+
+  .searchBox {
+    width: 220px;
+  }
+
+
+  .noticeItem {
+    grid-template-columns:
+      minmax(0, 1fr)
+      120px;
+  }
+}
+
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@include mobile {
+  .page {
+    min-height: calc(100vh - 76px);
+  }
+
+
+  .hero,
+  .content {
+    width:
+      calc(
+        100% -
+        (#{$side-margin-mobile} * 2)
+      );
+
+    max-width: none;
+  }
+
+
+  .hero {
+    padding-top: $space-10;
+
+    h1 {
+      font-size: 30px;
+      letter-spacing: -0.5px;
+    }
+  }
+
+
+  .content {
+    padding:
+      $space-6
+      0
+      $space-16;
+  }
+
+
+  .filterRow {
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: $space-4;
+
+    padding-bottom: $space-4;
+  }
+
+
+  .categoryTabs {
+    width: 100%;
+
+    gap: $space-1;
+
+    overflow-x: auto;
+
+    padding-bottom: 2px;
+
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    button {
+      flex-shrink: 0;
+
+      min-width: 52px;
+      height: 34px;
+
+      padding: 0 $space-3;
+
+      font-size: $font-size-xs;
+    }
+  }
+
+
+  .searchBox {
+    width: 100%;
+    height: 40px;
+
+    img {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+
+  .list {
+    margin-top: $space-4;
+  }
+
+
+  .noticeItem {
+    grid-template-columns: 1fr;
+
+    gap: $space-2;
+
+    min-height: 82px;
+
+    padding:
+      $space-4
+      0;
+
+    > div {
+      align-items: center;
+    }
+
+    strong {
+      margin-left: $space-3;
+
+      font-size: $font-size-sm;
+    }
+
+    time {
+      justify-self: start;
+
+      padding-right: 0;
+
+      font-size: 11px;
+    }
+  }
+
+
+  .categoryBadge,
+  .pinBadge {
+    min-width: 48px;
+    height: 26px;
+
+    padding: 0 $space-2;
+
+    font-size: 11px;
+  }
+
+
+  .pinBadge {
+    margin-right: $space-1;
+  }
+
+
+  .paginationWrap {
+    margin-top: $space-8;
+  }
+
+
+  .emptyState {
+    min-height: 220px;
+
+    font-size: $font-size-xs;
+  }
+}
