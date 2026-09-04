@@ -236,7 +236,7 @@ $radius-control: 8px;
 }
 
 .resetButton {
-  height: 40px; padding: 0 14px; background: transparent; border: 1px solid $border-color; border-radius: $radius-control; font-size: 13px; color: $text-caption; cursor: pointer;
+  height: 40px; display: inline-flex; align-items: center; justify-content: center; padding: 0 14px; background: transparent; border: 1px solid $border-color; border-radius: $radius-control; font-size: 13px; line-height: 1; color: $text-caption; cursor: pointer;
   &:hover { background: #f5f4ef; color: $text-title; }
 }
 
@@ -249,8 +249,8 @@ $radius-control: 8px;
   }
   .actions {
     display: flex; gap: 8px;
-    .bulkButton { height: 36px; padding: 0 12px; border-radius: 6px; font-size: 12px; background: #fff; border: 1px solid $danger; color: $danger; cursor: pointer; }
-    .registerButton { height: 36px; padding: 0 14px; border-radius: 6px; font-size: 13px; font-weight: 600; background: $primary; color: #fff; border: none; cursor: pointer; &:hover { background: $primary-hover; } }
+    .bulkButton { height: 36px; display: inline-flex; align-items: center; justify-content: center; padding: 0 12px; border-radius: 6px; font-size: 12px; line-height: 1; background: #fff; border: 1px solid $danger; color: $danger; cursor: pointer; }
+    .registerButton { height: 36px; display: inline-flex; align-items: center; justify-content: center; padding: 0 14px; border-radius: 6px; font-size: 13px; font-weight: 600; line-height: 1; background: $primary; color: #fff; border: none; cursor: pointer; &:hover { background: $primary-hover; } }
   }
 }
 
@@ -260,7 +260,7 @@ $radius-control: 8px;
 
 .dataTable {
   width: 100%;
-  min-width: 920px;
+  min-width: 950px;
   border-collapse: collapse;
   table-layout: fixed;
   text-align: left;
@@ -268,6 +268,14 @@ $radius-control: 8px;
 
   th { padding: 12px 14px; background: #faf8f5; color: $text-caption; font-weight: 600; border-bottom: 1px solid $border-color; white-space: nowrap; }
   td { padding: 12px 14px; border-bottom: 1px solid #f0eee8; color: $text-body; vertical-align: middle; overflow: hidden; }
+
+  th:nth-child(4),
+  td:nth-child(4),
+  th:nth-child(8),
+  td:nth-child(8) {
+    white-space: nowrap;
+    word-break: keep-all;
+  }
 
   tr.clickableRow {
     cursor: pointer; transition: background-color 0.15s ease;
@@ -279,7 +287,7 @@ $radius-control: 8px;
 .selectColumn { width: 40px; }
 .idColumn { width: 96px; }
 .titleColumn { width: auto; }
-.categoryColumn { width: 58px; }
+.categoryColumn { width: 82px; }
 .dateColumn { width: 114px; }
 .statusColumn { width: 76px; }
 .pinColumn { width: 70px; }
@@ -322,7 +330,7 @@ $radius-control: 8px;
 }
 
 .editBtn {
-  padding: 5px 10px; background: $bg-surface; border: 1px solid $border-color; border-radius: 6px; font-size: 11px; color: $text-title; cursor: pointer;
+  min-height: 30px; display: inline-flex; align-items: center; justify-content: center; padding: 0 10px; background: $bg-surface; border: 1px solid $border-color; border-radius: 6px; font-size: 11px; line-height: 1; color: $text-title; cursor: pointer;
   &:hover { background: $primary; color: #fff; border-color: $primary; }
 }
 
@@ -330,7 +338,12 @@ $radius-control: 8px;
 // 우측 패널 (공지 상세 및 수정)
 // ==========================================
 .editPanel {
-  background: $bg-surface; border: 1px solid $border-color; border-radius: $radius-card; padding: 20px; box-shadow: $shadow-sm; animation: fadeIn 0.2s ease-out;
+  background: $bg-surface;
+  border: 1px solid $border-color;
+  border-radius: $radius-card;
+  padding: 24px;
+  box-shadow: $shadow-sm;
+  animation: fadeIn 0.2s ease-out;
 }
 
 @keyframes fadeIn {
@@ -339,34 +352,107 @@ $radius-control: 8px;
 }
 
 .panelTopHeader {
-  display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #f0eee8; margin-bottom: 14px;
-  h2 { font-size: 16px; font-weight: 700; color: $text-title; margin: 0; }
-  button { background: none; border: none; font-size: 20px; color: $text-caption; cursor: pointer; line-height: 1; &:hover { color: $text-title; } }
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0eee8;
+  margin-bottom: 20px;
+
+  h2 { font-size: 17px; font-weight: 700; color: $text-title; margin: 0; }
+  button {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: $primary-subtle;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    font-size: 20px;
+    color: $text-caption;
+    cursor: pointer;
+    line-height: 1;
+    &:hover { color: $primary; border-color: $primary; background: #fff; }
+  }
+}
+
+.requiredGuide {
+  margin: 6px 0 0;
+  color: $text-caption;
+  font-size: 11px;
+
+  span { color: $danger; font-weight: 700; }
+}
+
+.requiredMark {
+  color: $danger;
+  font-style: normal;
+  font-weight: 700;
 }
 
 .metaFormSection {
-  display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f2efe8;
+  display: flex; flex-direction: column; gap: 18px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #f2efe8;
 
   .metaHeaderTitle {
-    display: flex; gap: 8px; align-items: center;
-    input {
-      flex: 1; height: 36px; padding: 0 10px; border: 1px solid $border-color; border-radius: 6px; font-size: 13px; font-weight: 700; background: #fbfaf8; color: $text-title;
-      &:focus { outline: none; border-color: $primary; background: #fff; }
+    display: flex; gap: 10px; align-items: flex-end;
+
+    .titleField {
+      display: flex;
+      flex: 1;
+      min-width: 0;
+      flex-direction: column;
+      gap: 7px;
+
+      > span { font-size: 12px; font-weight: 700; color: $text-title; }
+
+      input {
+        width: 100%; height: 40px; padding: 0 12px; border: 1px solid $border-color; border-radius: $radius-control; font-size: 13px; font-weight: 700; background: #fbfaf8; color: $text-title; box-sizing: border-box;
+        &:focus { outline: none; border-color: $primary; background: #fff; box-shadow: 0 0 0 3px rgba(59, 95, 84, 0.08); }
+      }
     }
     .importantCheckLabel {
-      display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: $warning; background: $warning-subtle; padding: 4px 8px; border-radius: 6px; cursor: pointer; white-space: nowrap;
+      min-height: 40px; display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: $warning; background: $warning-subtle; padding: 0 10px; border: 1px solid transparent; border-radius: $radius-control; cursor: pointer; white-space: nowrap; box-sizing: border-box;
+      &:hover { border-color: $warning; }
     }
   }
 
   .metaDl {
-    margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 12px;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    font-size: 12px;
+
     div {
-      display: flex; justify-content: space-between; align-items: center;
-      dt { color: $text-caption; }
+      min-width: 0;
+      min-height: 62px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 7px;
+      padding: 10px 12px;
+      background: #fbfaf8;
+      border: 1px solid #f0eee8;
+      border-radius: $radius-control;
+      box-sizing: border-box;
+
+      &:first-child {
+        min-height: 54px;
+        grid-column: 1 / -1;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      dt { color: $text-caption; font-size: 11px; white-space: nowrap; }
       dd {
-        margin: 0; color: $text-title; font-weight: 500;
+        width: 100%; min-width: 0; margin: 0; color: $text-title; font-weight: 600; text-align: left; overflow-wrap: anywhere;
         select {
-          height: 28px; padding: 0 6px; border: 1px solid $border-color; border-radius: 4px; font-size: 11px; background: #fbfaf8;
+          width: 100%; height: 34px; padding: 0 28px 0 10px; border: 1px solid $border-color; border-radius: 6px; font-size: 12px; font-weight: 600; color: $text-title; background: #fff;
+          &:hover { border-color: $primary; }
+          &:focus { outline: none; border-color: $primary; box-shadow: 0 0 0 3px rgba(59, 95, 84, 0.08); }
         }
       }
     }
@@ -374,18 +460,19 @@ $radius-control: 8px;
 }
 
 .previewSection {
-  display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px;
+  display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;
   h4 { font-size: 13px; font-weight: 700; color: $text-title; margin: 0; }
   textarea {
-    width: 100%; padding: 10px; border: 1px solid $border-color; border-radius: 6px; font-size: 12px; background: #fbfaf8; color: $text-body; resize: none; box-sizing: border-box; line-height: 1.4;
-    &:focus { outline: none; border-color: $primary; background: #fff; }
+    width: 100%; min-height: 180px; padding: 14px; border: 1px solid $border-color; border-radius: $radius-control; font-size: 13px; background: #fbfaf8; color: $text-body; resize: vertical; box-sizing: border-box; line-height: 1.65;
+    &:focus { outline: none; border-color: $primary; background: #fff; box-shadow: 0 0 0 3px rgba(59, 95, 84, 0.08); }
   }
 }
 
 .stepFooter {
-  display: flex; justify-content: space-between; align-items: center;
-  .deleteBtn { padding: 6px 12px; background: #fff; border: 1px solid $danger; color: $danger; border-radius: 6px; font-size: 12px; cursor: pointer; }
-  .saveBtn { padding: 6px 18px; background: $primary; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; &:hover { background: $primary-hover; } }
+  display: flex; align-items: center; gap: 8px;
+  .deleteBtn { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; padding: 0 14px; background: #fff; border: 1px solid $danger; color: $danger; border-radius: $radius-control; font-size: 12px; font-weight: 600; line-height: 1; cursor: pointer; &:hover { background: $danger-subtle; } }
+  .saveBtn { min-width: 96px; min-height: 38px; display: inline-flex; align-items: center; justify-content: center; margin-left: auto; padding: 0 20px; background: $primary; color: #fff; border: 1px solid $primary; border-radius: $radius-control; font-size: 12px; font-weight: 700; line-height: 1; cursor: pointer; &:hover { background: $primary-hover; border-color: $primary-hover; } }
+  button:disabled { opacity: 0.55; cursor: not-allowed; }
 }
 
 // ==========================================
@@ -436,7 +523,11 @@ $radius-control: 8px;
   width: 90px;
   height: 90px;
   border-radius: 50%;
-  background: conic-gradient($primary var(--active-rate, 60%), #e8e6df 0);
+  background: conic-gradient(
+    $primary 0 var(--published-end, 0%),
+    $info var(--published-end, 0%) var(--draft-end, 0%),
+    $warning var(--draft-end, 0%) 100%
+  );
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -456,6 +547,8 @@ $radius-control: 8px;
   span, strong { position: relative; z-index: 1; }
   span { font-size: 11px; color: $text-caption; }
   strong { font-size: 15px; color: $text-title; }
+
+  &[data-empty='true'] { background: #e8e6df; }
 }
 
 .statusOverview ul {
@@ -575,5 +668,28 @@ $radius-control: 8px;
 
   .mainSection {
     padding: 16px;
+  }
+
+  .editPanel {
+    padding: 18px;
+  }
+
+  .metaFormSection {
+    .metaHeaderTitle {
+      align-items: stretch;
+      flex-direction: column;
+
+      .importantCheckLabel {
+        align-self: flex-start;
+      }
+    }
+
+    .metaDl {
+      grid-template-columns: 1fr;
+
+      div:first-child {
+        grid-column: auto;
+      }
+    }
   }
 }

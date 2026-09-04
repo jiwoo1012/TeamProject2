@@ -162,6 +162,13 @@ const NoticeManage = () => {
   const publishedCount = notices.filter((n) => n.status === 'published').length
   const draftCount = notices.filter((n) => n.status === 'draft').length
   const importantCount = notices.filter((n) => n.isPinned).length
+  // 중요 고정 공지는 상태와 중복 집계하지 않아 도넛의 합계가 전체 건수와 일치하도록 한다.
+  const donutPublishedCount = notices.filter((n) => n.status === 'published' && !n.isPinned).length
+  const donutDraftCount = notices.filter((n) => n.status === 'draft' && !n.isPinned).length
+  const publishedEndRate = totalCount ? (donutPublishedCount / totalCount) * 100 : 0
+  const draftEndRate = totalCount
+    ? ((donutPublishedCount + donutDraftCount) / totalCount) * 100
+    : 0
 
   const summaryCards = [
     { key: 'total', label: '전체 공지', value: totalCount, unit: '건', caption: '등록된 전체 공지' },
@@ -538,7 +545,10 @@ const NoticeManage = () => {
         {(selectedNotice || isCreating) ? (
           <aside className={styles.editPanel} ref={panelRef} aria-labelledby="notice-detail-title">
             <header className={styles.panelTopHeader}>
-              <h2 id="notice-detail-title">{isCreating ? '새 공지 등록' : '공지 상세 보기'}</h2>
+              <div>
+                <h2 id="notice-detail-title">{isCreating ? '새 공지 등록' : '공지 상세 보기'}</h2>
+                <p className={styles.requiredGuide}><span>*</span> 표시는 필수 입력 항목입니다.</p>
+              </div>
               <button type="button" onClick={() => { setSelectedNoticeId(null); setIsCreating(false) }} aria-label="닫기">
                 ×
               </button>
@@ -546,12 +556,16 @@ const NoticeManage = () => {
 
             <div className={styles.metaFormSection}>
               <div className={styles.metaHeaderTitle}>
-                <input
-                  type="text"
-                  value={draftTitle}
-                  onChange={(e) => setDraftTitle(e.target.value)}
-                  placeholder="공지 제목을 입력하세요"
-                />
+                <label className={styles.titleField}>
+                  <span>제목 <em className={styles.requiredMark}>*</em></span>
+                  <input
+                    type="text"
+                    value={draftTitle}
+                    onChange={(e) => setDraftTitle(e.target.value)}
+                    placeholder="공지 제목을 입력하세요"
+                    required
+                  />
+                </label>
                 <label className={styles.importantCheckLabel}>
                   <input
                     type="checkbox"
@@ -568,9 +582,9 @@ const NoticeManage = () => {
                   <dd>{selectedNotice?.id || '등록 후 자동 생성'}</dd>
                 </div>
                 <div>
-                  <dt>분류</dt>
+                  <dt>분류 <em className={styles.requiredMark}>*</em></dt>
                   <dd>
-                    <select value={draftCategory} onChange={(e) => setDraftCategory(e.target.value)}>
+                    <select value={draftCategory} onChange={(e) => setDraftCategory(e.target.value)} required>
                       {categories
                         .filter((c) => c !== '전체 분류')
                         .map((c) => (
@@ -582,9 +596,9 @@ const NoticeManage = () => {
                   </dd>
                 </div>
                 <div>
-                  <dt>게시 상태</dt>
+                  <dt>게시 상태 <em className={styles.requiredMark}>*</em></dt>
                   <dd>
-                    <select value={draftStatus} onChange={(e) => setDraftStatus(e.target.value)}>
+                    <select value={draftStatus} onChange={(e) => setDraftStatus(e.target.value)} required>
                       <option value="published">게시 중</option>
                       <option value="draft">숨김</option>
                     </select>
@@ -592,11 +606,11 @@ const NoticeManage = () => {
                 </div>
                 <div>
                   <dt>작성일</dt>
-                  <dd>{formatDateTime(selectedNotice?.createdAt)}</dd>
+                  <dd>{isCreating ? '등록 시 자동 기록' : formatDateTime(selectedNotice?.createdAt)}</dd>
                 </div>
                 <div>
                   <dt>최근 수정</dt>
-                  <dd>{formatDateTime(selectedNotice?.updatedAt || selectedNotice?.createdAt)}</dd>
+                  <dd>{isCreating ? '수정 시 자동 기록' : formatDateTime(selectedNotice?.updatedAt || selectedNotice?.createdAt)}</dd>
                 </div>
                 <div>
                   <dt>노출 대상</dt>
@@ -610,12 +624,16 @@ const NoticeManage = () => {
             </div>
 
             <div className={styles.previewSection}>
-              <h4>본문 미리 보기 및 편집</h4>
+              <h4>
+                {isCreating ? '본문 작성' : '본문 미리 보기 및 편집'}{' '}
+                <em className={styles.requiredMark}>*</em>
+              </h4>
               <textarea
                 rows="6"
                 value={draftContent}
                 onChange={(e) => setDraftContent(e.target.value)}
                 placeholder="공지사항 본문을 입력하세요..."
+                required
               />
             </div>
 
@@ -641,7 +659,13 @@ const NoticeManage = () => {
               <div className={styles.statusOverview}>
                 <div
                   className={styles.statusDonut}
-                  style={{ '--active-rate': `${Math.round((publishedCount / totalCount) * 100 || 0)}%` }}
+                  style={{
+                    '--published-end': `${publishedEndRate}%`,
+                    '--draft-end': `${draftEndRate}%`,
+                  }}
+                  data-empty={totalCount === 0}
+                  role="img"
+                  aria-label={`전체 ${totalCount}건 중 게시 중 ${donutPublishedCount}건, 숨김 ${donutDraftCount}건, 중요 고정 ${importantCount}건`}
                 >
                   <span>전체</span>
                   <strong>{totalCount}건</strong>
@@ -650,12 +674,12 @@ const NoticeManage = () => {
                   <li>
                     <span className={styles.dotProgress} />
                     <span>게시 중</span>
-                    <strong>{publishedCount}건</strong>
+                    <strong>{donutPublishedCount}건</strong>
                   </li>
                   <li>
                     <span className={styles.dotScheduled} />
                     <span>숨김</span>
-                    <strong>{draftCount}건</strong>
+                    <strong>{donutDraftCount}건</strong>
                   </li>
                   <li>
                     <span className={styles.dotImportant} />
@@ -664,6 +688,7 @@ const NoticeManage = () => {
                   </li>
                 </ul>
               </div>
+              <p className={styles.analyticsCaption}>중요 고정 공지는 게시 상태보다 우선해 표시됩니다.</p>
             </section>
 
             <section className={styles.analyticsCard}>
