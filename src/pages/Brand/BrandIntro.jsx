@@ -89,6 +89,14 @@ const closingValueItems = [
   },
 ]
 
+const BRAND_MESSAGE = '『자작』은 혼자 마시는 시간을 외로운 시간이 아닌 나를 돌보는 시간으로 바꿉니다.'
+
+const renderMessageCharacters = (text) => Array.from(text, (character, index) => (
+  <span key={`${character}-${index}`} data-message-character>
+    {character === ' ' ? '\u00a0' : character}
+  </span>
+))
+
 const BrandIntro = () => {
   const secondSectionRef = useRef(null)
   const bottleRef = useRef(null)
@@ -143,11 +151,11 @@ const BrandIntro = () => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (prefersReducedMotion || hasManualSenseInteraction || isSenseTemporarilyPaused) return undefined
 
-    // 다섯 감각 슬라이드를 8초마다 다음 항목으로 자동 전환한다.
+    // 다섯 감각 슬라이드를 2초마다 다음 항목으로 자동 전환한다.
     const intervalId = window.setInterval(() => {
       setActiveSenseIndex((currentIndex) => (currentIndex + 1) % senseItems.length)
       setSenseTrackIndex((currentIndex) => currentIndex + 1)
-    }, 8000)
+    }, 2000)
 
     // 페이지를 벗어날 때 interval을 제거해 중복 실행과 메모리 누수를 방지한다.
     return () => window.clearInterval(intervalId)
@@ -259,6 +267,47 @@ const BrandIntro = () => {
             },
           })
         })
+
+        const brushSteps = document.querySelector('[data-brush-steps]')
+        const brushStepItems = brushSteps?.querySelectorAll('[data-brush-step]')
+
+        if (brushSteps && brushStepItems?.length) {
+          gsap.timeline({
+            scrollTrigger: {
+              trigger: brushSteps,
+              start: 'top 82%',
+              once: true,
+            },
+          })
+            .fromTo(
+              brushSteps,
+              { '--brush-reveal': '100%' },
+              { '--brush-reveal': '0%', duration: 2.1, ease: 'power1.inOut' },
+            )
+            .from(
+              brushStepItems,
+              { autoAlpha: 0, y: 16, duration: 0.42, stagger: 0.3, ease: 'power2.out' },
+              0.18,
+            )
+        }
+
+        const messageTitle = document.querySelector('[data-message-title]')
+        const messageCharacters = messageTitle?.querySelectorAll('[data-message-character]')
+
+        if (messageTitle && messageCharacters?.length) {
+          gsap.from(messageCharacters, {
+            autoAlpha: 0,
+            y: 8,
+            duration: 0.16,
+            stagger: 0.055,
+            ease: 'power1.out',
+            scrollTrigger: {
+              trigger: messageTitle,
+              start: 'top 82%',
+              once: true,
+            },
+          })
+        }
       })
     })
 
@@ -337,24 +386,24 @@ const BrandIntro = () => {
           </p>
         </div>
 
-        <ol className={styles.curationSteps} data-reveal-group>
-          <li data-reveal-item>
+        <ol className={styles.curationSteps} data-brush-steps>
+          <li data-brush-step>
             <span className={styles.stepIcon} aria-hidden="true">01</span>
             <strong>기분과 상황 이해</strong>
           </li>
-          <li data-reveal-item>
+          <li data-brush-step>
             <span className={styles.stepIcon} aria-hidden="true">02</span>
             <strong>전통주 추천</strong>
           </li>
-          <li data-reveal-item>
+          <li data-brush-step>
             <span className={styles.stepIcon} aria-hidden="true">03</span>
             <strong>페어링 안주 제안</strong>
           </li>
-          <li data-reveal-item>
+          <li data-brush-step>
             <span className={styles.stepIcon} aria-hidden="true">04</span>
             <strong>어울리는 잔 추천</strong>
           </li>
-          <li data-reveal-item>
+          <li data-brush-step>
             <span className={styles.stepIcon} aria-hidden="true">05</span>
             <strong>오늘의 한 상 완성</strong>
           </li>
@@ -433,13 +482,18 @@ const BrandIntro = () => {
       </section>
 
       <section className={styles.message} aria-labelledby="brand-message-title">
-        <div className={styles.messageInner} data-reveal>
-          <h2 id="brand-message-title">
-            <span className={styles.messageBrand}><span className={styles.messageQuote}>『</span>자작<span className={styles.messageQuote}>』</span></span>은 혼자 마시는 시간을
-            {' '}외로운 시간이 아닌
-            {' '}나를 돌보는 시간으로 바꿉니다.
+        <div className={styles.messageInner}>
+          <h2 id="brand-message-title" data-message-title aria-label={BRAND_MESSAGE}>
+            <span className={styles.messageBrand} aria-hidden="true">
+              <span className={styles.messageQuote}>{renderMessageCharacters('『')}</span>
+              {renderMessageCharacters('자작')}
+              <span className={styles.messageQuote}>{renderMessageCharacters('』')}</span>
+            </span>
+            <span className={styles.messageCharacters} aria-hidden="true">
+              {renderMessageCharacters('은 혼자 마시는 시간을 외로운 시간이 아닌 나를 돌보는 시간으로 바꿉니다.')}
+            </span>
           </h2>
-          <p className={styles.messageDescription}>
+          <p className={styles.messageDescription} data-reveal>
             술을 많이 마시게 하는 것이 아니라, 나에게 맞는 술을 천천히 이해하고
             <br className={styles.desktopBreak} />
             좋은 안주와 함께 즐길 수 있도록 돕는 것. 그것이 자작의 따뜻한 출발입니다.
