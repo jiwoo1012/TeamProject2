@@ -996,6 +996,17 @@ const AddressBook = () => {
                                 styles.itemTitle
                               }
                             >
+                              <span
+                                className={
+                                  styles.addressLabel
+                                }
+                              >
+                                {
+                                  address.label ||
+                                  '배송지'
+                                }
+                              </span>
+
                               <strong>
                                 {
                                   address.address
@@ -1037,6 +1048,9 @@ const AddressBook = () => {
                           {!address.isDefault && (
                             <button
                               type="button"
+                              className={
+                                styles.setDefaultButton
+                              }
                               onClick={() =>
                                 handleSetDefault(
                                   address.id

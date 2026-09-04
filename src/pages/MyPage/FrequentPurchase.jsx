@@ -7,9 +7,9 @@ import {
 } from 'firebase/firestore'
 import { Link } from 'react-router-dom'
 
-import { products } from '../../data/products'
 import { subscribeToAuthState } from '../../firebase/auth'
 import { db } from '../../firebase/firebase'
+import { fetchProducts } from '../../services/productCatalog'
 
 import styles from './FrequentPurchase.module.scss'
 
@@ -123,6 +123,16 @@ const FrequentPurchase = () => {
   const [orders, setOrders] =
     useState([])
 
+  const [
+    catalogProducts,
+    setCatalogProducts,
+  ] = useState([])
+
+  const [
+    isCatalogLoading,
+    setIsCatalogLoading,
+  ] = useState(true)
+
   const [sortBy, setSortBy] =
     useState('count')
 
@@ -140,6 +150,27 @@ const FrequentPurchase = () => {
   /* =========================
      로그인 상태
   ========================= */
+
+  useEffect(() => {
+    let isCancelled = false
+
+    fetchProducts()
+      .then((items) => {
+        if (!isCancelled) {
+          setCatalogProducts(items)
+        }
+      })
+      .finally(() => {
+        if (!isCancelled) {
+          setIsCatalogLoading(false)
+        }
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [])
+
 
   useEffect(() => {
     const unsubscribe =
@@ -317,7 +348,7 @@ const FrequentPurchase = () => {
 
 
               const productData =
-                products.find(
+                catalogProducts.find(
                   (product) =>
                     product.productId ===
                     productId
@@ -412,7 +443,12 @@ const FrequentPurchase = () => {
       const result =
         Array.from(
           productMap.values()
-        ).map(
+        )
+          .filter(
+            (product) =>
+              product.purchaseCount >= 2
+          )
+          .map(
           (product) => ({
             ...product,
 
@@ -457,6 +493,7 @@ const FrequentPurchase = () => {
     }, [
       orders,
       sortBy,
+      catalogProducts,
     ])
 
 
@@ -592,7 +629,7 @@ const FrequentPurchase = () => {
             CONTENT
         ===================== */}
 
-        {isLoading ? (
+        {isLoading || isCatalogLoading ? (
 
           <div
             className={
