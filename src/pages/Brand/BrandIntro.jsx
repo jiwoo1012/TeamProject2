@@ -13,12 +13,11 @@ import guideLiquor from '../../assets/images/brand/guide-liquor.png'
 import guidePairing from '../../assets/images/brand/guide-pairing.png'
 import guideChoice from '../../assets/images/brand/guide-choice.png'
 import guideComfort from '../../assets/images/brand/guide-comfort.png'
-import leafStone from '../../assets/images/brand/leaf-stone.png'
-import makdongPawMark from '../../assets/images/brand/makdong-paw-mark.png'
 import makdong from '../../assets/characters/M007_Poses01.png'
 import useSectionWheelSnap from './useSectionWheelSnap'
 import useStickyBrandHeader from './useStickyBrandHeader'
 import styles from './BrandIntro.module.scss'
+import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 
 const senseItems = [
   {
@@ -98,68 +97,33 @@ const renderMessageCharacters = (text) => Array.from(text, (character, index) =>
 ))
 
 const BrandIntro = () => {
+  const pageRef = useRef(null)
+  const reasonRef = useRef(null)
   const secondSectionRef = useRef(null)
   const bottleRef = useRef(null)
   const stageRef = useRef(null)
   const [activeSenseIndex, setActiveSenseIndex] = useState(0)
-  const [senseTrackIndex, setSenseTrackIndex] = useState(1)
-  const [isSenseTransitionEnabled, setIsSenseTransitionEnabled] = useState(true)
-  const [hasManualSenseInteraction, setHasManualSenseInteraction] = useState(false)
-  const [isSenseTemporarilyPaused, setIsSenseTemporarilyPaused] = useState(false)
-
+  const senseTouchRef = useRef(null)
   const activeSense = senseItems[activeSenseIndex]
-  const senseTrackItems = [senseItems.at(-1), ...senseItems, senseItems[0]]
 
-  const handleSenseChange = (nextIndex) => {
-    setHasManualSenseInteraction(true)
-    setActiveSenseIndex(nextIndex)
-    setSenseTrackIndex(nextIndex + 1)
-  }
+  const handleSenseChange = (index) => setActiveSenseIndex(index)
+  const handlePreviousSense = () => setActiveSenseIndex((index) => (index - 1 + senseItems.length) % senseItems.length)
+  const handleNextSense = () => setActiveSenseIndex((index) => (index + 1) % senseItems.length)
 
-  const handlePreviousSense = () => {
-    setHasManualSenseInteraction(true)
-    const previousIndex = (activeSenseIndex - 1 + senseItems.length) % senseItems.length
-    setActiveSenseIndex(previousIndex)
-    setSenseTrackIndex((currentIndex) => currentIndex - 1)
-  }
-
-  const handleNextSense = () => {
-    setHasManualSenseInteraction(true)
-    const nextIndex = (activeSenseIndex + 1) % senseItems.length
-    setActiveSenseIndex(nextIndex)
-    setSenseTrackIndex((currentIndex) => currentIndex + 1)
-  }
-
-  const handleSenseTransitionEnd = () => {
-    const lastTrackIndex = senseItems.length + 1
-    if (senseTrackIndex !== 0 && senseTrackIndex !== lastTrackIndex) return
-
-    // 양 끝의 복제 이미지에 도착하면 애니메이션 없이 실제 이미지 위치로 정렬한다.
-    setIsSenseTransitionEnabled(false)
-    setSenseTrackIndex(senseTrackIndex === 0 ? senseItems.length : 1)
-
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => setIsSenseTransitionEnabled(true))
-    })
+  const handleSenseTouchEnd = (event) => {
+    const start = senseTouchRef.current
+    senseTouchRef.current = null
+    if (!start) return
+    const touch = event.changedTouches[0]
+    const deltaX = touch.clientX - start.x
+    const deltaY = touch.clientY - start.y
+    if (Math.abs(deltaX) < 48 || Math.abs(deltaX) < Math.abs(deltaY) * 1.5) return
+    if (deltaX < 0) handleNextSense()
+    else handlePreviousSense()
   }
 
   useStickyBrandHeader()
   useSectionWheelSnap([{ ref: secondSectionRef }])
-
-  useEffect(() => {
-    // 사용자가 모션 감소를 설정한 경우 자동 슬라이드를 실행하지 않는다.
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (prefersReducedMotion || hasManualSenseInteraction || isSenseTemporarilyPaused) return undefined
-
-    // 다섯 감각 슬라이드를 2초마다 다음 항목으로 자동 전환한다.
-    const intervalId = window.setInterval(() => {
-      setActiveSenseIndex((currentIndex) => (currentIndex + 1) % senseItems.length)
-      setSenseTrackIndex((currentIndex) => currentIndex + 1)
-    }, 2000)
-
-    // 페이지를 벗어날 때 interval을 제거해 중복 실행과 메모리 누수를 방지한다.
-    return () => window.clearInterval(intervalId)
-  }, [hasManualSenseInteraction, isSenseTemporarilyPaused])
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger)
@@ -174,10 +138,28 @@ const BrandIntro = () => {
 
     media.add({
       desktop: '(min-width: 768px)',
+      mobile: '(max-width: 767px)',
       reduce: '(prefers-reduced-motion: reduce)',
     }, ({ conditions }) => {
       const { desktop, reduce } = conditions
-      if (!desktop) return undefined
+      if (!desktop) {
+        if (reduce) return undefined
+
+        gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 80px',
+            end: 'bottom bottom',
+            scrub: 0.7,
+            invalidateOnRefresh: true,
+          },
+        })
+          .fromTo(stage, { yPercent: 115 }, { yPercent: 0, duration: 1, ease: 'none' }, 0)
+          .fromTo(bottle,
+            { y: () => -section.querySelector(`.${styles.storyScene}`).clientHeight * 0.22 },
+            { y: 0, duration: 0.72, ease: 'power1.inOut' }, 0.28)
+        return undefined
+      }
 
       const landingScale = 1
       const bottleLandingY = '-2svh' // 술병
@@ -242,7 +224,7 @@ const BrandIntro = () => {
             duration: 1.2,
             ease: 'power2.out',
             scrollTrigger: {
-              trigger: el,
+              trigger: el.closest('section'),
               start: 'top 85%',
               once: true,
             },
@@ -261,35 +243,12 @@ const BrandIntro = () => {
             stagger: 0.2,
             ease: 'power2.out',
             scrollTrigger: {
-              trigger: group,
+              trigger: group.closest('section'),
               start: 'top 85%',
               once: true,
             },
           })
         })
-
-        const brushSteps = document.querySelector('[data-brush-steps]')
-        const brushStepItems = brushSteps?.querySelectorAll('[data-brush-step]')
-
-        if (brushSteps && brushStepItems?.length) {
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: brushSteps,
-              start: 'top 82%',
-              once: true,
-            },
-          })
-            .fromTo(
-              brushSteps,
-              { '--brush-reveal': '100%' },
-              { '--brush-reveal': '0%', duration: 2.1, ease: 'power1.inOut' },
-            )
-            .from(
-              brushStepItems,
-              { autoAlpha: 0, y: 16, duration: 0.42, stagger: 0.3, ease: 'power2.out' },
-              0.18,
-            )
-        }
 
         const messageTitle = document.querySelector('[data-message-title]')
         const messageCharacters = messageTitle?.querySelectorAll('[data-message-character]')
@@ -302,14 +261,14 @@ const BrandIntro = () => {
             stagger: 0.055,
             ease: 'power1.out',
             scrollTrigger: {
-              trigger: messageTitle,
+              trigger: messageTitle.closest('section'),
               start: 'top 82%',
               once: true,
             },
           })
         }
       })
-    })
+    }, pageRef)
 
     return () => {
       media.revert()
@@ -318,7 +277,8 @@ const BrandIntro = () => {
   }, [])
 
   return (
-    <main className={styles.page}>
+    <main ref={pageRef} className={styles.page}>
+      <MobileTopButton contentRef={reasonRef} />
       <section
         ref={secondSectionRef}
         className={styles.storySequence}
@@ -340,7 +300,7 @@ const BrandIntro = () => {
         </div>
       </section>
 
-      <section className={styles.reason} aria-labelledby="traditional-liquor-title">
+      <section ref={reasonRef} className={styles.reason} aria-labelledby="traditional-liquor-title">
         <div className={styles.reasonHeading} data-reveal>
           <h2 id="traditional-liquor-title">왜 전통주인가?</h2>
           <p>
@@ -372,44 +332,6 @@ const BrandIntro = () => {
         </ol>
       </section>
 
-      <section className={styles.curation} aria-labelledby="curation-title">
-        <div className={styles.curationHeading} data-reveal>
-          <h2 id="curation-title">
-            전통주를 고르는 일을 넘어
-            <br />
-            오늘의 나를 돌보는 한 상을 만듭니다.
-          </h2>
-          <p>
-            술의 종류와 향, 도수만이 아니라 오늘의 기분과 함께 먹을 음식,
-            <br className={styles.desktopBreak} />
-            어떤 잔에 따라 마실지까지 하나의 경험으로 연결합니다.
-          </p>
-        </div>
-
-        <ol className={styles.curationSteps} data-brush-steps>
-          <li data-brush-step>
-            <span className={styles.stepIcon} aria-hidden="true">01</span>
-            <strong>기분과 상황 이해</strong>
-          </li>
-          <li data-brush-step>
-            <span className={styles.stepIcon} aria-hidden="true">02</span>
-            <strong>전통주 추천</strong>
-          </li>
-          <li data-brush-step>
-            <span className={styles.stepIcon} aria-hidden="true">03</span>
-            <strong>페어링 안주 제안</strong>
-          </li>
-          <li data-brush-step>
-            <span className={styles.stepIcon} aria-hidden="true">04</span>
-            <strong>어울리는 잔 추천</strong>
-          </li>
-          <li data-brush-step>
-            <span className={styles.stepIcon} aria-hidden="true">05</span>
-            <strong>오늘의 한 상 완성</strong>
-          </li>
-        </ol>
-      </section>
-
       <section className={styles.senses} aria-labelledby="senses-title">
         <header className={styles.sensesHeading} data-reveal>
           <h2 id="senses-title">
@@ -420,33 +342,41 @@ const BrandIntro = () => {
             </span>{' '}
             가지 감각
           </h2>
+          <p>빛과 향, 맛을 천천히 살펴보세요. 마음이 가는 감각부터 시작해도 좋습니다.</p>
         </header>
 
-        <div
-          className={styles.senseSlider}
-          onMouseEnter={() => setIsSenseTemporarilyPaused(true)}
-          onMouseLeave={() => setIsSenseTemporarilyPaused(false)}
-          onFocus={() => setIsSenseTemporarilyPaused(true)}
-          onBlur={(event) => {
-            if (!event.currentTarget.contains(event.relatedTarget)) {
-              setIsSenseTemporarilyPaused(false)
-            }
-          }}
-        >
+        <div className={styles.senseSlider} data-reveal>
           <div className={styles.senseCards} aria-live="polite">
             <article className={styles.senseCard}>
-              <div className={styles.senseImageFrame}>
+              <div className={styles.senseImageFrame}
+                tabIndex={0}
+                role="group"
+                aria-label="감각 이미지, 좌우 화살표 키 또는 스와이프로 넘기기"
+                onTouchStart={(event) => {
+                  const touch = event.touches[0]
+                  senseTouchRef.current = event.touches.length === 1 ? { x: touch.clientX, y: touch.clientY } : null
+                }}
+                onTouchEnd={handleSenseTouchEnd}
+                onTouchCancel={() => { senseTouchRef.current = null }}
+                onKeyDown={(event) => {
+                  if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+                    event.preventDefault()
+                    if (event.key === 'ArrowRight') handleNextSense()
+                    else handlePreviousSense()
+                  }
+                }}
+              >
                 <div
-                  className={`${styles.senseImageTrack} ${isSenseTransitionEnabled ? '' : styles.isTransitionDisabled}`}
-                  style={{ transform: `translateX(-${senseTrackIndex * 100}%)` }}
-                  onTransitionEnd={handleSenseTransitionEnd}
+                  className={styles.senseImageTrack}
+                  style={{ transform: `translateX(-${activeSenseIndex * 100}%)` }}
                 >
-                  {senseTrackItems.map((item, index) => (
+                  {senseItems.map((item, index) => (
                     <img
                       key={`${item.number}-${index}`}
                       src={item.image}
-                      alt={index === senseTrackIndex ? item.alt : ''}
-                      aria-hidden={index !== senseTrackIndex}
+                      draggable={false}
+                      alt={index === activeSenseIndex ? item.alt : ''}
+                      aria-hidden={index !== activeSenseIndex}
                     />
                   ))}
                 </div>
@@ -482,6 +412,7 @@ const BrandIntro = () => {
       </section>
 
       <section className={styles.message} aria-labelledby="brand-message-title">
+        <img className={styles.messageBottle} src={brandBottle} alt="" aria-hidden="true" loading="lazy" />
         <div className={styles.messageInner}>
           <h2 id="brand-message-title" data-message-title aria-label={BRAND_MESSAGE}>
             <span className={styles.messageBrand} aria-hidden="true">
@@ -501,31 +432,9 @@ const BrandIntro = () => {
         </div>
       </section>
 
-      <section className={styles.closing} aria-labelledby="closing-title">
-        <div className={styles.closingInner}>
-          <div className={styles.closingIntro} data-reveal>
-            <h2 id="closing-title">
-              막동이가
-              <br />
-              <span className={styles.closingTitleLine}>
-                <span className={styles.closingTitleAccent}>도와드립니다.</span>
-                <img className={styles.closingPawMark} src={makdongPawMark} alt="" aria-hidden="true" />
-              </span>
-            </h2>
-            <p className={styles.closingIntroText}>
-              전통주와 안주의 연결부터
-              <br />
-              나에게 맞는 선택까지 함께할게요.
-            </p>
-            <div className={styles.makdongVisual}>
-              <img className={styles.makdongCharacter} src={makdong} alt="자작의 전통주 큐레이터 막동이" />
-              <img className={styles.makdongDecoration} src={leafStone} alt="" aria-hidden="true" />
-            </div>
-            <Link className={styles.shopLink} to="/brand/makdong">
-              막동이 이야기 보기 <span aria-hidden="true">→</span>
-            </Link>
-          </div>
-
+      <section className={styles.values} aria-labelledby="values-title">
+        <div className={styles.valuesInner}>
+          <h2 id="values-title" data-reveal>한 잔을 권할 때, 자작이 생각하는 것</h2>
           <ol className={styles.closingValues} data-reveal-group>
             {closingValueItems.map((item) => (
               <li key={item.number} data-reveal-item>
@@ -538,6 +447,21 @@ const BrandIntro = () => {
               </li>
             ))}
           </ol>
+        </div>
+      </section>
+
+      <section className={styles.closing} aria-labelledby="closing-title">
+        <div className={styles.closingInner} data-reveal>
+          <div className={styles.makdongVisual}>
+            <img className={styles.makdongCharacter} src={makdong} alt="자작의 다정한 길잡이 막동이" loading="lazy" />
+          </div>
+          <div className={styles.closingIntro}>
+            <h2 id="closing-title">한 잔 곁에, 막동이</h2>
+            <p className={styles.closingIntroText}>자작의 주막에는 마음을 먼저 살피는 작은 길잡이가 있습니다.</p>
+            <Link className={styles.shopLink} to="/brand/makdong">
+              막동이 이야기 보기 <span aria-hidden="true">→</span>
+            </Link>
+          </div>
         </div>
       </section>
     </main>
