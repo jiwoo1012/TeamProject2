@@ -3,7 +3,6 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import { subscribeToAuthState } from '../../firebase/auth'
 import eventsData from '../../data/events.json'
 import { PATHS } from '../../routes/paths'
-import backgroundImage from '../../assets/images/eventPage/background2.jpg'
 import cardsImage from '../../assets/images/eventPage/cards.png'
 import oImage from '../../assets/images/eventPage/o.png'
 import xImage from '../../assets/images/eventPage/x.png'
@@ -78,10 +77,7 @@ const EventReady = () => {
   const isCardGame = eventType === 'card-game'
 
   return (
-    <main
-      className={styles.page}
-      style={{ '--ready-background': `url(${backgroundImage})` }}
-    >
+    <main className={styles.page}>
       <section className={styles.hero} aria-labelledby="event-ready-title">
         <div className={`${styles.sideVisual} ${styles.leftVisual}`} aria-hidden="true">
           {isCardGame ? (

@@ -4,7 +4,6 @@ import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
 import { saveEventParticipation } from '../../services/eventParticipation'
 import quizData from '../../data/quizs.json'
 import { PATHS } from '../../routes/paths'
-import backgroundImage from '../../assets/images/eventPage/background3.jpg'
 import styles from './OxQuizEvent.module.scss'
 
 const EVENT_ID = 'event-3'
@@ -120,7 +119,7 @@ const OxQuizEvent = () => {
   }
 
   return (
-    <main className={`${styles.page} ${isQuitOpen ? styles.isPaused : ''}`} style={{ '--quiz-background': `url(${backgroundImage})` }}>
+    <main className={`${styles.page} ${isQuitOpen ? styles.isPaused : ''}`}>
       <div className={styles.quizShell}>
         <div className={styles.progressHeader}>
           <strong>{currentIndex + 1}/{quizzes.length}</strong>
