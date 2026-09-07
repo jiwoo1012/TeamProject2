@@ -13,7 +13,8 @@
 .eventMeta > div + div { border-top: 1px solid $color-border; }
 .eventMeta dt { display: flex; gap: $space-3; align-items: center; color: $color-text-secondary; font-size: $font-size-sm; font-weight: $font-weight-semibold; }
 .eventMeta dd { font-size: $font-size-sm; }
-.startButton { display: grid; grid-template-columns: 1fr auto; align-items: center; width: min(100%, 560px); margin-top: $space-6; padding: $space-4 $space-8; font-size: $font-size-lg; @include event.btn-primary; font-weight: $font-weight-bold; }
+.startButton { display: grid; grid-template-columns: 1fr auto; align-items: center; width: min(100%, 560px); margin-top: $space-6; padding: $space-4 $space-8; font-size: $font-size-lg; @include event.btn-primary; border: 0; font-family: inherit; font-weight: $font-weight-bold; cursor: pointer; }
+.startButton:disabled { opacity: .45; cursor: not-allowed; transform: none; }
 .startButton span { margin-left: $space-4; font-size: $font-size-2xl; }
 .loginNotice { position: fixed; z-index: $z-toast; bottom: $space-8; left: 50%; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: $space-4; align-items: center; width: min(600px, calc(100% - (#{$side-margin-mobile} * 2))); padding: $space-4 $space-5; color: $color-text-primary; background: $color-white; border: 1px solid rgba($color-border, .7); border-radius: $radius-xl; box-shadow: 0 $space-3 $space-8 rgba($color-text-primary, .2); transform: translateX(-50%); animation: loginNotice 2.6s cubic-bezier(.22, 1, .36, 1) both; }
 .loginNotice > span { @include mixins.flex-center; width: 36px; aspect-ratio: 1; color: $color-white; font-size: $font-size-xl; font-weight: $font-weight-bold; background: $color-error; border-radius: 50%; }

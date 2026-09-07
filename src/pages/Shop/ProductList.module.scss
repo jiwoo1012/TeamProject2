@@ -4,9 +4,14 @@
 .page { --shop-header-height: 72px; overflow: clip; color: $color-text-primary; background: $color-bg; font-family: $font-family-base; }
 .revealStage { position: relative; min-height: 100vh; background: $color-bg; }
 .stickyFrame { position: sticky; z-index: 0; top: var(--shop-header-height); height: clamp(200px, 28.23vw, 542px); overflow: hidden; line-height: 0; background: $color-bg; }
-.bannerSlider, .banner { position: absolute; inset: 0; width: 100%; height: 100%; }
-.banner { display: block; object-fit: contain; opacity: 0; transition: opacity 0.5s ease, transform 0.5s ease; }
-.activeBanner { opacity: 1; transform: scale(1); }
+.bannerSlider, .bannerLink, .banner { position: absolute; inset: 0; width: 100%; height: 100%; }
+.bannerLink { display: block; opacity: 0; pointer-events: none; transition: opacity 0.5s ease, transform 0.5s ease; }
+.banner { display: block; object-fit: contain; }
+.activeBanner { opacity: 1; pointer-events: auto; transform: scale(1); }
+.bannerDots { position: absolute; z-index: 2; bottom: $space-4; left: 50%; display: flex; gap: $space-2; align-items: center; transform: translateX(-50%); }
+.bannerDots button { width: 9px; height: 9px; padding: 0; background: rgba($color-bg, .7); border: 1px solid rgba($color-text-primary, .3); border-radius: $radius-pill; box-shadow: 0 1px 3px rgba($color-text-primary, .14); transition: width $transition-fast ease, background-color $transition-fast ease, transform $transition-fast ease; }
+.bannerDots button:hover { transform: scale(1.15); }
+.bannerDots .activeDot { width: 24px; background: $color-primary; border-color: $color-primary; }
 .tastePanel { position: relative; z-index: 1; width: 100%; padding: $space-24 $side-margin-desktop $space-16; color: $color-text-primary; text-align: center; }
 .tasteContent { width: min(90vw, 760px); margin-inline: auto; text-align: center; }
 .tasteContent h1 { font-family: $font-family-display; font-size: clamp($font-size-4xl, 5vw, 72px); line-height: $line-height-tight; }
@@ -113,7 +118,11 @@
   .revealStage { min-height: 0; background: $color-bg; }
   .stickyFrame { position: relative; top: auto; height: auto; overflow: visible; }
   .bannerSlider { position: relative; inset: auto; width: 100%; height: auto; aspect-ratio: 1920 / 542; overflow: hidden; }
-  .banner { width: 100%; height: 100%; object-fit: cover; }
+  .bannerLink, .banner { width: 100%; height: 100%; }
+  .banner { object-fit: cover; }
+  .bannerDots { bottom: $space-2; }
+  .bannerDots button { width: 7px; height: 7px; }
+  .bannerDots .activeDot { width: 20px; }
   .shopBody { margin-top: 0; background: $color-bg; transition: none; }
   .catalog::before { top: 0; }
   .categoryRevealCircle { display: none; }

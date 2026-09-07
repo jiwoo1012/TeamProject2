@@ -62,6 +62,7 @@ const normalizeEvent = (source, fallbackId, applicants = 0) => {
 }
 
 const fallbackEvents = eventsData.map((item, index) => normalizeEvent(item, `event-${index + 1}`))
+const EVENTS_PER_PAGE = 4
 const eventBannerImages = import.meta.glob('../../assets/images/banner/eventBanner*.png', { eager: true, import: 'default' })
 const resolveEventBanner = (image = {}) => {
   const source = image.bannerUrl ?? image.url ?? ''
@@ -88,6 +89,7 @@ const EventManage = () => {
   const [toastMessage, setToastMessage] = useState('')
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [panelMode, setPanelMode] = useState('guide')
+  const [currentPage, setCurrentPage] = useState(1)
   const [participationCounts, setParticipationCounts] = useState({})
   const [newEvent, setNewEvent] = useState({ title: '', description: '', detailDescription: '', startDate: '', endDate: '', type: 'quiz', maxCount: 1, announcementDate: '', bannerUrl: '' })
 
@@ -183,6 +185,28 @@ const EventManage = () => {
       return matchesQuery && matchesTab && matchesType
     })
   }, [events, searchQuery, activeTab, typeFilter])
+
+  const totalPages = Math.max(1, Math.ceil(filteredEvents.length / EVENTS_PER_PAGE))
+  const paginatedEvents = filteredEvents.slice(
+    (currentPage - 1) * EVENTS_PER_PAGE,
+    currentPage * EVENTS_PER_PAGE,
+  )
+
+  useEffect(() => setCurrentPage(1), [searchQuery, activeTab, typeFilter])
+  useEffect(() => setCurrentPage((page) => Math.min(page, totalPages)), [totalPages])
+
+  const openManagementPanel = (mode) => {
+    setSelectedEventId(null)
+    setPanelMode(mode)
+
+    if (window.matchMedia('(max-width: 767px)').matches) {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      })
+    }
+  }
 
   // 이벤트 수정 패널 열기
   const openEditPanel = (ev) => {
@@ -316,8 +340,8 @@ const EventManage = () => {
         </div>
 
         <div className={styles.managementButtons}>
-          <button type="button" className={styles.winnerButton} onClick={() => { setSelectedEventId(null); setPanelMode('winners') }}>당첨자 관리</button>
-          <button type="button" className={styles.registerButton} onClick={() => { setSelectedEventId(null); setPanelMode('register') }}>+ 새 이벤트 등록</button>
+          <button type="button" className={styles.winnerButton} onClick={() => openManagementPanel('winners')}>당첨자 관리</button>
+          <button type="button" className={styles.registerButton} onClick={() => openManagementPanel('register')}>+ 새 이벤트 등록</button>
         </div>
       </div>
 
@@ -388,7 +412,7 @@ const EventManage = () => {
             {filteredEvents.length === 0 ? (
               <div className={styles.emptyState}>검색 결과가 없습니다.</div>
             ) : (
-              filteredEvents.map((ev) => (
+              paginatedEvents.map((ev) => (
                 <article
                   key={ev.id}
                   className={`${styles.eventCard} ${selectedEventId === ev.id ? styles.selectedCard : ''}`}
@@ -435,6 +459,35 @@ const EventManage = () => {
               ))
             )}
           </div>
+          <nav className={styles.pagination} aria-label="이벤트 목록 페이지">
+            <button
+              type="button"
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={currentPage === 1}
+              aria-label="이전 페이지"
+            >
+              ‹
+            </button>
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+              <button
+                key={page}
+                type="button"
+                className={currentPage === page ? styles.activePage : ''}
+                onClick={() => setCurrentPage(page)}
+                aria-current={currentPage === page ? 'page' : undefined}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+              disabled={currentPage === totalPages}
+              aria-label="다음 페이지"
+            >
+              ›
+            </button>
+          </nav>
         </section>
 
         {/* 우측 패널 (이벤트 상세 보기 / 탭형 수정) */}

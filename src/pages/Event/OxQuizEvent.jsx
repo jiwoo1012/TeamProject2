@@ -31,7 +31,6 @@ const OxQuizEvent = () => {
     answer: quiz.Answer.toUpperCase(),
     image: resolveQuizImage(quiz.imageUrl),
   })), [])
-  const userRef = useRef(null)
   const hasSavedRef = useRef(false)
 
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -56,7 +55,6 @@ const OxQuizEvent = () => {
     let active = true
     const unsubscribe = subscribeToAuthState(async (currentUser) => {
       const member = currentUser && !currentUser.isAnonymous ? currentUser : null
-      userRef.current = member
       if (!member) return
       try {
         const memberData = await getCurrentUserData(member.uid)
@@ -73,14 +71,8 @@ const OxQuizEvent = () => {
 
   const saveResult = useCallback(async (finalCorrectCount) => {
     if (hasSavedRef.current) return
-    hasSavedRef.current = true
-    const user = userRef.current
+    hasSavedRef.current = 'saving'
     const finalPoints = finalCorrectCount * POINTS_PER_ANSWER
-
-    if (!user) {
-      setSaveMessage('로그인 상태에서만 포인트와 참여 내역이 저장됩니다.')
-      return
-    }
 
     try {
       await saveEventParticipation({
@@ -89,11 +81,15 @@ const OxQuizEvent = () => {
         rewardProductId: null, rewardPoints: finalPoints, isWinner: finalPoints > 0,
         outcome: 'completed', correctCount: finalCorrectCount,
       })
+      hasSavedRef.current = 'saved'
       setSaveMessage(`${finalPoints.toLocaleString('ko-KR')}P가 지급되었습니다.`)
     } catch (error) {
-      setSaveMessage(error.message === 'ALREADY_PARTICIPATED'
-        ? '오늘의 참여 기회를 이미 사용했습니다.'
-        : '결과를 저장하지 못했습니다. 잠시 후 다시 확인해주세요.')
+      hasSavedRef.current = false
+      setSaveMessage(error.message === 'LOGIN_REQUIRED'
+        ? '로그인 상태에서만 포인트와 참여 내역이 저장됩니다.'
+        : error.message === 'ALREADY_PARTICIPATED'
+          ? '오늘의 참여 기회를 이미 사용했습니다.'
+          : '결과를 저장하지 못했습니다. 잠시 후 다시 확인해주세요.')
     }
   }, [])
 

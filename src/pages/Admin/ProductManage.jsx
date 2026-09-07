@@ -340,6 +340,14 @@ const ProductManage = () => {
     setDraftDetailImageUrls([null, null, null])
     setDraftDetails(EMPTY_DETAIL_DRAFT)
     setDraftPairingIds([])
+
+    if (window.matchMedia('(max-width: 767px)').matches) {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      })
+    }
   }
 
   const updateDraftDetail = (key, value) => {
