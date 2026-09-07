@@ -16,6 +16,7 @@ import cartIcon from '../../assets/icons/cartIcon.png'
 import wishlistIcon from '../../assets/icons/wishIcon.png'
 import loginIcon from '../../assets/icons/loginIcon.png'
 import searchIcon from '../../assets/icons/searchIcon.png'
+import brandSnbImage from '../../assets/images/main/ai-recommendation/mood-celebration.png'
 
 import SearchModal from './SearchModal'
 
@@ -629,8 +630,11 @@ const DesktopHeader = () => {
                 styles.brandImage
               }
             >
-              {/* 추후 브랜드 이미지 */}
-            </div>
+              <img
+                src={brandSnbImage}
+                alt="자작 브랜드 소개"
+              />
+</div>
 
             <div
               className={
