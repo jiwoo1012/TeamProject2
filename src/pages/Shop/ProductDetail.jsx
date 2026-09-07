@@ -13,6 +13,9 @@ import { PATHS } from '../../routes/paths'
 import jajakLogo from '../../assets/logos/jajakLogo.png'
 import faqMakdong from '../../assets/characters/M007_Poses04.png'
 import pattern2 from '../../assets/images/eventPage/pattern2.png'
+import dojagiIcon from '../../assets/icons/dojagi.png'
+import drinkIcon from '../../assets/icons/drink.png'
+import moonIcon from '../../assets/icons/moon.png'
 import styles from './ProductDetail.module.scss'
 
 const productImages = import.meta.glob(
@@ -120,6 +123,7 @@ const ProductDetail = () => {
 
   const [activeTab, setActiveTab] = useState('detail')
   const [openAccordion, setOpenAccordion] = useState(null)
+  const [hoveredGalleryImage, setHoveredGalleryImage] = useState(null)
   const [pairPage, setPairPage] = useState(0)
   const [isWished, setIsWished] = useState(false)
   const [isWishLoading, setIsWishLoading] = useState(false)
@@ -353,14 +357,16 @@ const ProductDetail = () => {
         liquorId === product.productId
     )
 
-    let ids = directPairing
+    let ids = product.pairedProductIds?.length
+      ? product.pairedProductIds
+      : directPairing
       ? [
           ...directPairing.pairedFoodIds,
           ...directPairing.recommendedGlassIds,
         ]
       : []
 
-    if (!directPairing) {
+    if (!directPairing && !product.pairedProductIds?.length) {
       ids = pairings
         .filter(
           ({
@@ -394,6 +400,12 @@ const ProductDetail = () => {
         liquorId === product.productId
     )
 
+    if (product.pairedProductIds?.length) {
+      return product.pairedProductIds
+        .map((id) => withImage(products.find((item) => item.productId === id)))
+        .filter((item) => item?.productType === '안주')
+    }
+
     if (directPairing) {
       return directPairing.pairedFoodIds
         .map((id) =>
@@ -411,7 +423,7 @@ const ProductDetail = () => {
         item.productType === '안주' &&
         item.productId !== product.productId
     )
-  }, [foods, product, relatedProducts])
+  }, [foods, product, products, relatedProducts])
 
   const pairPageCount = Math.max(
     1,
@@ -452,13 +464,38 @@ const ProductDetail = () => {
   const isLowStock = !isSoldOut && Number(product.stock) > 0 && Number(product.stock) <= 5
 
   const stylingImageOne = productStylingImages[0] ?? productDetailImages[0] ?? product.imageSrc
-  const stylingImageTwo = productStylingImages.at(-1) ?? productDetailImages.at(-1) ?? product.imageSrc
+  const isLiquor = product.productType === '전통주'
+  const editorialImageCount = isLiquor ? 3 : 2
+  const editorialImages = [
+    ...productStylingImages.filter((image) => image !== stylingImageOne),
+    ...productDetailImages.filter((image) => image !== stylingImageOne),
+  ].filter((image, index, images) => images.indexOf(image) === index)
+    .slice(0, editorialImageCount)
+
+  while (editorialImages.length < editorialImageCount) {
+    editorialImages.push(product.imageSrc)
+  }
+
   const tastingNotes = [
     { label: '당도', value: Number(product.sweetness ?? 0) },
     { label: '산도', value: Number(product.acidity ?? 0) },
     { label: '탄산', value: Number(product.carbonation ?? 0) },
     { label: '묵직함', value: Number(product.bodyWeight ?? 0) },
   ]
+  const productSubtype = product.liquorType ?? product.snackType ?? product.glassType ?? product.giftType ?? '추천 상품'
+  const timeRange = product.recommendedTimeRange
+    ? `${product.recommendedTimeRange.start}–${product.recommendedTimeRange.end}`
+    : product.timeOfDay
+  const productFacts = [
+    ['제품명', product.productName],
+    ['제조사', product.brandManufacturer],
+    ['분류', `${product.productType} · ${productSubtype}`],
+    ['가격', `${Number(product.price ?? 0).toLocaleString('ko-KR')}원`],
+    ['용량', product.volume],
+    ['도수', product.alcoholByVolume ?? (product.abv != null ? `${product.abv}%` : null)],
+    ['추천 온도', product.recommendedDrinkingTemperature],
+    ['알레르기', product.allergyCautionInfo],
+  ].filter(([, value]) => value)
 
   const visiblePairings = relatedProducts.slice(
     pairPage * 2,
@@ -707,9 +744,24 @@ const ProductDetail = () => {
                 src={product.imageSrc}
                 alt={product.productName}
               />
+
+              {productDetailImages.slice(0, 3).map((image) => (
+                <img
+                  className={`${styles.previewImage} ${
+                    hoveredGalleryImage === image ? styles.activePreviewImage : ''
+                  }`}
+                  src={image}
+                  alt=""
+                  aria-hidden="true"
+                  key={`preview-${image}`}
+                />
+              ))}
             </div>
 
-            <div className={styles.thumbnails}>
+            <div
+              className={styles.thumbnails}
+              onMouseLeave={() => setHoveredGalleryImage(null)}
+            >
               {productDetailImages
                 .slice(0, 3)
                 .map((image, index) => (
@@ -718,6 +770,10 @@ const ProductDetail = () => {
                     alt={`${product.productName} 상세 이미지 ${
                       index + 1
                     }`}
+                    tabIndex="0"
+                    onMouseEnter={() => setHoveredGalleryImage(image)}
+                    onFocus={() => setHoveredGalleryImage(image)}
+                    onBlur={() => setHoveredGalleryImage(null)}
                     key={image}
                   />
                 ))}
@@ -795,7 +851,9 @@ const ProductDetail = () => {
                       {tastingNotes.map((note) => (
                         <div className={styles.tastingNote} key={note.label}>
                           <span>{note.label}</span>
-                          <strong>{note.value} / 5</strong>
+                          <strong style={{ '--taste-value': `${Math.min(5, Math.max(0, note.value)) * 72}deg` }}>
+                            <span>{note.value} / 5</span>
+                          </strong>
                         </div>
                       ))}
                     </div>
@@ -819,9 +877,81 @@ const ProductDetail = () => {
                 </div>
               </section>
 
-              <figure className={styles.secondStylingImage}>
-                <img src={stylingImageTwo} alt={`${product.productName} 두 번째 연출 이미지`} loading="lazy" />
-              </figure>
+              <div className={styles.editorialSections}>
+                {isLiquor ? (
+                  <>
+                    <section className={styles.editorialPanel}>
+                      <img src={editorialImages[0]} alt={`${product.productName} 추천 시간 연출`} loading="lazy" />
+                      <div className={styles.editorialOverlay}>
+                        <p>{timeRange}</p>
+                        <h2>{product.timeOfDay ?? '추천 시간'}</h2>
+                        <span>{product.recommendedSituation ?? product.productDescription}</span>
+                      </div>
+                    </section>
+
+                    <section className={styles.editorialPanel}>
+                      <img src={editorialImages[1]} alt={`${product.productName} 맛 연출`} loading="lazy" />
+                      <div className={`${styles.editorialOverlay} ${styles.keywordEditorial}`}>
+                        <h2>{(product.flavorKeywords ?? []).map((keyword) => `#${keyword}`).join('  ')}</h2>
+                        <span>{product.productDescription}</span>
+                      </div>
+                    </section>
+
+                    <section className={styles.editorialPanel}>
+                      <img src={editorialImages[2]} alt={`${product.productName} 상품 정보 연출`} loading="lazy" />
+                      <div className={`${styles.editorialOverlay} ${styles.factEditorial}`}>
+                        <h2>상품 정보</h2>
+                        <dl>
+                          {productFacts.map(([label, value]) => (
+                            <div key={label}><dt>{label}</dt><dd>{value}</dd></div>
+                          ))}
+                        </dl>
+                      </div>
+                    </section>
+                  </>
+                ) : (
+                  <>
+                    <section className={styles.editorialPanel}>
+                      <img src={editorialImages[0]} alt={`${product.productName} 브랜드 연출`} loading="lazy" />
+                      <div className={styles.editorialOverlay}>
+                        <p>{product.brandManufacturer}</p>
+                        <h2>{productSubtype}</h2>
+                        <span>{product.productDescription}</span>
+                      </div>
+                    </section>
+
+                    <section className={styles.editorialPanel}>
+                      <img src={editorialImages[1]} alt={`${product.productName} 상품 정보 연출`} loading="lazy" />
+                      <div className={`${styles.editorialOverlay} ${styles.factEditorial}`}>
+                        <h2>상품 정보</h2>
+                        <dl>
+                          {productFacts.map(([label, value]) => (
+                            <div key={label}><dt>{label}</dt><dd>{value}</dd></div>
+                          ))}
+                        </dl>
+                      </div>
+                    </section>
+                  </>
+                )}
+              </div>
+
+              <section className={styles.gourmetMoment}>
+                <h2>자작을 온전히 즐기는 미식의 순간</h2>
+                <div>
+                  <article>
+                    <span><img src={dojagiIcon} alt="" aria-hidden="true" /></span>
+                    <p>손끝에 전해지는 잔의 질감과 은은한 디자인을 천천히 감상하며, 정성스레 빚어진 전통주를 차분히 따라 채워보세요.</p>
+                  </article>
+                  <article>
+                    <span><img src={drinkIcon} alt="" aria-hidden="true" /></span>
+                    <p>은은하게 퍼지는 술의 향과 최적의 온도를 온전히 느끼며 첫 모금을 마시는 순간, 복잡했던 하루의 긴장이 부드럽게 풀립니다.</p>
+                  </article>
+                  <article>
+                    <span><img src={moonIcon} alt="" aria-hidden="true" /></span>
+                    <p>준비된 안주로 입안을 다듬고 맛의 여운을 길게 이어보세요. 어우러지는 맛과 향으로 지친 하루에 따뜻한 위로를 전해드립니다.</p>
+                  </article>
+                </div>
+              </section>
 
               <section className={styles.cautionSection}>
                 <h2>구매 전에 확인하세요.</h2>
@@ -1056,7 +1186,11 @@ const ProductDetail = () => {
         </div>
 
 
-        <aside className={styles.purchasePanel}>
+        <aside
+          className={`${styles.purchasePanel} ${
+            openAccordion ? styles.expandedPurchasePanel : ''
+          }`}
+        >
 
           <p className={styles.brand}>
             {product.brandManufacturer}

@@ -87,6 +87,7 @@ const ProductList = () => {
     searchParams.get('search')?.trim() ?? ''
 
   const [bannerIndex, setBannerIndex] = useState(0)
+  const [revealProgress, setRevealProgress] = useState(0)
   const [categoryId, setCategoryId] = useState('all')
   const [detailFilter, setDetailFilter] = useState('전체')
   const [priceFilter, setPriceFilter] = useState('all')
@@ -287,6 +288,44 @@ const ProductList = () => {
 
     return () =>
       window.clearInterval(timer)
+  }, [])
+
+  useEffect(() => {
+    if (window.matchMedia('(max-width: 767px)').matches) {
+      setRevealProgress(1)
+      return undefined
+    }
+
+    let frameId
+
+    const updateProgress = () => {
+      const stage = stageRef.current
+
+      if (!stage) return
+
+      const bannerHeight = stage.firstElementChild?.offsetHeight ?? 0
+      const progress = Math.min(
+        1,
+        Math.max(0, -stage.getBoundingClientRect().top / Math.max(bannerHeight, 1))
+      )
+
+      setRevealProgress(progress)
+    }
+
+    const handleScroll = () => {
+      window.cancelAnimationFrame(frameId)
+      frameId = window.requestAnimationFrame(updateProgress)
+    }
+
+    updateProgress()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('resize', handleScroll)
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', handleScroll)
+    }
   }, [])
 
   useEffect(() => {
@@ -863,7 +902,12 @@ const ProductList = () => {
 
         </div>
 
-      <div className={styles.shopBody}>
+      <div
+        className={styles.shopBody}
+        style={{
+          '--sheet-rise': `${revealProgress * -120}px`,
+        }}
+      >
         <div
           className={styles.catalog}
         >

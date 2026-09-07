@@ -205,7 +205,7 @@ service cloud.firestore {
           && request.resource.data.type == 'earn'
           && request.resource.data.amount is int
           && request.resource.data.amount > 0
-          && historyId == 'event_' + request.resource.data.eventId + '_' + userId
+          && historyId.matches('event_' + request.resource.data.eventId + '_' + userId + '.*')
           && get(
             /databases/$(database)/documents/eventParticipations/$(request.resource.data.eventId + '_' + userId)
           ).data.rewardPoints == request.resource.data.amount);
@@ -490,7 +490,23 @@ service cloud.firestore {
           )
         ));
 
-      allow update, delete:
+      allow update:
+        if isAdmin()
+        || (signedIn()
+          && resource.data.userId == request.auth.uid
+          && request.resource.data.userId == request.auth.uid
+          && request.resource.data.eventId == resource.data.eventId
+          && participationId == request.resource.data.eventId + '_' + request.auth.uid
+          && request.resource.data.participationCount == resource.data.get('participationCount', 1) + 1
+          && request.resource.data.rewardPoints is int
+          && request.resource.data.rewardPoints >= 0
+          && (
+            (request.resource.data.eventId == 'event-1' && request.resource.data.rewardPoints in [0, 100, 1000, 5000])
+            || (request.resource.data.eventId == 'event-2' && request.resource.data.rewardPoints <= 2500 && request.resource.data.rewardPoints % 100 == 0)
+            || (request.resource.data.eventId == 'event-3' && request.resource.data.rewardPoints <= 5000 && request.resource.data.rewardPoints % 500 == 0)
+          ));
+
+      allow delete:
         if false;
     }
 

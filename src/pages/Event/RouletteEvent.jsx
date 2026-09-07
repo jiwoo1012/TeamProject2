@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
-import { getCollection, getDocument } from '../../firebase/firestore'
-import { saveEventParticipation } from '../../services/eventParticipation'
+import { getCollection } from '../../firebase/firestore'
+import { getEventParticipationAvailability, saveEventParticipation } from '../../services/eventParticipation'
 import { PATHS } from '../../routes/paths'
 import eventsData from '../../data/events.json'
 import backgroundImage from '../../assets/images/eventPage/background2.jpg'
@@ -113,14 +113,14 @@ const RouletteEvent = () => {
       }
 
       try {
-        const [participation, memberData] = await Promise.all([
-          getDocument('eventParticipations', `${EVENT_ID}_${member.uid}`),
+        const [availability, memberData] = await Promise.all([
+          getEventParticipationAvailability(EVENT_ID, event.participationLimit),
           getCurrentUserData(member.uid),
         ])
         const admin = memberData?.role === 'admin'
         if (active) {
           setIsAdmin(admin)
-          setHasParticipated(Boolean(participation) && !admin)
+          setHasParticipated(!availability.canParticipate && !admin)
         }
       } catch {
         if (active) setErrorMessage('참여 정보를 불러오지 못했습니다.')
@@ -139,7 +139,7 @@ const RouletteEvent = () => {
       active = false
       unsubscribe()
     }
-  }, [])
+  }, [event.participationLimit])
 
   useEffect(() => {
     document.body.classList.toggle('jajak-roulette-spinning', isSpinning)
@@ -186,6 +186,7 @@ const RouletteEvent = () => {
       rewardRank: prize.rank, rewardName: prize.name,
       rewardProductId: prize.productId ?? null,
       rewardPoints: prize.points ?? 0, isWinner: true,
+      outcome: 'completed', participationLimit: event.participationLimit,
     })
   }
 
