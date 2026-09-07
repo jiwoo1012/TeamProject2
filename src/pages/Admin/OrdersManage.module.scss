@@ -1,0 +1,2078 @@
+// ========================================
+// 주문 관리 전체
+// ========================================
+
+.page {
+  width: 100%;
+  min-width: 0;
+  padding-bottom: 56px;
+
+  color: #312e2a;
+}
+
+
+// ========================================
+// 상단 제목 / 새로 고침
+// 상품 관리 페이지와 동일한 구성
+// ========================================
+
+.pageToolbar {
+  min-height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h1 {
+    margin: 0;
+
+    color: #302d29;
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.045em;
+  }
+
+  > button {
+    height: 38px;
+    padding: 0 14px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    border: 1px solid #c9c2b9;
+    border-radius: 5px;
+    background: #fff;
+
+    color: #746e67;
+    font-size: 12px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+      border-color 0.2s ease,
+      color 0.2s ease,
+      background 0.2s ease;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    &:hover {
+      border-color: #538983;
+      color: #538983;
+      background: #fbfdfc;
+    }
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.7;
+    }
+  }
+}
+
+
+.refreshing {
+  svg {
+    animation: refreshSpin 0.8s linear infinite;
+  }
+}
+
+
+@keyframes refreshSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+// ========================================
+// 전통 문양 구분선
+// ========================================
+
+.ornamentLine {
+  width: 100%;
+  height: 41px;
+
+  display: flex;
+  align-items: flex-start;
+
+  overflow: hidden;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 41px;
+    object-fit: fill;
+    object-position: center top;
+  }
+}
+
+
+// ========================================
+// 요약 카드
+// ========================================
+
+.summaryArea {
+  margin-top: 1px;
+  margin-bottom: 20px;
+}
+
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(
+    4,
+    minmax(0, 1fr)
+  );
+
+  gap: 15px;
+}
+
+
+.summaryCard {
+  min-width: 0;
+  min-height: 122px;
+
+  padding: 20px 18px;
+
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  border: 1px solid #e4dfd8;
+  border-radius: 9px;
+  background: #fff;
+
+  box-shadow:
+    0 1px 2px
+      rgba(54, 45, 38, 0.02);
+}
+
+
+.summaryIcon {
+  width: 37px;
+  height: 37px;
+
+  flex: 0 0 37px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+.total {
+  color: #6d9a82;
+  background: #eff7f1;
+}
+
+
+.today {
+  color: #6e9aa9;
+  background: #eef6f8;
+}
+
+
+.ready {
+  color: #da7770;
+  background: #fff1ef;
+}
+
+
+.request {
+  color: #bf8737;
+  background: #fff8ec;
+}
+
+
+.summaryContent {
+  min-width: 0;
+
+  h3 {
+    margin: 0 0 6px;
+
+    color: #4d4843;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+
+    strong {
+      color: #171614;
+      font-size: 27px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+
+    span {
+      color: #58534d;
+      font-size: 11px;
+    }
+  }
+
+  small {
+    margin-top: 12px;
+
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    color: #aaa49d;
+    font-size: 9px;
+
+    b {
+      color: #568b80;
+      font-weight: 700;
+    }
+  }
+}
+
+
+.summaryCard:nth-child(2) {
+  .summaryContent small b {
+    color: #6594aa;
+  }
+}
+
+
+.summaryCard:nth-child(3) {
+  .summaryContent small b {
+    color: #dc655e;
+  }
+}
+
+
+.summaryCard:nth-child(4) {
+  .summaryContent small b {
+    color: #be842c;
+  }
+}
+
+
+// ========================================
+// 메인 2단
+// ========================================
+
+.managementGrid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    270px;
+
+  gap: 16px;
+
+  align-items: start;
+}
+
+
+.mainSection {
+  min-width: 0;
+
+  overflow: hidden;
+
+  border: 1px solid #8d877f;
+  border-radius: 14px;
+  background: #fff;
+}
+
+
+// ========================================
+// 검색 / 필터
+// ========================================
+
+.filterBar {
+  padding: 18px 19px 10px;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+
+.searchField {
+  height: 38px;
+
+  flex: 1;
+  min-width: 200px;
+
+  padding: 0 10px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  border: 1px solid #aaa49d;
+  border-radius: 6px;
+  background: #fff;
+
+  &:focus-within {
+    border-color: #548983;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+
+    flex: 0 0 auto;
+  }
+
+  input {
+    width: 100%;
+    min-width: 0;
+
+    border: 0;
+    outline: 0;
+    background: transparent;
+
+    color: #49443f;
+    font-size: 10px;
+
+    &::placeholder {
+      color: #aaa49d;
+    }
+  }
+}
+
+
+.selectField {
+  height: 38px;
+
+  flex: 0 0 94px;
+
+  select {
+    width: 100%;
+    height: 100%;
+
+    padding: 0 8px;
+
+    border: 1px solid #aaa49d;
+    border-radius: 6px;
+    outline: 0;
+    background: #fff;
+
+    color: #55504a;
+    font-size: 10px;
+
+    cursor: pointer;
+
+    &:focus {
+      border-color: #548983;
+    }
+  }
+}
+
+
+.sortField {
+  flex-basis: 88px;
+}
+
+
+.resetButton {
+  height: 38px;
+
+  padding: 0 11px;
+
+  flex: 0 0 auto;
+
+  border: 1px solid #aaa49d;
+  border-radius: 6px;
+  background: #fff;
+
+  color: #625d57;
+  font-size: 10px;
+
+  cursor: pointer;
+
+  &:hover {
+    color: #4d837e;
+    border-color: #4d837e;
+  }
+}
+
+
+// ========================================
+// 빠른 필터
+// ========================================
+
+.quickFilterArea {
+  padding: 0 19px 14px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  > span {
+    flex: 0 0 auto;
+
+    color: #68625c;
+    font-size: 9px;
+    font-weight: 600;
+  }
+
+  > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+
+    button {
+      min-height: 22px;
+      padding: 0 10px;
+
+      border: 0;
+      border-radius: 999px;
+      background: #efeeec;
+
+      color: #69635d;
+      font-size: 8px;
+
+      cursor: pointer;
+
+      transition:
+        background 0.2s ease,
+        color 0.2s ease;
+    }
+
+    .activeQuick {
+      background: #548983;
+      color: #fff;
+    }
+  }
+}
+
+
+// ========================================
+// 주문 목록 제목
+// ========================================
+
+.sectionHeading {
+  min-height: 59px;
+
+  padding: 0 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-top: 1px solid #ebe6df;
+  border-bottom: 1px solid #ebe6df;
+}
+
+
+.titleWrap {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+
+  h2 {
+    margin: 0;
+
+    color: #3a3631;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  span {
+    color: #77716a;
+    font-size: 10px;
+  }
+}
+
+
+// ========================================
+// 테이블
+// ========================================
+
+.tableWrap {
+  width: 100%;
+
+  overflow-x: auto;
+}
+
+
+.dataTable {
+  width: 100%;
+  min-width: 790px;
+
+  border-collapse: collapse;
+  table-layout: fixed;
+
+  thead {
+    background: #f5f0e8;
+
+    tr {
+      height: 42px;
+    }
+
+    th {
+      padding: 0 8px;
+
+      color: #625c55;
+      font-size: 9px;
+      font-weight: 600;
+
+      text-align: center;
+      white-space: nowrap;
+    }
+  }
+
+  tbody {
+    tr {
+      height: 47px;
+
+      border-bottom:
+        1px solid #d8d2ca;
+
+      transition:
+        background 0.15s ease;
+
+      &:hover {
+        background: #faf8f5;
+      }
+
+      &:last-child {
+        border-bottom: 0;
+      }
+    }
+
+    td {
+      padding: 0 8px;
+
+      overflow: hidden;
+
+      color: #5e5852;
+      font-size: 8.5px;
+
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      strong {
+        color: #544e48;
+        font-size: 8.5px;
+        font-weight: 600;
+      }
+    }
+  }
+
+  th:nth-child(1) {
+    width: 14%;
+  }
+
+  th:nth-child(2) {
+    width: 9%;
+  }
+
+  th:nth-child(3) {
+    width: 18%;
+  }
+
+  th:nth-child(4) {
+    width: 11%;
+  }
+
+  th:nth-child(5) {
+    width: 12%;
+  }
+
+  th:nth-child(6) {
+    width: 12%;
+  }
+
+  th:nth-child(7) {
+    width: 12%;
+  }
+
+  th:nth-child(8) {
+    width: 12%;
+  }
+}
+
+
+.selectedRow {
+  background: #f5faf8 !important;
+}
+
+
+.productCell {
+  color: #423e39 !important;
+  font-weight: 500;
+}
+
+
+.statusBadge {
+  min-width: 48px;
+
+  padding: 4px 7px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid;
+  border-radius: 999px;
+
+  font-size: 7.5px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+
+.paid {
+  color: #4e8a84;
+  border-color: #9fc7c1;
+  background: #f5fbfa;
+}
+
+
+.refund {
+  color: #dd665f;
+  border-color: #efaaa4;
+  background: #fff6f5;
+}
+
+
+.ready {
+  color: #b88635;
+  border-color: #e8c785;
+  background: #fffbf2;
+}
+
+
+.shipping {
+  color: #528ba4;
+  border-color: #9ac5d7;
+  background: #f4fafc;
+}
+
+
+.completed {
+  color: #4d8875;
+  border-color: #a8cdbf;
+  background: #f5fbf7;
+}
+
+
+.waiting {
+  color: #7e7871;
+  border-color: #ccc6bf;
+  background: #faf9f7;
+}
+
+
+.detailButton {
+  height: 24px;
+
+  padding: 0 8px;
+
+  border: 1px solid #c4bdb5;
+  border-radius: 4px;
+  background: #fff;
+
+  color: #5a554f;
+  font-size: 7.5px;
+
+  cursor: pointer;
+
+  &:hover {
+    border-color: #548983;
+    color: #548983;
+  }
+}
+
+
+.emptyState {
+  height: 150px !important;
+
+  color: #9e9890 !important;
+  font-size: 10px !important;
+}
+
+
+// ========================================
+// 우측 통계
+// ========================================
+
+.analyticsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+
+.analyticsCard {
+  padding: 20px 18px;
+
+  border: 1px solid #8d877f;
+  border-radius: 14px;
+  background: #fff;
+}
+
+
+.analyticsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h2 {
+    margin: 0;
+
+    color: #3c3833;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  span {
+    color: #969089;
+    font-size: 7px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+}
+
+
+// ========================================
+// 도넛
+// ========================================
+
+.statusOverview {
+  margin-top: 22px;
+
+  display: flex;
+  align-items: center;
+  gap: 17px;
+
+  ul {
+    flex: 1;
+
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    list-style: none;
+
+    li {
+      display: grid;
+
+      grid-template-columns:
+        7px 1fr auto;
+
+      align-items: center;
+      gap: 6px;
+
+      color: #68625c;
+      font-size: 8px;
+
+      > span:first-child {
+        width: 6px;
+        height: 6px;
+
+        border-radius: 50%;
+      }
+
+      strong {
+        color: #77716b;
+        font-size: 7.5px;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+
+.statusDonut {
+  position: relative;
+
+  width: 102px;
+  height: 102px;
+
+  flex: 0 0 102px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    conic-gradient(
+      #568983 0 18%,
+      #e17c72 18% 44%,
+      #d7d8d6 44% 89%,
+      #799f99 89% 96%,
+      #e5b16d 96% 100%
+    );
+
+  &::after {
+    content: '';
+
+    position: absolute;
+    inset: 17px;
+
+    border-radius: 50%;
+    background: #fff;
+  }
+
+  > div {
+    position: relative;
+    z-index: 1;
+
+    text-align: center;
+
+    span {
+      display: block;
+
+      color: #88827b;
+      font-size: 7px;
+    }
+
+    strong {
+      display: block;
+
+      margin-top: 2px;
+
+      color: #46413c;
+      font-size: 11px;
+    }
+  }
+}
+
+
+.dotReady {
+  background: #568983;
+}
+
+
+.dotShipping {
+  background: #e17c72;
+}
+
+
+.dotCompleted {
+  background: #d7d8d6;
+}
+
+
+.dotRefund {
+  background: #799f99;
+}
+
+
+// ========================================
+// 7일 그래프
+// ========================================
+
+.chartLegend {
+  margin-top: 14px;
+
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    color: #817b74;
+    font-size: 7px;
+  }
+
+  i {
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+  }
+}
+
+
+.orderLegend {
+  background: #568983;
+}
+
+
+.cancelLegend {
+  background: #df8b82;
+}
+
+
+.barChart {
+  height: 135px;
+
+  margin-top: 11px;
+  padding-top: 12px;
+
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+
+  border-top: 1px solid #ebe6df;
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 29px,
+      #eeeae4 30px
+    );
+}
+
+
+.barItem {
+  flex: 1;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 6px;
+
+  > span {
+    color: #a39d96;
+    font-size: 6px;
+  }
+}
+
+
+.barPair {
+  width: 100%;
+  height: 91px;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+
+  i {
+    width: 6px;
+
+    min-height: 2px;
+
+    display: block;
+
+    border-radius: 2px 2px 0 0;
+  }
+}
+
+
+.orderBar {
+  background: #568983;
+}
+
+
+.cancelBar {
+  background: #df8b82;
+}
+
+
+.weekCompare {
+  min-height: 57px;
+
+  margin-top: 15px;
+  padding: 9px 10px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  border: 1px solid #a8c8be;
+  border-radius: 7px;
+  background: #fbfdfc;
+
+  > div:nth-child(2) {
+    flex: 1;
+
+    span {
+      display: block;
+
+      color: #8a847d;
+      font-size: 7px;
+    }
+
+    strong {
+      display: block;
+
+      margin-top: 2px;
+
+      color: #538983;
+      font-size: 13px;
+    }
+  }
+
+  dl {
+    margin: 0;
+
+    padding-left: 10px;
+
+    border-left: 1px solid #e0ded9;
+
+    div {
+      display: flex;
+      gap: 5px;
+
+      + div {
+        margin-top: 4px;
+      }
+    }
+
+    dt {
+      color: #969088;
+      font-size: 6px;
+    }
+
+    dd {
+      margin: 0;
+
+      color: #57514b;
+      font-size: 7px;
+      font-weight: 600;
+    }
+  }
+}
+
+
+.compareIcon {
+  width: 30px;
+  height: 30px;
+
+  flex: 0 0 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #e8eeeb;
+
+  color: #538983;
+  font-size: 14px;
+}
+
+
+// ========================================
+// 상세 오버레이
+// ========================================
+
+.detailBackdrop {
+  position: fixed;
+  inset: 0;
+
+  z-index: 200;
+
+  border: 0;
+  background: rgba(43, 40, 36, 0.17);
+
+  backdrop-filter: blur(1px);
+}
+
+
+.detailPanel {
+  position: fixed;
+
+  top: 79px;
+  right: 0;
+  bottom: 0;
+
+  z-index: 210;
+
+  width: min(
+    730px,
+    calc(100vw - 275px)
+  );
+
+  min-width: 610px;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  border-radius: 26px 0 0 0;
+
+  background: #eff7ed;
+
+  box-shadow:
+    -13px 0 34px
+      rgba(46, 52, 47, 0.17);
+
+  animation:
+    detailOpen 0.27s ease both;
+}
+
+
+@keyframes detailOpen {
+  from {
+    opacity: 0;
+    transform: translateX(35px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+// ========================================
+// 상세 헤더
+// ========================================
+
+.detailHeader {
+  min-height: 71px;
+
+  padding: 0 25px;
+
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h2 {
+    margin: 0;
+
+    color: #2e2c28;
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  button {
+    width: 31px;
+    height: 31px;
+
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+
+    color: #5d5852;
+    font-size: 23px;
+    font-weight: 300;
+
+    cursor: pointer;
+
+    &:hover {
+      background:
+        rgba(
+          72,
+          126,
+          103,
+          0.08
+        );
+    }
+  }
+}
+
+
+.detailScroll {
+  min-height: 0;
+  flex: 1;
+
+  padding: 0 24px 24px;
+
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color:
+    #bfcec3 transparent;
+}
+
+
+// ========================================
+// 상세 공통 카드
+// ========================================
+
+.orderSummary,
+.detailSection,
+.shippingManage {
+  border: 1px solid #d7e3d6;
+  border-radius: 8px;
+  background: #fff;
+}
+
+
+.orderSummary {
+  min-height: 64px;
+
+  padding: 12px 13px;
+
+  display: grid;
+
+  grid-template-columns:
+    1.25fr
+    1fr
+    1fr
+    1fr
+    1fr;
+
+  margin-bottom: 10px;
+
+  > div {
+    min-width: 0;
+
+    padding: 0 11px;
+
+    border-right:
+      1px solid #ecefe9;
+
+    &:first-child {
+      padding-left: 0;
+    }
+
+    &:last-child {
+      padding-right: 0;
+      border-right: 0;
+    }
+
+    > span {
+      display: block;
+
+      margin-bottom: 7px;
+
+      color: #979891;
+      font-size: 7px;
+    }
+
+    > strong {
+      color: #45413d;
+      font-size: 9px;
+      font-weight: 600;
+
+      small {
+        margin-left: 4px;
+
+        color: #9b9892;
+        font-size: 7px;
+        font-weight: 400;
+      }
+    }
+  }
+}
+
+
+.detailStatus {
+  min-width: 47px;
+
+  padding: 4px 7px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid;
+  border-radius: 999px;
+
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+
+.totalPrice {
+  color: #292723 !important;
+  font-size: 12px !important;
+}
+
+
+.detailSection {
+  margin-bottom: 10px;
+  padding: 14px 15px;
+
+  > h3,
+  .sectionTitleRow h3 {
+    margin: 0 0 12px;
+
+    color: #3c3934;
+    font-size: 11px;
+    font-weight: 700;
+
+    > span {
+      margin-left: 4px;
+
+      color: #668f82;
+      font-size: 8px;
+    }
+  }
+}
+
+
+// ========================================
+// 진행 상태
+// ========================================
+
+.progress {
+  position: relative;
+
+  padding-top: 2px;
+
+  display: grid;
+  grid-template-columns:
+    repeat(5, 1fr);
+
+  &::before {
+    content: '';
+
+    position: absolute;
+
+    top: 14px;
+    left: 10%;
+    right: 10%;
+
+    height: 1px;
+
+    background: #d5ded6;
+  }
+}
+
+
+.progressItem {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  strong {
+    margin-top: 5px;
+
+    color: #55514b;
+    font-size: 7.5px;
+    font-weight: 600;
+  }
+
+  small {
+    margin-top: 2px;
+
+    color: #aaa69f;
+    font-size: 6px;
+  }
+}
+
+
+.stepCircle {
+  width: 25px;
+  height: 25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #ccd6cd;
+  border-radius: 50%;
+  background: #fff;
+
+  color: #969b96;
+  font-size: 7px;
+  font-weight: 700;
+}
+
+
+.stepDone {
+  border-color: #4d8677;
+  background: #4d8677;
+  color: #fff;
+}
+
+
+.stepCurrent {
+  border: 2px solid #438473;
+  background: #eef7f1;
+  color: #438473;
+}
+
+
+// ========================================
+// 상세 2단
+// ========================================
+
+.detailTwoColumn {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 10px;
+
+  > .detailSection {
+    margin-bottom: 10px;
+  }
+}
+
+
+// ========================================
+// 주문 상품
+// ========================================
+
+.productList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+
+.orderProduct {
+  min-height: 49px;
+
+  padding: 6px 8px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  border: 1px solid #ebeee9;
+  border-radius: 6px;
+  background: #fcfdfb;
+
+  > div {
+    flex: 1;
+    min-width: 0;
+
+    strong {
+      display: block;
+
+      overflow: hidden;
+
+      color: #4c4944;
+      font-size: 7.5px;
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    small {
+      display: block;
+
+      margin-top: 3px;
+
+      color: #9f9b95;
+      font-size: 6.5px;
+    }
+  }
+
+  > p {
+    margin: 0;
+
+    text-align: right;
+
+    strong {
+      display: block;
+
+      color: #514c47;
+      font-size: 7.5px;
+    }
+
+    small {
+      display: block;
+
+      margin-top: 3px;
+
+      color: #a6a19b;
+      font-size: 6.5px;
+    }
+  }
+}
+
+
+.productThumb {
+  width: 35px;
+  height: 35px;
+
+  flex: 0 0 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 5px;
+  background: #f2efe9;
+
+  font-size: 17px;
+}
+
+
+// ========================================
+// 정보 리스트
+// ========================================
+
+.infoList {
+  margin: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  > div {
+    display: grid;
+
+    grid-template-columns:
+      68px minmax(0, 1fr);
+
+    gap: 8px;
+  }
+
+  dt {
+    color: #93918b;
+    font-size: 7.5px;
+    line-height: 1.45;
+  }
+
+  dd {
+    margin: 0;
+
+    color: #4c4944;
+    font-size: 7.5px;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+}
+
+
+.totalRow {
+  margin-top: 4px;
+
+  padding-top: 8px;
+
+  border-top: 1px solid #ece9e4;
+
+  dt,
+  dd {
+    color: #2e2b27;
+    font-size: 9px;
+    font-weight: 700;
+  }
+}
+
+
+.sectionTitleRow {
+  margin-bottom: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h3 {
+    margin-bottom: 0 !important;
+  }
+
+  button {
+    height: 24px;
+
+    padding: 0 8px;
+
+    border: 1px solid #d2d9d0;
+    border-radius: 4px;
+    background: #fff;
+
+    color: #6c706a;
+    font-size: 7px;
+
+    cursor: pointer;
+  }
+}
+
+
+// ========================================
+// 처리 이력
+// ========================================
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+
+  > div {
+    position: relative;
+
+    min-height: 28px;
+
+    display: grid;
+
+    grid-template-columns:
+      7px
+      88px
+      62px
+      1fr;
+
+    gap: 7px;
+
+    align-items: start;
+
+    &::before {
+      content: '';
+
+      position: absolute;
+
+      top: 7px;
+      bottom: -4px;
+      left: 3px;
+
+      width: 1px;
+      background: #d6dfd7;
+    }
+
+    &:last-child::before {
+      display: none;
+    }
+
+    > i {
+      position: relative;
+      z-index: 1;
+
+      width: 6px;
+      height: 6px;
+
+      margin-top: 2px;
+
+      border-radius: 50%;
+      background: #568979;
+    }
+
+    > span {
+      color: #93908a;
+      font-size: 6.5px;
+
+      small {
+        margin-left: 4px;
+
+        color: #aaa69f;
+        font-size: 6px;
+      }
+    }
+
+    > strong {
+      color: #53504b;
+      font-size: 6.7px;
+    }
+
+    > p {
+      margin: 0;
+
+      color: #99958f;
+      font-size: 6.5px;
+    }
+  }
+}
+
+
+// ========================================
+// 배송 준비 관리
+// ========================================
+
+.shippingManage {
+  padding: 14px 15px;
+}
+
+
+.shippingHeader {
+  margin-bottom: 13px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  > span {
+    width: 18px;
+    height: 18px;
+
+    flex: 0 0 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background: #4c8977;
+
+    color: #fff;
+    font-size: 7px;
+    font-weight: 700;
+  }
+
+  h3 {
+    margin: 0;
+
+    color: #3b3934;
+    font-size: 10px;
+  }
+
+  p {
+    margin: 2px 0 0;
+
+    color: #929b91;
+    font-size: 6.5px;
+  }
+}
+
+
+.shippingContent {
+  display: grid;
+
+  grid-template-columns:
+    0.8fr 1.45fr;
+
+  gap: 10px;
+}
+
+
+// ========================================
+// 체크리스트
+// ========================================
+
+.checkList {
+  padding: 11px;
+
+  border: 1px solid #e0e7de;
+  border-radius: 6px;
+  background: #fbfdfb;
+
+  h4 {
+    margin: 0 0 9px;
+
+    color: #56524d;
+    font-size: 8px;
+  }
+
+  label {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+
+    margin-bottom: 6px;
+
+    cursor: pointer;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    input {
+      width: 11px;
+      height: 11px;
+
+      margin: 0;
+
+      accent-color: #528a7b;
+    }
+
+    > span {
+      color: #99958f;
+      font-size: 6px;
+      line-height: 1.35;
+
+      strong {
+        display: block;
+
+        margin-bottom: 1px;
+
+        color: #55514c;
+        font-size: 6.7px;
+      }
+    }
+  }
+}
+
+
+// ========================================
+// 배송 폼
+// ========================================
+
+.shippingForm {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 8px;
+}
+
+
+.shippingForm label {
+  min-width: 0;
+
+  > span {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #615d57;
+    font-size: 6.7px;
+    font-weight: 600;
+  }
+
+  select,
+  input,
+  textarea {
+    width: 100%;
+
+    border: 1px solid #d4ddd3;
+    border-radius: 5px;
+    outline: 0;
+
+    background: #fff;
+
+    color: #57524d;
+    font-size: 7px;
+
+    &:focus {
+      border-color: #558b7d;
+    }
+
+    &::placeholder {
+      color: #ada9a3;
+    }
+  }
+
+  select,
+  input {
+    height: 29px;
+    padding: 0 8px;
+  }
+}
+
+
+.memoField {
+  position: relative;
+
+  textarea {
+    min-height: 55px;
+
+    padding: 8px 8px 17px;
+
+    resize: none;
+
+    line-height: 1.4;
+  }
+
+  small {
+    position: absolute;
+
+    right: 7px;
+    bottom: 6px;
+
+    color: #aba7a0;
+    font-size: 6px;
+  }
+}
+
+
+// ========================================
+// 상세 하단 버튼
+// ========================================
+
+.detailFooter {
+  min-height: 64px;
+
+  padding: 10px 24px;
+
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-top: 1px solid #d4e0d3;
+  background: #f5faf3;
+
+  > div {
+    display: flex;
+    gap: 8px;
+  }
+
+  button {
+    height: 36px;
+
+    border-radius: 5px;
+
+    font-size: 8px;
+    font-weight: 600;
+
+    cursor: pointer;
+  }
+}
+
+
+.cancelOrder {
+  width: 135px;
+
+  border: 1px solid #ec7169;
+  background: #fff;
+
+  color: #dc5851;
+}
+
+
+.tempSave {
+  width: 135px;
+
+  border: 1px solid #aab9ad;
+  background: #fff;
+
+  color: #59645b;
+}
+
+
+.startShipping {
+  width: 155px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  border: 1px solid #347763;
+  background: #347763;
+
+  color: #fff;
+
+  svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  &:hover {
+    background: #2d6b58;
+  }
+}
+
+
+// ========================================
+// 접근성
+// ========================================
+
+.srOnly {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  padding: 0;
+  margin: -1px;
+
+  overflow: hidden;
+
+  clip: rect(
+    0,
+    0,
+    0,
+    0
+  );
+
+  white-space: nowrap;
+
+  border: 0;
+}
+
+
+// ========================================
+// 반응형
+// ========================================
+
+@media (
+  max-width: 1300px
+) {
+  .summaryGrid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .managementGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .analyticsColumn {
+    display: grid;
+
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+}
+
+
+@media (
+  max-width: 1000px
+) {
+  .detailPanel {
+    top: 0;
+
+    width: 92vw;
+    min-width: 0;
+  }
+
+  .detailTwoColumn {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+
+@media (
+  max-width: 760px
+) {
+  .pageToolbar {
+    h1 {
+      font-size: 23px;
+    }
+  }
+
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .filterBar {
+    flex-wrap: wrap;
+  }
+
+  .searchField {
+    flex-basis: 100%;
+  }
+
+  .analyticsColumn {
+    grid-template-columns: 1fr;
+  }
+
+  .detailPanel {
+    width: 100vw;
+  }
+
+  .orderSummary {
+    grid-template-columns:
+      repeat(2, 1fr);
+
+    gap: 12px;
+
+    > div {
+      padding: 0;
+      border-right: 0;
+    }
+  }
+
+  .shippingContent {
+    grid-template-columns: 1fr;
+  }
+}

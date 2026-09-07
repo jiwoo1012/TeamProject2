@@ -72,6 +72,19 @@ const USE_MOCK_AI =
 
 
 // ========================================
+// CORS 허용 주소
+//
+// 배포 사이트 + 로컬 개발 환경
+// ========================================
+
+const CORS_ORIGINS = [
+  'https://jajak-ten.vercel.app',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+]
+
+
+// ========================================
 // 함수 옵션
 //
 // Mock:
@@ -79,12 +92,18 @@ const USE_MOCK_AI =
 //
 // 실제 OpenAI:
 // OPENAI_API_KEY Secret 연결
+//
+// Vercel / localhost CORS 허용
 // ========================================
 
 const recommendationOptions =
   USE_MOCK_AI
-    ? {}
+    ? {
+        cors: CORS_ORIGINS,
+      }
     : {
+        cors: CORS_ORIGINS,
+
         secrets: [
           OPENAI_API_KEY,
         ],
