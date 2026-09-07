@@ -124,7 +124,7 @@
 
   color: #fff;
 
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -134,7 +134,7 @@
 
   color: #99938c;
 
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 600;
 
   text-align: center;
@@ -148,7 +148,7 @@
 
   color: #bbb5ad;
 
-  font-size: 6px;
+  font-size: 11px;
 
   white-space: nowrap;
 }
@@ -234,7 +234,7 @@
   dt {
     color: #8f8981;
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 500;
   }
 
@@ -247,7 +247,7 @@
 
     color: #4b463f;
 
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 600;
 
     text-overflow: ellipsis;
@@ -266,6 +266,10 @@
 
 
 .sectionHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
   padding-bottom: 8px;
 
   border-bottom: 1px solid #6c6760;
@@ -305,7 +309,7 @@
 
   color: #8f8981;
 
-  font-size: 7px;
+  font-size: 11px;
 
   span {
     &:nth-child(2),
@@ -448,7 +452,7 @@
 
     color: #49443d;
 
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 700;
 
     text-overflow: ellipsis;
@@ -458,7 +462,7 @@
   span {
     color: #aaa49c;
 
-    font-size: 7px;
+    font-size: 11px;
   }
 }
 
@@ -467,7 +471,7 @@
 .linePrice {
   color: #5f5952;
 
-  font-size: 8px;
+  font-size: 12px;
 
   text-align: center;
 }
@@ -480,7 +484,7 @@
 .addressContent {
   position: relative;
 
-  padding: 16px 12px 0;
+  padding: 18px 12px 0;
 }
 
 
@@ -506,7 +510,7 @@
   dt {
     color: #5c564f;
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 700;
   }
 
@@ -515,7 +519,7 @@
 
     color: #706a63;
 
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 400;
     line-height: 1.5;
   }
@@ -523,11 +527,6 @@
 
 
 .addressButton {
-  position: absolute;
-
-  top: 15px;
-  right: 0;
-
   min-width: 73px;
   height: 28px;
 
@@ -541,7 +540,7 @@
 
   color: #71685f;
 
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 600;
 
   cursor: pointer;
@@ -554,7 +553,23 @@
     border-color: #bca991;
 
     background: #faf8f4;
+    color: #4d7e7b;
   }
+}
+
+
+.addressNotice {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+
+  border-radius: 6px;
+
+  background: #f5f3ef;
+
+  color: #776e64;
+
+  font-size: 12px;
+  line-height: 1.55;
 }
 
 
@@ -610,7 +625,7 @@
 
     color: #8b5f57;
 
-    font-size: 11px;
+    font-size: 13px;
   }
 
   p {
@@ -618,7 +633,7 @@
 
     color: #a48079;
 
-    font-size: 8px;
+    font-size: 12px;
   }
 }
 
@@ -670,7 +685,7 @@
 
   border-radius: 5px;
 
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 600;
 
   cursor: pointer;
@@ -721,7 +736,7 @@
 
   color: #a95c51;
 
-  font-size: 9px;
+  font-size: 12px;
 
   text-align: right;
 }
@@ -757,7 +772,7 @@
       0
       18px;
 
-    font-size: 9px;
+    font-size: 12px;
   }
 }
 
@@ -844,8 +859,6 @@
 
 
   .stepperBox {
-    overflow-x: auto;
-
     padding:
       20px
       12px;
@@ -853,7 +866,14 @@
 
 
   .stepper {
-    min-width: 470px;
+    min-width: 0;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+
+  .stepDate {
+    white-space: normal;
+    text-align: center;
   }
 
 
@@ -920,7 +940,9 @@
   .addressButton {
     position: static;
 
-    margin-top: 16px;
+    flex-shrink: 0;
+
+    margin: 0;
   }
 
 

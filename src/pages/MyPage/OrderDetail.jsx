@@ -144,6 +144,9 @@ const OrderDetail = () => {
   const [loadAttempt, setLoadAttempt] =
     useState(0)
 
+  const [addressNotice, setAddressNotice] =
+    useState('')
+
 
   useEffect(() => {
     let isActive = true
@@ -968,6 +971,18 @@ const OrderDetail = () => {
             >
               배송지 정보
             </h3>
+
+            <button
+              type="button"
+              className={styles.addressButton}
+              onClick={() =>
+                setAddressNotice(
+                  '주문 완료 후 배송지 변경은 고객센터를 통해 확인해 주세요. 배송지 관리에서는 다음 주문의 주소를 변경할 수 있습니다.'
+                )
+              }
+            >
+              배송지 변경
+            </button>
           </div>
 
 
@@ -1031,22 +1046,15 @@ const OrderDetail = () => {
               </div>
             </dl>
 
-
-            {canCancel && (
-              <button
-                type="button"
-                className={
-                  styles.addressButton
-                }
-                onClick={() =>
-                  navigate(
-                    '/mypage/profile'
-                  )
-                }
+            {addressNotice && (
+              <p
+                className={styles.addressNotice}
+                role="status"
               >
-                배송지 변경
-              </button>
+                {addressNotice}
+              </p>
             )}
+
           </div>
         </section>
 

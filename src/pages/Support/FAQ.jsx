@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { PATHS } from '../../routes/paths'
 import styles from './FAQ.module.scss'
 import searchIconImage from '../../assets/icons/searchIcon.png'
+import inquiryIconImage from '../../assets/icons/inquiryIcon.png'
 
 const FAQ_ITEMS = [
     {
@@ -122,12 +123,12 @@ const FAQ = () => {
             )
           })}
         </ul>
-      </div>
 
-      <Link to={PATHS.inquiry} className={styles.floatingButton} aria-label="1:1 문의하기">
-        <span aria-hidden="true">?</span>
-        <em>1:1 문의하기</em>
-      </Link>
+        <Link to={PATHS.inquiry} className={styles.floatingButton} aria-label="1:1 문의하기">
+          <img src={inquiryIconImage} alt="" className={styles.inquiryIcon} />
+          <em>1:1 문의하기</em>
+        </Link>
+      </div>
     </section>
   )
 }

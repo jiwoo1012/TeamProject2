@@ -1,3 +1,5 @@
+@use '../../styles/variables' as v;
+
 ﻿:global(html.main-journey-active) {
   scrollbar-width: none;
 }
@@ -11,6 +13,24 @@
   height: 800svh;
   background: #1d130d;
 }
+:global(html.main-journey-mobile-playback) {
+  overflow: hidden;
+  overscroll-behavior: none;
+
+  body {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+  }
+}
+
+.mobilePlayback .stage {
+  position: fixed;
+  inset: 0;
+  height: 100%;
+  z-index: 100;
+}
+
 .stage {
   position: sticky;
   top: 0;
@@ -41,6 +61,68 @@
   pointer-events: none;
   translate: -50% -25%;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,.55));
+}
+.autoScrollLabel {
+  position: absolute;
+  top: calc(100% + #{v.$space-3});
+  left: 50%;
+  translate: -50% 0;
+  color: v.$color-bg;
+  font-family: v.$font-family-base;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-medium;
+  line-height: v.$line-height-base;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity v.$transition-base;
+}
+.autoScrolling .autoScrollLabel {
+  opacity: 1;
+}
+.mobilePlaybackCursor {
+  top: auto;
+  // 하단 메뉴 영역(80px) 위에 24px 간격을 확보합니다.
+  bottom: calc(env(safe-area-inset-bottom, 0px) + #{v.$space-20} + #{v.$space-6});
+  left: 50%;
+  width: auto;
+  height: auto;
+  border: 0;
+  translate: -50% 0;
+
+  > i {
+    display: none;
+  }
+
+  .autoScrollLabel {
+    position: static;
+    display: block;
+    translate: none;
+    font-size: v.$font-size-sm;
+  }
+}
+.autoScrollDots {
+  display: inline-flex;
+  margin-left: v.$space-1;
+
+  span {
+    display: inline-block;
+    animation: autoScrollDotWave 1.2s ease-in-out infinite;
+    animation-play-state: paused;
+  }
+
+  span:nth-child(2) { animation-delay: 0.15s; }
+  span:nth-child(3) { animation-delay: 0.3s; }
+}
+.autoScrolling .autoScrollDots span {
+  animation-play-state: running;
+}
+@keyframes autoScrollDotWave {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .autoScrollDots span { animation: none; }
 }
 .sceneScrollCursor i {
   position: absolute;
@@ -128,6 +210,26 @@
 .foodTrayScene {
   background: #1d130d;
 }
+.servingScene,
+.hanokRoomScene,
+.foodTrayScene,
+.finalMessageScene {
+  .sceneLayer {
+    filter: saturate(calc(1 - 0.38 * var(--finale-tone, 0))) brightness(calc(1 + 0.08 * var(--finale-tone, 0)));
+  }
+  &::after {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    background: rgba(v.$color-bg, 0.12);
+    opacity: var(--finale-tone, 0);
+    content: '';
+    pointer-events: none;
+  }
+}
+.finalMessageScene::after {
+  background: linear-gradient(to bottom, rgba(v.$color-bg, 0.8), rgba(v.$color-bg, 0.6) 34%, rgba(v.$color-bg, 0.12) 60%);
+}
 .finalMessageScene {
   background: #1d130d;
 }
@@ -143,16 +245,6 @@
   transform-origin: center bottom;
   pointer-events: none;
   will-change: opacity, transform;
-}
-.livingroomTableOverlay {
-  position: absolute;
-  right: 50%;
-  bottom: -11%;
-  width: 60%;
-  max-width: none;
-  height: auto;
-  translate: 50% 0;
-  pointer-events: none;
 }
 // makdong04.png — 거실 책상 앞에 앉아 있는 막동이
 .makdongTableFront {
@@ -187,18 +279,6 @@
   background: #000;
   pointer-events: none;
   will-change: opacity;
-}
-// O-002.png — 한옥 방 이동 이후 계속 유지되는 책상
-.hanokTableOverlay {
-  position: absolute;
-  right: 48%;
-  bottom: 13%;
-  z-index: 2;
-  width: 53%;
-  max-width: none;
-  height: auto;
-  translate: 50% 0;
-  pointer-events: none;
 }
 // makdong06.png — J-005 한옥 입구 장면 막동이
 .entranceMakdong {
@@ -238,9 +318,9 @@
 .hanokFoodTray {
   position: absolute;
   right: 48%;
-  bottom: 25%;
+  bottom: 28%;
   z-index: 3;
-  width: clamp(320px, 34vw, 500px);
+  width: clamp(260px, 28vw, 410px);
   max-width: none;
   height: auto;
   translate: 50% 0;
@@ -255,66 +335,57 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #fffaf2;
+  width: calc(100% - 80px);
+  color: v.$color-text-primary;
   text-align: center;
-  text-shadow: 0 2px 18px rgba(24, 12, 5, 0.75);
   translate: -50% 0;
   pointer-events: auto;
 
   p {
-    margin: 0 0 24px;
-    font-family: 'JS Arirang HON', 'Pretendard', sans-serif;
-    font-size: clamp(32px, 3.6vw, 58px);
-    font-weight: 400;
-    line-height: 1.45;
-    letter-spacing: 0.01em;
-
-    span {
-      display: block;
-      white-space: nowrap;
+    margin: 0 0 v.$space-8;
+    font-family: v.$font-family-base;
+    font-weight: v.$font-weight-regular;
+    line-height: v.$line-height-tight;
+    letter-spacing: -0.04em;
+    span { display: block; white-space: nowrap; }
+    span:first-child {
+      margin-bottom: v.$space-4;
+      font-size: clamp(22px, 1.8vw, 28px);
+      letter-spacing: -0.02em;
+    }
+    span:last-child {
+      font-size: clamp(42px, 3.2vw, 56px);
+      font-weight: v.$font-weight-medium;
     }
   }
-
   button {
     display: inline-flex;
-    min-width: 164px;
-    min-height: 48px;
-    gap: 12px;
+    min-height: v.$space-12;
+    gap: v.$space-4;
     align-items: center;
     justify-content: center;
-    padding: 15px 28px;
-    border: 0;
-    border-radius: 9999px;
-    color: #fff;
-    background: #4d2f1d;
-    font-family: 'Pretendard', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 1;
+    padding: v.$space-4 v.$space-6;
+    border: 2px solid transparent;
+    border-radius: v.$radius-pill;
+    color: v.$color-white;
+    background: v.$color-text-primary;
+    font-family: v.$font-family-base;
+    font-size: v.$font-size-sm;
+    font-weight: v.$font-weight-bold;
+    line-height: v.$line-height-base;
     cursor: pointer;
-    box-shadow: 0 8px 24px rgba(24, 12, 5, 0.24);
-    transition: transform 0.2s ease, background 0.2s ease;
-
-    &:hover,
-    &:focus-visible {
-      background: #6b452d;
-      transform: translateY(-2px);
+    transition: background v.$transition-base, color v.$transition-base, border-color v.$transition-base;
+    &:hover {
+      border-color: rgba(v.$color-text-primary, 0.55);
+      background: v.$color-bg;
+      color: v.$color-text-primary;
     }
-
-    &:focus-visible {
-      outline: 2px solid #fff;
-      outline-offset: 4px;
-    }
-  }
-
-  small {
-    margin-top: 10px;
-    font-size: 9px;
-    letter-spacing: 0.24em;
+    &:focus-visible { outline: 2px solid v.$color-text-primary; outline-offset: v.$space-1; }
   }
 }
-.finaleArrow {
-  animation: finaleArrow 1.2s ease-in-out infinite;
+.finaleArrow { animation: finaleArrow 1.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .finaleArrow { animation: none; }
 }
 .finaleTransition {
   position: absolute;
@@ -433,6 +504,9 @@
   outline-offset: 4px;
 }
 
+.mobileScrollHand {
+  display: none;
+}
 .scrollGuide {
   position: absolute; bottom: 42px; left: 50%; z-index: 6;
   display: flex; flex-direction: column; align-items: center;
@@ -463,6 +537,30 @@
 }
 
 @media (max-width: 767px) {
+  .mobileScrollHand {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    display: block;
+    width: 148px;
+    height: 148px;
+    margin: 0;
+    fill: none;
+    stroke: rgba(v.$color-white, 0.45);
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    animation: mobileScrollHand 1.6s ease-in-out infinite;
+  }
+  .scrollGuide .scrollLine { display: none; }
+  .scrollGuide > span:first-child,
+  .scrollGuide > small {
+    display: none;
+  }
+  .openingScene .shade {
+    opacity: 0;
+  }
   .journey {
     height: 800svh;
   }
@@ -477,63 +575,70 @@
   .mobileCoverScene .sceneLayer {
     object-fit: cover;
   }
-  // makdong02.png — 모바일 위치
+  // ===== 모바일 막동이 / 음식 조절 =====
+  // 이 구간만 수정하면 PC에는 영향이 없습니다.
+  // width: 크기. min(44vw, 330px)는 화면 너비의 44%, 최대 330px입니다.
+  // 크기를 키울 때 vw를 늘리고, 최대 크기에 막히면 px도 늘리세요.
+  // right: 늘리면 왼쪽으로 / 줄이면 오른쪽으로 이동합니다.
+  // top: 늘리면 아래로 / 줄이면 위로 이동합니다.
+  // bottom: 늘리면 위로 / 줄이면 아래로 이동합니다.
+  // calc(...)는 앞부분을 두고 마지막 + / - 값만 조절하세요.
+  // 예: + 4vw → + 6vw는 위로, - 2vw → - 4vw는 아래로 이동합니다.
+  // 등장·퇴장 움직임은 JSX에서 관리하므로 transform은 추가하지 마세요.
+
+  // 1. makdong02.png — 창문에서 빼꼼하는 막동이
   .makdongWindowPeek {
-    top: 22%;
-    right: 4%;
-    width: min(44vw, 330px);
+    top: 42%; // 위아래 (증가하면 아래)
+    right: -4%; // 좌우 (증가하면 왼쪽)
+    width: min(44vw, 330px); // 크기
   }
-  // makdong01.png — 모바일 위치
+  // 2. makdong01.png — 보자기를 들고 있는 막동이
   .makdongBundleHold {
-    right: 5%;
-    bottom: 8%;
-    width: min(65vw, 440px);
+    right: -10%; // 좌우
+    bottom: 22%; // 위아래 (증가하면 위)
+    width: min(65vw, 220px); // 크기
   }
-  .livingroomTableOverlay {
-    bottom: calc(50% - 28.125vw + 1.8vw);
-    width: 56%;
-  }
-  // makdong03.png — 모바일 위치
+  // 3. makdong03.png — 거실에서 옷을 갈아입는 막동이
   .makdongChangingClothes {
+    right: 50%; // 좌우: 기존 PC 상속값을 여기에 표시
     bottom: calc(50% - 28.125vw + 4vw);
     width: min(38vw, 290px);
   }
-  // makdong04.png — 모바일 위치
+  // 4. makdong04.png — 거실 상 앞에 앉은 막동이
   .makdongTableFront {
-    bottom: calc(50% - 28.125vw - 2vw);
-    width: min(62vw, 430px);
+    right: 50%; // 좌우
+    bottom: calc(50% - 28.125vw - 4vw);
+    width: min(62vw, 630px);
   }
-  // makdong05.png — 모바일 위치
+  // 5. makdong05.png — 거실에서 상을 펼치는 막동이
   .makdongTableSpread {
-    bottom: calc(50% - 28.125vw - 12vw);
-    width: min(88vw, 600px);
+    right: 45%; // 좌우
+    bottom: calc(50% - 28.125vw - 120vw);
+    width: min(110vw, 600px);
   }
-  // O-002.png — 모바일 위치
-  .hanokTableOverlay {
-    bottom: calc(50% - 28.125vw + 4vw);
-    width: 52%;
-  }
-  // makdong06.png — 모바일 위치
+  // 6. makdong06.png — 한옥 문 앞에 있는 막동이
   .entranceMakdong {
-    bottom: calc(50% - 28.125vw + 2vw);
+    right: 50%; // 좌우
+    bottom: calc(50% - 28.125vw + -20vw);
     width: min(38vw, 290px);
   }
-  // makdong02.png — J-005 모바일 빼꼼 위치
+  // 7. makdong02.png — 한옥 입구에서 눈 깜빡임 후 빼꼼하는 막동이
   .entrancePeekMakdong {
-    top: 22%;
-    right: 3%;
-    width: min(44vw, 330px);
+    top: 42%;
+    right: -6%;
+    width: min(124vw, 330px);
   }
-  // makdong07.png — 모바일 위치
+  // 8. makdong07.png — 한옥 방에서 술상을 나르는 막동이
   .servingMakdong {
     right: 6%;
-    bottom: calc(50% - 28.125vw + 2vw);
-    width: min(48vw, 350px);
+    bottom: calc(50% - 28.125vw + -49vw);
+    width: min(55vw, 350px);
   }
-  // O-003.png — 모바일 위치
+  // 9. O-003.png — 마지막 음식상
   .hanokFoodTray {
-    bottom: calc(50% - 28.125vw + 2vw);
-    width: min(58vw, 420px);
+    right: 48%; // 좌우
+    bottom: calc(50% - 28.125vw + 4vw);
+    width: min(48vw, 350px);
   }
   .finaleCopy {
     top: 18%;
@@ -541,7 +646,8 @@
 
     p {
       margin-bottom: 20px;
-      font-size: clamp(24px, 7vw, 34px);
+      span:first-child { font-size: v.$font-size-lg; }
+      span:last-child { font-size: clamp(26px, 7vw, 34px); }
       line-height: 1.5;
 
       span {
@@ -558,6 +664,9 @@
   .skipButton {
     top: 20px;
     right: 20px;
+    padding: 0;
+    scale: 1.2;
+    transform-origin: right top;
   }
   .scrollGuide {
     right: 20px;
@@ -577,6 +686,14 @@
   .keypadHand {
     display: none;
   }
+}
+
+@keyframes mobileScrollHand {
+  0%, 100% { transform: translateY(5px); }
+  50% { transform: translateY(-7px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mobileScrollHand { animation: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

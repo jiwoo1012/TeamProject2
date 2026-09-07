@@ -4,7 +4,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 import entranceClosed from '../../assets/images/main/journey/001-entrance-closed.webp'
-import entranceClosedMobile from '../../assets/images/main/journey/0001-entrance-closed.webp'
+import entranceClosedMobile from '../../assets/images/main/journey/0001-entrance-closed.png'
 import entranceOpen from '../../assets/images/main/journey/002-entrance-open.webp'
 import entranceOpenMobile from '../../assets/images/main/journey/0002-entrance-open.webp'
 import keypadHand from '../../assets/images/main/journey/entrance-keypad-hand.png'
@@ -20,25 +20,27 @@ import livingroomLightOffMobile from '../../assets/images/main/journey/0006-livi
 import livingroomLightOn from '../../assets/images/main/journey/007-livingroom-light-on.png'
 import livingroomLightOnMobile from '../../assets/images/main/journey/0007-livingroom-light-on.png'
 import livingroomWindow from '../../assets/images/main/journey/008-livingroom-window.png'
+import livingroomWindowMobile from '../../assets/images/main/journey/0008-livingroom-window.png'
 import livingroomNightView from '../../assets/images/main/journey/livingroom-night-view.webp'
+import livingroomNightViewMobile from '../../assets/images/main/journey/0010-livingroom-night-view.png'
 import livingroomWindowFrame from '../../assets/images/main/journey/livingroom-window-frame.png'
+import livingroomWindowFrameMobile from '../../assets/images/main/journey/0009-livingroom-window-frame.png'
 import makdongWindowPeek from '../../assets/images/main/journey/makdong02.png'
 import makdongBundleHold from '../../assets/images/main/journey/makdong01.png'
 import makdongChangingClothes from '../../assets/images/main/journey/makdong03.png'
 import makdongTableFront from '../../assets/images/main/journey/makdong04.png'
 import makdongTableSpread from '../../assets/images/main/journey/makdong05.png'
-import livingroomTableOverlay from '../../assets/images/main/journey/O-001.png'
+import makdongTableSpreadMobile from '../../assets/images/main/journey/makdong005.png'
 import hanokEntrance from '../../assets/images/main/journey/J-005.png'
+import hanokEntranceMobile from '../../assets/images/main/journey/J-0005.png'
 import hanokMakdong from '../../assets/images/main/journey/makdong06.png'
 import hanokInterior from '../../assets/images/main/journey/J-003-2.png'
+import hanokInteriorMobile from '../../assets/images/main/journey/J-0003-2.png'
 import servingMakdong from '../../assets/images/main/journey/makdong07.png'
-import hanokTableOverlay from '../../assets/images/main/journey/O-002.png'
 import hanokFoodTray from '../../assets/images/main/journey/O-003.png'
 import styles from './JourneySection.module.scss'
 
 gsap.registerPlugin(ScrollTrigger)
-
-const FINAL_MESSAGE_SCENE = 'final-message-scene'
 
 // [자주 수정하는 곳 1] 기본 장면의 재생 순서
 // 새 사진 추가 방법:
@@ -60,10 +62,6 @@ const scenes = [
   makdongTableSpread,
   hanokEntrance,
   hanokInterior,
-  servingMakdong,
-  hanokInterior,
-  hanokFoodTray,
-  FINAL_MESSAGE_SCENE,
 ]
 
 const LIGHT_OFF_INDEX = scenes.indexOf(livingroomLightOff)
@@ -76,6 +74,7 @@ const mobileOpeningScenes = [
   livingroomTableMobile,
   livingroomLightOffMobile,
   livingroomLightOnMobile,
+  livingroomWindowMobile,
 ]
 
 const JourneySection = ({ onSkip }) => {
@@ -106,6 +105,12 @@ const JourneySection = ({ onSkip }) => {
 
   useLayoutEffect(() => {
     let scrollTween
+    let autoScrollTween
+    let isAutoPlaying = false
+    let hasAutoPlayed = false
+    let startAutoScroll = () => {}
+    const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const isMobilePlayback = window.matchMedia('(max-width: 767px)').matches
     let isMoving = false
     let removeWheelHandler = () => {}
     let removeTouchHandlers = () => {}
@@ -114,15 +119,20 @@ const JourneySection = ({ onSkip }) => {
     let removeCursorPointerHandler = () => {}
     const root = document.documentElement
     const scrollbarClass = 'main-journey-active'
-    const stage = sectionRef.current?.querySelector(`.${styles.stage}`)
+    const section = sectionRef.current
+    const sceneCursor = sceneCursorRef.current
+    const stage = section?.querySelector(`.${styles.stage}`)
 
     root.classList.add(scrollbarClass)
     root.classList.remove('main-header-visible')
+    if (isMobilePlayback) {
+      root.classList.add('main-journey-mobile-playback')
+      section.classList.add(styles.mobilePlayback)
+    }
 
     const context = gsap.context(() => {
       const sceneElements = sceneRefs.current
       const handElements = [handRef.current, handleHandRef.current]
-      const sceneCursor = sceneCursorRef.current
 
       // Journey가 처음 열렸을 때 각 이미지의 투명도와 크기를 초기화합니다.
       gsap.set(sceneElements, { opacity: 0, scale: 1.06 })
@@ -142,11 +152,17 @@ const JourneySection = ({ onSkip }) => {
       gsap.set(servingMakdongRef.current, { autoAlpha: 0, xPercent: 14, yPercent: 8, scale: 0.94 })
       gsap.set(hanokFoodTrayRef.current, { autoAlpha: 0, yPercent: 12, scale: 0.95 })
       gsap.set(finaleCopyRef.current, { autoAlpha: 0, y: 24 })
+      gsap.set(sceneElements[sceneElements.length - 1], { '--finale-tone': 0 })
       gsap.set(finaleTransitionRef.current, { autoAlpha: 0 })
       gsap.set(sceneCursor, { autoAlpha: 0, x: -100, y: -100 })
+      if (isMobilePlayback) {
+        sceneCursor?.classList.add(styles.mobilePlaybackCursor)
+        gsap.set(sceneCursor, { x: 0, y: 0 })
+      }
       stage?.classList.add(styles.cursorHidden)
 
       const followCursor = (event) => {
+        if (isMobilePlayback) return
         gsap.set(sceneCursor, { x: event.clientX, y: event.clientY })
       }
       window.addEventListener('pointermove', followCursor)
@@ -156,6 +172,10 @@ const JourneySection = ({ onSkip }) => {
       const finishJourney = () => {
         if (isFinishing) return
         isFinishing = true
+        autoScrollTween?.kill()
+        isAutoPlaying = false
+        sceneCursor?.classList.remove(styles.autoScrolling)
+        if (isMobilePlayback) gsap.set(sceneCursor, { autoAlpha: 0 })
         isMoving = true
         gsap.timeline()
           .to(finaleCopyRef.current, { autoAlpha: 0, y: -16, duration: 0.3, ease: 'power2.in' })
@@ -165,22 +185,32 @@ const JourneySection = ({ onSkip }) => {
       finishJourneyRef.current = finishJourney
 
       // [자주 수정하는 곳 2] 기본 장면의 전체 재생 방식
-      // PC와 모바일 모두 사용자의 스크롤 위치에 맞춰 재생됩니다.
+      // 첫 장면은 직접 시작하고, 중간 장면은 스크롤 위치를 자동으로 이동시킵니다.
+      // 마지막 메시지에서는 멈추며 기존 버튼으로 메인에 진입합니다.
       const timeline = gsap.timeline({
-        scrollTrigger: {
+        paused: isMobilePlayback,
+        onUpdate: () => {
+          if (!isMobilePlayback) return
+          const isOpening = timeline.progress() <= 0.04
+          stage?.classList.toggle(styles.openingScene, isOpening)
+          gsap.set(bellRef.current, { autoAlpha: isOpening ? 1 : 0 })
+        },
+        scrollTrigger: isMobilePlayback ? undefined : {
           trigger: sectionRef.current,
           start: 'top top',
           end: 'bottom bottom',
           scrub: 1,
           invalidateOnRefresh: true,
           onUpdate: ({ progress }) => {
-            const finalSceneOpacity = Number(gsap.getProperty(sceneElements[sceneElements.length - 1], 'opacity'))
+            stage?.classList.toggle(styles.openingScene, progress <= 0.04)
+            const finalSceneOpacity = Number(gsap.getProperty(finaleCopyRef.current, 'opacity'))
             const showScrollCursor = progress > 0.04 && finalSceneOpacity < 0.5
             stage?.classList.toggle(styles.cursorHidden, progress <= 0.04)
             stage?.classList.toggle(styles.customCursorActive, showScrollCursor)
             gsap.set(sceneCursor, { autoAlpha: showScrollCursor ? 1 : 0 })
             gsap.set(bellRef.current, { autoAlpha: progress <= 0.04 ? 1 : 0 })
             if (progress > 0.04) gsap.to(handElements, { autoAlpha: 0, duration: 0.16, overwrite: 'auto' })
+            if (progress > 0.04 && progress < 1 && !isMoving) startAutoScroll()
           },
           onEnter: () => root.classList.add(scrollbarClass),
           onLeave: () => {
@@ -316,49 +346,88 @@ const JourneySection = ({ onSkip }) => {
             }, '-=0.05')
         }
 
-        if (sceneElements[index].classList.contains(styles.servingScene)) {
-          timeline.to(servingMakdongRef.current, {
-            autoAlpha: 1,
-            xPercent: 0,
-            yPercent: 0,
-            scale: 1,
-            duration: 0.75,
-            ease: 'back.out(1.15)',
-          }, '-=0.55')
-        }
-
-        if (sceneElements[index].classList.contains(styles.foodTrayScene)) {
-          timeline.to(hanokFoodTrayRef.current, {
-            autoAlpha: 1,
-            yPercent: 0,
-            scale: 1,
-            duration: 0.7,
-            ease: 'power2.out',
-          }, '-=0.55')
-        }
-
-        if (sceneElements[index].classList.contains(styles.finalMessageScene)) {
+        // ?? ?? ??? ??? ???? ???? ??? ???? ?????.
+        if (sceneElements[index].classList.contains(styles.hanokRoomScene)) {
           timeline
-            .to(skipButtonRef.current, {
-              autoAlpha: 0,
-              duration: 0.2,
-              ease: 'power1.out',
-            }, '-=0.8')
+            .to({}, { duration: 0.7 })
+            .to(servingMakdongRef.current, {
+              autoAlpha: 1, xPercent: 0, yPercent: 0, scale: 1,
+              duration: 0.9, ease: 'power2.out',
+            })
+            .to({}, { duration: 0.8 })
+            .to(servingMakdongRef.current, {
+              autoAlpha: 0, xPercent: 18, duration: 0.7, ease: 'power2.in',
+            })
+            .to({}, { duration: 0.4 })
+            .to(hanokFoodTrayRef.current, {
+              autoAlpha: 1, yPercent: 0, scale: 1,
+              duration: 0.9, ease: 'power2.out',
+            })
+            .to({}, { duration: 0.8 })
+            .to(skipButtonRef.current, { autoAlpha: 0, duration: 0.2 })
+            .to(sceneElements[index], { '--finale-tone': 1, duration: 0.7, ease: 'power2.out' })
             .to(finaleCopyRef.current, {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.55,
-              ease: 'power2.out',
-            }, '-=0.4')
+              autoAlpha: 1, y: 0, duration: 0.7, ease: 'power2.out',
+            }, '<')
         }
 
         timeline
           .to({}, { duration: 0.35 })
+        if (index === 1) timeline.addLabel('entranceOpenReady')
       }
 
-      // 마우스를 사용하는 PC에서만 손 이미지가 포인터를 따라갑니다.
+      // 첫 스크롤 이후 PC와 모바일 모두 마지막 메시지까지 자동으로 진행합니다.
+      startAutoScroll = () => {
+        if (isMobilePlayback) {
+          if (hasAutoPlayed || isFinishing) return
+          hasAutoPlayed = true
+          stage?.classList.remove(styles.cursorHidden)
+          if (isReducedMotion) {
+            timeline.progress(1)
+            return
+          }
+          isAutoPlaying = true
+          sceneCursor?.classList.add(styles.autoScrolling)
+          gsap.set(sceneCursor, { autoAlpha: 1 })
+          // 페이지 위치를 고정하고 기존 장면 타임라인만 재생합니다.
+          autoScrollTween = timeline.tweenTo(timeline.duration(), {
+            duration: timeline.duration() * 1.3,
+            ease: 'none',
+            onComplete: () => {
+              isAutoPlaying = false
+              sceneCursor?.classList.remove(styles.autoScrolling)
+              gsap.set(sceneCursor, { autoAlpha: 0 })
+            },
+          })
+          return
+        }
+        if (isReducedMotion || isAutoPlaying || hasAutoPlayed || isFinishing) return
+        const trigger = timeline.scrollTrigger
+        if (!trigger || trigger.progress <= 0 || trigger.progress >= 1) return
+
+        hasAutoPlayed = true
+        isAutoPlaying = true
+        sceneCursor?.classList.add(styles.autoScrolling)
+        const scrollState = { progress: trigger.progress }
+        autoScrollTween = gsap.to(scrollState, {
+          progress: 1,
+          duration: timeline.duration() * (1 - scrollState.progress) * 1.3,
+          ease: 'none',
+          onUpdate: () => {
+            window.scrollTo({
+              top: trigger.start + (trigger.end - trigger.start) * scrollState.progress,
+              behavior: 'instant',
+            })
+          },
+          onComplete: () => {
+            isAutoPlaying = false
+            sceneCursor?.classList.remove(styles.autoScrolling)
+          },
+        })
+      }
+
       const canTrackPointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
-      if (stage && canTrackPointer) {
+      if (stage && canTrackPointer && !isMobilePlayback) {
         const moveHandX = gsap.quickTo(handRef.current, 'x', { duration: 0.12, ease: 'power2.out' })
         const moveHandY = gsap.quickTo(handRef.current, 'y', { duration: 0.12, ease: 'power2.out' })
         const moveHandleHandX = gsap.quickTo(handleHandRef.current, 'x', { duration: 0.12, ease: 'power2.out' })
@@ -408,6 +477,11 @@ const JourneySection = ({ onSkip }) => {
 
       // PC에서 휠을 한 번 움직일 때 다음 사진 단계로 이동시키는 로직입니다.
       const handleWheel = (event) => {
+        if (isMobilePlayback) {
+          event.preventDefault()
+          if (event.deltaY > 0) startAutoScroll()
+          return
+        }
         const section = sectionRef.current
         const sectionStart = section.offsetTop
         const sectionEnd = sectionStart + section.offsetHeight - window.innerHeight
@@ -416,7 +490,7 @@ const JourneySection = ({ onSkip }) => {
 
         const direction = Math.sign(event.deltaY)
         if (!direction) return
-        if (isMoving) {
+        if (isMoving || isAutoPlaying) {
           event.preventDefault()
           return
         }
@@ -436,29 +510,35 @@ const JourneySection = ({ onSkip }) => {
         if (targetIndex > 0) gsap.to(handElements, { autoAlpha: 0, duration: 0.12, overwrite: 'auto' })
         isMoving = true
         const scrollState = { y: currentScroll }
-        const targetScroll = sectionStart + (sectionEnd - sectionStart) * (targetIndex / lastIndex)
+        const isOpeningTransition = direction > 0 && currentIndex === 0
+        const targetProgress = isOpeningTransition
+          ? timeline.labels.entranceOpenReady / timeline.duration()
+          : targetIndex / lastIndex
+        const targetScroll = sectionStart + (sectionEnd - sectionStart) * targetProgress
         scrollTween?.kill()
         scrollTween = gsap.to(scrollState, {
           y: targetScroll,
-          duration: 0.9,
-          ease: 'power2.inOut',
-          onUpdate: () => window.scrollTo(0, scrollState.y),
-          onComplete: () => { isMoving = false },
+          duration: isOpeningTransition ? 2.2 : 0.9,
+          ease: isOpeningTransition ? 'sine.inOut' : 'power2.inOut',
+          onUpdate: () => window.scrollTo({ top: scrollState.y, behavior: 'instant' }),
+          onComplete: () => {
+            isMoving = false
+            startAutoScroll()
+          },
         })
       }
 
       const isDesktopStepMode = window.matchMedia('(hover: hover) and (pointer: fine)').matches
-      if (isDesktopStepMode) {
+      if (isDesktopStepMode || isMobilePlayback) {
         window.addEventListener('wheel', handleWheel, { passive: false })
         removeWheelHandler = () => window.removeEventListener('wheel', handleWheel)
       }
 
       // 마지막 메시지는 버튼을 눌렀을 때만 종료합니다.
       // 모바일 터치와 키보드의 아래 방향 스크롤도 마지막 장면에서 멈춥니다.
+      const getJourneyEnd = () => timeline.scrollTrigger?.end ?? 0
       const isAtFinalScene = () => {
-        const section = sectionRef.current
-        const sectionEnd = section.offsetTop + section.offsetHeight - window.innerHeight
-        return window.scrollY >= sectionEnd - 2
+        return window.scrollY >= getJourneyEnd() - 2
       }
 
       let touchStartY = 0
@@ -467,11 +547,33 @@ const JourneySection = ({ onSkip }) => {
       }
       const handleTouchMove = (event) => {
         const currentY = event.touches[0]?.clientY ?? touchStartY
-        const isScrollingDown = currentY < touchStartY
-        if (isScrollingDown && isAtFinalScene()) event.preventDefault()
+        const deltaY = touchStartY - currentY
+        touchStartY = currentY
+        if (isMobilePlayback) {
+          if (event.touches.length !== 1) return
+          event.preventDefault()
+          if (deltaY > 0) startAutoScroll()
+          return
+        }
+        if (isAutoPlaying) {
+          event.preventDefault()
+          return
+        }
+        if (deltaY > 0 && isAtFinalScene()) event.preventDefault()
       }
       const handleKeyDown = (event) => {
+        if (event.target instanceof Element && event.target.closest('button, a, input, textarea, select, [contenteditable="true"]')) return
         const scrollDownKeys = ['ArrowDown', 'PageDown', 'End', ' ']
+        const scrollKeys = [...scrollDownKeys, 'ArrowUp', 'PageUp', 'Home']
+        if (isMobilePlayback && scrollKeys.includes(event.key)) {
+          event.preventDefault()
+          if (scrollDownKeys.includes(event.key)) startAutoScroll()
+          return
+        }
+        if (isAutoPlaying && scrollKeys.includes(event.key)) {
+          event.preventDefault()
+          return
+        }
         if (scrollDownKeys.includes(event.key) && isAtFinalScene()) event.preventDefault()
       }
 
@@ -492,30 +594,29 @@ const JourneySection = ({ onSkip }) => {
       removePointerHandlers()
       removeCursorPointerHandler()
       scrollTween?.kill()
+      autoScrollTween?.kill()
       stage?.classList.remove(styles.cursorHidden)
       stage?.classList.remove(styles.customCursorActive)
+      sceneCursor?.classList.remove(styles.mobilePlaybackCursor, styles.autoScrolling)
       finishJourneyRef.current = null
       context.revert()
       root.classList.remove(scrollbarClass)
+      root.classList.remove('main-journey-mobile-playback')
+      section?.classList.remove(styles.mobilePlayback)
     }
   }, [])
 
   return (
     <>
     <section ref={sectionRef} className={styles.journey} aria-label="자작의 공간으로 들어가는 스크롤 이야기">
-      <div className={styles.stage}>
+      <div className={`${styles.stage} ${styles.openingScene}`}>
         {/* scenes 배열의 사진을 같은 위치에 겹쳐 놓고 투명도로 전환합니다. */}
         {scenes.map((scene, index) => (
-          index <= LIGHT_ON_INDEX ? (
+          index < mobileOpeningScenes.length ? (
             <picture
               key={`${scene}-${index}`}
               ref={(element) => { sceneRefs.current[index] = element }}
-              className={`${styles.scene} ${[
-                livingroomWide,
-                livingroomTable,
-                livingroomLightOff,
-                livingroomLightOn,
-              ].includes(scene) ? styles.mobileCoverScene : ''}`}
+              className={`${styles.scene} ${styles.mobileCoverScene}`}
               aria-hidden="true"
             >
               <source media="(max-width: 767px)" srcSet={mobileOpeningScenes[index]} />
@@ -525,102 +626,91 @@ const JourneySection = ({ onSkip }) => {
             <div
               key={`${scene}-${index}`}
               ref={(element) => { sceneRefs.current[index] = element }}
-              className={`${styles.scene} ${styles.compositeScene}`}
+              className={`${styles.scene} ${styles.compositeScene} ${styles.mobileCoverScene}`}
               aria-hidden="true"
             >
-              <img className={styles.sceneLayer} src={livingroomNightView} alt="" />
+              <picture>
+                <source media="(max-width: 767px)" srcSet={livingroomNightViewMobile} />
+                <img className={styles.sceneLayer} src={livingroomNightView} alt="" />
+              </picture>
               <img ref={makdongPeekRef} className={styles.makdongWindowPeek} src={makdongWindowPeek} alt="" />
               <img ref={makdongBundleRef} className={styles.makdongBundleHold} src={makdongBundleHold} alt="" />
-              <img className={styles.sceneLayer} src={livingroomWindowFrame} alt="" />
+              <picture>
+                <source media="(max-width: 767px)" srcSet={livingroomWindowFrameMobile} />
+                <img className={styles.sceneLayer} src={livingroomWindowFrame} alt="" />
+              </picture>
             </div>
           ) : scene === livingroomTable && index > scenes.indexOf(livingroomNightView) ? (
             <div
               key={`${scene}-${index}`}
               ref={(element) => { sceneRefs.current[index] = element }}
-              className={`${styles.scene} ${styles.tableCompositeScene}`}
+              className={`${styles.scene} ${styles.tableCompositeScene} ${styles.mobileCoverScene}`}
               aria-hidden="true"
             >
-              <img className={styles.sceneLayer} src={livingroomTable} alt="" />
+              <picture>
+                <source media="(max-width: 767px)" srcSet={livingroomTableMobile} />
+                <img className={styles.sceneLayer} src={livingroomTable} alt="" />
+              </picture>
               <img ref={makdongChangingRef} className={styles.makdongChangingClothes} src={makdongChangingClothes} alt="" />
-              <img className={styles.livingroomTableOverlay} src={livingroomTableOverlay} alt="" />
             </div>
           ) : scene === makdongTableFront ? (
             <div
               key={`${scene}-${index}`}
               ref={(element) => { sceneRefs.current[index] = element }}
-              className={`${styles.scene} ${styles.tableFrontScene}`}
+              className={`${styles.scene} ${styles.tableFrontScene} ${styles.mobileCoverScene}`}
               aria-hidden="true"
             >
-              <img className={styles.sceneLayer} src={livingroomTable} alt="" />
-              <img className={styles.livingroomTableOverlay} src={livingroomTableOverlay} alt="" />
+              <picture>
+                <source media="(max-width: 767px)" srcSet={livingroomTableMobile} />
+                <img className={styles.sceneLayer} src={livingroomTable} alt="" />
+              </picture>
               <img ref={makdongTableFrontRef} className={styles.makdongTableFront} src={makdongTableFront} alt="" />
             </div>
           ) : scene === makdongTableSpread ? (
             <div
               key={`${scene}-${index}`}
               ref={(element) => { sceneRefs.current[index] = element }}
-              className={`${styles.scene} ${styles.tableSpreadScene}`}
+              className={`${styles.scene} ${styles.tableSpreadScene} ${styles.mobileCoverScene}`}
               aria-hidden="true"
             >
-              <img className={styles.sceneLayer} src={livingroomTable} alt="" />
-              <img className={styles.livingroomTableOverlay} src={livingroomTableOverlay} alt="" />
-              <img ref={makdongTableSpreadRef} className={styles.makdongTableSpread} src={makdongTableSpread} alt="" />
+              <picture>
+                <source media="(max-width: 767px)" srcSet={livingroomTableMobile} />
+                <img className={styles.sceneLayer} src={livingroomTable} alt="" />
+              </picture>
+              <picture>
+                <source media="(max-width: 767px)" srcSet={makdongTableSpreadMobile} />
+                <img ref={makdongTableSpreadRef} className={styles.makdongTableSpread} src={makdongTableSpread} alt="" />
+              </picture>
               <div ref={darkOverlayRef} className={styles.darkOverlay} />
             </div>
           ) : scene === hanokEntrance ? (
             <div
               key={`${scene}-${index}`}
               ref={(element) => { sceneRefs.current[index] = element }}
-              className={`${styles.scene} ${styles.hanokEntranceScene}`}
+              className={`${styles.scene} ${styles.hanokEntranceScene} ${styles.mobileCoverScene}`}
               aria-hidden="true"
             >
-              <img className={styles.sceneLayer} src={hanokEntrance} alt="" />
+              <picture>
+                <source media="(max-width: 767px)" srcSet={hanokEntranceMobile} />
+                <img className={styles.sceneLayer} src={hanokEntrance} alt="" />
+              </picture>
               <img ref={entrancePeekRef} className={styles.entrancePeekMakdong} src={makdongWindowPeek} alt="" />
               <img ref={entranceMakdongRef} className={styles.entranceMakdong} src={hanokMakdong} alt="" />
               <div ref={backgroundBlinkRef} className={styles.darkOverlay} />
-            </div>
-          ) : scene === servingMakdong ? (
-            <div
-              key={`${scene}-${index}`}
-              ref={(element) => { sceneRefs.current[index] = element }}
-              className={`${styles.scene} ${styles.servingScene}`}
-              aria-hidden="true"
-            >
-              <img className={styles.sceneLayer} src={hanokInterior} alt="" />
-              <img ref={servingMakdongRef} className={styles.servingMakdong} src={servingMakdong} alt="" />
-              <img className={styles.hanokTableOverlay} src={hanokTableOverlay} alt="" />
             </div>
           ) : scene === hanokInterior ? (
             <div
               key={`${scene}-${index}`}
               ref={(element) => { sceneRefs.current[index] = element }}
-              className={`${styles.scene} ${styles.hanokRoomScene}`}
+              className={`${styles.scene} ${styles.hanokRoomScene} ${styles.finalMessageScene} ${styles.mobileCoverScene}`}
               aria-hidden="true"
             >
-              <img className={styles.sceneLayer} src={hanokInterior} alt="" />
-              <img className={styles.hanokTableOverlay} src={hanokTableOverlay} alt="" />
-            </div>
-          ) : scene === hanokFoodTray ? (
-            <div
-              key={`${scene}-${index}`}
-              ref={(element) => { sceneRefs.current[index] = element }}
-              className={`${styles.scene} ${styles.foodTrayScene}`}
-              aria-hidden="true"
-            >
-              <img className={styles.sceneLayer} src={hanokInterior} alt="" />
-              <img className={styles.hanokTableOverlay} src={hanokTableOverlay} alt="" />
+              <picture>
+                <source media="(max-width: 767px)" srcSet={hanokInteriorMobile} />
+                <img className={styles.sceneLayer} src={hanokInterior} alt="" />
+              </picture>
+              <img ref={servingMakdongRef} className={styles.servingMakdong} src={servingMakdong} alt="" />
               <img ref={hanokFoodTrayRef} className={styles.hanokFoodTray} src={hanokFoodTray} alt="" />
-            </div>
-          ) : scene === FINAL_MESSAGE_SCENE ? (
-            <div
-              key={`${scene}-${index}`}
-              ref={(element) => { sceneRefs.current[index] = element }}
-              className={`${styles.scene} ${styles.finalMessageScene}`}
-              aria-hidden="true"
-            >
-              <img className={styles.sceneLayer} src={hanokInterior} alt="" />
-              <img className={styles.hanokTableOverlay} src={hanokTableOverlay} alt="" />
-              <img className={styles.hanokFoodTray} src={hanokFoodTray} alt="" />
               <div ref={finaleCopyRef} className={styles.finaleCopy}>
                 <p>
                   <span>오늘 하루도 수고했어요.</span>
@@ -649,13 +739,22 @@ const JourneySection = ({ onSkip }) => {
 
         <div ref={guideRef} className={styles.scrollGuide}>
           <span>자작의 공간으로 들어가 볼까요?</span>
+          <svg className={styles.mobileScrollHand} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <path d="M25 37V10C25 4 33 4 33 10V27C33 22 41 22 41 27V30C41 25 49 25 49 30V33C49 29 56 29 56 34V42C56 51 50 58 41 58H35C29 58 25 55 22 51L12 38C9 34 14 29 18 33L25 40" />
+            <path d="M33 27V36M41 30V37M49 33V39" />
+          </svg>
           <span className={styles.scrollLine} aria-hidden="true" />
           <small>SCROLL</small>
         </div>
       </div>
     </section>
     {createPortal(
-      <span ref={sceneCursorRef} className={styles.sceneScrollCursor} aria-hidden="true"><i /></span>,
+      <span ref={sceneCursorRef} className={styles.sceneScrollCursor} aria-hidden="true">
+        <i />
+        <span className={styles.autoScrollLabel}>
+          자동재생중<span className={styles.autoScrollDots}><span>.</span><span>.</span><span>.</span></span>
+        </span>
+      </span>,
       document.body
     )}
     </>

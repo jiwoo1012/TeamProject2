@@ -122,7 +122,7 @@
     color: $color-text-primary;
 
     font-family: $font-family-base;
-    font-size: $font-size-sm;
+    font-size: $font-size-md;
     font-weight: $font-weight-semibold;
 
     transition:
@@ -224,7 +224,7 @@
 
     color: $color-text-primary;
 
-    font-size: $font-size-xs;
+    font-size: $font-size-sm;
 
     &::placeholder {
       color: $color-text-muted;
@@ -304,7 +304,7 @@
 
     color: $color-text-muted;
 
-    font-size: $font-size-xs;
+    font-size: $font-size-sm;
     font-weight: $font-weight-regular;
 
     white-space: nowrap;
@@ -317,7 +317,7 @@
 
     color: $color-text-primary;
 
-    font-size: $font-size-sm;
+    font-size: $font-size-md;
     font-weight: $font-weight-regular;
 
     line-height: 1.4;

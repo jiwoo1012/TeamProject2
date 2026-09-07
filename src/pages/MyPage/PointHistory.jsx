@@ -164,9 +164,9 @@ const PointHistory = () => {
 
         try {
           const [
-            userData,
-            historyDocs,
-          ] = await Promise.all([
+            userResult,
+            historyResult,
+          ] = await Promise.allSettled([
             getCurrentUserData(
               currentUser.uid
             ),
@@ -177,9 +177,21 @@ const PointHistory = () => {
           ])
 
 
+          if (userResult.status === 'rejected') {
+            throw userResult.reason
+          }
+
+
           if (!isMounted) {
             return
           }
+
+
+          const userData = userResult.value
+          const historyDocs =
+            historyResult.status === 'fulfilled'
+              ? historyResult.value
+              : []
 
 
           setPoints(
@@ -249,6 +261,18 @@ const PointHistory = () => {
           setPointHistory(
             normalized
           )
+
+
+          if (historyResult.status === 'rejected') {
+            console.error(
+              '포인트 상세 내역 조회 실패:',
+              historyResult.reason
+            )
+
+            setLoadError(
+              '보유 포인트는 정상 조회했지만 상세 내역은 현재 확인할 수 없습니다.'
+            )
+          }
         } catch (error) {
           console.error(
             '포인트 내역 조회 실패:',
@@ -411,11 +435,9 @@ const PointHistory = () => {
               </span>
 
               <strong>
-                +
-                {formatNumber(
-                  earnedPoints
-                )}
-                P
+                {loadError
+                  ? '-'
+                  : `+${formatNumber(earnedPoints)}P`}
               </strong>
             </div>
 
@@ -426,11 +448,9 @@ const PointHistory = () => {
               </span>
 
               <strong>
-                -
-                {formatNumber(
-                  usedPoints
-                )}
-                P
+                {loadError
+                  ? '-'
+                  : `-${formatNumber(usedPoints)}P`}
               </strong>
             </div>
 
@@ -441,7 +461,7 @@ const PointHistory = () => {
               </span>
 
               <strong>
-                0P
+                -
               </strong>
             </div>
           </div>

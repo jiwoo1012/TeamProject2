@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
+import { collection, getDocs, query, where } from 'firebase/firestore'
 
-import { subscribeToAuthState } from '../../firebase/auth'
+import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
+import { db } from '../../firebase/firebase'
+import { getCollection } from '../../firebase/firestore'
 
 import styles from './MyPageLayout.module.scss'
+import { getStoredProfileAvatar, profileAvatars } from './profileAvatars'
 
 
 const QuickIcon = ({ type }) => {
@@ -58,25 +62,21 @@ const quickMenus = [
     label: '주문 내역',
     to: 'orders',
     icon: 'order',
-    value: '10',
   },
   {
     label: '포인트',
     to: 'points',
     icon: 'point',
-    value: '10,325 P',
   },
   {
     label: '찜',
     to: 'wishlist',
     icon: 'wishlist',
-    value: '10',
   },
   {
     label: '자주 구매',
     to: 'frequent',
     icon: 'repeat',
-    value: '10',
   },
 ]
 
@@ -142,22 +142,111 @@ const menuGroups = [
 
 const MyPageLayout = () => {
   const [currentUser, setCurrentUser] = useState(null)
+  const [userData, setUserData] = useState(null)
+  const [profileAvatar, setProfileAvatar] = useState(profileAvatars[0])
+  const [quickValues, setQuickValues] = useState({
+    order: 0,
+    point: '0 P',
+    wishlist: 0,
+    repeat: 0,
+  })
 
   useEffect(() => {
-    const unsubscribe = subscribeToAuthState(setCurrentUser)
+    const unsubscribe = subscribeToAuthState(async (user) => {
+      setCurrentUser(user)
+
+      if (!user) {
+        setUserData(null)
+        setProfileAvatar(profileAvatars[0])
+        setQuickValues({ order: 0, point: '0 P', wishlist: 0, repeat: 0 })
+        return
+      }
+
+      setProfileAvatar(getStoredProfileAvatar(user.uid))
+
+      try {
+        const ordersQuery = query(
+          collection(db, 'orders'),
+          where('userId', '==', user.uid),
+        )
+        const [nextUserData, wishlist, orderSnapshot] = await Promise.all([
+          getCurrentUserData(user.uid),
+          getCollection(`users/${user.uid}/wishlist`),
+          getDocs(ordersQuery),
+        ])
+        const productOrderCounts = {}
+
+        orderSnapshot.docs.forEach((orderDocument) => {
+          const items = orderDocument.data().items || []
+          const orderedProductIds = new Set()
+
+          items.forEach((item) => {
+            if (!item.productId) return
+            orderedProductIds.add(item.productId)
+          })
+
+          orderedProductIds.forEach((productId) => {
+            productOrderCounts[productId] = (productOrderCounts[productId] || 0) + 1
+          })
+        })
+
+        setUserData(nextUserData)
+        setQuickValues({
+          order: orderSnapshot.size,
+          point: `${Number(nextUserData?.points || 0).toLocaleString('ko-KR')} P`,
+          wishlist: wishlist.length,
+          repeat: Object.values(productOrderCounts).filter((count) => count >= 2).length,
+        })
+      } catch (error) {
+        console.error('마이페이지 사이드바 정보 조회 실패:', error)
+      }
+    })
 
     return unsubscribe
   }, [])
 
+  useEffect(() => {
+    if (!currentUser) return undefined
+
+    const syncProfile = async () => {
+      setProfileAvatar(getStoredProfileAvatar(currentUser.uid))
+
+      try {
+        const nextUserData = await getCurrentUserData(currentUser.uid)
+        setUserData(nextUserData)
+        setQuickValues((current) => ({
+          ...current,
+          point: `${Number(nextUserData?.points || 0).toLocaleString('ko-KR')} P`,
+        }))
+      } catch (error) {
+        console.error('마이페이지 프로필 동기화 실패:', error)
+      }
+    }
+
+    window.addEventListener('jajak-profile-avatar-change', syncProfile)
+    window.addEventListener('jajak-profile-change', syncProfile)
+
+    return () => {
+      window.removeEventListener('jajak-profile-avatar-change', syncProfile)
+      window.removeEventListener('jajak-profile-change', syncProfile)
+    }
+  }, [currentUser])
+
 
   const userName =
+    userData?.nickname ||
     currentUser?.displayName ||
     currentUser?.email?.split('@')[0] ||
-    '홍길동'
+    '회원'
 
   const userEmail =
     currentUser?.email ||
     'jajak@jajak.com'
+
+  const currentPoints = Number(userData?.points || 0)
+  const pointGoal = 2000
+  const pointsToNextLevel = Math.max(0, pointGoal - currentPoints)
+  const pointProgress = Math.min(100, (currentPoints / pointGoal) * 100)
 
 
   return (
@@ -171,9 +260,7 @@ const MyPageLayout = () => {
           <div className={styles.profileArea}>
             <div className={styles.profileTop}>
               <div className={styles.profileImage}>
-                <span>
-                  {userName.charAt(0)}
-                </span>
+                <img src={profileAvatar.src} alt={`${userName} 프로필`} />
               </div>
 
               <div className={styles.profileInfo}>
@@ -201,12 +288,12 @@ const MyPageLayout = () => {
                   aria-hidden="true"
                 />
 
-                일반 회원
+                {userData?.role === 'admin' ? '관리자' : '일반 회원'}
               </span>
 
               <span className={styles.nextLevel}>
                 다음 등급까지
-                <strong> 1,289P</strong>
+                <strong> {pointsToNextLevel.toLocaleString('ko-KR')}P</strong>
               </span>
             </div>
 
@@ -215,12 +302,12 @@ const MyPageLayout = () => {
               <div className={styles.progressTrack}>
                 <span
                   className={styles.progressBar}
-                  style={{ width: '60%' }}
+                  style={{ width: `${pointProgress}%` }}
                 />
               </div>
 
               <span className={styles.progressText}>
-                1,289 / 2,000P
+                {currentPoints.toLocaleString('ko-KR')} / {pointGoal.toLocaleString('ko-KR')}P
               </span>
             </div>
           </div>
@@ -254,7 +341,7 @@ const MyPageLayout = () => {
                   </span>
 
                   <span className={styles.quickValue}>
-                    {item.value}
+                    {quickValues[item.icon]}
                   </span>
                 </NavLink>
               ))}
@@ -300,7 +387,7 @@ const MyPageLayout = () => {
 
         {/* 오른쪽 콘텐츠 */}
         <main className={styles.content}>
-          <Outlet />
+          <Outlet context={{ profileAvatar, userData, quickValues }} />
         </main>
 
       </div>

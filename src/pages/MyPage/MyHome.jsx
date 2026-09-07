@@ -5,7 +5,7 @@ import {
   query,
   where,
 } from 'firebase/firestore'
-import { Link } from 'react-router-dom'
+import { Link, useOutletContext } from 'react-router-dom'
 
 import {
   getOrderStatusLabel,
@@ -47,6 +47,22 @@ const formatDate = (date) => {
 
 const BenefitIcon = ({ type }) => {
   const icons = {
+    order: (
+      <>
+        <path d="M6 5h12v15H6z" />
+        <path d="M9 5V3h6v2M9 10h6M9 14h4" />
+      </>
+    ),
+
+    shipping: (
+      <>
+        <path d="M3 7h11v10H3z" />
+        <path d="M14 10h4l3 3v4h-7z" />
+        <circle cx="7" cy="18" r="2" />
+        <circle cx="18" cy="18" r="2" />
+      </>
+    ),
+
     wishlist: (
       <path d="M12 20.5s-7-4.4-7-10A4 4 0 0 1 12 7.8a4 4 0 0 1 7 2.7c0 5.6-7 10-7 10Z" />
     ),
@@ -93,6 +109,7 @@ const BenefitIcon = ({ type }) => {
 
 
 const MyHome = () => {
+  const { profileAvatar } = useOutletContext()
   const [firebaseUser, setFirebaseUser] =
     useState(null)
 
@@ -373,35 +390,34 @@ const MyHome = () => {
     .slice(0, 3)
 
 
-  /* =========================
-     AI 추천
-
-     아직 실제 추천 기록 연결 전이라
-     화면 확인용 데이터
-  ========================= */
-
-  const aiRecommendations = [
-    {
-      id: 1,
-
-      title:
-        '분위기 좋은 저녁 술을 위한 추천',
-
-      date: '최근 추천',
-    },
-
-    {
-      id: 2,
-
-      title:
-        '우중충하고 비오는 날을 위한 메뉴 추천',
-
-      date: '최근 추천',
-    },
-  ]
-
-
   const benefits = [
+    {
+      key: 'order',
+
+      label: '전체 주문',
+
+      value:
+        orders.length,
+
+      unit: '건',
+
+      to: 'orders',
+    },
+
+    {
+      key: 'shipping',
+
+      label: '배송 진행',
+
+      value: orders.filter((order) =>
+        [ORDER_STATUS.PREPARING, ORDER_STATUS.SHIPPED].includes(order.rawStatus)
+      ).length,
+
+      unit: '건',
+
+      to: 'orders',
+    },
+
     {
       key: 'wishlist',
 
@@ -413,26 +429,6 @@ const MyHome = () => {
       unit: '개',
 
       to: 'wishlist',
-    },
-
-    {
-      key: 'coupon',
-
-      label: '쿠폰',
-
-      value: 0,
-
-      unit: '장',
-    },
-
-    {
-      key: 'inquiry',
-
-      label: '문의',
-
-      value: 0,
-
-      unit: '건',
     },
 
     {
@@ -481,9 +477,8 @@ const MyHome = () => {
             className={
               styles.avatar
             }
-            aria-hidden="true"
           >
-            {memberName.charAt(0)}
+            <img src={profileAvatar.src} alt={`${memberName} 프로필`} />
           </div>
 
 
@@ -810,19 +805,6 @@ const MyHome = () => {
             </div>
 
 
-            <Link
-              to="ai-history"
-              className={
-                styles.moreLink
-              }
-            >
-              AI 추천 기록 전체 보기
-              <span
-                aria-hidden="true"
-              >
-                ›
-              </span>
-            </Link>
           </div>
 
 
@@ -831,48 +813,13 @@ const MyHome = () => {
               styles.aiBox
             }
           >
-            {aiRecommendations.map(
-              (
-                recommendation
-              ) => (
-                <article
-                  key={
-                    recommendation.id
-                  }
-                  className={
-                    styles.aiItem
-                  }
-                >
-                  <div
-                    className={
-                      styles.aiCopy
-                    }
-                  >
-                    <strong>
-                      {
-                        recommendation.title
-                      }
-                    </strong>
-
-                    <span>
-                      {
-                        recommendation.date
-                      }
-                    </span>
-                  </div>
-
-
-                  <Link
-                    to="ai-history"
-                    className={
-                      styles.recommendButton
-                    }
-                  >
-                    추천 보기
-                  </Link>
-                </article>
-              )
-            )}
+            <div className={styles.aiEmpty}>
+              <div>
+                <strong>저장된 AI 추천 기록이 없습니다.</strong>
+                <span>취향 설문을 완료하고 나만의 전통주를 추천받아보세요.</span>
+              </div>
+              <Link to="/ai" className={styles.recommendButton}>추천받기</Link>
+            </div>
           </div>
 
         </section>

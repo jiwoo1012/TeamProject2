@@ -15,6 +15,12 @@
 .startButton { display: grid; grid-template-columns: 1fr auto; align-items: center; width: min(100%, 560px); margin-top: $space-6; padding: $space-4 $space-8; color: $color-white; font-size: $font-size-lg; font-weight: $font-weight-bold; background: $color-primary; border-radius: $radius-md; transition: background-color $transition-fast ease, transform $transition-fast ease; }
 .startButton span { margin-left: $space-4; font-size: $font-size-2xl; }
 .startButton:hover { background: $color-primary-light; transform: translateY(-2px); }
+.loginNotice { position: fixed; z-index: $z-toast; bottom: $space-8; left: 50%; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: $space-4; align-items: center; width: min(600px, calc(100% - (#{$side-margin-mobile} * 2))); padding: $space-4 $space-5; color: $color-text-primary; background: $color-white; border: 1px solid rgba($color-border, .7); border-radius: $radius-xl; box-shadow: 0 $space-3 $space-8 rgba($color-text-primary, .2); transform: translateX(-50%); animation: loginNotice 2.6s cubic-bezier(.22, 1, .36, 1) both; }
+.loginNotice > span { @include mixins.flex-center; width: 36px; aspect-ratio: 1; color: $color-white; font-size: $font-size-xl; font-weight: $font-weight-bold; background: $color-error; border-radius: 50%; }
+.loginNotice strong { min-width: 0; font-size: $font-size-md; font-weight: $font-weight-semibold; }
+.loginNotice > a { display: flex; gap: $space-2; align-items: center; padding: $space-2; color: $color-primary-light; font-size: $font-size-md; font-weight: $font-weight-semibold; white-space: nowrap; transition: color $transition-fast ease, transform $transition-fast ease; }
+.loginNotice > a:hover { color: $color-primary; transform: translateX($space-1); }
+@keyframes loginNotice { 0% { opacity: 0; transform: translate(-50%, $space-5); } 12%, 76% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, $space-3); } }
 .precautions { width: min(100%, 560px); margin-top: $space-6; color: $color-text-secondary; font-size: $font-size-xs; line-height: $line-height-relaxed; text-align: left; }
 .precautions li::before { margin-right: $space-2; content: '•'; }
 .sideVisual { position: absolute; z-index: 3; pointer-events: none; }
@@ -55,6 +61,8 @@
   .eventMeta { padding-inline: $space-4; }
   .eventMeta > div { grid-template-columns: 112px 1fr; gap: $space-2; }
   .startButton { padding: $space-3 $space-5; font-size: $font-size-md; }
+  .loginNotice { bottom: calc(72px + #{$space-3}); grid-template-columns: auto minmax(0, 1fr); padding: $space-3 $space-4; }
+  .loginNotice > a { grid-column: 2; padding: 0; font-size: $font-size-sm; }
   .leftVisual { z-index: 4; top: -$space-2; left: -$space-4; width: 42%; }
   .rightVisual { z-index: 4; right: -$space-5; bottom: -$space-6; width: 43%; opacity: .28; }
   .oxImages img { width: 40%; }

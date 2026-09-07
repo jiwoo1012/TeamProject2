@@ -1,8 +1,15 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
 
-// NOTE: $font-family-display는 BrandIntro와 동일하게 강조 영역(인트로 타이틀)에만 사용.
-// 폰트 로딩 상태(JS Arirang HON 미로드)도 BrandIntro와 동일.
+// PC 전용 별칭: 공통 폰트 및 모바일의 기존 렌더링에 영향을 주지 않는다.
+// 원본 웹폰트: https://noonnu.cc/font_page/373 (정선군 정선아리랑혼체)
+@font-face {
+  font-family: 'Makdong Arirang HON';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/JSArirangHON-RegularA1.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 :global(html.brand-header-sticky) :global(body > #root > div > header) {
   position: sticky;
@@ -242,7 +249,7 @@
   @include container;
   display: grid;
   min-height: calc(100svh - 176px);
-  grid-template-columns: minmax(360px, 0.75fr) minmax(650px, 1fr);
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
   gap: clamp($space-8, 4vw, $space-16);
   align-items: center;
 }
@@ -282,6 +289,57 @@
   color: $color-text-secondary;
   font-size: 0.95rem;
   line-height: 1.8;
+}
+
+.profileCards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-3;
+  margin: $space-6 0 0;
+
+  div { padding: $space-4; border: 1px solid $color-border; border-radius: $radius-lg; background: $color-white; }
+  dt { color: $color-primary; font-size: $font-size-sm; font-weight: $font-weight-bold; }
+  dd { margin: $space-2 0 0; font-size: $font-size-sm; line-height: $line-height-relaxed; word-break: keep-all; overflow-wrap: anywhere; }
+}
+
+.tailSecret {
+  display: flex;
+  gap: $space-3;
+  padding-top: $space-5;
+  border-top: 1px solid rgba($color-primary, 0.3);
+  > span { color: $color-primary; font-size: $font-size-3xl; }
+  h3 { margin: 0; font-size: $font-size-md; }
+  p { margin: $space-2 0; color: $color-text-secondary; font-size: $font-size-sm; line-height: $line-height-relaxed; }
+  strong { color: $color-primary; font-size: $font-size-sm; }
+}
+
+.propArchive {
+  grid-column: 1 / -1;
+  h3 { margin: 0 0 $space-5; font-size: $font-size-xl; }
+  h3 span { display: block; margin-top: $space-2; font-size: $font-size-sm; color: $color-text-secondary; font-weight: $font-weight-regular; }
+}
+
+.propCards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: $space-4; }
+.propCard {
+  position: relative;
+  display: grid;
+  grid-template-columns: 45% minmax(0, 1fr);
+  gap: 11%;
+  align-items: center;
+  min-height: 200px;
+  margin: 0;
+  padding: $space-4;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  background: $color-white;
+  overflow: hidden;
+  img { width: 100%; height: 160px; object-fit: contain; }
+  svg { position: absolute; inset: $space-4; width: calc(100% - #{$space-8}); height: calc(100% - #{$space-8}); pointer-events: none; }
+  path { fill: none; stroke: $color-primary; stroke-width: 1; vector-effect: non-scaling-stroke; }
+  figcaption { position: relative; min-width: 0; word-break: keep-all; overflow-wrap: anywhere; }
+  figcaption > span { display: block; color: $color-primary; font-size: $font-size-xs; }
+  strong { display: block; margin-top: $space-1; font-size: $font-size-md; }
+  p { margin: $space-2 0 0; color: $color-text-secondary; font-size: $font-size-sm; line-height: $line-height-relaxed; }
 }
 
 .guideBoard {
@@ -485,6 +543,14 @@
   letter-spacing: 0.02em;
 }
 
+.transitionSubcopy {
+  display: block;
+  margin-top: $space-4;
+  font-size: max(14px, 0.65em);
+  line-height: 1.8;
+  font-weight: $font-weight-regular;
+}
+
 .transitionPawTrail {
   position: relative;
   z-index: 4;
@@ -628,14 +694,14 @@
 .characterStoryInner {
   @include container;
   display: grid;
-  grid-template-columns: minmax(380px, 0.9fr) minmax(440px, 1.1fr);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: clamp($space-12, 8vw, $space-24);
   align-items: start;
 }
 
 .characterStoryVisual {
   position: sticky;
-  top: -16px;
+  top: 80px;
   display: grid;
   height: calc(100svh - 80px - (#{$space-6} * 2));
   min-height: 580px;
@@ -656,13 +722,18 @@
   max-height: 660px;
   object-fit: contain;
   object-position: bottom;
-  transform: translateX(-#{$space-30});
+  transform: none;
 }
 
 .characterStoryCopy {
   width: 100%;
   max-width: 38rem;
   padding-top: clamp($space-10, 10vh, $space-20);
+}
+
+.characterStory > .characterStoryHeader {
+  @include container;
+  margin-bottom: $space-12;
 }
 
 .characterStoryHeader h2 {
@@ -695,7 +766,7 @@
 }
 
 .characterPurpose h3 {
-  margin: $space-5 0 0;
+  margin: 0;
   font-size: clamp(1.65rem, 2.6vw, 2.5rem);
   line-height: 1.5;
 }
@@ -720,46 +791,64 @@
 }
 
 .curationIntro h3 {
-  margin: $space-4 0 0;
+  margin: 0;
   font-size: clamp(2rem, 3.5vw, 3.5rem);
   line-height: 1.35;
 }
 
-.characterStorySteps {
+.traitCards {
   display: grid;
-  margin: clamp($space-10, 7vh, $space-16) 0 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-3;
+  margin: $space-6 0 0;
   padding: 0;
   list-style: none;
 }
 
-.characterStorySteps li {
-  min-height: 54vh;
-  padding: clamp($space-12, 9vh, $space-20) 0;
-  border-top: 1px solid $color-border;
+.traitCards li {
+  padding: $space-5;
+  border: 1px solid $color-border;
+  border-radius: $radius-xl;
+  background: $color-bg;
 }
 
-.characterStorySteps span {
+.traitCards span {
   display: block;
   color: $color-primary;
-  font-size: clamp(3.5rem, 6vw, 6.5rem);
+  font-size: $font-size-xs;
   font-weight: 700;
-  letter-spacing: -0.06em;
-  line-height: 1;
-  opacity: 0.25;
+  line-height: $line-height-base;
 }
 
-.characterStorySteps h3 {
-  margin: $space-6 0 0;
-  font-size: clamp(1.8rem, 2.5vw, 2.7rem);
+.traitCards h3 {
+  margin: 0;
+  font-size: $font-size-lg;
   line-height: 1.4;
 }
 
-.characterStorySteps p {
+.traitCards p {
   max-width: 30rem;
-  margin: $space-5 0 0;
+  margin: $space-3 0 0;
   color: $color-text-secondary;
-  font-size: clamp(0.95rem, 1.05vw, 1.08rem);
-  line-height: 1.9;
+  font-size: $font-size-sm;
+  line-height: $line-height-relaxed;
+}
+
+.characterStoryCopy { word-break: keep-all; overflow-wrap: anywhere; }
+.dialogueDemo { margin-top: $space-16; }
+.dialogueDemo h3 { margin: 0 0 $space-6; font-size: $font-size-2xl; line-height: $line-height-base; }
+.speechBubble { margin: 0; padding: $space-6; border-radius: $radius-xl $radius-xl $radius-xl $radius-sm; background: $color-surface; font-size: $font-size-md; line-height: 1.8; }
+.dialogueChoices {
+  display: flex; flex-wrap: wrap; gap: $space-2; margin-top: $space-5;
+  button { min-height: $space-12; padding: $space-3 $space-4; border: 1px solid $color-primary; border-radius: $radius-pill; background: $color-white; color: $color-primary; font: inherit; cursor: pointer; }
+  button[aria-pressed='true'] { background: $color-primary; color: $color-white; }
+  button:focus-visible { outline: 2px solid $color-primary; outline-offset: 3px; }
+}
+.dialogueReply {
+  margin-top: $space-5;
+  &:not(:empty) { padding: $space-6; border: 1px solid $color-border; border-radius: $radius-xl $radius-xl $radius-sm $radius-xl; background: $color-bg; }
+  > span { color: $color-primary; font-size: $font-size-sm; }
+  p { margin: $space-3 0 0; font-size: $font-size-md; line-height: 1.8; }
 }
 
 // ---------------------------------------------------------------------
@@ -768,7 +857,9 @@
 .outro {
   position: relative;
   display: grid;
-  min-height: 80svh;
+  min-height: auto;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 300px);
+  gap: $space-8;
   padding: clamp($space-24, 11vw, $space-30) $space-5 clamp($space-20, 8vw, $space-24);
   background: $color-white;
   place-items: center;
@@ -791,10 +882,10 @@
 }
 
 .outroVisual {
-  position: absolute;
-  bottom: -$space-10;
-  right: max(2%, calc((100vw - 1280px) / 2));
-  width: min(25vw, 330px);
+  position: relative;
+  grid-column: 2;
+  grid-row: 1;
+  width: 100%;
 }
 
 .outroVisual img {
@@ -819,6 +910,9 @@
   position: relative;
   z-index: 2;
   width: min(100%, 800px);
+  grid-column: 1;
+  grid-row: 1;
+  h2 { font-size: clamp($font-size-2xl, 3vw, $font-size-4xl); line-height: 1.5; word-break: keep-all; }
 }
 
 .outroCopy > p {
@@ -858,6 +952,7 @@
 // Responsive — 팀 3단 breakpoint 기준 (mobile / tablet / desktop)
 // ---------------------------------------------------------------------
 @include tablet {
+  .propCards { grid-template-columns: 1fr; }
   .characterGuideInner {
     grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
     gap: $space-6;
@@ -893,47 +988,56 @@
 }
 
 @include mobile {
+  .page {
+    // 공통 메뉴 높이 68px + 화면 하단 간격 12px.
+    --makdong-tabbar-space: 80px;
+    --makdong-header-height: 80px;
+  }
   .blankIntro {
     min-height: calc(100svh - 60px);
   }
 
   .introClickGuide {
-    top: $space-20;
+    top: calc(#{$space-24} + 20px);
     left: auto;
-    right: -$space-2;
-    width: 210px;
+    right: $space-5;
+    width: min(210px, calc(100% - #{$space-10}));
     padding: $space-5 $space-6;
     font-size: 0.85rem;
   }
 
+  .introClickArrow { display: none; }
+
   .characterGuide {
     min-height: auto;
-    padding-block: $space-20;
+    padding-block: $space-16 $space-8;
     scroll-margin-top: 60px;
   }
 
   .characterStory {
     min-height: auto;
-    padding-block: $space-20;
+    padding-block: $space-8 $space-16;
   }
 
   .characterStoryInner {
     min-height: auto;
     grid-template-columns: 1fr;
-    gap: $space-12;
+    gap: $space-6;
   }
 
   .characterStoryVisual {
     position: relative;
     top: auto;
     height: auto;
-    min-height: 460px;
+    min-height: 0;
+    place-items: start center;
   }
 
   .characterStoryVisual img {
     width: min(100%, 430px);
-    max-height: 520px;
-    transform: translateX(-#{$space-2});
+    height: auto;
+    max-height: 420px;
+    transform: none;
   }
 
   .characterStoryCopy {
@@ -946,19 +1050,25 @@
   }
 
   .blankCharacterSection {
-    min-height: calc(100svh - 60px);
-    padding: $space-10 $space-5;
-    scroll-margin-top: 60px;
+    min-height: calc(100svh - var(--makdong-header-height) - var(--makdong-tabbar-space));
+    box-sizing: border-box;
+    padding: $space-6 $space-5;
+    scroll-margin-top: var(--makdong-header-height);
+    background: $color-primary;
   }
 
   .blankCharacterSection h2 {
-    font-size: clamp(3.4rem, 18vw, 6rem);
+    font-size: clamp(2.8rem, 14vw, 6rem);
+    white-space: nowrap;
     letter-spacing: 0;
   }
 
   .transitionTagline {
-    margin-top: $space-8;
-    font-size: 0.9rem;
+    margin-top: $space-5;
+    font-size: $font-size-lg;
+    line-height: $line-height-relaxed;
+    color: $color-bg;
+    word-break: keep-all;
   }
 
   .transitionPawTrail {
@@ -975,11 +1085,14 @@
   }
 
   .transitionMakdong {
-    right: -$space-10;
-    bottom: -1%;
-    width: min(76vw, 380px);
-    max-height: 58%;
+    right: 5%;
+    bottom: $space-6;
+    width: 90%;
+    height: 58%;
+    max-height: none;
+    object-fit: contain;
   }
+  .ceramicStillLife, .flowRibbons, .transitionFloor, .transitionPawTrail { display: none; }
 
   .flowRibbons i {
     width: 115vw;
@@ -997,21 +1110,18 @@
   }
 
   .curationIntro {
-    margin-top: $space-20;
+    margin-top: $space-12;
   }
+  .storyCompanion { display: block; width: min(60%, 220px); height: auto; margin: 0 auto $space-6; }
 
-  .characterStorySteps {
-    margin-top: $space-16;
-  }
-
-  .characterStorySteps li {
-    min-height: auto;
-    padding-block: $space-16;
-  }
-
-  .characterStorySteps span {
-    font-size: clamp(3.5rem, 18vw, 5rem);
-  }
+  .profileCards { gap: $space-2; }
+  .profileCards div { padding: $space-3; }
+  .propCards { grid-template-columns: 1fr; }
+  .traitCards li { padding: $space-4 $space-3; }
+  .traitCards h3 { font-size: $font-size-md; }
+  .dialogueChoices { flex-direction: column; }
+  .dialogueDemo { margin-top: $space-12; }
+  .speechBubble, .dialogueReply:not(:empty) { padding: $space-5; }
 
   .characterGuideInner {
     min-height: auto;
@@ -1030,8 +1140,11 @@
   }
 
   .guideBoard {
-    min-height: 620px;
+    min-height: auto;
     padding: $space-6 $space-4;
+    grid-template-rows: auto;
+    background: $color-bg url('../../assets/images/mypage/orderCompleteHanji.png') center / cover;
+    border-radius: $radius-xl;
   }
 
   .guideBoardHeader {
@@ -1045,17 +1158,34 @@
   }
 
   .turnaroundBoard {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 100%;
     gap: $space-2;
-    padding-block: $space-6;
+    padding-block: $space-4;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
   }
+  .turnaroundBoard figure { scroll-snap-align: start; scroll-snap-stop: always; min-width: 0; }
+  .turnaroundBoard:focus-visible { outline: 2px solid $color-primary; outline-offset: 2px; }
+  .turnaroundBoard figcaption { font-size: $font-size-sm; }
+  .viewNavigation { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: $space-2; font-size: $font-size-xs; color: $color-primary; }
+  .viewNavigation > div { display: flex; }
+  .viewNavigation button { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+  .viewNavigation button span { width: $space-2; height: $space-2; border-radius: $radius-pill; background: $color-surface; }
+  .viewNavigation button[aria-pressed='true'] span { width: $space-5; background: $color-primary; }
+  .viewNavigation button:focus-visible { outline: 2px solid $color-primary; border-radius: $radius-sm; }
 
   .turnaroundVisual {
-    min-height: 190px;
+    min-height: 300px;
+    border: 0;
   }
 
   .turnaroundVisual img {
-    width: 125%;
-    height: 185px;
+    width: 100%;
+    height: 300px;
   }
 
   .imagePlaceholder {
@@ -1070,13 +1200,14 @@
   .characterMeta dt {
     gap: $space-2;
   }
+  .characterMeta dt, .characterMeta dd, .characterMeta dd strong { font-size: $font-size-sm; }
 
   .characterMeta dd {
     padding-left: $space-3;
   }
 
   .characterMeta dd span {
-    font-size: 0.62rem;
+    font-size: $font-size-sm;
   }
 
   .blankIntro img {
@@ -1084,12 +1215,10 @@
     max-height: 68vh;
   }
 
-  .outro h2 {
-    font-size: clamp(2.35rem, 11vw, 3.4rem);
-  }
+  .outro h2 { font-size: clamp($font-size-2xl, 7vw, $font-size-3xl); }
   .outro {
-    min-height: 78svh;
-    padding: $space-24 $space-5 $space-30;
+    grid-template-columns: 1fr;
+    padding: $space-16 $space-5 $space-20;
   }
 
   .outro::before {
@@ -1098,12 +1227,12 @@
   }
 
   .outroVisual {
-    right: auto;
-    bottom: -$space-8;
-    left: 50%;
+    grid-column: 1;
+    grid-row: 1;
     width: min(55vw, 240px);
-    transform: translateX(-50%);
   }
+
+  .outroCopy { grid-column: 1; grid-row: 2; }
 
   .outroCopy > p {
     font-size: 0.92rem;
@@ -1115,4 +1244,92 @@
   .outroCopy a {
     transition: none;
   }
+}
+
+// 막동이의 PC 공간: 푸른 저고리, 한지, 손으로 빚은 윤곽.
+@include desktop {
+  .page { background: $color-primary; }
+  .blankIntro,
+  .characterGuide,
+  .characterStory,
+  .outro {
+    background-color: $color-bg;
+    background-image: linear-gradient(rgba($color-primary, 0.12), rgba($color-primary, 0.12)), url('../../assets/images/mypage/orderCompleteHanji.png');
+    background-size: auto, 900px auto;
+  }
+
+  .blankIntro { background-image: radial-gradient(ellipse at 50% 85%, rgba($color-primary-light, 0.26), transparent 65%), url('../../assets/images/mypage/orderCompleteHanji.png'); }
+  .blankIntroWord,
+  .characterGuideTitle,
+  .blankCharacterSection h2 {
+    font-family: 'Makdong Arirang HON', $font-family-display;
+    font-weight: 400;
+    line-height: 1.05;
+  }
+  .blankIntroWord { opacity: 0.6; color: $color-primary; font-size: clamp(8rem, 16vw, 16rem); }
+  .introClickGuide { color: $color-text-primary; background: rgba($color-bg, 0.75); border-radius: 48% 52% 46% 54%; }
+
+  .blankCharacterSection {
+    min-height: max(760px, calc(100svh - 80px));
+    background: $color-primary;
+    padding-top: $space-12;
+  }
+  .blankCharacterSection h2 { color: rgba($color-bg, 0.35); font-size: clamp(9rem, 19vw, 20rem); }
+  .transitionTagline { position: absolute; top: 48%; left: 10%; width: 32%; margin: 0; color: $color-bg; font-size: clamp($font-size-3xl, 2.4vw, $font-size-4xl); line-height: 1.6; word-break: keep-all; text-wrap: balance; text-align: left; }
+  .transitionMakdong { right: 5%; bottom: 3%; width: 52%; height: 78%; max-height: none; object-fit: contain; filter: drop-shadow(0 24px 28px rgba($color-text-primary, 0.16)); transform-origin: 50% 85%; }
+  .ceramicStillLife, .flowRibbons, .transitionFloor { display: none; }
+  .transitionPawTrail { opacity: 0.5; }
+
+  .characterGuide { padding-block: $space-20; }
+  .characterGuideTitle { color: $color-primary; font-size: clamp(4rem, 6vw, 6rem); }
+  .characterIntro { min-height: auto; }
+  .profileCards { gap: $space-4; }
+  .profileCards div {
+    padding: $space-5;
+    border: 0;
+    border-radius: 24px 36px 28px 16px;
+    background: rgba($color-bg, 0.92);
+    box-shadow: 0 5px 0 rgba($color-primary, 0.08);
+  }
+  .profileCards div:nth-child(even) { background: rgba($color-primary, 0.12); }
+  .profileCards dt { display: inline-block; padding: $space-1 $space-3; border-radius: $radius-pill; background: $color-primary; color: $color-white; }
+  .profileCards dd { font-size: $font-size-md; }
+
+  .guideBoard {
+    background: $color-bg url('../../assets/images/mypage/orderCompleteHanji.png') center / 760px auto;
+    border: 0;
+    border-radius: 32px 12px 40px 16px;
+    box-shadow: 0 12px 32px rgba($color-primary, 0.12);
+  }
+  .guideBoard::after { border: 1px solid rgba($color-taupe, 0.28); border-radius: 38px 18px 44px 24px; transform: rotate(-0.6deg); }
+  .guideBoardHeader { border-bottom: 0; }
+  .guideBoardHeader h2 { color: $color-primary; font-size: $font-size-md; }
+  .guideBoardHeader span { letter-spacing: 0.06em; }
+  .turnaroundVisual { border-bottom: 0; }
+  .turnaroundBoard figcaption { color: $color-primary; }
+  .tailSecret { border-top: 0; padding: $space-4; border-radius: $radius-xl; background: rgba($color-primary, 0.08); }
+  .propCard { border: 0; border-radius: 28px 16px 24px 32px; background: rgba($color-bg, 0.85); }
+
+  .characterStory { background-color: $color-primary; background-image: linear-gradient(rgba($color-primary, 0.92), rgba($color-primary, 0.92)), url('../../assets/images/mypage/orderCompleteHanji.png'); }
+  .characterStoryVisual { background: transparent; min-height: 660px; overflow: visible; }
+  .characterStoryCopy { padding-top: calc(#{$space-24} + 30px); }
+  .characterStoryVisual img { width: 115%; max-width: none; max-height: 780px; filter: drop-shadow(0 18px 28px rgba($color-text-primary, 0.12)); }
+  .characterStoryHeader h2 { color: $color-bg; }
+  .characterStoryHeader > p:last-child { color: $color-bg; font-size: $font-size-lg; line-height: 1.9; }
+  .characterPurpose { margin-top: 0; border: 0; border-radius: 32px 16px 40px 20px; background: $color-bg url('../../assets/images/mypage/orderCompleteHanji.png') center / cover; }
+  .curationIntro > p, .curationIntro h3, .dialogueDemo h3 { color: $color-bg; }
+  .traitCards li { border: 0; border-radius: 28px 16px 32px 20px; }
+  .speechBubble { background: $color-bg; }
+  .outro { padding-inline: max(80px, calc((100vw - #{$container-max}) / 2)); }
+  .outroCopy h2 { color: $color-primary; }
+  .outro::before { color: rgba($color-primary, 0.08); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .outroVisual img { animation: makdongIdle 6s ease-in-out infinite; }
+  }
+}
+
+@keyframes makdongIdle {
+  0%, 100% { transform: translateY(0) rotate(-0.7deg); }
+  50% { transform: translateY(-14px) rotate(0.7deg); }
 }

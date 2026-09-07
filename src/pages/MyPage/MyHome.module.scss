@@ -70,6 +70,15 @@
   color: #8f8f8f;
 
   font-size: 18px;
+
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
   font-weight: 700;
 }
 
@@ -109,7 +118,7 @@
   }
 
   span {
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 600;
 
     color: #846337;
@@ -195,7 +204,7 @@
     font-weight: 700;
 
     em {
-      font-size: 9px;
+      font-size: 12px;
       font-style: normal;
       font-weight: 600;
     }
@@ -247,7 +256,7 @@
 .benefitLabel {
   color: #8b877f;
 
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 500;
 }
 
@@ -284,7 +293,7 @@
 
     color: #aaa59d;
 
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 400;
   }
 }
@@ -302,7 +311,7 @@
 
   color: #5e5952;
 
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 500;
 
   text-decoration: none;
@@ -384,7 +393,7 @@
   span {
     color: #b9ad98;
 
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 700;
   }
 }
@@ -413,23 +422,28 @@
   span {
     color: #a9a49c;
 
-    font-size: 9px;
+    font-size: 12px;
   }
 }
 
 
 .orderActions {
+  width: 88px;
+
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
 
-  gap: 7px;
+  gap: 6px;
 }
 
 
 .statusBadge {
-  min-width: 57px;
-  height: 24px;
+  width: 100%;
+  min-width: 0;
+  height: 28px;
+
+  box-sizing: border-box;
 
   display: inline-flex;
   align-items: center;
@@ -443,7 +457,7 @@
 
   color: #777169;
 
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -473,31 +487,43 @@
 
 
 .detailButton {
-  min-width: 57px;
-  height: 24px;
+  width: 100%;
+  min-width: 88px;
+  height: 32px;
+
+  box-sizing: border-box;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  padding: 0 9px;
+  padding: 0 12px;
 
-  border-radius: 20px;
+  border-radius: 8px;
 
-  background: #f4f1eb;
+  border: 1px solid #4d7e7b;
 
-  color: #5f5a53;
+  background: #4d7e7b;
 
-  font-size: 8px;
-  font-weight: 500;
+  color: #fff;
+
+  font-size: 13px;
+  font-weight: 700;
 
   text-decoration: none;
+  white-space: nowrap;
 
   transition:
-    background 0.2s ease;
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 
   &:hover {
-    background: #e9e5dd;
+    border-color: #3c6763;
+
+    background: #3c6763;
+
+    color: #fff;
   }
 }
 
@@ -546,14 +572,14 @@
   strong {
     color: #3a3630;
 
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
   }
 
   span {
     color: #aaa49b;
 
-    font-size: 8px;
+    font-size: 12px;
   }
 }
 
@@ -561,35 +587,39 @@
 .recommendButton {
   flex-shrink: 0;
 
-  min-width: 61px;
-  height: 25px;
+  min-width: 92px;
+  height: 36px;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  padding: 0 10px;
+  padding: 0 14px;
 
-  border: 1px solid #7d776e;
+  border: 1px solid #4d7e7b;
 
-  border-radius: 20px;
+  border-radius: 8px;
 
-  background: #fff;
+  background: #4d7e7b;
 
-  color: #4d4943;
+  color: #fff;
 
-  font-size: 8px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
 
   text-decoration: none;
 
   transition:
     background 0.2s ease,
-    color 0.2s ease;
+    border-color 0.2s ease,
+    transform 0.2s ease;
 
   &:hover {
-    background: #514c45;
-    color: #fff;
+    border-color: #3c6763;
+
+    background: #3c6763;
+
+    transform: translateY(-1px);
   }
 }
 
@@ -609,7 +639,7 @@
 
   color: #aaa49b;
 
-  font-size: 11px;
+  font-size: 13px;
 
   text-align: center;
 }
@@ -722,10 +752,18 @@
   .orderActions {
     grid-column: 1 / -1;
 
+    width: auto;
+
     flex-direction: row;
     justify-content: flex-end;
 
     padding-top: 4px;
+
+    .statusBadge,
+    .detailButton {
+      width: auto;
+      min-width: 88px;
+    }
   }
 
 
@@ -733,5 +771,41 @@
     padding:
       14px
       14px;
+  }
+}
+
+.aiEmpty {
+  min-height: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px;
+
+  > div {
+    display: grid;
+    gap: 6px;
+  }
+
+  strong {
+    color: #38342e;
+    font-size: 15px;
+  }
+
+  span {
+    color: #817b73;
+    font-size: 13px;
+  }
+
+}
+
+@media (max-width: 767px) {
+  .aiEmpty {
+    align-items: flex-start;
+    flex-direction: column;
+
+    .recommendButton {
+      width: 100%;
+    }
   }
 }

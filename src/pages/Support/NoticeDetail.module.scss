@@ -143,6 +143,54 @@
 }
 
 
+/* ========================================
+   CATEGORY BADGE
+======================================== */
+
+.categoryBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 50px;
+  height: 28px;
+
+  padding: 0 $space-3;
+
+  box-sizing: border-box;
+
+  border-radius: $radius-pill;
+
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+.categoryNews {
+  background: #f2eee8;
+  color: #77695c;
+}
+
+.categoryDelivery {
+  background: #f5ead7;
+  color: #826d4f;
+}
+
+.categoryEvent {
+  background: #e8efe4;
+  color: #5f725c;
+}
+
+.categoryService {
+  background: #f0ece6;
+  color: #75695d;
+}
+
+.categoryMaintenance {
+  background: #f3eee7;
+  color: #75695d;
+}
+
+
 .divider {
   color:
     rgba($color-text-primary, 0.3);
@@ -439,6 +487,16 @@
 
 
   .pinBadge {
+    min-width: 44px;
+    height: 26px;
+
+    padding: 0 $space-2;
+
+    font-size: 11px;
+  }
+
+
+  .categoryBadge {
     min-width: 44px;
     height: 26px;
 

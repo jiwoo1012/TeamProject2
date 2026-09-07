@@ -176,7 +176,7 @@ const useHeroReveal = ({
     const coverTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: mainContentRef.current,
-        start: HERO_COVER_EXIT_START,
+        start: isMobile ? 'top top-=8' : HERO_COVER_EXIT_START,
         toggleActions: 'play none none reverse',
         invalidateOnRefresh: true,
         onRefresh: () => {
@@ -223,7 +223,7 @@ const useHeroReveal = ({
     const timeline = gsap.timeline({
       onComplete: () => { canMovePastHeroRef.current = true },
       onReverseComplete: () => { canMovePastHeroRef.current = false },
-      scrollTrigger: {
+      scrollTrigger: isMobile ? undefined : {
         trigger: mainContentRef.current,
         start: () => `top top-=${window.innerHeight + 100}`,
         toggleActions: 'play none none reverse',
@@ -272,17 +272,57 @@ const useHeroReveal = ({
         'shopReveal',
       )
 
+    let releaseMobileScroll = () => {}
+
     if (isMobile) {
-      timeline.to(heroSunsetPhotoRef.current, {
+      timeline.fromTo(heroSunsetPhotoRef.current, { autoAlpha: 0 }, {
         autoAlpha: 1,
-        duration: 0.7,
+        duration: 1.4,
         ease: 'power1.inOut',
+        immediateRender: false,
       }, 'shopReveal')
+      // 첫 스크롤로 커버 축소부터 문구·상품 버튼까지 연속 재생합니다.
+      coverTimeline.add(timeline)
+
+      let isScrollLocked = false
+      coverTimeline.eventCallback('onStart', () => {
+        if (isScrollLocked || root.classList.contains('main-journey-active')) return
+        isScrollLocked = true
+        const body = document.body
+        const scrollY = window.scrollY
+        const properties = ['position', 'top', 'left', 'width', 'overflow']
+        const previousStyles = properties.map((property) => [
+          property, body.style.getPropertyValue(property), body.style.getPropertyPriority(property),
+        ])
+        const previousOverflow = root.style.overflow
+
+        // 전환 중에는 관성 스크롤도 멈추고, 현재 화면 위치를 그대로 보존합니다.
+        coverTimeline.scrollTrigger.disable(false, false)
+        root.style.overflow = 'hidden'
+        Object.assign(body.style, {
+          position: 'fixed', top: `${-scrollY}px`, left: '0', width: '100%', overflow: 'hidden',
+        })
+
+        releaseMobileScroll = (shouldResumeTrigger = true) => {
+          if (!isScrollLocked) return
+          isScrollLocked = false
+          previousStyles.forEach(([property, value, priority]) => {
+            if (value) body.style.setProperty(property, value, priority)
+            else body.style.removeProperty(property)
+          })
+          root.style.overflow = previousOverflow
+          window.scrollTo({ top: scrollY, behavior: 'instant' })
+          if (shouldResumeTrigger) coverTimeline.scrollTrigger?.enable(false, false)
+        }
+      })
+      coverTimeline.eventCallback('onComplete', () => releaseMobileScroll())
+      coverTimeline.eventCallback('onReverseComplete', () => releaseMobileScroll())
     }
 
-    heroRevealRef.current = timeline
+    heroRevealRef.current = isMobile ? coverTimeline : timeline
 
     return () => {
+      releaseMobileScroll(false)
       headerTrigger.kill()
       mobileScrollGuideTrigger?.kill()
       gsap.killTweensOf(heroScrollGuide)

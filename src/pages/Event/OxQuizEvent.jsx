@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { doc, runTransaction, serverTimestamp } from 'firebase/firestore'
 import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
-import { db } from '../../firebase/firebase'
+import { saveEventParticipation } from '../../services/eventParticipation'
 import quizData from '../../data/quizs.json'
 import { PATHS } from '../../routes/paths'
 import backgroundImage from '../../assets/images/eventPage/background3.jpg'
@@ -84,27 +83,11 @@ const OxQuizEvent = () => {
       return
     }
 
-    const participationRef = doc(db, 'eventParticipations', `${EVENT_ID}_${user.uid}`)
-    const userDocumentRef = doc(db, 'users', user.uid)
-
     try {
-      await runTransaction(db, async (transaction) => {
-        const participationSnapshot = await transaction.get(participationRef)
-        if (participationSnapshot.exists()) throw new Error('ALREADY_PARTICIPATED')
-        const userSnapshot = await transaction.get(userDocumentRef)
-        const currentPoints = Number(userSnapshot.data()?.points ?? 0)
-        if (finalPoints > 0) transaction.update(userDocumentRef, { points: currentPoints + finalPoints })
-        transaction.set(participationRef, {
-          eventId: EVENT_ID,
-          userId: user.uid,
-          eventTitle: EVENT_TITLE,
-          rewardType: 'point',
-          rewardRank: null,
-          rewardName: `${finalCorrectCount}문제 정답 포인트`,
-          rewardProductId: null,
-          rewardPoints: finalPoints,
-          participatedAt: serverTimestamp(),
-        })
+      await saveEventParticipation({
+        eventId: EVENT_ID, eventTitle: EVENT_TITLE, rewardType: 'point',
+        rewardRank: null, rewardName: `${finalCorrectCount}문제 정답 포인트`,
+        rewardProductId: null, rewardPoints: finalPoints, isWinner: finalPoints > 0,
       })
       setSaveMessage(`${finalPoints.toLocaleString('ko-KR')}P가 지급되었습니다.`)
     } catch (error) {

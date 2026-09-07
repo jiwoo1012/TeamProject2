@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { doc, runTransaction, serverTimestamp } from 'firebase/firestore'
 import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
-import { db } from '../../firebase/firebase'
+import { saveEventParticipation } from '../../services/eventParticipation'
 import { PATHS } from '../../routes/paths'
 import backgroundImage from '../../assets/images/eventPage/background4.png'
 import cardBack from '../../assets/images/eventPage/cardBack.png'
@@ -20,12 +19,12 @@ const PREVIEW_SECONDS = 10
 const GAME_SECONDS = 30
 
 const CARD_PAIRS = [
-  { pairId: 1, image: card1, points: 1500, alt: '막동이 카드' },
-  { pairId: 2, image: card2, points: 2500, alt: '전 카드' },
-  { pairId: 3, image: card3, points: 2000, alt: '특별 카드' },
-  { pairId: 4, image: card4, points: 500, alt: '막걸리 카드' },
-  { pairId: 5, image: card5, points: 1000, alt: '소주 카드' },
-  { pairId: 6, image: card6, points: 1000, alt: '과실주 카드' },
+  { pairId: 1, image: card1, points: 500, alt: '막동이 카드' },
+  { pairId: 2, image: card2, points: 700, alt: '전 카드' },
+  { pairId: 3, image: card3, points: 1000, alt: '특별 카드' },
+  { pairId: 4, image: card4, points: 100, alt: '막걸리 카드' },
+  { pairId: 5, image: card5, points: 100, alt: '소주 카드' },
+  { pairId: 6, image: card6, points: 100, alt: '과실주 카드' },
 ]
 
 const shuffleCards = () => {
@@ -107,32 +106,11 @@ const CardGame = () => {
       return
     }
 
-    const participationRef = doc(db, 'eventParticipations', `${EVENT_ID}_${user.uid}`)
-    const userDocumentRef = doc(db, 'users', user.uid)
-
     try {
-      await runTransaction(db, async (transaction) => {
-        const participationSnapshot = await transaction.get(participationRef)
-        if (participationSnapshot.exists()) throw new Error('ALREADY_PARTICIPATED')
-
-        const userSnapshot = await transaction.get(userDocumentRef)
-        const currentPoints = Number(userSnapshot.data()?.points ?? 0)
-
-        if (finalScore > 0) {
-          transaction.update(userDocumentRef, { points: currentPoints + finalScore })
-        }
-
-        transaction.set(participationRef, {
-          eventId: EVENT_ID,
-          userId: user.uid,
-          eventTitle: EVENT_TITLE,
-          rewardType: 'point',
-          rewardRank: null,
-          rewardName: `${pairCount}쌍 성공 포인트 (${outcome})`,
-          rewardProductId: null,
-          rewardPoints: finalScore,
-          participatedAt: serverTimestamp(),
-        })
+      await saveEventParticipation({
+        eventId: EVENT_ID, eventTitle: EVENT_TITLE, rewardType: 'point',
+        rewardRank: null, rewardName: `${pairCount}쌍 성공 포인트 (${outcome})`,
+        rewardProductId: null, rewardPoints: finalScore, isWinner: finalScore > 0,
       })
       setSaveMessage(finalScore > 0 ? `${finalScore.toLocaleString('ko-KR')}P가 지급되었습니다.` : '참여 내역이 저장되었습니다.')
     } catch (error) {

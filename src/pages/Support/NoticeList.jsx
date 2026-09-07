@@ -9,9 +9,14 @@ import styles from './NoticeList.module.scss'
 
 const formatDate = (timestamp) => {
   const date = timestamp?.toDate?.()
-  return date ? new Intl.DateTimeFormat('ko-CA').format(date) : '-'
-}
+  if (!date) return '-'
 
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}. ${month}. ${day}.`
+}
 const CATEGORY_FILTERS = ['전체', '소식', '배송', '이벤트', '서비스', '점검']
 const PAGE_SIZE = 6
 
