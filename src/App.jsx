@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import {
   Routes,
   Route,
@@ -11,80 +11,107 @@ import AdultModal from './components/common/AdultModal'
 import ScrollToTop from './components/common/ScrollToTop'
 
 // Main
-import MainPage from './pages/Main/MainPage'
 import SplashIntro from './pages/Main/SplashIntro'
 
 // Brand
-import BrandIntro from './pages/Brand/BrandIntro'
-import MakdongIntro from './pages/Brand/MakdongIntro'
 
 // Shop
-import ProductList from './pages/Shop/ProductList'
-import ProductDetail from './pages/Shop/ProductDetail'
 
 // Auth
-import Login from './pages/Auth/Login'
-import Signup from './pages/Auth/Signup'
-import PreferenceSurvey from './pages/Auth/PreferenceSurvey'
-import PreferenceQuestions from './pages/Auth/PreferenceQuestions'
-import PreferenceSafetyIntro from './pages/Auth/PreferenceSafetyIntro'
-import PreferenceSafety from './pages/Auth/PreferenceSafety'
-import PreferenceComplete from './pages/Auth/PreferenceComplete'
 
 // AI
-import AiIntro from './pages/AiCurator/AiIntro'
-import AiSurvey from './pages/AiCurator/AiSurvey'
-import AiResult from './pages/AiCurator/AiResult'
-import AiPreference from './pages/AiCurator/AiPreference'
 
 // Cart / Order
-import Cart from './pages/CartOrder/Cart'
-import Checkout from './pages/CartOrder/Checkout'
-import OrderComplete from './pages/CartOrder/OrderComplete'
 
 // MyPage
-import MyPageLayout from './pages/MyPage/MyPageLayout'
-import MyHome from './pages/MyPage/MyHome'
-import ProfileEdit from './pages/MyPage/ProfileEdit'
-import OrderHistory from './pages/MyPage/OrderHistory'
-import OrderDetail from './pages/MyPage/OrderDetail'
-import WishList from './pages/MyPage/WishList'
-import PointHistory from './pages/MyPage/PointHistory'
-import FrequentPurchase from './pages/MyPage/FrequentPurchase'
-import AddressBook from './pages/MyPage/AddressBook'
-import ClaimHistory from './pages/MyPage/ClaimHistory'
-import InquiryHistory from './pages/MyPage/InquiryHistory'
-import AiHistory from './pages/MyPage/AiHistory'
-import EventHistory from './pages/MyPage/EventHistory'
-import EventWinningHistory from './pages/MyPage/EventWinningHistory'
-import MyPageErrorContent from './pages/MyPage/MyPageErrorContent'
 
 // Event
-import EventList from './pages/Event/EventList'
-import EventReady from './pages/Event/EventReady'
-import RouletteEvent from './pages/Event/RouletteEvent'
-import OxQuizEvent from './pages/Event/OxQuizEvent'
-import CardGame from './pages/Event/CardGame'
 
 // Support
-import FAQ from './pages/Support/FAQ'
-import NoticeList from './pages/Support/NoticeList'
-import NoticeDetail from './pages/Support/NoticeDetail'
-import InquiryQnA from './pages/Support/InquiryQnA'
 
 // Admin
-import AdminLayout from './pages/Admin/AdminLayout'
-import Dashboard from './pages/Admin/Dashboard'
-import UserManage from './pages/Admin/UserManage'
-import ProductManage from './pages/Admin/ProductManage'
-import AiLogManage from './pages/Admin/AiLogManage'
-import EventManage from './pages/Admin/EventManage'
-import NoticeManage from './pages/Admin/NoticeManage'
-import ReviewManage from './pages/Admin/ReviewManage'
-import AdminErrorContent from './pages/Admin/AdminErrorContent'
 
 // NotFound
-import NotFound from './pages/NotFound/NotFound'
+
+// ==========================================
+// Route-level code splitting
+// 각 페이지는 해당 경로에 진입할 때 필요한 JS만 로드
+// ==========================================
+
+// Main
+const MainPage = lazy(() => import('./pages/Main/MainPage'))
+
+// Brand
+const BrandIntro = lazy(() => import('./pages/Brand/BrandIntro'))
+const MakdongIntro = lazy(() => import('./pages/Brand/MakdongIntro'))
+
+// Shop
+const ProductList = lazy(() => import('./pages/Shop/ProductList'))
+const ProductDetail = lazy(() => import('./pages/Shop/ProductDetail'))
+
+// Auth
+const Login = lazy(() => import('./pages/Auth/Login'))
+const Signup = lazy(() => import('./pages/Auth/Signup'))
+const PreferenceSurvey = lazy(() => import('./pages/Auth/PreferenceSurvey'))
+const PreferenceQuestions = lazy(() => import('./pages/Auth/PreferenceQuestions'))
+const PreferenceSafetyIntro = lazy(() => import('./pages/Auth/PreferenceSafetyIntro'))
+const PreferenceSafety = lazy(() => import('./pages/Auth/PreferenceSafety'))
+const PreferenceComplete = lazy(() => import('./pages/Auth/PreferenceComplete'))
+
+// AI
+const AiIntro = lazy(() => import('./pages/AiCurator/AiIntro'))
+const AiSurvey = lazy(() => import('./pages/AiCurator/AiSurvey'))
+const AiResult = lazy(() => import('./pages/AiCurator/AiResult'))
+const AiPreference = lazy(() => import('./pages/AiCurator/AiPreference'))
+
+// Cart / Order
+const Cart = lazy(() => import('./pages/CartOrder/Cart'))
+const Checkout = lazy(() => import('./pages/CartOrder/Checkout'))
+const OrderComplete = lazy(() => import('./pages/CartOrder/OrderComplete'))
+
+// MyPage
+const MyPageLayout = lazy(() => import('./pages/MyPage/MyPageLayout'))
+const MyHome = lazy(() => import('./pages/MyPage/MyHome'))
+const ProfileEdit = lazy(() => import('./pages/MyPage/ProfileEdit'))
+const OrderHistory = lazy(() => import('./pages/MyPage/OrderHistory'))
+const OrderDetail = lazy(() => import('./pages/MyPage/OrderDetail'))
+const WishList = lazy(() => import('./pages/MyPage/WishList'))
+const PointHistory = lazy(() => import('./pages/MyPage/PointHistory'))
+const FrequentPurchase = lazy(() => import('./pages/MyPage/FrequentPurchase'))
+const AddressBook = lazy(() => import('./pages/MyPage/AddressBook'))
+const ClaimHistory = lazy(() => import('./pages/MyPage/ClaimHistory'))
+const InquiryHistory = lazy(() => import('./pages/MyPage/InquiryHistory'))
+const AiHistory = lazy(() => import('./pages/MyPage/AiHistory'))
+const EventHistory = lazy(() => import('./pages/MyPage/EventHistory'))
+const EventWinningHistory = lazy(() => import('./pages/MyPage/EventWinningHistory'))
+const MyPageErrorContent = lazy(() => import('./pages/MyPage/MyPageErrorContent'))
+
+// Event
+const EventList = lazy(() => import('./pages/Event/EventList'))
+const EventReady = lazy(() => import('./pages/Event/EventReady'))
+const RouletteEvent = lazy(() => import('./pages/Event/RouletteEvent'))
+const OxQuizEvent = lazy(() => import('./pages/Event/OxQuizEvent'))
+const CardGame = lazy(() => import('./pages/Event/CardGame'))
+
+// Support
+const FAQ = lazy(() => import('./pages/Support/FAQ'))
+const NoticeList = lazy(() => import('./pages/Support/NoticeList'))
+const NoticeDetail = lazy(() => import('./pages/Support/NoticeDetail'))
+const InquiryQnA = lazy(() => import('./pages/Support/InquiryQnA'))
+
+// Admin
+const AdminLayout = lazy(() => import('./pages/Admin/AdminLayout'))
+const Dashboard = lazy(() => import('./pages/Admin/Dashboard'))
+const UserManage = lazy(() => import('./pages/Admin/UserManage'))
+const ProductManage = lazy(() => import('./pages/Admin/ProductManage'))
+const AiLogManage = lazy(() => import('./pages/Admin/AiLogManage'))
+const EventManage = lazy(() => import('./pages/Admin/EventManage'))
+const NoticeManage = lazy(() => import('./pages/Admin/NoticeManage'))
+const ReviewManage = lazy(() => import('./pages/Admin/ReviewManage'))
+const AdminErrorContent = lazy(() => import('./pages/Admin/AdminErrorContent'))
+
+// NotFound
+const NotFound = lazy(() => import('./pages/NotFound/NotFound'))
 
 
 const ADULT_VERIFIED_KEY =
@@ -178,7 +205,8 @@ const App = () => {
       <ScrollToTop />
 
 
-      <Routes>
+      <Suspense fallback={null}>
+        <Routes>
 
         {/* ========================================
             독립 페이지
@@ -801,7 +829,8 @@ const App = () => {
 
         </Route>
 
-      </Routes>
+        </Routes>
+      </Suspense>
 
 
       {/* ========================================
