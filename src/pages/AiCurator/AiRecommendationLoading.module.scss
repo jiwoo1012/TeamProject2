@@ -1,0 +1,285 @@
+@use '../../styles/variables' as *;
+
+
+.loadingPage {
+  width: 100%;
+  min-height: calc(100vh - 96px);
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  overflow: hidden;
+
+  background: $color-bg;
+}
+
+
+.loadingInner {
+  width: min(720px, calc(100% - 40px));
+
+  padding-top: clamp(70px, 10vh, 120px);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+/* ========================================
+   문구
+======================================== */
+
+.messageWindow {
+  position: relative;
+
+  width: 100%;
+  height: 52px;
+
+  overflow: hidden;
+}
+
+
+.message {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+
+  margin: 0;
+
+  text-align: center;
+
+  color: $color-text-secondary;
+
+  font-family: $font-family-display;
+  font-size: clamp(24px, 2.3vw, 34px);
+  font-weight: $font-weight-bold;
+
+  line-height: 1.4;
+  letter-spacing: -0.035em;
+
+  transition:
+    transform 0.35s
+      cubic-bezier(
+        0.4,
+        0,
+        0.2,
+        1
+      ),
+    opacity 0.35s ease;
+
+  will-change:
+    transform,
+    opacity;
+}
+
+
+.message.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+
+.message.exit {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+
+.message.enter {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+
+/* ========================================
+   Progress
+======================================== */
+
+.progressArea {
+  width: min(600px, 82%);
+
+  margin-top: 24px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.progressTrack {
+  width: 100%;
+  height: 6px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background:
+    rgba(
+      $color-text-secondary,
+      0.18
+    );
+}
+
+
+.progressBar {
+  width: 0;
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: $color-text-secondary;
+
+  transition:
+    width 0.18s linear;
+}
+
+
+.progressNumber {
+  margin-top: 7px;
+
+  color: rgba(
+    $color-text-secondary,
+    0.75
+  );
+
+  font-family: $font-family-base;
+  font-size: 13px;
+  font-weight: $font-weight-medium;
+}
+
+
+/* ========================================
+   막둥이 영상
+======================================== */
+
+.videoWrap {
+  width: clamp(
+    280px,
+    32vw,
+    440px
+  );
+
+  margin-top: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.video {
+  display: block;
+
+  width: 100%;
+  height: auto;
+
+  object-fit: contain;
+}
+
+
+/* ========================================
+   Tablet
+======================================== */
+
+@media (
+  max-width: 1024px
+) {
+  .loadingInner {
+    padding-top: 80px;
+  }
+
+  .progressArea {
+    width: min(
+      560px,
+      84%
+    );
+  }
+
+  .videoWrap {
+    width: clamp(
+      260px,
+      42vw,
+      390px
+    );
+
+    margin-top: 40px;
+  }
+}
+
+
+/* ========================================
+   Mobile
+======================================== */
+
+@media (
+  max-width: 767px
+) {
+  .loadingPage {
+    min-height:
+      calc(
+        100vh - 70px
+      );
+  }
+
+  .loadingInner {
+    width:
+      calc(
+        100% - 32px
+      );
+
+    padding-top: 60px;
+  }
+
+  .messageWindow {
+    height: 44px;
+  }
+
+  .message {
+    font-size: 23px;
+  }
+
+  .progressArea {
+    width: 88%;
+
+    margin-top: 18px;
+  }
+
+  .progressTrack {
+    height: 5px;
+  }
+
+  .progressNumber {
+    margin-top: 6px;
+
+    font-size: 12px;
+  }
+
+  .videoWrap {
+    width: min(
+      300px,
+      78vw
+    );
+
+    margin-top: 34px;
+  }
+}
+
+
+@media (
+  prefers-reduced-motion:
+    reduce
+) {
+  .message,
+  .progressBar {
+    transition: none;
+  }
+
+  .video {
+    animation: none;
+  }
+}

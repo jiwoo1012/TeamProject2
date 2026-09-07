@@ -570,6 +570,15 @@
   gap: 48px;
 }
 
+.recommendationEmpty {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 28px 16px;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+  text-align: center;
+}
+
 .recommendationItem {
   display: grid;
   width: 100%;

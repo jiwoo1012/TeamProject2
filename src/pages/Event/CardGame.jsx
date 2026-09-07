@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
 import { saveEventParticipation } from '../../services/eventParticipation'
 import { PATHS } from '../../routes/paths'
-import backgroundImage from '../../assets/images/eventPage/background4.png'
 import cardBack from '../../assets/images/eventPage/cardBack.png'
 import card1 from '../../assets/images/eventPage/card1.png'
 import card2 from '../../assets/images/eventPage/card2.png'
@@ -111,6 +110,7 @@ const CardGame = () => {
         eventId: EVENT_ID, eventTitle: EVENT_TITLE, rewardType: 'point',
         rewardRank: null, rewardName: `${pairCount}쌍 성공 포인트 (${outcome})`,
         rewardProductId: null, rewardPoints: finalScore, isWinner: finalScore > 0,
+        outcome, matchedPairs: pairCount,
       })
       setSaveMessage(finalScore > 0 ? `${finalScore.toLocaleString('ko-KR')}P가 지급되었습니다.` : '참여 내역이 저장되었습니다.')
     } catch (error) {
@@ -223,7 +223,7 @@ const CardGame = () => {
   const isGameUiVisible = phase === 'playing' || phase === 'finished'
 
   return (
-    <main className={`${styles.page} ${isQuitOpen ? styles.isPaused : ''}`} style={{ '--card-game-background': `url(${backgroundImage})` }}>
+    <main className={`${styles.page} ${isQuitOpen ? styles.isPaused : ''}`}>
       {phase === 'intro' && <p className={styles.introMessage}>10초 안에 같은 그림의 위치를 외우세요!</p>}
 
       <div className={`${styles.gameShell} ${phase === 'intro' ? styles.isIntro : ''} ${phase === 'dealing' ? styles.isDealing : ''} ${phase === 'preview' ? styles.isPreview : ''} ${phase === 'starting' ? styles.isStarting : ''} ${isGameUiVisible ? styles.isPlaying : ''}`}>

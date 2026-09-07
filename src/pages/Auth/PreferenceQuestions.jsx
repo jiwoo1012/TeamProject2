@@ -317,7 +317,12 @@ const PreferenceQuestions = () => {
   const handleSkip = () => {
     sessionStorage.removeItem('preferenceAnswers')
 
-    navigate('/')
+    navigate('/', {
+      replace: true,
+      state: {
+        skipJourney: true,
+      },
+    })
   }
 
 

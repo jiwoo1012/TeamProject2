@@ -708,7 +708,7 @@ const WishList = () => {
                     >
 
                       <Link
-                        to={`/product/${product.productId}`}
+                        to={`/shop/${product.productId}`}
                         className={
                           styles.productImageLink
                         }
@@ -769,7 +769,7 @@ const WishList = () => {
 
 
                       <Link
-                        to={`/product/${product.productId}`}
+                        to={`/shop/${product.productId}`}
                         className={
                           styles.productName
                         }

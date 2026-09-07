@@ -6,6 +6,7 @@ import sellingIcon from '../../assets/icons/shopping.png'
 import lowStockIcon from '../../assets/icons/alert.png'
 import hiddenIcon from '../../assets/icons/X.png'
 import { products as productData } from '../../data/products'
+import pairingData from '../../data/pairings.json'
 import { db } from '../../firebase/firebase'
 import { deleteDocument, setDocument, updateDocument } from '../../firebase/firestore'
 import { fetchProducts } from '../../services/productCatalog'
@@ -20,6 +21,12 @@ const PRODUCT_OVERRIDES_KEY = 'jajak_admin_product_overrides'
 const DELETED_PRODUCTS_KEY = 'jajak_admin_deleted_products'
 const PRODUCTS_PER_PAGE = 8
 const PRODUCT_CATEGORIES = ['탁주', '약주', '청주', '증류주', '과실주', '리큐르', '안주', '잔', '선물 세트']
+const EMPTY_DETAIL_DRAFT = {
+  brandManufacturer: '', discountRate: '0', volume: '', alcoholByVolume: '',
+  snackType: '', glassType: '', sweetness: '0', acidity: '0', carbonation: '0', bodyWeight: '0',
+  timeOfDay: '', recommendedSituation: '', recommendedTimeStart: '',
+  recommendedTimeEnd: '', recommendedDrinkingTemperature: '', allergyCautionInfo: '',
+}
 
 const resolveProductImage = (imageUrl) => {
   if (/^(data:|https?:\/\/)/.test(imageUrl ?? '')) return imageUrl
@@ -145,6 +152,8 @@ const ProductManage = () => {
   const [draftTag, setDraftTag] = useState('')
   const [draftImageUrl, setDraftImageUrl] = useState('')
   const [draftDetailImageUrls, setDraftDetailImageUrls] = useState([null, null, null])
+  const [draftDetails, setDraftDetails] = useState(EMPTY_DETAIL_DRAFT)
+  const [draftPairingIds, setDraftPairingIds] = useState([])
   const [liveMetrics, setLiveMetrics] = useState({ reviews: 0, rating: 0, likes: 0 })
 
   // 외부 빈 공간 클릭 시 통계 패널로 복귀
@@ -287,6 +296,30 @@ const ProductManage = () => {
     setDraftTag('')
     setDraftImageUrl(product.imageUrl || '')
     setDraftDetailImageUrls(Array.from({ length: 3 }, (_, index) => product.detailImageUrls?.[index] ?? null))
+    const timeRange = product.recommendedTimeRange ?? {}
+    setDraftDetails({
+      brandManufacturer: product.brandManufacturer ?? '',
+      discountRate: String(product.discountRate ?? '0').replace('%', ''),
+      volume: product.volume ?? '',
+      alcoholByVolume: product.alcoholByVolume ?? product.abv ?? '',
+      snackType: product.snackType ?? '',
+      glassType: product.glassType ?? '',
+      sweetness: String(product.sweetness ?? 0), acidity: String(product.acidity ?? 0),
+      carbonation: String(product.carbonation ?? 0), bodyWeight: String(product.bodyWeight ?? 0),
+      timeOfDay: product.timeOfDay ?? '', recommendedSituation: product.recommendedSituation ?? '',
+      recommendedTimeStart: timeRange.start ?? '', recommendedTimeEnd: timeRange.end ?? '',
+      recommendedDrinkingTemperature: product.recommendedDrinkingTemperature ?? '',
+      allergyCautionInfo: product.allergyCautionInfo ?? '',
+    })
+    const legacyPairing = pairingData.find((item) => item.liquorId === product.id)
+    const reversePairingIds = pairingData
+      .filter((item) => [...(item.pairedFoodIds ?? []), ...(item.recommendedGlassIds ?? [])].includes(product.id))
+      .map((item) => item.liquorId)
+    setDraftPairingIds(product.pairedProductIds ?? [
+      ...(legacyPairing?.pairedFoodIds ?? []),
+      ...(legacyPairing?.recommendedGlassIds ?? []),
+      ...reversePairingIds,
+    ])
   }
 
   const openCreatePanel = () => {
@@ -305,6 +338,12 @@ const ProductManage = () => {
     setDraftTag('')
     setDraftImageUrl('')
     setDraftDetailImageUrls([null, null, null])
+    setDraftDetails(EMPTY_DETAIL_DRAFT)
+    setDraftPairingIds([])
+  }
+
+  const updateDraftDetail = (key, value) => {
+    setDraftDetails((current) => ({ ...current, [key]: value }))
   }
 
   useEffect(() => {
@@ -384,6 +423,7 @@ const ProductManage = () => {
       imageUrl: draftImageUrl,
       imageSrc: resolveProductImage(draftImageUrl),
       detailImageUrls: draftDetailImageUrls,
+      pairedProductIds: draftPairingIds,
     }
     const isLiquor = ['탁주', '약주', '청주', '증류주', '과실주', '리큐르'].includes(draftCategory)
     const isAccessory = ['잔', '선물 세트'].includes(draftCategory)
@@ -393,9 +433,7 @@ const ProductManage = () => {
         productName: draftName,
         productType: isLiquor ? '전통주' : (isAccessory ? '주류용품' : draftCategory),
         liquorType: isLiquor ? draftCategory : (selectedProduct.liquorType ?? null),
-        glassType: draftCategory === '선물 세트'
-          ? '선물세트'
-          : (draftCategory === '잔' ? (selectedProduct.glassType === '선물세트' ? '술잔' : selectedProduct.glassType) : (selectedProduct.glassType ?? null)),
+        glassType: isAccessory ? (draftDetails.glassType.trim() || (draftCategory === '선물 세트' ? '선물세트' : '술잔')) : null,
         price: Number(draftPrice),
         stock: normalizedStock,
         status: normalizedStatus,
@@ -403,6 +441,24 @@ const ProductManage = () => {
         flavorKeywords: draftTags,
         imageUrl: draftImageUrl,
         detailImageUrls: draftDetailImageUrls,
+        brandManufacturer: draftDetails.brandManufacturer.trim(),
+        discountRate: `${Math.max(0, Number(draftDetails.discountRate) || 0)}%`,
+        volume: draftDetails.volume.trim() || null,
+        snackType: draftCategory === '안주' ? draftDetails.snackType.trim() || null : null,
+        alcoholByVolume: isLiquor ? draftDetails.alcoholByVolume.trim() || null : null,
+        abv: isLiquor ? Number.parseFloat(draftDetails.alcoholByVolume) || 0 : null,
+        sweetness: isLiquor ? Number(draftDetails.sweetness) : null,
+        acidity: isLiquor ? Number(draftDetails.acidity) : null,
+        carbonation: isLiquor ? Number(draftDetails.carbonation) : null,
+        bodyWeight: isLiquor ? Number(draftDetails.bodyWeight) : null,
+        timeOfDay: isLiquor ? draftDetails.timeOfDay.trim() || null : null,
+        recommendedSituation: isLiquor ? draftDetails.recommendedSituation.trim() || null : null,
+        recommendedTimeRange: isLiquor && (draftDetails.recommendedTimeStart || draftDetails.recommendedTimeEnd)
+          ? { start: draftDetails.recommendedTimeStart, end: draftDetails.recommendedTimeEnd }
+          : null,
+        recommendedDrinkingTemperature: isLiquor ? draftDetails.recommendedDrinkingTemperature.trim() || null : null,
+        allergyCautionInfo: draftDetails.allergyCautionInfo.trim() || null,
+        pairedProductIds: draftPairingIds,
       })
       setProducts((prev) => prev.map((p) => p.id === selectedProduct.id ? editedProduct : p))
     } catch (error) {
@@ -445,17 +501,40 @@ const ProductManage = () => {
     const isLiquor = ['탁주', '약주', '청주', '증류주', '과실주', '리큐르'].includes(draftCategory)
     const isAccessory = ['잔', '선물 세트'].includes(draftCategory)
     const stock = Math.max(0, Number(draftStock))
+    if (!draftDetails.brandManufacturer.trim() || !draftImageUrl || draftDetailImageUrls.filter(Boolean).length < 3) {
+      setToastMessage('제조사와 대표 이미지, 서브 이미지 3장을 모두 입력해주세요.')
+      return
+    }
     try {
       await setDocument('products', productId, {
         productId,
         productName: draftName.trim(),
         productType: isLiquor ? '전통주' : (isAccessory ? '주류용품' : draftCategory),
         liquorType: isLiquor ? draftCategory : null,
-        glassType: draftCategory === '선물 세트' ? '선물세트' : (draftCategory === '잔' ? '술잔' : null),
-        price: Number(draftPrice), stock,
+        snackType: draftCategory === '안주' ? draftDetails.snackType.trim() : null,
+        glassType: isAccessory ? (draftDetails.glassType.trim() || (draftCategory === '선물 세트' ? '선물세트' : '술잔')) : null,
+        brandManufacturer: draftDetails.brandManufacturer.trim(),
+        price: Number(draftPrice),
+        discountRate: `${Math.max(0, Number(draftDetails.discountRate) || 0)}%`,
+        volume: draftDetails.volume.trim() || null,
+        alcoholByVolume: isLiquor ? draftDetails.alcoholByVolume.trim() || null : null,
+        abv: isLiquor ? Number.parseFloat(draftDetails.alcoholByVolume) || 0 : null,
+        sweetness: isLiquor ? Number(draftDetails.sweetness) : null,
+        acidity: isLiquor ? Number(draftDetails.acidity) : null,
+        carbonation: isLiquor ? Number(draftDetails.carbonation) : null,
+        bodyWeight: isLiquor ? Number(draftDetails.bodyWeight) : null,
+        timeOfDay: isLiquor ? draftDetails.timeOfDay.trim() || null : null,
+        recommendedSituation: isLiquor ? draftDetails.recommendedSituation.trim() || null : null,
+        recommendedTimeRange: isLiquor && (draftDetails.recommendedTimeStart || draftDetails.recommendedTimeEnd)
+          ? { start: draftDetails.recommendedTimeStart, end: draftDetails.recommendedTimeEnd }
+          : null,
+        recommendedDrinkingTemperature: isLiquor ? draftDetails.recommendedDrinkingTemperature.trim() || null : null,
+        allergyCautionInfo: draftDetails.allergyCautionInfo.trim() || null,
+        stock,
         status: draftDisplayStatus === 'hidden' ? 'hidden' : (stock === 0 ? 'soldout' : draftStatus),
         productDescription: draftDescription.trim(), flavorKeywords: draftTags,
         imageUrl: draftImageUrl, detailImageUrls: draftDetailImageUrls.filter(Boolean),
+        pairedProductIds: draftPairingIds,
         views: 0, likes: 0, reviewCount: 0, rating: 0,
         createdAt: new Date().toISOString(),
       })
@@ -474,6 +553,31 @@ const ProductManage = () => {
     setStatusFilter('all')
     setActiveCardKey('total')
   }
+
+  const renderPairingPicker = () => (
+    <section className={styles.formSection}>
+      <h4 className={styles.sectionBarTitle}>추천 페어링 상품</h4>
+      <p className={styles.fieldGuide}>상품 상세페이지의 추천 조합에 표시할 상품을 선택하세요.</p>
+      <div className={styles.pairingPicker}>
+        {products
+          .filter((item) => item.id !== (selectedProductId ?? draftProductId))
+          .map((item) => (
+            <label key={item.id} className={draftPairingIds.includes(item.id) ? styles.selectedPairing : ''}>
+              <input
+                type="checkbox"
+                checked={draftPairingIds.includes(item.id)}
+                onChange={() => setDraftPairingIds((current) => current.includes(item.id)
+                  ? current.filter((id) => id !== item.id)
+                  : [...current, item.id])}
+              />
+              <span>{item.imageSrc && <img src={item.imageSrc} alt="" />}</span>
+              <strong title={item.name}>{item.name}</strong>
+            </label>
+          ))}
+      </div>
+      <p className={styles.selectionCount}>{draftPairingIds.length}개 상품 선택됨</p>
+    </section>
+  )
 
   return (
     <section className={styles.page} aria-labelledby="product-manage-title">
@@ -685,6 +789,8 @@ const ProductManage = () => {
               <button type="button" onClick={() => setPanelMode('analytics')} aria-label="닫기">×</button>
             </header>
             <div className={styles.formContainer}>
+              <div className={styles.stepIndicator} aria-label={`상품 등록 ${editStep}단계`}><span>{editStep}</span> / 4</div>
+              {editStep === 1 && <>
               <section className={styles.formSection}>
                 <h4 className={styles.sectionBarTitle}>기본 정보</h4>
                 <div className={styles.formRow}><label htmlFor="create-product-id">상품 ID *</label><input id="create-product-id" value={draftProductId} onChange={(e) => setDraftProductId(e.target.value)} placeholder="product37" /></div>
@@ -698,9 +804,37 @@ const ProductManage = () => {
                 <div className={styles.formRow}><label htmlFor="create-product-status">판매 상태 *</label><select id="create-product-status" value={draftStatus} onChange={(e) => setDraftStatus(e.target.value)}><option value="selling">판매 중</option><option value="soldout">품절</option><option value="hidden">숨김</option></select></div>
                 <div className={styles.formRow}><label htmlFor="create-display-status">진열 상태 *</label><select id="create-display-status" value={draftDisplayStatus} onChange={(e) => setDraftDisplayStatus(e.target.value)}><option value="display">진열 중</option><option value="hidden">진열 안함</option></select></div>
               </section>
+              <div className={styles.nextActionWrap}><button type="button" className={styles.deleteBtn} onClick={() => setPanelMode('analytics')}>취소</button><button type="button" className={styles.nextBtn} onClick={() => setEditStep(2)}>다음 &gt;</button></div>
+              </>}
+              {editStep === 2 && <>
               <section className={styles.formSection}>
                 <h4 className={styles.sectionBarTitle}>상품 정보</h4>
                 <div className={styles.formFieldBlock}><label htmlFor="create-product-description">상품 설명 *</label><textarea id="create-product-description" rows="3" value={draftDescription} onChange={(e) => setDraftDescription(e.target.value)} /></div>
+                <div className={styles.formRow}><label htmlFor="create-brand">제조사 *</label><input id="create-brand" value={draftDetails.brandManufacturer} onChange={(e) => updateDraftDetail('brandManufacturer', e.target.value)} /></div>
+                <div className={styles.formRow}><label htmlFor="create-discount">할인율 (%)</label><input id="create-discount" type="number" min="0" max="100" value={draftDetails.discountRate} onChange={(e) => updateDraftDetail('discountRate', e.target.value)} /></div>
+                <div className={styles.formRow}><label htmlFor="create-volume">용량</label><input id="create-volume" value={draftDetails.volume} onChange={(e) => updateDraftDetail('volume', e.target.value)} placeholder="예: 500ml" /></div>
+                {draftCategory === '안주' && <div className={styles.formRow}><label htmlFor="create-snack-type">안주 유형</label><input id="create-snack-type" value={draftDetails.snackType} onChange={(e) => updateDraftDetail('snackType', e.target.value)} placeholder="예: 마른안주" /></div>}
+                {['잔', '선물 세트'].includes(draftCategory) && <div className={styles.formRow}><label htmlFor="create-glass-type">제품 유형</label><input id="create-glass-type" value={draftDetails.glassType} onChange={(e) => updateDraftDetail('glassType', e.target.value)} placeholder={draftCategory === '잔' ? '예: 청자 술잔' : '예: 혼술 선물세트'} /></div>}
+                {['탁주', '약주', '청주', '증류주', '과실주', '리큐르'].includes(draftCategory) && (
+                  <div className={styles.detailFields}>
+                    <div className={styles.formRow}><label htmlFor="create-abv">도수</label><input id="create-abv" value={draftDetails.alcoholByVolume} onChange={(e) => updateDraftDetail('alcoholByVolume', e.target.value)} placeholder="예: 8.0%" /></div>
+                    <div className={styles.tasteInputs}>
+                      {[
+                        ['sweetness', '당도'], ['acidity', '산도'], ['carbonation', '탄산'], ['bodyWeight', '묵직함'],
+                      ].map(([key, label]) => <label key={key}>{label} (0~5)<input type="number" min="0" max="5" value={draftDetails[key]} onChange={(e) => updateDraftDetail(key, e.target.value)} /></label>)}
+                    </div>
+                    <div className={styles.formRow}><label htmlFor="create-time-of-day">추천 시간대</label><select id="create-time-of-day" value={draftDetails.timeOfDay} onChange={(e) => updateDraftDetail('timeOfDay', e.target.value)}><option value="">선택</option><option value="낮의 결">낮의 결</option><option value="밤의 결">밤의 결</option></select></div>
+                    <div className={styles.timeInputs}><label>시작 시간<input type="time" value={draftDetails.recommendedTimeStart} onChange={(e) => updateDraftDetail('recommendedTimeStart', e.target.value)} /></label><label>종료 시간<input type="time" value={draftDetails.recommendedTimeEnd} onChange={(e) => updateDraftDetail('recommendedTimeEnd', e.target.value)} /></label></div>
+                    <div className={styles.formFieldBlock}><label htmlFor="create-situation">추천 상황</label><textarea id="create-situation" rows="2" value={draftDetails.recommendedSituation} onChange={(e) => updateDraftDetail('recommendedSituation', e.target.value)} /></div>
+                    <div className={styles.formRow}><label htmlFor="create-temperature">추천 음용 온도</label><input id="create-temperature" value={draftDetails.recommendedDrinkingTemperature} onChange={(e) => updateDraftDetail('recommendedDrinkingTemperature', e.target.value)} placeholder="예: 차갑게 (5~10℃)" /></div>
+                  </div>
+                )}
+              </section>
+              <div className={styles.stepFooter}><button type="button" className={styles.prevBtn} onClick={() => setEditStep(1)}>&lt; 이전</button><button type="button" className={styles.nextBtn} onClick={() => setEditStep(3)}>다음 &gt;</button></div>
+              </>}
+              {editStep === 3 && <>
+                <section className={styles.formSection}>
+                <div className={styles.formFieldBlock}><label htmlFor="create-allergy">알레르기 주의사항</label><textarea id="create-allergy" rows="2" value={draftDetails.allergyCautionInfo} onChange={(e) => updateDraftDetail('allergyCautionInfo', e.target.value)} /></div>
                 <div className={styles.formFieldBlock}>
                   <label>맛 키워드</label>
                   <div className={styles.chipGroup}>{draftTags.map((tag) => <span key={tag} className={styles.chip}>{tag}<button type="button" onClick={() => setDraftTags((current) => current.filter((item) => item !== tag))} aria-label={`${tag} 삭제`}>×</button></span>)}</div>
@@ -709,15 +843,18 @@ const ProductManage = () => {
                 <div className={styles.formFieldBlock}>
                   <label>상품 앨범</label>
                   <div className={styles.albumRow}>
-                    <div className={styles.mainImgBox}>{draftImageUrl ? <img src={resolveProductImage(draftImageUrl)} alt="새 상품 대표" /> : <span>대표 이미지</span>}</div>
-                    {draftDetailImageUrls.map((url, index) => <div className={styles.subImgBox} key={index}>{url ? <img src={url} alt={`서브 이미지 ${index + 1}`} /> : <span>서브 {index + 1}</span>}</div>)}
-                    <button type="button" className={styles.uploadPlusBox} onClick={() => imageInputRef.current?.click()}><span>+</span><small>대표 등록</small></button>
+                    <button type="button" className={styles.imageEditTile} onClick={() => imageInputRef.current?.click()}>{draftImageUrl ? <img src={resolveProductImage(draftImageUrl)} alt="새 상품 대표" /> : <span className={styles.emptyImage}>대표 이미지</span>}<strong>대표 이미지 {draftImageUrl ? '변경' : '등록'}</strong></button>
                     <input ref={imageInputRef} className={styles.srOnly} type="file" accept="image/*" onChange={handleImageChange} />
-                    {Array.from({ length: 3 }, (_, index) => <button type="button" className={styles.uploadPlusBox} key={index} onClick={() => detailImageInputRefs.current[index]?.click()}><span>+</span><small>서브 {index + 1}</small><input ref={(node) => { detailImageInputRefs.current[index] = node }} className={styles.srOnly} type="file" accept="image/*" onChange={(event) => handleImageChange(event, index)} /></button>)}
+                    {draftDetailImageUrls.map((url, index) => <button type="button" className={styles.imageEditTile} key={index} onClick={() => detailImageInputRefs.current[index]?.click()}>{url ? <img src={url} alt={`서브 이미지 ${index + 1}`} /> : <span className={styles.emptyImage}>서브 {index + 1}</span>}<strong>서브 {index + 1} {url ? '변경' : '등록'}</strong><input ref={(node) => { detailImageInputRefs.current[index] = node }} className={styles.srOnly} type="file" accept="image/*" onChange={(event) => handleImageChange(event, index)} /></button>)}
                   </div>
                 </div>
               </section>
-              <div className={styles.panelFooterActions}><button type="button" className={styles.deleteBtn} onClick={() => setPanelMode('analytics')}>취소</button><button type="button" className={styles.saveBtn} onClick={handleCreateProduct}>상품 등록</button></div>
+              <div className={styles.stepFooter}><button type="button" className={styles.prevBtn} onClick={() => setEditStep(2)}>&lt; 이전</button><button type="button" className={styles.nextBtn} onClick={() => setEditStep(4)}>다음 &gt;</button></div>
+              </>}
+              {editStep === 4 && <>
+                {renderPairingPicker()}
+                <div className={styles.stepFooter}><button type="button" className={styles.prevBtn} onClick={() => setEditStep(3)}>&lt; 이전</button><button type="button" className={styles.saveBtn} onClick={handleCreateProduct}>상품 등록</button></div>
+              </>}
             </div>
           </aside>
         ) : selectedProduct ? (
@@ -836,6 +973,33 @@ const ProductManage = () => {
                       onChange={(e) => setDraftDescription(e.target.value)}
                     />
                   </div>
+                  <div className={styles.formRow}><label>제조사 *</label><input value={draftDetails.brandManufacturer} onChange={(e) => updateDraftDetail('brandManufacturer', e.target.value)} /></div>
+                  <div className={styles.formRow}><label>할인율 (%)</label><input type="number" min="0" max="100" value={draftDetails.discountRate} onChange={(e) => updateDraftDetail('discountRate', e.target.value)} /></div>
+                  <div className={styles.formRow}><label>용량</label><input value={draftDetails.volume} onChange={(e) => updateDraftDetail('volume', e.target.value)} /></div>
+                  {draftCategory === '안주' && <div className={styles.formRow}><label>안주 유형</label><input value={draftDetails.snackType} onChange={(e) => updateDraftDetail('snackType', e.target.value)} /></div>}
+                  {['잔', '선물 세트'].includes(draftCategory) && <div className={styles.formRow}><label>제품 유형</label><input value={draftDetails.glassType} onChange={(e) => updateDraftDetail('glassType', e.target.value)} placeholder={draftCategory === '잔' ? '예: 청자 술잔' : '예: 혼술 선물세트'} /></div>}
+                  {['탁주', '약주', '청주', '증류주', '과실주', '리큐르'].includes(draftCategory) && (
+                    <div className={styles.detailFields}>
+                      <strong className={styles.detailFieldsTitle}>주류 상세 정보</strong>
+                      <div className={styles.formRow}><label>도수</label><input value={draftDetails.alcoholByVolume} onChange={(e) => updateDraftDetail('alcoholByVolume', e.target.value)} /></div>
+                      <div className={styles.tasteInputs}>{[['sweetness', '당도'], ['acidity', '산도'], ['carbonation', '탄산'], ['bodyWeight', '묵직함']].map(([key, label]) => <label key={key}>{label} (0~5)<input type="number" min="0" max="5" value={draftDetails[key]} onChange={(e) => updateDraftDetail(key, e.target.value)} /></label>)}</div>
+                      <div className={styles.formRow}><label>추천 시간대</label><select value={draftDetails.timeOfDay} onChange={(e) => updateDraftDetail('timeOfDay', e.target.value)}><option value="">선택</option><option value="낮의 결">낮의 결</option><option value="밤의 결">밤의 결</option></select></div>
+                      <div className={styles.timeInputs}><label>시작 시간<input type="time" value={draftDetails.recommendedTimeStart} onChange={(e) => updateDraftDetail('recommendedTimeStart', e.target.value)} /></label><label>종료 시간<input type="time" value={draftDetails.recommendedTimeEnd} onChange={(e) => updateDraftDetail('recommendedTimeEnd', e.target.value)} /></label></div>
+                      <div className={styles.formFieldBlock}><label>추천 상황</label><textarea rows="2" value={draftDetails.recommendedSituation} onChange={(e) => updateDraftDetail('recommendedSituation', e.target.value)} /></div>
+                      <div className={styles.formRow}><label>추천 음용 온도</label><input value={draftDetails.recommendedDrinkingTemperature} onChange={(e) => updateDraftDetail('recommendedDrinkingTemperature', e.target.value)} /></div>
+                    </div>
+                  )}
+                </section>
+                <div className={styles.stepFooter}>
+                  <button type="button" className={styles.prevBtn} onClick={() => setEditStep(1)}>&lt; 이전</button>
+                  <button type="button" className={styles.nextBtn} onClick={() => setEditStep(3)}>다음 &gt;</button>
+                </div>
+              </div>
+            )}
+            {editStep === 3 && (
+              <div className={styles.formContainer}>
+                <section className={styles.formSection}>
+                  <div className={styles.formFieldBlock}><label>알레르기 주의사항</label><textarea rows="2" value={draftDetails.allergyCautionInfo} onChange={(e) => updateDraftDetail('allergyCautionInfo', e.target.value)} /></div>
 
                   <div className={styles.formFieldBlock}>
                     <label>맛 키워드 *</label>
@@ -856,30 +1020,22 @@ const ProductManage = () => {
                   <div className={styles.formFieldBlock}>
                     <label>상품 앨범 *</label>
                     <div className={styles.albumRow}>
-                      <div className={styles.mainImgBox}>
-                        {draftImageUrl ? <img src={resolveProductImage(draftImageUrl)} alt="변경할 대표 상품" /> : <span>대표 이미지</span>}
-                      </div>
+                      <button type="button" className={styles.imageEditTile} onClick={() => imageInputRef.current?.click()}>
+                        {draftImageUrl ? <img src={resolveProductImage(draftImageUrl)} alt="현재 대표 상품" /> : <span className={styles.emptyImage}>대표 이미지</span>}
+                        <strong>대표 이미지 변경</strong>
+                      </button>
+                      <input ref={imageInputRef} className={styles.srOnly} type="file" accept="image/*" onChange={handleImageChange} />
                       {Array.from({ length: 3 }, (_, index) => {
                         const localImages = getLocalDetailImages(getReferenceImageUrl(selectedProduct))
                         const preview = draftDetailImageUrls[index] || localImages[index]
                         return (
-                          <div className={styles.subImgBox} key={index}>
-                            {preview ? <img src={preview} alt={`서브 이미지 ${index + 1}`} /> : <span>서브 {index + 1}</span>}
-                            {draftDetailImageUrls[index] && <button type="button" onClick={() => setDraftDetailImageUrls((current) => current.map((url, itemIndex) => itemIndex === index ? null : url))} aria-label={`서브 이미지 ${index + 1} 변경 취소`}>×</button>}
-                          </div>
+                          <button type="button" className={styles.imageEditTile} key={index} onClick={() => detailImageInputRefs.current[index]?.click()}>
+                            {preview ? <img src={preview} alt={`현재 서브 이미지 ${index + 1}`} /> : <span className={styles.emptyImage}>서브 {index + 1}</span>}
+                            <strong>서브 {index + 1} 변경</strong>
+                            <input ref={(node) => { detailImageInputRefs.current[index] = node }} className={styles.srOnly} type="file" accept="image/*" onChange={(event) => handleImageChange(event, index)} />
+                          </button>
                         )
                       })}
-                      <button type="button" className={styles.uploadPlusBox} onClick={() => imageInputRef.current?.click()}>
-                        <span>+</span>
-                        <small>대표 변경</small>
-                      </button>
-                      <input ref={imageInputRef} className={styles.srOnly} type="file" accept="image/*" onChange={handleImageChange} />
-                      {Array.from({ length: 3 }, (_, index) => (
-                        <button type="button" className={styles.uploadPlusBox} key={`detail-upload-${index}`} onClick={() => detailImageInputRefs.current[index]?.click()}>
-                          <span>+</span><small>서브 {index + 1}</small>
-                          <input ref={(node) => { detailImageInputRefs.current[index] = node }} className={styles.srOnly} type="file" accept="image/*" onChange={(event) => handleImageChange(event, index)} />
-                        </button>
-                      ))}
                     </div>
                   </div>
                 </section>
@@ -919,16 +1075,21 @@ const ProductManage = () => {
                 </section>
 
                 <div className={styles.stepFooter}>
-                  <button type="button" className={styles.prevBtn} onClick={() => setEditStep(1)}>
+                  <button type="button" className={styles.prevBtn} onClick={() => setEditStep(2)}>
                     &lt; 이전
                   </button>
+                  <button type="button" className={styles.nextBtn} onClick={() => setEditStep(4)}>다음 &gt;</button>
+                </div>
+              </div>
+            )}
+            {editStep === 4 && (
+              <div className={styles.formContainer}>
+                {renderPairingPicker()}
+                <div className={styles.stepFooter}>
+                  <button type="button" className={styles.prevBtn} onClick={() => setEditStep(3)}>&lt; 이전</button>
                   <div className={styles.finalActions}>
-                    <button type="button" className={styles.deleteBtn} onClick={handleDeleteProduct}>
-                      상품 삭제
-                    </button>
-                    <button type="button" className={styles.saveBtn} onClick={handleSaveEdit}>
-                      저장
-                    </button>
+                    <button type="button" className={styles.deleteBtn} onClick={handleDeleteProduct}>상품 삭제</button>
+                    <button type="button" className={styles.saveBtn} onClick={handleSaveEdit}>저장</button>
                   </div>
                 </div>
               </div>

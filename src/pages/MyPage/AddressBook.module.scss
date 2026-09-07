@@ -18,7 +18,10 @@
 
   background: #fff;
 
+  border: 1px solid rgba(77, 126, 123, 0.08);
   border-radius: 18px;
+
+  box-shadow: 0 14px 36px rgba(73, 61, 51, 0.06);
 }
 
 
@@ -66,11 +69,11 @@
   height: 1px;
 
   margin:
-    4px
+    8px
     0
     28px;
 
-  background: #625d56;
+  background: #d9e1de;
 }
 
 
@@ -109,15 +112,32 @@
     12px
     22px;
 
-  border: 1px solid #5d9086;
+  border: 1px solid #9fc1b9;
 
-  border-radius: 7px;
+  border-radius: 12px;
 
-  background: #fbfefd;
+  background: linear-gradient(135deg, #f8fcfb 0%, #eff8f5 100%);
+
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
 
   text-align: left;
 
   cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    border-color: #6f9f96;
+
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.85),
+      0 8px 18px rgba(77, 126, 123, 0.08);
+
+    transform: translateY(-1px);
+  }
 }
 
 
@@ -227,7 +247,7 @@
 
   border-radius: 20px;
 
-  background: #f0efec;
+  background: #f5f6f4;
 
   color: #7e7971;
 
@@ -235,6 +255,20 @@
   font-weight: 600;
 
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    border-color: #d5e1dd;
+
+    background: #edf5f2;
+
+    color: #4d7e7b;
+  }
 }
 
 
@@ -254,6 +288,8 @@
   background: #5e978b;
 
   color: #fff;
+
+  box-shadow: 0 5px 12px rgba(77, 126, 123, 0.18);
 
   .tabDot {
     background: #fff;
@@ -276,11 +312,11 @@
 
   padding: 0;
 
-  border: 1px solid #d7d3cc;
+  border: 1px solid #d7e1de;
 
   border-radius: 50%;
 
-  background: #f4f2ee;
+  background: #fff;
 
   color: #5f756e;
 
@@ -295,6 +331,8 @@
     border-color 0.2s ease,
     color 0.2s ease,
     transform 0.2s ease;
+
+  box-shadow: 0 3px 10px rgba(73, 61, 51, 0.05);
 
   &:hover {
     border-color: #7fa59c;
@@ -316,7 +354,7 @@
   display: flex;
   flex-direction: column;
 
-  gap: 14px;
+  gap: 10px;
 }
 
 
@@ -331,26 +369,45 @@
 
   gap: 12px;
 
-  min-height: 76px;
+  min-height: 78px;
 
   padding:
     14px
-    18px;
+    16px;
 
   border:
     1px solid
-    #e3dfd8;
+    #e2eae7;
 
-  border-radius: 6px;
+  border-radius: 12px;
+
+  background: #fff;
+
+  box-shadow: 0 4px 14px rgba(73, 61, 51, 0.035);
 
   transition:
-    border-color 0.2s ease;
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    border-color: #bfd6d0;
+
+    box-shadow: 0 7px 18px rgba(73, 61, 51, 0.06);
+
+    transform: translateY(-1px);
+  }
 }
 
 
 .selectedItem {
-  border-color: #c4d7d2;
-  background: #fbfefd;
+  border-color: #8eb9ae;
+  background: #f7fcfa;
+
+  box-shadow:
+    0 7px 18px rgba(77, 126, 123, 0.08),
+    inset 0 0 0 1px rgba(142, 185, 174, 0.18);
 }
 
 
@@ -362,7 +419,7 @@
   align-items: center;
   justify-content: flex-start;
 
-  gap: 14px;
+  gap: 12px;
 
   padding: 0;
 
@@ -380,7 +437,9 @@
   display: flex;
   align-items: center;
 
-  gap: 7px;
+  gap: 8px;
+
+  flex-wrap: wrap;
 }
 
 
@@ -396,7 +455,9 @@
 
   border-radius: 10px;
 
-  background: #f0f5f2;
+  border: 1px solid #d7e8e2;
+
+  background: #f1f8f5;
 
   color: #578278;
 
@@ -419,9 +480,9 @@
 
   border-radius: 10px;
 
-  border: 1px solid #bed4ce;
+  border: 1px solid #b8d8cf;
 
-  background: #e5f0ec;
+  background: #eaf7f3;
 
   color: #5e8c82;
 
@@ -434,14 +495,16 @@
   display: flex;
   align-items: center;
 
-  gap: 2px;
+  gap: 4px;
 
   button {
     min-height: 28px;
 
-    padding: 0 8px;
+    padding: 0 9px;
 
     border: 0;
+
+    border-radius: 7px;
 
     background: transparent;
 
@@ -453,6 +516,8 @@
     cursor: pointer;
 
     &:hover {
+      background: #f0f7f4;
+
       color: #5e8b81;
     }
 
@@ -473,11 +538,13 @@
   border: 1px solid #9ebbb3;
   border-radius: 8px;
 
-  background: #fff;
+  background: #f9fcfb;
 
   color: #4d7e7b;
 
   font-size: 12px;
+
+  box-shadow: 0 2px 6px rgba(77, 126, 123, 0.05);
 
   &:hover {
     border-color: #4d7e7b;
@@ -497,21 +564,21 @@
 
 .addAddressButton {
   width: 100%;
-  height: 38px;
+  height: 42px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  margin-top: 16px;
+  margin-top: 14px;
 
   border:
     1px solid
-    #dedad4;
+    #dfe7e4;
 
-  border-radius: 5px;
+  border-radius: 10px;
 
-  background: #fff;
+  background: #fbfcfb;
 
   color: #575149;
 
@@ -520,8 +587,15 @@
 
   cursor: pointer;
 
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+
   &:hover {
     border-color: #9dbbb4;
+
+    background: #f1f8f5;
 
     color: #5b887e;
   }

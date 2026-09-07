@@ -428,20 +428,21 @@
 
 
 .orderActions {
-  width: 88px;
+  width: 84px;
 
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  align-self: start;
 
-  gap: 6px;
+  gap: 5px;
 }
 
 
 .statusBadge {
   width: 100%;
   min-width: 0;
-  height: 28px;
+  height: 24px;
 
   box-sizing: border-box;
 
@@ -449,47 +450,52 @@
   align-items: center;
   justify-content: center;
 
-  padding: 0 9px;
+  padding: 0 7px;
 
-  border-radius: 20px;
+  border: 1px solid transparent;
+  border-radius: 14px;
 
-  background: #ece9e3;
+  background: #fff;
 
   color: #777169;
 
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 500;
 }
 
 
 .preparing {
-  background: #e9f3ed;
+  border-color: #b7d7c3;
+  background: #f5fbf7;
   color: #62806f;
 }
 
 
 .shipping {
-  background: #eceae3;
+  border-color: #d6cdbf;
+  background: #fcfaf7;
   color: #7d7464;
 }
 
 
 .completed {
-  background: #e8f3ea;
+  border-color: #a9cec0;
+  background: #f4faf6;
   color: #587761;
 }
 
 
 .cancelled {
-  background: #f4e9e7;
+  border-color: #e3beb9;
+  background: #fdf7f6;
   color: #9b6861;
 }
 
 
 .detailButton {
   width: 100%;
-  min-width: 88px;
-  height: 32px;
+  min-width: 0;
+  height: 30px;
 
   box-sizing: border-box;
 

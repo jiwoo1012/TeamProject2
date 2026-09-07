@@ -1,0 +1,151 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as mixins;
+
+// TODO: move to src/styles/_variables.scss once global files are editable.
+// Reward-only accent — used for point numbers / winning highlights,
+// kept separate from $color-primary so "what you just won" pops on screen.
+$color-reward: #F5B942;
+
+// CSS Modules localize @keyframes names per file, so each page must
+// still @include the *-keyframes mixins once at the top level even
+// though the animation body is defined here.
+
+@mixin ribbon-shape {
+  clip-path: polygon(7% 0, 93% 0, 87% 50%, 93% 100%, 7% 100%, 13% 50%);
+}
+
+@mixin chance-ribbon {
+  @include ribbon-shape;
+  color: $color-white;
+  background: $color-primary;
+}
+
+@mixin result-glow-keyframes {
+  @keyframes resultGlow {
+    0% { opacity: 0; transform: scale(.72); }
+    45% { opacity: 1; transform: scale(1.04); }
+    100% { opacity: .55; transform: scale(1); }
+  }
+}
+
+@mixin result-glow {
+  position: absolute;
+  z-index: -1;
+  inset: -18%;
+  content: '';
+  pointer-events: none;
+  background: radial-gradient(circle, rgba($color-primary-light, .24) 0 18%, rgba($color-primary-light, .1) 34%, transparent 68%);
+  border-radius: 50%;
+  animation: resultGlow 1.4s ease-out both;
+}
+
+@mixin modal-keyframes {
+  @keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes modalIn { from { opacity: 0; transform: translateY($space-5) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+}
+
+@mixin modal-backdrop {
+  @include mixins.flex-center;
+  position: fixed;
+  z-index: $z-toast;
+  inset: 0;
+  padding: $space-5;
+  background: rgba($color-text-primary, .58);
+  animation: backdropIn $transition-base ease both;
+}
+
+@mixin modal-box {
+  width: min(100%, 570px);
+  color: $color-text-primary;
+  background: $color-bg;
+  border-radius: $radius-xl;
+  box-shadow: 0 $space-5 $space-16 rgba($color-text-primary, .3);
+  animation: modalIn $transition-base cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@mixin modal-heading {
+  font-family: $font-family-display;
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  text-align: center;
+}
+
+@mixin modal-close-button {
+  position: absolute;
+  top: $space-5;
+  right: $space-5;
+  color: $color-text-primary;
+  font-size: $font-size-4xl;
+  line-height: 1;
+}
+
+@mixin btn-base {
+  border-radius: $radius-md;
+  font-weight: $font-weight-semibold;
+  text-align: center;
+  transition: background-color $transition-fast ease, color $transition-fast ease, transform $transition-fast ease;
+}
+
+@mixin btn-primary {
+  @include btn-base;
+  color: $color-white;
+  background: $color-primary;
+
+  &:hover {
+    background: $color-primary-light;
+    transform: translateY(-2px);
+  }
+}
+
+@mixin btn-secondary {
+  @include btn-base;
+  color: $color-text-secondary;
+  background: $color-surface;
+
+  &:hover {
+    color: $color-white;
+    background: $color-primary-light;
+  }
+}
+
+// "플레이 전" 안내 화면(EventList/EventReady/Roulette) 배경.
+// 반복 타일 종이 텍스처 대신 soft glow 그라디언트로 통일한다.
+@mixin lobby-background {
+  background-color: $color-bg;
+  background-image:
+    radial-gradient(ellipse 60% 50% at 12% 0%, rgba($color-primary-light, .18), transparent 60%),
+    radial-gradient(ellipse 55% 45% at 100% 100%, rgba($color-primary, .14), transparent 60%),
+    linear-gradient(180deg, $color-bg 0%, rgba($color-surface, .45) 100%);
+}
+
+// 캐릭터·소품 발밑에 까는 은은한 타원 그림자.
+// 이게 없으면 배경 위에 스티커를 붙여놓은 것처럼 붕 떠 보인다.
+// (EventReady에서 먼저 적용, Roulette 히어로에도 같은 문제가 있어 추후 재사용 예정)
+//
+// 주의: 그림자를 얹는 컨테이너(.leftVisual 등)는 보통 height가
+// 콘텐츠에 맡겨진(auto) 상태라, 자식의 height/bottom을 %로 주면
+// CSS 스펙상 auto로 취급돼 무효화된다. 그래서 height는 width 기준
+// aspect-ratio로, bottom 오프셋은 %가 아닌 고정 단위로 준다.
+@mixin ground-shadow($width: 68%, $ratio: 4.6, $lift: 8px) {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  bottom: -$lift;
+  width: $width;
+  aspect-ratio: #{$ratio} / 1;
+  background: radial-gradient(ellipse at center, rgba($color-text-primary, .4) 0%, rgba($color-text-primary, .18) 55%, transparent 78%);
+  filter: blur(3px);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+// "플레이 중" 몰입 화면(OxQuiz/CardGame) 배경.
+// 반복 타일 종이 텍스처를 제거하고 두 게임을 같은 다크 스테이지 톤으로 통일한다.
+@mixin stage-background-dark {
+  background-color: $color-text-primary;
+  background-image:
+    radial-gradient(circle at 50% 22%, rgba($color-primary-light, .22) 0%, transparent 52%),
+    radial-gradient(circle at center, rgba($color-text-primary, .3) 0%, rgba($color-text-primary, .62) 55%, rgba($color-text-primary, .95) 100%);
+}

@@ -1,30 +1,40 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as mixins;
+@use './eventShared' as event;
 
-.page { --roulette-runner-width: clamp(180px, 17vw, 280px); min-height: 100vh; padding: $space-12 0 $space-24; color: $color-text-primary; background-color: $color-bg; background-image: var(--roulette-background); background-repeat: repeat; background-position: top center; background-size: 860px auto; font-family: $font-family-base; }
-:global(body.jajak-roulette-page) { background-color: $color-bg; background-image: url('../../assets/images/eventPage/background2.jpg'); background-repeat: repeat; background-position: top center; background-size: 860px auto; }
+@include event.modal-keyframes;
+@include event.result-glow-keyframes;
+
+.page { --roulette-runner-width: clamp(180px, 17vw, 280px); min-height: 100vh; padding: $space-12 0 $space-24; color: $color-text-primary; font-family: $font-family-base; @include event.lobby-background; }
+:global(body.jajak-roulette-page) { @include event.lobby-background; }
 :global(body.jajak-roulette-spinning) { overflow: hidden; }
 :global(header) { transition: opacity .35s ease, transform .55s cubic-bezier(.4, 0, .2, 1); }
 :global(body.jajak-roulette-spinning header) { opacity: 0; transform: translateY(calc(-100% - 80px)); pointer-events: none; }
-.hero { @include mixins.container; position: relative; min-height: 690px; }
+.hero { @include mixins.container; position: relative; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: center; gap: $space-8; max-width: 1120px; }
 .gameArea { position: relative; display: flex; justify-content: center; width: 100%; min-width: 0; }
 .runningTrail { position: fixed; z-index: $z-dropdown - 2; top: 50%; right: 0; left: calc(-1 * var(--roulette-runner-width)); height: $space-5; opacity: 0; visibility: hidden; pointer-events: none; background-image: radial-gradient(circle, $color-primary-light 0, $color-primary-light $space-1, transparent calc(#{$space-1} + 1px)); background-position: left center; background-size: $space-20 100%; background-repeat: repeat-x; clip-path: inset(0 0 0 100%); transform: translateY(-50%); }
 .runningTrack { position: fixed; z-index: $z-dropdown - 1; top: 50%; left: 0; width: var(--roulette-runner-width); aspect-ratio: 2 / 3; opacity: 0; visibility: hidden; pointer-events: none; transform: translate(100vw, -50%); }
 .runningFrame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; }
-.rouletteStage { position: relative; z-index: 2; width: min(100%, 800px); aspect-ratio: 948 / 908; margin-inline: auto; transition: filter $transition-base ease, transform .55s cubic-bezier(.4, 0, .2, 1); }
+.rouletteStage { position: relative; z-index: 2; width: min(100%, 580px); aspect-ratio: 948 / 908; margin-inline: auto; transition: filter $transition-base ease, transform .55s cubic-bezier(.4, 0, .2, 1); }
 .rouletteStage > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 .rouletteBack { z-index: 1; }
-.rouletteWheel { z-index: 3; transform-origin: 46.04% 50%; will-change: transform; }
+.rouletteWheel { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; transform-box: view-box; transform-origin: 46.04% 50%; will-change: transform; }
+.wheelSegment path { stroke: rgba($color-primary, .2); stroke-width: 2; }
+.wheelGold path { fill: event.$color-reward; }
+.wheelCream path { fill: $color-bg; }
+.wheelMint path { fill: $color-primary-light; }
+.wheelRank { fill: $color-text-primary; font-family: $font-family-base; font-size: 36px; font-weight: $font-weight-bold; }
+.wheelRim { fill: none; stroke: $color-taupe; stroke-width: 12; }
 .rouletteFront { z-index: 5; }
 .spinButton { @include mixins.flex-center; position: absolute; z-index: 6; top: 31.17%; left: 28.06%; width: 36.29%; height: 37.89%; padding: 0; color: $color-white; font-family: $font-family-display; font-size: $font-size-5xl; background: transparent; border-radius: 50%; transition: color $transition-fast ease, scale $transition-fast ease; }
 .spinButton:not(:disabled):hover { color: $color-primary-light; scale: 1.1; }
 .spinButton:disabled { cursor: default; }
-.makdong { position: absolute; z-index: 7; bottom: 5%; left: -10%; width: 50%; max-height: 550px; object-fit: contain; object-position: bottom; transition: opacity $transition-base ease; pointer-events: none; }
-.eventCard { position: absolute; z-index: 8; top: 50%; right: calc(50% - 50vw); display: flex; flex-direction: column; width: 650px;min-height: 610px; padding: $space-10 $space-30 $space-10 $space-10; background: rgba($color-bg, .9); border: 1px solid rgba($color-border, .8); border-radius: $radius-lg 0 0 $radius-lg; box-shadow: $shadow-sm; transition: opacity $transition-base ease; transform: translateY(-50%); backdrop-filter: blur(1px); }
-.chanceRibbon { align-self: center; padding: $space-2 $space-10; color: $color-white; font-size: $font-size-sm; background: $color-primary; clip-path: polygon(8% 0, 92% 0, 86% 50%, 92% 100%, 8% 100%, 14% 50%); }
-.eventCard h1 { margin-top: $space-5; font-family: $font-family-display; font-size: $font-size-5xl; text-align: center; }
-.description { margin-top: $space-10; font-size: $font-size-md; line-height: $line-height-relaxed; text-align: center; white-space: pre-line; }
-.eventMeta { margin-top: $space-8; padding: $space-2 $space-6; border: 1px solid $color-border; border-radius: $radius-lg; background-color: rgba($color-bg,1);}
+.makdong { position: absolute; z-index: 7; bottom: 0; left: -$space-4; width: 36%; max-height: 300px; object-fit: contain; object-position: bottom; transition: opacity $transition-base ease; pointer-events: none; }
+.eventCard { position: relative; z-index: 8; display: flex; flex-direction: column; box-sizing: border-box; width: 100%; min-width: 0; padding: $space-8; background: $color-bg; border: 1px solid rgba($color-border, .8); border-radius: $radius-lg; box-shadow: $shadow-sm; transition: opacity $transition-base ease; }
+.chanceRibbon { align-self: center; padding: $space-2 $space-10; font-size: $font-size-sm; @include event.chance-ribbon; }
+.eventCard h1 { margin-top: $space-4; font-family: $font-family-display; font-size: $font-size-3xl; line-height: $line-height-tight; text-align: center; word-break: keep-all; }
+.description { margin-top: $space-5; font-size: $font-size-md; line-height: $line-height-relaxed; text-align: center; white-space: pre-line; }
+.eventMeta { margin-top: $space-6; padding: $space-2 $space-6; border: 1px solid $color-border; border-radius: $radius-lg; background-color: rgba($color-bg,1);}
 .eventMeta div { display: grid; grid-template-columns: 125px 1fr; gap: $space-4; padding: $space-4 0; }
 .eventMeta div + div { border-top: 1px solid $color-border; }
 .eventMeta dt { color: $color-text-secondary; font-size: $font-size-sm; font-weight: $font-weight-semibold; }
@@ -38,21 +48,39 @@
 .loginNotice > a { display: flex; gap: $space-2; align-items: center; padding: $space-2; color: $color-primary-light; font-size: $font-size-md; font-weight: $font-weight-semibold; white-space: nowrap; transition: color $transition-fast ease, transform $transition-fast ease; }
 .loginNotice > a:hover { color: $color-primary; transform: translateX($space-1); }
 @keyframes loginNotice { 0% { opacity: 0; transform: translate(-50%, $space-5); } 12%, 76% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, $space-3); } }
-.historyLink { @include mixins.flex-center; min-height: 52px; margin-top: auto; color: $color-white; font-size: $font-size-md; font-weight: $font-weight-semibold; background: $color-primary; border-radius: $radius-md; transition: background-color $transition-fast ease; }
-.historyLink:hover { background: $color-taupe; }
+.historyLink { @include mixins.flex-center; min-height: 48px; margin-top: $space-6; font-size: $font-size-md; @include event.btn-primary; }
 .prizeSection { margin-top: $space-8; padding: $space-12 max($side-margin-desktop, calc((100% - #{$container-max}) / 2)); background: rgba($color-bg, .54); transition: opacity $transition-base ease; }
 .prizeSection h2 { font-family: $font-family-display; font-size: $font-size-3xl; text-align: center; }
 .prizeSection h2 span { margin-inline: $space-3; color: $color-primary; }
-.prizeGrid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: $space-3; margin-top: $space-12; }
-.prizeCard { position: relative; display: flex; flex-direction: column; align-items: center; min-height: 200px; padding: $space-5 $space-4 $space-5; text-align: center; background: rgba($color-bg,1); border: 1px solid $color-border; border-radius: $radius-lg; }
-.rank { @include mixins.flex-center; position: absolute; top: 0; left: 50%; width: 48px; aspect-ratio: 1; color: $color-white; font-size: $font-size-md; font-weight: $font-weight-bold; background: $color-primary; border-radius: 50%; transform: translate(-50%, -50%); }
-.firstRank { background: $color-warning; }
-.prizeCard h3 { display: flex; align-items: center; justify-content: center; min-height: 58px; font-size: $font-size-lg; line-height: $line-height-tight; }
+.prizeGrid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: $space-5; max-width: 1120px; margin: $space-8 auto 0; }
+.prizeCard { position: relative; min-width: 0; display: flex; flex-direction: column; align-items: center; padding: $space-6; text-align: center; background: $color-bg; border: 1px solid $color-border; border-radius: $radius-xl; }
+.rank { @include mixins.flex-center; align-self: flex-start; min-width: 52px; padding: $space-1 $space-3; color: $color-white; font-size: $font-size-sm; font-weight: $font-weight-bold; background: $color-primary; border-radius: $radius-pill; }
+.firstRank { color: $color-text-primary; background: event.$color-reward; }
+.secondRank { color: $color-text-primary; background: $color-surface; }
+.thirdRank { color: $color-white; background: $color-taupe; }
+.prizeCard h3 { display: flex; align-items: center; justify-content: center; min-height: 58px; margin-top: $space-3; font-size: $font-size-lg; line-height: $line-height-tight; word-break: keep-all; }
 .prizeImage, .pointIcon { @include mixins.flex-center; width: 116px; aspect-ratio: 1; overflow: hidden; border-radius: 50%; }
-.prizeImage { background: $color-surface; }
+.prizeImage { width: min(100%, 180px); margin-top: $space-4; background: $color-surface; border-radius: $radius-lg; }
 .prizeImage img { width: 100%; height: 100%; object-fit: cover; }
-.pointIcon { color: $color-text-secondary; font-size: $font-size-5xl; font-weight: $font-weight-medium; border: 5px solid $color-text-secondary; }
+.pointIcon { color: event.$color-reward; font-size: $font-size-5xl; font-weight: $font-weight-bold; border: 5px solid event.$color-reward; }
 .prizeCard > p { padding-top: $space-5; color: $color-text-secondary; font-size: $font-size-xs; line-height: $line-height-base; }
+.grandPrize {
+  border-color: rgba(event.$color-reward, .65);
+  background: radial-gradient(ellipse at 50% 40%, rgba(event.$color-reward, .14), transparent 70%), $color-bg;
+  box-shadow: 0 $space-2 $space-6 rgba(event.$color-reward, .1);
+  h3 { font-size: $font-size-2xl; }
+  .prizeImage { width: min(100%, 240px); }
+}
+.pointRewards { max-width: 1120px; margin: $space-8 auto 0; padding-top: $space-6; border-top: 1px solid $color-border; }
+.pointRewards > h3 { margin-bottom: $space-4; font-size: $font-size-md; font-weight: $font-weight-semibold; }
+.pointGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: $space-4; }
+.pointReward { min-width: 0; padding: $space-5; border-radius: $radius-lg; background: rgba($color-surface, .25); }
+.pointRank { display: inline-block; padding: $space-1 $space-3; border-radius: $radius-pill; color: $color-primary; background: rgba($color-primary, .08); font-size: $font-size-xs; font-weight: $font-weight-semibold; }
+.pointAmount { display: flex; align-items: center; gap: $space-3; margin-top: $space-3; }
+.pointAmount .pointIcon { flex-shrink: 0; width: 44px; border-width: 2px; font-size: $font-size-2xl; }
+.pointAmount h4 { font-size: $font-size-xl; font-weight: $font-weight-bold; line-height: $line-height-tight; word-break: keep-all; }
+.pointReward > p { margin-top: $space-3; color: $color-text-secondary; font-size: $font-size-xs; }
+.pointNote { margin-top: $space-4; color: $color-text-secondary; font-size: $font-size-xs; text-align: center; }
 .isSpinning .makdong, .isSpinning .eventCard, .isSpinning .prizeSection { opacity: 0; pointer-events: none; }
 .isSpinning .runningTrail { visibility: visible; opacity: 1; animation: revealRunningTrail 2.8s linear .14s forwards; }
 .isSpinning .runningTrack { visibility: visible; opacity: 1; animation: makdongRunAcross 2.8s linear forwards; }
@@ -79,64 +107,78 @@
   0%, 49% { opacity: 0; }
   50%, 100% { opacity: 1; }
 }
-.modalBackdrop { @include mixins.flex-center; position: fixed; z-index: $z-modal; inset: 0; padding: $space-5; background: rgb(0 0 0 / 40%); }
-.resultModal { position: relative; isolation: isolate; width: min(100%, 570px); padding: $space-16 $space-12 $space-10; background: $color-bg; border-radius: $radius-xl; box-shadow: 0 $space-4 $space-12 rgb(0 0 0 / 18%); }
-.resultModal::before { position: absolute; z-index: -1; inset: -18%; content: ''; pointer-events: none; background: radial-gradient(circle, rgba($color-primary-light, .24) 0 18%, rgba($color-primary-light, .1) 34%, transparent 68%); border-radius: 50%; animation: resultGlow 1.4s ease-out both; }
-@keyframes resultGlow { 0% { opacity: 0; transform: scale(.72); } 45% { opacity: 1; transform: scale(1.04); } 100% { opacity: .55; transform: scale(1); } }
-.closeButton { position: absolute; top: $space-5; right: $space-5; color: $color-text-primary; font-size: $font-size-4xl; line-height: 1; }
+.modalBackdrop { @include event.modal-backdrop; }
+.resultModal { position: relative; isolation: isolate; padding: $space-16 $space-12 $space-10; @include event.modal-box; }
+.resultModal::before { @include event.result-glow; }
+.closeButton { @include event.modal-close-button; }
 .giftIcon { display: block; width: 76px; height: 76px; margin: 0 auto; object-fit: contain; }
-.resultModal h2 { margin-top: $space-6; font-family: $font-family-display; font-size: $font-size-4xl; text-align: center; }
+.resultModal h2 { margin-top: $space-6; @include event.modal-heading; }
 .resultPrize { display: grid; grid-template-columns: 132px 1fr; gap: $space-6; align-items: center; margin-top: $space-8; padding: $space-5; border: 1px solid $color-border; border-radius: $radius-lg; }
 .resultPrize img, .resultPoint { width: 132px; aspect-ratio: 1; border-radius: 50%; }
 .resultPrize img { object-fit: cover; background: $color-surface; }
-.resultPoint { @include mixins.flex-center; color: $color-text-secondary; font-size: $font-size-5xl; font-weight: $font-weight-semibold; background: $color-surface; border: 4px solid $color-text-secondary; }
+.resultPoint { @include mixins.flex-center; color: event.$color-reward; font-size: $font-size-5xl; font-weight: $font-weight-bold; border: 4px solid event.$color-reward; }
+.pointIcon, .resultPoint {
+  position: relative;
+  background: linear-gradient(135deg, rgba(event.$color-reward, .2), $color-white 48%, rgba(event.$color-reward, .12));
+  box-shadow: inset 0 0 0 $space-1 $color-white, inset 0 0 0 calc(#{$space-1} + 1px) rgba(event.$color-reward, .55), 0 $space-1 $space-3 rgba(event.$color-reward, .18);
+  text-shadow: 0 1px 0 rgba($color-text-primary, .22);
+}
 .resultPrize strong { font-size: $font-size-2xl; }
 .resultPrize p { margin-top: $space-3; color: $color-text-secondary; font-size: $font-size-sm; }
 .resultMeta { display: grid; gap: $space-5; margin: $space-8 $space-5 0; }
 .resultMeta div { display: grid; grid-template-columns: 125px 1fr; gap: $space-4; }
 .resultMeta dt { color: $color-text-muted; }
-.resultModal > a { @include mixins.flex-center; width: min(100%, 290px); min-height: 58px; margin: $space-10 auto 0; color: $color-white; font-size: $font-size-lg; font-weight: $font-weight-semibold; background: $color-primary; border-radius: $radius-md; }
+.resultModal > a { @include mixins.flex-center; width: min(100%, 290px); min-height: 58px; margin: $space-10 auto 0; font-size: $font-size-lg; @include event.btn-primary; }
 
 @include mixins.tablet {
   .page { --roulette-runner-width: clamp(160px, 22vw, 230px); }
   .page { padding-top: $space-8; }
-  .hero { min-height: 0; }
-  .eventCard { position: static; width: 100%; min-height: 540px; margin-top: $space-8; padding: $space-6; transform: none; }
+  .hero { grid-template-columns: minmax(0, 1fr); max-width: 720px; }
+  .eventCard { padding: $space-6; }
   .eventCard h1 { font-size: $font-size-3xl; }
   .description { margin-top: $space-6; font-size: $font-size-sm; }
   .eventMeta { padding-inline: $space-3; }
   .eventMeta div { grid-template-columns: 100px 1fr; gap: $space-2; }
-  .makdong { left: -12%; width: 51%; }
+  .makdong { left: 0; width: 32%; }
   .spinButton { font-size: $font-size-3xl; }
   .prizeSection { padding-inline: $side-margin-tablet; }
   .prizeGrid { grid-template-columns: repeat(3, 1fr); gap: $space-8 $space-4; }
+  .prizeCard { padding: $space-5; }
+  .grandPrize h3 { font-size: $font-size-lg; }
+  .grandPrize .prizeImage { width: min(100%, 180px); }
+  .pointAmount h4 { font-size: $font-size-lg; }
 }
 
 @include mixins.mobile {
-  .page { --roulette-runner-width: 150px; padding: $space-5 0 $space-20; background-size: 620px auto; }
-  .hero { width: calc(100% - (#{$side-margin-mobile} * 2)); min-height: 0; }
+  .page { --roulette-runner-width: 150px; padding: $space-5 0 $space-20; }
+  .hero { width: calc(100% - (#{$side-margin-mobile} * 2)); grid-template-columns: minmax(0, 1fr); gap: $space-6; }
   .gameArea { padding-top: $space-8; }
   .rouletteStage { width: 100%; }
-  .makdong { bottom: -2%; left: -9%; width: 47%; }
+  .makdong { bottom: 0; left: 0; width: 34%; }
   .runningTrack { top: 52%; }
   .runningTrail { top: 52%; background-size: $space-16 100%; }
   .spinButton { font-size: $font-size-4xl; }
-  .eventCard { position: static; width: 100%; min-height: 530px; margin-top: $space-8; padding: $space-6 $space-5; transform: none; }
+  .eventCard { padding: $space-6 $space-5; }
   .loginNotice { bottom: calc(72px + #{$space-3}); grid-template-columns: auto minmax(0, 1fr); padding: $space-3 $space-4; }
   .loginNotice > a { grid-column: 2; padding: 0; font-size: $font-size-sm; }
   .chanceRibbon { padding: $space-2 $space-8; font-size: $font-size-sm; }
-  .eventCard h1 { font-size: $font-size-4xl; }
+  .eventCard h1 { font-size: $font-size-2xl; }
   .description { margin-top: $space-6; font-size: $font-size-sm; }
   .eventMeta { padding-inline: $space-3; }
   .eventMeta div { grid-template-columns: 105px 1fr; gap: $space-2; }
   .prizeSection { margin-top: $space-12; padding: $space-10 $side-margin-mobile; }
   .prizeSection h2 { font-size: $font-size-2xl; }
   .prizeGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-8 $space-3; margin-top: $space-10; }
-  .prizeCard { min-height: 250px; padding: $space-5; }
+  .prizeCard { padding: $space-4; }
+  .grandPrize { grid-column: 1 / -1; }
+  .grandPrize h3 { font-size: $font-size-xl; }
+  .pointGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-3; }
+  .pointReward { padding: $space-4; }
+  .pointAmount { flex-wrap: wrap; gap: $space-2; }
+  .pointAmount h4 { font-size: $font-size-md; }
   .prizeCard h3 { font-size: $font-size-md; }
-  .prizeImage, .pointIcon { width: 104px; }
+  .prizeImage { width: min(100%, 160px); }
   .resultModal { padding: $space-12 $space-5 $space-8; }
-  .resultModal h2 { font-size: $font-size-3xl; }
   .resultPrize { grid-template-columns: 96px 1fr; gap: $space-4; padding: $space-4; }
   .resultPrize img, .resultPoint { width: 96px; }
   .resultPrize strong { font-size: $font-size-lg; }

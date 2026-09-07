@@ -1157,3 +1157,76 @@ $radius-control: 8px;
     align-items: center;
   }
 }
+
+
+// ========================================
+// 모바일 필터 및 회원 카드 가독성
+// ========================================
+
+@media (max-width: 767px) {
+  .selectField select,
+  .resetButton {
+    border-color: #c8ddd8;
+    background: #f3f8f6;
+    color: #456f6b;
+    font-weight: 600;
+    text-align: center;
+    text-align-last: center;
+  }
+
+  .selectField select:focus,
+  .resetButton:hover {
+    border-color: #7eaaa5;
+    background: #eaf4f1;
+    color: #35625e;
+  }
+
+  .memberTable tbody {
+    gap: 12px;
+  }
+
+  .memberTable tbody tr {
+    padding: 16px;
+    gap: 16px 18px;
+    border-color: #d8e4df;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(57, 85, 78, 0.05);
+  }
+
+  .memberTable tbody td {
+    min-height: 0;
+    gap: 7px;
+    color: #3f3b37;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.55;
+
+    &::before {
+      color: #4d7e7b;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    &:nth-child(3) {
+      grid-column: 1 / -1;
+      padding: 11px 12px;
+      border-radius: 8px;
+      background: #f3f8f6;
+    }
+  }
+
+  .memberTable .statusBadge,
+  .memberTable .roleBadge {
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .viewButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+}

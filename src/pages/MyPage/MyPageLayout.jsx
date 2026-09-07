@@ -33,10 +33,10 @@ const QuickIcon = ({ type }) => {
 
     repeat: (
       <>
-        <path d="M4 7h11a4 4 0 0 1 4 4" />
-        <path d="m16 4 3 3-3 3" />
-        <path d="M20 17H9a4 4 0 0 1-4-4" />
-        <path d="m8 20-3-3 3-3" />
+        <path d="M7.5 8.5h9a2 2 0 0 1 2 2v8h-13v-8a2 2 0 0 1 2-2Z" />
+        <path d="M8.5 8.5V6.8A1.8 1.8 0 0 1 10.3 5h3.4a1.8 1.8 0 0 1 1.8 1.8v1.7" />
+        <path d="M8.5 12.5h5M8.5 16h3" />
+        <path d="m18 4 .45 1.25 1.25.45-1.25.45L18 7.4l-.45-1.25-1.25-.45 1.25-.45L18 4Z" />
       </>
     ),
   }
@@ -244,8 +244,7 @@ const MyPageLayout = () => {
     'jajak@jajak.com'
 
   const currentPoints = Number(userData?.points || 0)
-  const pointGoal = 2000
-  const pointsToNextLevel = Math.max(0, pointGoal - currentPoints)
+  const pointGoal = 10000
   const pointProgress = Math.min(100, (currentPoints / pointGoal) * 100)
 
 
@@ -291,10 +290,6 @@ const MyPageLayout = () => {
                 {userData?.role === 'admin' ? '관리자' : '일반 회원'}
               </span>
 
-              <span className={styles.nextLevel}>
-                다음 등급까지
-                <strong> {pointsToNextLevel.toLocaleString('ko-KR')}P</strong>
-              </span>
             </div>
 
 

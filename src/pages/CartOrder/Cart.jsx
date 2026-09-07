@@ -28,9 +28,7 @@ import {
   getDocument,
 } from '../../firebase/firestore'
 
-import {
-  products as fallbackProducts,
-} from '../../data/products'
+import pairings from '../../data/pairings.json'
 
 import cartTopOrnament from '../../assets/images/mypage/cartTopOrnament.svg'
 import cartStepOrnament from '../../assets/images/mypage/cartStepOrnament.svg'
@@ -80,24 +78,6 @@ const normalizeProductId = (
     /^liq-/,
     'liq_'
   )
-}
-
-
-const mergeProductCatalog = (
-  firestoreProducts
-) => {
-  const firestoreProductIds = new Set(
-    firestoreProducts.map((product) =>
-      normalizeProductId(product.productId || product.id)
-    )
-  )
-
-  return [
-    ...firestoreProducts,
-    ...fallbackProducts.filter((product) =>
-      !firestoreProductIds.has(normalizeProductId(product.productId))
-    ),
-  ]
 }
 
 
@@ -502,12 +482,7 @@ const Cart = () => {
     setCartLoadError('')
 
     Promise.all([
-      getCollection('products')
-        .then(mergeProductCatalog)
-        .catch((error) => {
-          console.error('Firestore 상품 조회 실패, 기준 상품 데이터로 대체합니다:', error)
-          return fallbackProducts
-        }),
+      getCollection('products'),
       currentUser && !currentUser.isAnonymous
         ? getRemoteCart(currentUser.uid).catch((error) => {
             console.error('원격 장바구니 조회 실패:', error)
@@ -603,12 +578,40 @@ const Cart = () => {
   const isEmpty =
     items.length === 0
 
+  const pairingProductIds = useMemo(() => {
+    const ids = new Set()
+
+    items.forEach((item) => {
+      const itemId = normalizeProductId(item.id)
+      const directPairing = pairings.find(({ liquorId }) => liquorId === itemId)
+
+      if (directPairing) {
+        directPairing.pairedFoodIds.forEach((id) => ids.add(id))
+        directPairing.recommendedGlassIds.forEach((id) => ids.add(id))
+        return
+      }
+
+      pairings
+        .filter(({ pairedFoodIds, recommendedGlassIds }) => (
+          [...pairedFoodIds, ...recommendedGlassIds].includes(itemId)
+        ))
+        .forEach(({ liquorId }) => ids.add(liquorId))
+    })
+
+    return ids
+  }, [items])
+
   const recommendations = useMemo(
     () => productCatalog
-      .filter((product) => (
-        product.status === 'selling'
-        && !items.some((item) => normalizeProductId(item.id) === normalizeProductId(product.productId || product.id))
-      ))
+      .filter((product) => {
+        const productId = normalizeProductId(product.productId || product.id)
+
+        return (
+          pairingProductIds.has(productId)
+          && product.status === 'selling'
+          && !items.some((item) => normalizeProductId(item.id) === productId)
+        )
+      })
       .slice(0, 3)
       .map((product) => ({
         id: product.productId || product.id,
@@ -619,7 +622,7 @@ const Cart = () => {
         status: product.status,
         stock: Number(product.stock) || 0,
       })),
-    [items, productCatalog],
+    [items, pairingProductIds, productCatalog],
   )
 
   const isAllSelected =
@@ -1333,55 +1336,61 @@ const Cart = () => {
                 styles.recommendationList
               }
             >
-               {recommendations.map(
-                (product) => (
-                  <article
-                    className={
-                      styles.recommendationItem
-                    }
-                    key={
-                      product.id
-                    }
-                  >
-                    <ProductImage
-                      imageUrl={
-                        product.imageUrl
-                      }
-                      name={
-                        product.name
-                      }
-                    />
-
-                    <div
+              {recommendations.length > 0 ? (
+                recommendations.map(
+                  (product) => (
+                    <article
                       className={
-                        styles.recommendationCopy
+                        styles.recommendationItem
+                      }
+                      key={
+                        product.id
                       }
                     >
-                      <strong>
-                        {
+                      <ProductImage
+                        imageUrl={
+                          product.imageUrl
+                        }
+                        name={
                           product.name
                         }
-                      </strong>
+                      />
 
-                      <span>
-                        {formatPrice(
-                          product.price
-                        )}
-                      </span>
-                    </div>
+                      <div
+                        className={
+                          styles.recommendationCopy
+                        }
+                      >
+                        <strong>
+                          {
+                            product.name
+                          }
+                        </strong>
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleAddRecommendation(
-                          product
-                        )
-                      }
-                    >
-                      + 담기
-                    </button>
-                  </article>
+                        <span>
+                          {formatPrice(
+                            product.price
+                          )}
+                        </span>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleAddRecommendation(
+                            product
+                          )
+                        }
+                      >
+                        + 담기
+                      </button>
+                    </article>
+                  )
                 )
+              ) : (
+                <p className={styles.recommendationEmpty}>
+                  현재 장바구니에서 추천할 페어링이 없어요.
+                </p>
               )}
             </div>
           </section>

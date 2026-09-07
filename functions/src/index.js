@@ -22,6 +22,7 @@ const {
 
 const {
   getFirestore,
+  FieldValue,
 } = require('firebase-admin/firestore')
 
 
@@ -45,8 +46,6 @@ setGlobalOptions({
 
 // ========================================
 // OpenAI Secret
-//
-// 실제 AI 모드에서만 사용
 // ========================================
 
 const OPENAI_API_KEY =
@@ -57,9 +56,6 @@ const OPENAI_API_KEY =
 
 // ========================================
 // Mock 모드 확인
-//
-// functions/.env.local
-// USE_MOCK_AI=true
 // ========================================
 
 const USE_MOCK_AI =
@@ -72,37 +68,19 @@ const USE_MOCK_AI =
 
 
 // ========================================
-// CORS 허용 주소
-//
-// 배포 사이트 + 로컬 개발 환경
-// ========================================
-
-const CORS_ORIGINS = [
-  'https://jajak-ten.vercel.app',
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-]
-
-
-// ========================================
 // 함수 옵션
 //
-// Mock:
-// OpenAI Secret 연결 X
-//
-// 실제 OpenAI:
-// OPENAI_API_KEY Secret 연결
-//
-// Vercel / localhost CORS 허용
+// callable 함수는 모든 Vercel Preview /
+// Production origin에서 호출 가능
 // ========================================
 
 const recommendationOptions =
   USE_MOCK_AI
     ? {
-        cors: CORS_ORIGINS,
+        cors: true,
       }
     : {
-        cors: CORS_ORIGINS,
+        cors: true,
 
         secrets: [
           OPENAI_API_KEY,
@@ -443,7 +421,115 @@ exports.recommendJajak =
 
 
         // ========================================
-        // 10. 완료 로그
+        // 10. 회원 추천 기록 Firestore 저장
+        //
+        // 비회원 추천:
+        // 저장하지 않음
+        //
+        // 회원 추천:
+        // users/{uid}/recommendations/{id}
+        // 경로에 추천 1회당 문서 1개 저장
+        // ========================================
+
+        let recommendationId =
+          null
+
+
+        if (
+          surveyType === 'member' &&
+          request.auth
+        ) {
+          const uid =
+            request.auth.uid
+
+
+          const recommendationRef =
+            db
+              .collection(
+                'users'
+              )
+              .doc(uid)
+              .collection(
+                'recommendations'
+              )
+              .doc()
+
+
+          await recommendationRef.set({
+            // 추천을 받은 회원
+            uid,
+
+            // 사용자 유형
+            userType:
+              'member',
+
+            // 추천받은 날짜
+            createdAt:
+              FieldValue
+                .serverTimestamp(),
+
+            // 사용자가 별도로 저장한 추천인지
+            // 처음 추천받았을 때는 false
+            isSaved:
+              false,
+
+            // 추천 당시 오늘의 설문
+            todaySurvey,
+
+            // AI가 실제로 추천한 주안상 3개
+            recommendations:
+              result.recommendations,
+
+            // 추천 관련 정보
+            meta: {
+              model:
+                result.meta
+                  ?.model ||
+                null,
+
+              isMock:
+                Boolean(
+                  result.meta
+                    ?.isMock
+                ),
+
+              candidateCount:
+                result.meta
+                  ?.candidateCount ||
+                0,
+
+              recommendationCount:
+                result
+                  .recommendations
+                  ?.length ||
+                0,
+            },
+          })
+
+
+          recommendationId =
+            recommendationRef.id
+
+
+          logger.info(
+            'JAJAK 추천 기록 저장 완료',
+            {
+              uid,
+
+              recommendationId,
+
+              recommendationCount:
+                result
+                  .recommendations
+                  ?.length ||
+                0,
+            }
+          )
+        }
+
+
+        // ========================================
+        // 11. 완료 로그
         // ========================================
 
         logger.info(
@@ -471,15 +557,24 @@ exports.recommendJajak =
               result
                 .recommendations
                 ?.length,
+
+            recommendationId,
           }
         )
 
 
         // ========================================
-        // 11. 프론트 반환
+        // 12. 프론트 반환
+        //
+        // 추천 결과와 함께
+        // Firestore 추천 기록 ID도 전달
         // ========================================
 
-        return result
+        return {
+          ...result,
+
+          recommendationId,
+        }
       } catch (error) {
         // ========================================
         // Firebase HttpsError

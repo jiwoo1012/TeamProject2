@@ -4,7 +4,6 @@ import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
 import { saveEventParticipation } from '../../services/eventParticipation'
 import quizData from '../../data/quizs.json'
 import { PATHS } from '../../routes/paths'
-import backgroundImage from '../../assets/images/eventPage/background3.jpg'
 import styles from './OxQuizEvent.module.scss'
 
 const EVENT_ID = 'event-3'
@@ -88,6 +87,7 @@ const OxQuizEvent = () => {
         eventId: EVENT_ID, eventTitle: EVENT_TITLE, rewardType: 'point',
         rewardRank: null, rewardName: `${finalCorrectCount}문제 정답 포인트`,
         rewardProductId: null, rewardPoints: finalPoints, isWinner: finalPoints > 0,
+        outcome: 'completed', correctCount: finalCorrectCount,
       })
       setSaveMessage(`${finalPoints.toLocaleString('ko-KR')}P가 지급되었습니다.`)
     } catch (error) {
@@ -120,7 +120,7 @@ const OxQuizEvent = () => {
   }
 
   return (
-    <main className={`${styles.page} ${isQuitOpen ? styles.isPaused : ''}`} style={{ '--quiz-background': `url(${backgroundImage})` }}>
+    <main className={`${styles.page} ${isQuitOpen ? styles.isPaused : ''}`}>
       <div className={styles.quizShell}>
         <div className={styles.progressHeader}>
           <strong>{currentIndex + 1}/{quizzes.length}</strong>

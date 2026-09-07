@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import eventsData from '../../data/events.json'
 import { PATHS } from '../../routes/paths'
+import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 
-import backgroundImage from '../../assets/images/eventPage/background2.jpg'
-import alcoholImage from '../../assets/images/eventPage/alcohol.png'
 import makdongImage from '../../assets/characters/M007_Poses03.png'
+import rouletteCharacter from '../../assets/characters/M007_Poses07.png'
+import cardGameCharacter from '../../assets/characters/M007_Poses02.png'
+import oxQuizCharacter from '../../assets/characters/M007_Poses04.png'
 
 import styles from './EventList.module.scss'
 
@@ -39,6 +41,7 @@ const formatDate = (date) => {
 
 const EventList = () => {
   const [currentPage, setCurrentPage] = useState(1)
+  const eventGridRef = useRef(null)
 
 
   const events = eventsData.map(
@@ -65,6 +68,8 @@ const EventList = () => {
     currentPage * PAGE_SIZE
   )
 
+  const featuredEvent = visibleEvents.find((event) => event.isActive)
+
 
   const handlePage = (page) => {
     setCurrentPage(page)
@@ -77,12 +82,7 @@ const EventList = () => {
 
 
   return (
-    <main
-      className={styles.page}
-      style={{
-        '--event-texture': `url(${backgroundImage})`,
-      }}
-    >
+    <main className={styles.page}>
       <div className={styles.container}>
 
         {/* ========================================
@@ -91,18 +91,11 @@ const EventList = () => {
 
         <section className={styles.hero}>
 
-          <img
-            className={styles.alcohol}
-            src={alcoholImage}
-            alt="전통주 술병과 잔"
-          />
-
-
           <div className={styles.heroText}>
             <p>EVENT</p>
 
             <h1>
-              막동이와 함께하는 자작의 즐거운 순간
+              막동이와 함께하는<br />자작의 즐거운 순간
             </h1>
 
             <span>
@@ -126,8 +119,16 @@ const EventList = () => {
             이벤트 목록
         ======================================== */}
 
+        <div className={styles.sectionHeading}>
+          <div>
+            <h2>한 잔의 여유, 한 번의 즐거움</h2>
+          </div>
+          <span>진행 중 {events.filter((event) => event.isActive).length} · 전체 {events.length}</span>
+        </div>
+
         <section
-          className={styles.eventGrid}
+          className={`${styles.eventGrid} ${featuredEvent ? styles.featuredGrid : ''}`}
+          ref={eventGridRef}
           aria-label="이벤트 목록"
         >
           {visibleEvents.map((event) => {
@@ -149,6 +150,33 @@ const EventList = () => {
               event.title.includes('카드') ||
               event.title.includes('짝맞추기') ||
               event.title.includes('짝 맞추기')
+
+
+            /*
+              게임 타입 뱃지 + 캐릭터
+
+              진행 중인 게임형 이벤트에만 노출해서
+              "지금 바로 즐기는 게임"이라는 걸
+              목록에서부터 보여준다.
+            */
+            let gameType = null
+
+            if (isRoulette) {
+              gameType = {
+                label: 'ROULETTE',
+                character: rouletteCharacter,
+              }
+            } else if (isOxQuiz) {
+              gameType = {
+                label: 'OX QUIZ',
+                character: oxQuizCharacter,
+              }
+            } else if (isCardGame) {
+              gameType = {
+                label: 'CARD GAME',
+                character: cardGameCharacter,
+              }
+            }
 
 
             /*
@@ -201,9 +229,10 @@ const EventList = () => {
               <article
                 className={`
                   ${styles.eventCard}
+                  ${event.id === featuredEvent?.id ? styles.featuredCard : ''}
                   ${
                     event.isActive
-                      ? styles.activeCard
+                      ? ''
                       : styles.endedCard
                   }
                 `}
@@ -213,10 +242,34 @@ const EventList = () => {
                 {/* 이벤트 이미지 */}
                 <div className={styles.imageArea}>
 
-                  <img
-                    src={event.bannerSrc}
-                    alt={`${event.title} 배너`}
-                  />
+                  {gameType && event.isActive ? (
+
+                    /*
+                      게임형 이벤트는 실제 배너 사진 대신
+                      브랜드 그라디언트 카드를 그려서
+                      캐릭터 일러스트가 묻히지 않게 한다.
+                    */
+                    <div className={styles.gameBanner}>
+                      <span className={styles.gameBadge}>
+                        {gameType.label}
+                      </span>
+
+                      <img
+                        className={styles.cardCharacter}
+                        src={gameType.character}
+                        alt=""
+                        aria-hidden="true"
+                      />
+                    </div>
+
+                  ) : (
+
+                    <img
+                      src={event.bannerSrc}
+                      alt={`${event.title} 배너`}
+                    />
+
+                  )}
 
                   <span className={styles.status}>
                     {event.isActive
@@ -332,6 +385,7 @@ const EventList = () => {
         </nav>
 
       </div>
+      <MobileTopButton contentRef={eventGridRef} />
     </main>
   )
 }

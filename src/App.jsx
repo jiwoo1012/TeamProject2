@@ -62,7 +62,7 @@ const PreferenceComplete = lazy(() => import('./pages/Auth/PreferenceComplete'))
 const AiIntro = lazy(() => import('./pages/AiCurator/AiIntro'))
 const AiSurvey = lazy(() => import('./pages/AiCurator/AiSurvey'))
 const AiResult = lazy(() => import('./pages/AiCurator/AiResult'))
-const AiPreference = lazy(() => import('./pages/AiCurator/AiPreference'))
+const AiPreference = lazy(() => import('./pages/MyPage/AiPreference'))
 
 // Cart / Order
 const Cart = lazy(() => import('./pages/CartOrder/Cart'))
@@ -356,7 +356,7 @@ const App = () => {
             <Route
               path="/ai/preference"
               element={
-                <AiPreference />
+                <Navigate to="/mypage/preference" replace />
               }
             />
 
@@ -681,7 +681,7 @@ const App = () => {
 
 
               {/* 내 취향 분석
-                  기존 AI 취향 분석 페이지 사용 */}
+                  마이페이지 취향 분석 페이지 */}
 
               <Route
                 path="preference"

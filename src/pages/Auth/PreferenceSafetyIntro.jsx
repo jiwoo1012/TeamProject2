@@ -60,7 +60,12 @@ const PreferenceSafetyIntro = () => {
   // ========================================
 
   const handleGoMain = () => {
-    navigate('/')
+    navigate('/', {
+      replace: true,
+      state: {
+        skipJourney: true,
+      },
+    })
   }
 
 

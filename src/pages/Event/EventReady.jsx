@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { subscribeToAuthState } from '../../firebase/auth'
+import { getEventParticipationAvailability } from '../../services/eventParticipation'
 import eventsData from '../../data/events.json'
 import { PATHS } from '../../routes/paths'
-import backgroundImage from '../../assets/images/eventPage/background2.jpg'
 import cardsImage from '../../assets/images/eventPage/cards.png'
 import oImage from '../../assets/images/eventPage/o.png'
 import xImage from '../../assets/images/eventPage/x.png'
@@ -53,6 +53,7 @@ const EventReady = () => {
   const loginNoticeTimerRef = useRef(null)
   const [currentUser, setCurrentUser] = useState(undefined)
   const [loginNotice, setLoginNotice] = useState('')
+  const [availability, setAvailability] = useState(null)
 
   useEffect(() => {
     const unsubscribe = subscribeToAuthState(setCurrentUser)
@@ -63,12 +64,25 @@ const EventReady = () => {
     }
   }, [])
 
+  useEffect(() => {
+    if (!config || !currentUser || currentUser.isAnonymous) {
+      setAvailability(null)
+      return
+    }
+    const event = eventsData[config.eventIndex].event
+    getEventParticipationAvailability(config.eventId, event.participationLimit)
+      .then(setAvailability)
+      .catch(() => setAvailability(null))
+  }, [config, currentUser])
+
   const handleStart = (eventObject) => {
-    if (currentUser && !currentUser.isAnonymous) return
+    if (currentUser && !currentUser.isAnonymous && availability?.canParticipate !== false) return
 
     eventObject.preventDefault()
     window.clearTimeout(loginNoticeTimerRef.current)
-    setLoginNotice('로그인 후 이벤트에 참여할 수 있어요.')
+    setLoginNotice(currentUser && !currentUser.isAnonymous
+      ? '이 이벤트의 참여 가능 횟수를 모두 사용했어요.'
+      : '로그인 후 이벤트에 참여할 수 있어요.')
     loginNoticeTimerRef.current = window.setTimeout(() => setLoginNotice(''), 2600)
   }
 
@@ -78,10 +92,7 @@ const EventReady = () => {
   const isCardGame = eventType === 'card-game'
 
   return (
-    <main
-      className={styles.page}
-      style={{ '--ready-background': `url(${backgroundImage})` }}
-    >
+    <main className={styles.page}>
       <section className={styles.hero} aria-labelledby="event-ready-title">
         <div className={`${styles.sideVisual} ${styles.leftVisual}`} aria-hidden="true">
           {isCardGame ? (
@@ -111,7 +122,7 @@ const EventReady = () => {
             </div>
             <div>
               <dt><span aria-hidden="true">♙</span> 남은 횟수</dt>
-              <dd>1 / {event.participationLimit.maxCount}</dd>
+              <dd>{availability?.isAdmin ? '제한 없음' : `${Math.max(0, event.participationLimit.maxCount - (availability?.usedCount ?? 0))} / ${event.participationLimit.maxCount}`}</dd>
             </div>
           </dl>
 
