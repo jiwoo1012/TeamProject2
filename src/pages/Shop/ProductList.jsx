@@ -87,7 +87,6 @@ const ProductList = () => {
     searchParams.get('search')?.trim() ?? ''
 
   const [bannerIndex, setBannerIndex] = useState(0)
-  const [revealProgress, setRevealProgress] = useState(0)
   const [categoryId, setCategoryId] = useState('all')
   const [detailFilter, setDetailFilter] = useState('전체')
   const [priceFilter, setPriceFilter] = useState('all')
@@ -357,79 +356,6 @@ const ProductList = () => {
     return () =>
       window.cancelAnimationFrame(frameId)
   }, [location.key, mainCategories, searchParams])
-
-  useEffect(() => {
-    if (
-      window
-        .matchMedia('(max-width: 767px)')
-        .matches
-    ) {
-      setRevealProgress(1)
-      return undefined
-    }
-
-    let frameId
-
-    const updateProgress = () => {
-      const stage = stageRef.current
-
-      if (!stage) return
-
-      const scrollRange =
-        stage.offsetHeight -
-        window.innerHeight
-
-      setRevealProgress(
-        Math.min(
-          1,
-          Math.max(
-            0,
-            -stage.getBoundingClientRect()
-              .top /
-              Math.max(scrollRange, 1)
-          )
-        )
-      )
-    }
-
-    const handleScroll = () => {
-      window.cancelAnimationFrame(frameId)
-
-      frameId =
-        window.requestAnimationFrame(
-          updateProgress
-        )
-    }
-
-    updateProgress()
-
-    window.addEventListener(
-      'scroll',
-      handleScroll,
-      {
-        passive: true,
-      }
-    )
-
-    window.addEventListener(
-      'resize',
-      handleScroll
-    )
-
-    return () => {
-      window.cancelAnimationFrame(frameId)
-
-      window.removeEventListener(
-        'scroll',
-        handleScroll
-      )
-
-      window.removeEventListener(
-        'resize',
-        handleScroll
-      )
-    }
-  }, [])
 
   const activeCategory =
     mainCategories.find(
@@ -935,55 +861,14 @@ const ProductList = () => {
             )}
           </div>
 
-          <div
-            className={
-              styles.tastePanel
-            }
-            style={{
-              '--reveal-progress':
-                revealProgress,
-            }}
-          >
-            <div
-              className={
-                styles.tasteContent
-              }
-            >
-              <h1>
-                막동이와 취향 찾기
-              </h1>
-
-              <p>
-                막동이가 당신이
-                좋아하는 맛, 원하는
-                시간대 등을 분석하여
-                어울리는 조합을
-                찾아드립니다.
-                <br />
-                나에게 딱 맞는 술상을
-                차려보세요.
-              </p>
-
-              <Link to="/ai">
-                취향 찾으러 가기
-              </Link>
-            </div>
-          </div>
         </div>
-      </section>
 
-      <div
-        className={styles.shopBody}
-      >
+      <div className={styles.shopBody}>
         <div
           className={styles.catalog}
         >
-          <img
-            className={
-              styles.topOrnament
-            }
-            src={productListOrnament}
-            alt=""
+          <div
+            className={styles.categoryRevealCircle}
             aria-hidden="true"
           />
 
@@ -994,6 +879,7 @@ const ProductList = () => {
               }
               aria-label="상품 대분류"
             >
+              <p className={styles.categoryGuide}>어떤 제품을 찾고계신가요?</p>
               {mainCategories.map(
                 (
                   category,
@@ -1065,6 +951,15 @@ const ProductList = () => {
               )}
             </nav>
           )}
+
+          <img
+            className={
+              styles.topOrnament
+            }
+            src={productListOrnament}
+            alt=""
+            aria-hidden="true"
+          />
 
           <section
             className={
@@ -1246,58 +1141,72 @@ const ProductList = () => {
               </div>
             )}
 
-            {visibleProducts.length >
-            0 ? (
-              <div
-                className={
-                  styles.productGrid
-                }
-                key={`products-${categoryId}-${detailFilter}-${priceFilter}-${sortBy}-${searchKeyword}`}
-              >
-                {visibleProducts.map(
-                  (product) => (
-                    <ProductCard
-                      product={product}
-                      isWished={wishes.has(
-                        product.productId
-                      )}
-                      onToggleWish={
-                        handleWish
-                      }
-                      onAddToCart={
-                        handleAddToCart
-                      }
-                      key={
-                        product.productId
-                      }
-                    />
-                  )
-                )}
-              </div>
-            ) : (
-              <p
-                className={
-                  styles.empty
-                }
-                key={`empty-${categoryId}-${detailFilter}-${priceFilter}`}
-              >
-                {searchKeyword
-                  ? `'${searchKeyword}'에 대한 검색 결과가 없습니다.`
-                  : '조건에 맞는 상품이 없습니다.'}
-              </p>
-            )}
+            <div className={styles.productsGradient}>
+              {visibleProducts.length >
+              0 ? (
+                <div
+                  className={
+                    styles.productGrid
+                  }
+                  key={`products-${categoryId}-${detailFilter}-${priceFilter}-${sortBy}-${searchKeyword}`}
+                >
+                  {visibleProducts.map(
+                    (product) => (
+                      <ProductCard
+                        product={product}
+                        isWished={wishes.has(
+                          product.productId
+                        )}
+                        onToggleWish={
+                          handleWish
+                        }
+                        onAddToCart={
+                          handleAddToCart
+                        }
+                        key={
+                          product.productId
+                        }
+                      />
+                    )
+                  )}
+                </div>
+              ) : (
+                <p
+                  className={
+                    styles.empty
+                  }
+                  key={`empty-${categoryId}-${detailFilter}-${priceFilter}`}
+                >
+                  {searchKeyword
+                    ? `'${searchKeyword}'에 대한 검색 결과가 없습니다.`
+                    : '조건에 맞는 상품이 없습니다.'}
+                </p>
+              )}
 
-            <Pagination
-              currentPage={
-                currentPage
-              }
-              totalPages={
-                totalPages
-              }
-              onChange={
-                handlePage
-              }
-            />
+              <Pagination
+                currentPage={
+                  currentPage
+                }
+                totalPages={
+                  totalPages
+                }
+                onChange={
+                  handlePage
+                }
+              />
+
+              <section className={styles.tastePanel} aria-labelledby="taste-finder-title">
+                <div className={styles.tasteContent}>
+                  <h1 id="taste-finder-title">막동이와 취향 찾기</h1>
+                  <p>
+                    막동이가 당신이 좋아하는 맛, 원하는 시간대 등을 분석하여 어울리는 조합을 찾아드립니다.
+                    <br />
+                    나에게 딱 맞는 술상을 차려보세요.
+                  </p>
+                  <Link to="/ai">취향 찾으러 가기</Link>
+                </div>
+              </section>
+            </div>
           </section>
         </div>
 
@@ -1328,6 +1237,7 @@ const ProductList = () => {
           </div>
         </section>
       </div>
+      </section>
 
       {selectedAlcohol && (
         <div
