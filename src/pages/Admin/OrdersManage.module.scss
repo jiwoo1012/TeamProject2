@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 // ========================================
 // 주문 관리 전체
 // ========================================
@@ -1098,7 +1100,7 @@
   z-index: 210;
 
   width: min(
-    730px,
+    800px,
     calc(100vw - 275px)
   );
 
@@ -1507,6 +1509,14 @@
   background: #f2efe9;
 
   font-size: 17px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: inherit;
+    object-fit: cover;
+  }
 }
 
 
@@ -2074,5 +2084,1856 @@
 
   .shippingContent {
     grid-template-columns: 1fr;
+  }
+}
+
+
+// ========================================
+// UserManage 디자인 시스템 정렬
+// ========================================
+
+$order-bg-canvas: #f8f6f2;
+$order-bg-surface: #ffffff;
+$order-primary: #3b5f54;
+$order-primary-subtle: #edf3f0;
+$order-text-title: #222524;
+$order-text-body: #4a504d;
+$order-text-caption: #7a827e;
+$order-border: #e8e6df;
+$order-danger: #b24840;
+$order-danger-subtle: #fbeeed;
+$order-shadow-sm: 0 2px 8px rgba(34, 37, 36, 0.04);
+$order-shadow-md: 0 6px 18px rgba(34, 37, 36, 0.06);
+
+.page {
+  min-height: 100vh;
+  padding: 32px 40px 56px;
+  box-sizing: border-box;
+  color: $order-text-body;
+  background: $order-bg-canvas;
+}
+
+.pageToolbar {
+  min-height: 0;
+  margin-bottom: 12px;
+
+  h1 {
+    color: $order-text-title;
+    font-size: 30px;
+    letter-spacing: -0.02em;
+  }
+
+  > button {
+    height: 38px;
+    padding: 0 16px;
+    gap: 8px;
+    color: $order-text-body;
+    font-size: 13px;
+    border: 1px solid $order-border;
+    border-radius: 8px;
+    box-shadow: $order-shadow-sm;
+
+    svg {
+      width: 15px;
+      height: 15px;
+      transition: transform 0.3s ease;
+    }
+
+    &:hover:not(:disabled) {
+      color: $order-primary;
+      border-color: color.adjust($order-primary, $lightness: 20%);
+      background: #fdfcf9;
+      box-shadow: 0 2px 10px rgba(59, 95, 84, 0.08);
+
+      svg {
+        transform: rotate(180deg);
+      }
+    }
+  }
+}
+
+.ornamentLine {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 1rem 0 1.8rem;
+
+  img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+}
+
+.summaryArea {
+  margin: 0 0 24px;
+}
+
+.summaryGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.summaryCard {
+  min-width: 0;
+  min-height: 94px;
+  padding: 18px 20px;
+  gap: 16px;
+  color: inherit;
+  text-align: left;
+  border: 1px solid $order-border;
+  border-radius: 14px;
+  background: $order-bg-surface;
+  box-shadow: $order-shadow-sm;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: color.adjust($order-primary, $lightness: 20%);
+    box-shadow: $order-shadow-md;
+  }
+
+  &.summaryCardActive {
+    border-color: $order-primary;
+    background: #fdfefd;
+    box-shadow: 0 0 0 1.5px $order-primary, $order-shadow-sm;
+  }
+}
+
+.summaryIcon {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  color: $order-primary;
+  border-radius: 12px;
+  background: $order-primary-subtle;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+.summaryCardrequest .summaryIcon {
+  color: $order-danger;
+  background: $order-danger-subtle;
+}
+
+.summaryContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+
+  h3 {
+    margin: 0;
+    color: $order-text-caption;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  p {
+    gap: 3px;
+    line-height: 1.2;
+
+    strong {
+      color: $order-text-title;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    span {
+      color: $order-text-caption;
+      font-size: 14px;
+    }
+  }
+
+  small {
+    margin-top: 2px;
+    gap: 4px;
+    color: $order-text-caption;
+    font-size: 12px;
+
+    b {
+      color: $order-primary;
+      font-weight: 600;
+    }
+  }
+}
+
+.managementGrid {
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 20px;
+}
+
+.mainSection,
+.analyticsCard {
+  border: 1px solid $order-border;
+  border-radius: 14px;
+  background: $order-bg-surface;
+  box-shadow: $order-shadow-sm;
+}
+
+.filterBar {
+  padding: 24px 24px 10px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.searchField {
+  min-width: 240px;
+  border-color: $order-border;
+  border-radius: 8px;
+
+  input {
+    color: $order-text-body;
+    font-size: 13px;
+  }
+}
+
+.selectField {
+  flex-basis: 104px;
+
+  select {
+    padding: 0 10px;
+    color: $order-text-body;
+    font-size: 12px;
+    border-color: $order-border;
+    border-radius: 8px;
+  }
+}
+
+.sortField {
+  flex-basis: 104px;
+}
+
+.resetButton {
+  padding: 0 14px;
+  color: $order-text-body;
+  font-size: 12px;
+  border-color: $order-border;
+  border-radius: 8px;
+}
+
+.quickFilterArea {
+  padding: 2px 24px 18px;
+  gap: 12px;
+
+  > span {
+    color: $order-text-caption;
+    font-size: 12px;
+  }
+
+  > div {
+    gap: 7px;
+
+    button {
+      min-height: 28px;
+      padding: 0 12px;
+      color: $order-text-body;
+      font-size: 11px;
+      background: #f0eee8;
+    }
+
+    .activeQuick {
+      color: #fff;
+      background: $order-primary;
+    }
+  }
+}
+
+.sectionHeading {
+  min-height: 62px;
+  padding: 0 24px;
+  border-color: $order-border;
+}
+
+.titleWrap {
+  h2 {
+    color: $order-text-title;
+    font-size: 17px;
+  }
+
+  span {
+    color: $order-primary;
+    font-size: 12px;
+    font-weight: 600;
+  }
+}
+
+.dataTable {
+  thead {
+    background: #f8f6f2;
+
+    th {
+      color: $order-text-caption;
+      font-size: 11px;
+    }
+  }
+
+  tbody {
+    tr {
+      height: 58px;
+      border-color: $order-border;
+    }
+
+    td {
+      color: $order-text-body;
+      font-size: 11px;
+
+      strong {
+        color: $order-text-title;
+        font-size: 11px;
+      }
+    }
+  }
+}
+
+.statusBadge {
+  min-width: 58px;
+  padding: 5px 8px;
+  font-size: 10px;
+}
+
+.detailButton {
+  height: 30px;
+  padding: 0 10px;
+  color: $order-text-body;
+  font-size: 10px;
+  border-color: $order-border;
+  border-radius: 6px;
+}
+
+.analyticsColumn {
+  gap: 16px;
+}
+
+.analyticsCard {
+  padding: 20px;
+}
+
+.analyticsHeader {
+  margin-bottom: 18px;
+
+  h2 {
+    color: $order-text-title;
+    font-size: 15px;
+  }
+
+  span {
+    color: #a0a6a2;
+    font-size: 11px;
+  }
+}
+
+.statusOverview {
+  margin-top: 0;
+  gap: 20px;
+
+  ul {
+    gap: 8px;
+
+    li {
+      grid-template-columns: 8px 1fr auto;
+      color: $order-text-body;
+      font-size: 11px;
+
+      > span:first-child {
+        width: 8px;
+        height: 8px;
+      }
+
+      strong {
+        color: $order-text-title;
+        font-size: 11px;
+      }
+    }
+  }
+}
+
+.statusDonut {
+  width: 90px;
+  height: 90px;
+  flex-basis: 90px;
+  background: conic-gradient(
+    $order-primary 0 var(--ready-end, 0%),
+    #6d9996 var(--ready-end, 0%) var(--shipping-end, 0%),
+    #b9c9c4 var(--shipping-end, 0%) var(--completed-end, 0%),
+    $order-danger var(--completed-end, 0%) 100%
+  );
+  animation: orderDonutReveal 420ms ease-out both;
+
+  &::after {
+    inset: 12px;
+    background: $order-bg-surface;
+  }
+
+  > div {
+    span {
+      color: $order-text-caption;
+      font-size: 11px;
+    }
+
+    strong {
+      color: $order-text-title;
+      font-size: 15px;
+    }
+  }
+}
+
+.dotReady { background: $order-primary; }
+.dotShipping { background: #6d9996; }
+.dotCompleted { background: #b9c9c4; }
+.dotRefund { background: $order-danger; }
+
+.chartLegend {
+  margin-top: 0;
+
+  span {
+    color: $order-text-caption;
+    font-size: 10px;
+  }
+
+  i {
+    width: 7px;
+    height: 7px;
+  }
+}
+
+.barChart {
+  height: 150px;
+  margin-top: 14px;
+}
+
+.barItem > span {
+  color: $order-text-caption;
+  font-size: 9px;
+}
+
+.barPair {
+  height: 104px;
+  gap: 4px;
+
+  i {
+    width: 8px;
+    height: var(--bar-height, 0%);
+    animation: orderBarReveal 460ms ease-out both;
+    transform-origin: bottom;
+  }
+}
+
+.weekCompare {
+  border-color: #c6d8d2;
+  background: #fdfefd;
+}
+
+@keyframes orderDonutReveal {
+  from {
+    opacity: 0;
+    transform: rotate(-45deg) scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+
+@keyframes orderBarReveal {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statusDonut,
+  .barPair i {
+    animation: none;
+  }
+}
+
+@media (max-width: 1180px) {
+  .page {
+    padding: 24px;
+  }
+
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .managementGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .analyticsColumn {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .page {
+    padding: 0 0 32px;
+  }
+
+  .pageToolbar {
+    gap: 12px;
+
+    h1 {
+      font-size: 24px;
+    }
+
+    > button {
+      height: 36px;
+      padding: 0 12px;
+      font-size: 12px;
+    }
+  }
+
+  .ornamentLine {
+    display: none;
+  }
+
+  .summaryArea {
+    margin-bottom: 18px;
+  }
+
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .summaryCard {
+    min-height: 124px;
+    padding: 14px 12px;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .summaryIcon {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .summaryContent {
+    h3 { font-size: 12px; line-height: 1.35; }
+    p strong { font-size: 22px; }
+    p span { font-size: 12px; }
+    small { font-size: 11px; line-height: 1.35; }
+  }
+
+  .filterBar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 16px 16px 10px;
+    gap: 8px;
+  }
+
+  .searchField {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
+
+  .selectField,
+  .sortField {
+    min-width: 0;
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .resetButton {
+    width: 100%;
+  }
+
+  .quickFilterArea {
+    padding: 4px 16px 16px;
+    align-items: flex-start;
+  }
+
+  .sectionHeading {
+    padding: 0 16px;
+  }
+
+  .tableWrap {
+    padding: 0 16px 16px;
+    box-sizing: border-box;
+    overflow: visible;
+  }
+
+  .dataTable {
+    min-width: 0;
+    display: block;
+
+    thead {
+      display: none;
+    }
+
+    tbody {
+      display: grid;
+      gap: 10px;
+    }
+
+    tr {
+      height: auto !important;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 18px;
+      padding: 18px 16px 16px;
+      border: 1px solid $order-border !important;
+      border-radius: 10px;
+      background: $order-bg-surface;
+    }
+
+    td {
+      min-width: 0;
+      min-height: 42px;
+      padding: 0 !important;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      color: $order-text-title !important;
+      font-size: 13px !important;
+      font-weight: 500;
+      line-height: 1.45;
+      white-space: normal !important;
+      overflow-wrap: anywhere;
+      border: 0;
+
+      &::before {
+        color: $order-text-caption;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1.2;
+      }
+
+      &:nth-child(1)::before { content: '주문 번호'; }
+      &:nth-child(2)::before { content: '주문자'; }
+      &:nth-child(3)::before { content: '주문 상품'; }
+      &:nth-child(4)::before { content: '주문일'; }
+      &:nth-child(5)::before { content: '결제 금액'; }
+      &:nth-child(6)::before { content: '결제 상태'; }
+      &:nth-child(7)::before { content: '배송 상태'; }
+
+      &:nth-child(8) {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+
+  .statusBadge {
+    width: auto;
+    padding: 5px 9px;
+    font-size: 12px;
+  }
+
+  .detailButton {
+    width: 100%;
+    min-height: 40px;
+    font-size: 13px;
+  }
+
+  .analyticsColumn {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .analyticsCard {
+    padding: 16px;
+  }
+}
+
+
+// 상세 본문 값은 제목보다 한 단계 낮춰 밀도를 맞춘다.
+.detailPanel {
+  font-size: 15px;
+}
+
+.infoList dd {
+  font-size: 15px;
+}
+
+
+// 주문 상세는 데스크톱 관리자 화면에서 읽기 쉬운 밀도로 별도 보정한다.
+.detailPanel {
+  font-size: 16px;
+}
+
+.detailScroll {
+  padding: 0 28px 28px;
+}
+
+.orderSummary {
+  min-height: 82px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+
+  > div {
+    padding: 0 14px;
+
+    > span {
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    > strong {
+      min-height: 30px;
+      font-size: 15px;
+
+      small {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+.detailStatus {
+  min-height: 30px;
+  padding: 0 11px;
+  font-size: 12px;
+}
+
+.totalPrice {
+  font-size: 19px !important;
+}
+
+.detailSection,
+.shippingManage {
+  margin-bottom: 14px;
+  padding: 22px;
+}
+
+.detailSection {
+  > h3,
+  .sectionTitleRow h3 {
+    margin-bottom: 16px;
+    font-size: 20px;
+
+    > span {
+      font-size: 13px;
+    }
+  }
+}
+
+.sectionTitleRow {
+  margin-bottom: 16px;
+
+  button {
+    min-height: 34px;
+    padding: 0 11px;
+    font-size: 13px;
+  }
+}
+
+.progress {
+  padding-top: 4px;
+
+  &::before {
+    top: 17px;
+  }
+}
+
+.stepCircle {
+  width: 32px;
+  height: 32px;
+  font-size: 12px;
+}
+
+.progressItem {
+  strong {
+    margin-top: 7px;
+    font-size: 13px;
+  }
+
+  small {
+    font-size: 11px;
+  }
+}
+
+.detailTwoColumn {
+  gap: 14px;
+
+  > .detailSection {
+    margin-bottom: 14px;
+  }
+}
+
+.productList {
+  gap: 8px;
+}
+
+.orderProduct {
+  min-height: 62px;
+  padding: 8px 10px;
+  gap: 10px;
+
+  > div {
+    strong {
+      font-size: 14px;
+    }
+
+    small {
+      margin-top: 4px;
+      font-size: 12px;
+    }
+  }
+
+  > p {
+    strong {
+      font-size: 14px;
+    }
+
+    small {
+      margin-top: 4px;
+      font-size: 12px;
+    }
+  }
+}
+
+.productThumb {
+  width: 42px;
+  height: 42px;
+  flex-basis: 42px;
+}
+
+.infoList {
+  gap: 13px;
+
+  > div {
+    grid-template-columns: 108px minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  dt {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  dd {
+    font-size: 16px;
+    line-height: 1.55;
+  }
+}
+
+.totalRow {
+  margin-top: 8px;
+  padding-top: 10px;
+
+  dt,
+  dd {
+    font-size: 17px;
+  }
+}
+
+.historyList > div {
+  min-height: 44px;
+  grid-template-columns: 9px 126px 88px 1fr;
+  gap: 12px;
+
+  > i {
+    width: 7px;
+    height: 7px;
+  }
+
+  > span,
+  > strong,
+  > p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  > span small {
+    font-size: 12px;
+  }
+}
+
+.shippingHeader {
+  margin-bottom: 16px;
+
+  > span {
+    width: 24px;
+    height: 24px;
+    flex-basis: 24px;
+    font-size: 12px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+
+  p {
+    margin-top: 4px;
+    font-size: 12px;
+  }
+}
+
+.shippingContent {
+  gap: 14px;
+}
+
+.checkList {
+  padding: 14px;
+
+  h4 {
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+
+  label {
+    gap: 8px;
+    margin-bottom: 9px;
+
+    input {
+      width: 14px;
+      height: 14px;
+    }
+
+    > span {
+      font-size: 12px;
+
+      strong {
+        font-size: 13px;
+      }
+    }
+  }
+}
+
+.shippingForm {
+  gap: 10px;
+}
+
+.formRow {
+  gap: 10px;
+}
+
+.shippingForm label {
+  > span {
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+
+  select,
+  input {
+    height: 36px;
+    padding: 0 10px;
+    font-size: 14px;
+  }
+}
+
+.detailFooter {
+  min-height: 76px;
+  padding: 12px 28px;
+
+  button {
+    height: 42px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .detailScroll {
+    padding: 0 20px 24px;
+  }
+
+  .detailFooter {
+    padding: 12px 20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .detailPanel {
+    font-size: 14px;
+  }
+
+  .orderSummary {
+    min-height: 0;
+  }
+
+  .detailSection,
+  .shippingManage {
+    padding: 16px;
+  }
+
+  .detailSection > h3,
+  .detailSection .sectionTitleRow h3 {
+    font-size: 16px;
+  }
+
+  .infoList > div {
+    grid-template-columns: 78px minmax(0, 1fr);
+  }
+
+  .infoList dt,
+  .infoList dd {
+    font-size: 13px;
+  }
+}
+
+
+// ========================================
+// 주문 목록 / 상세 최종 가독성 보정
+// ========================================
+
+.dataTable {
+  th:nth-child(1) { width: 9%; }
+  th:nth-child(2) { width: 10%; }
+  th:nth-child(3) { width: 22%; }
+  th:nth-child(4) { width: 12%; }
+  th:nth-child(5) { width: 12%; }
+  th:nth-child(6) { width: 12%; }
+  th:nth-child(7) { width: 12%; }
+  th:nth-child(8) { width: 11%; }
+
+  thead {
+    tr {
+      height: 48px;
+    }
+
+    th {
+      font-size: 14px;
+      line-height: 1.35;
+      vertical-align: middle;
+    }
+  }
+
+  tbody {
+    tr {
+      height: 64px;
+    }
+
+    td,
+    td strong {
+      font-size: 14px;
+      line-height: 1.4;
+      vertical-align: middle;
+    }
+  }
+}
+
+.orderId {
+  display: inline-block;
+  max-width: 100%;
+  color: $order-text-title;
+  cursor: help;
+  white-space: nowrap;
+}
+
+.statusBadge {
+  min-height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.detailButton {
+  min-width: 64px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.detailPanel {
+  color: $order-text-body;
+  font-size: 14px;
+}
+
+.detailHeader {
+  h2 {
+    font-size: 24px;
+    line-height: 1.3;
+  }
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+}
+
+.orderSummary > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  > span {
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
+  > strong {
+    display: flex;
+    align-items: center;
+    min-height: 28px;
+    font-size: 14px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+
+    small {
+      font-size: 11px;
+    }
+  }
+}
+
+.detailStatus {
+  min-height: 28px;
+  padding: 0 10px;
+  font-size: 11px;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.totalPrice {
+  font-size: 17px !important;
+}
+
+.detailSection {
+  > h3,
+  .sectionTitleRow h3 {
+    font-size: 16px;
+    line-height: 1.35;
+
+    > span {
+      font-size: 12px;
+    }
+  }
+}
+
+.progressItem {
+  justify-content: flex-start;
+  text-align: center;
+
+  strong {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  small {
+    font-size: 10px;
+    line-height: 1.3;
+  }
+}
+
+.stepCircle {
+  font-size: 11px;
+  line-height: 1;
+}
+
+.orderProduct {
+  > div {
+    strong {
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    small {
+      font-size: 11px;
+      line-height: 1.35;
+    }
+  }
+
+  > p {
+    strong {
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    small {
+      font-size: 11px;
+      line-height: 1.35;
+    }
+  }
+}
+
+.infoList > div {
+  align-items: center;
+}
+
+.infoList {
+  dt,
+  dd {
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+}
+
+.totalRow {
+  dt,
+  dd {
+    font-size: 14px;
+  }
+}
+
+.sectionTitleRow button {
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.historyList > div {
+  align-items: center;
+
+  > span,
+  > strong,
+  > p {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  > span small {
+    font-size: 10px;
+  }
+}
+
+.shippingHeader {
+  h3 {
+    font-size: 16px;
+    line-height: 1.35;
+  }
+
+  p {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+}
+
+.checkList {
+  h4 {
+    font-size: 13px;
+  }
+
+  label {
+    align-items: center;
+
+    > span {
+      font-size: 11px;
+
+      strong {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+.shippingForm label {
+  > span {
+    font-size: 12px;
+  }
+
+  select,
+  input {
+    font-size: 13px;
+  }
+}
+
+.detailFooter button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  line-height: 1;
+}
+
+@media (max-width: 767px) {
+  .dataTable {
+    th:nth-child(n),
+    td:nth-child(n) {
+      width: auto;
+    }
+  }
+
+  .orderSummary > div > strong,
+  .infoList dt,
+  .infoList dd {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 390px) {
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryCard {
+    min-height: 104px;
+    align-items: center;
+  }
+}
+
+
+// ========================================
+// 내부 타이포 가독성 보정
+// 레이아웃과 카드 크기는 유지한다.
+// ========================================
+
+.summaryContent {
+  h3 {
+    font-size: 14px;
+  }
+
+  p strong {
+    font-size: 28px;
+  }
+
+  p span,
+  small {
+    font-size: 13px;
+  }
+}
+
+.searchField input {
+  font-size: 14px;
+}
+
+.selectField select,
+.resetButton {
+  font-size: 13px;
+}
+
+.quickFilterArea {
+  > span {
+    font-size: 13px;
+  }
+
+  > div button {
+    font-size: 12px;
+    font-weight: 500;
+  }
+}
+
+.titleWrap {
+  h2 {
+    font-size: 19px;
+  }
+
+  span {
+    font-size: 13px;
+  }
+}
+
+.dataTable {
+  thead th {
+    font-size: 13px;
+  }
+
+  tbody td,
+  tbody td strong {
+    font-size: 13px;
+  }
+}
+
+.statusBadge,
+.detailButton {
+  font-size: 11px;
+}
+
+.analyticsHeader {
+  h2 {
+    font-size: 17px;
+  }
+
+  span {
+    font-size: 12px;
+  }
+}
+
+.statusOverview ul li,
+.statusOverview ul li strong {
+  font-size: 12px;
+}
+
+.statusDonut > div {
+  span {
+    font-size: 12px;
+  }
+
+  strong {
+    font-size: 17px;
+  }
+}
+
+.chartLegend span,
+.barItem > span {
+  font-size: 11px;
+}
+
+.weekCompare {
+  > div:nth-child(2) {
+    span {
+      font-size: 10px;
+    }
+
+    strong {
+      font-size: 15px;
+    }
+  }
+
+  dl {
+    dt {
+      font-size: 9px;
+    }
+
+    dd {
+      font-size: 10px;
+    }
+  }
+}
+
+.detailHeader h2 {
+  font-size: 22px;
+}
+
+.orderSummary > div {
+  > span {
+    font-size: 10px;
+  }
+
+  > strong {
+    font-size: 12px;
+
+    small {
+      font-size: 10px;
+    }
+  }
+}
+
+.detailStatus {
+  font-size: 10px;
+}
+
+.totalPrice {
+  font-size: 15px !important;
+}
+
+.detailSection {
+  > h3,
+  .sectionTitleRow h3 {
+    font-size: 14px;
+
+    > span {
+      font-size: 11px;
+    }
+  }
+}
+
+.progressItem {
+  strong {
+    font-size: 10px;
+  }
+
+  small {
+    font-size: 9px;
+  }
+}
+
+.stepCircle {
+  font-size: 10px;
+}
+
+.orderProduct {
+  > div {
+    strong {
+      font-size: 12px;
+    }
+
+    small {
+      font-size: 10px;
+    }
+  }
+
+  > p {
+    strong {
+      font-size: 12px;
+    }
+
+    small {
+      font-size: 10px;
+    }
+  }
+}
+
+.infoList {
+  dt,
+  dd {
+    font-size: 11px;
+  }
+}
+
+.totalRow {
+  dt,
+  dd {
+    font-size: 13px;
+  }
+}
+
+.sectionTitleRow button {
+  font-size: 11px;
+}
+
+.historyList > div {
+  > span {
+    font-size: 9px;
+
+    small {
+      font-size: 8px;
+    }
+  }
+
+  > strong,
+  > p {
+    font-size: 10px;
+  }
+}
+
+.shippingHeader {
+  > span {
+    font-size: 10px;
+  }
+
+  h3 {
+    font-size: 14px;
+  }
+
+  p {
+    font-size: 10px;
+  }
+}
+
+.checkList {
+  h4 {
+    font-size: 12px;
+  }
+
+  label > span {
+    font-size: 10px;
+
+    strong {
+      font-size: 11px;
+    }
+  }
+}
+
+.shippingForm label {
+  > span {
+    font-size: 11px;
+  }
+
+  select,
+  input,
+  textarea {
+    font-size: 12px;
+  }
+}
+
+.memoField small {
+  font-size: 9px;
+}
+
+.detailFooter button {
+  font-size: 12px;
+}
+
+@media (max-width: 767px) {
+  .summaryContent {
+    h3 {
+      font-size: 13px;
+    }
+
+    p strong {
+      font-size: 24px;
+    }
+
+    p span,
+    small {
+      font-size: 12px;
+    }
+  }
+
+  .dataTable tbody td,
+  .dataTable tbody td strong {
+    font-size: 14px !important;
+  }
+}
+
+
+// 상세 패널의 기존 축소 규칙을 마지막에 덮어쓴다.
+.detailPanel {
+  font-size: 16px;
+}
+
+.detailHeader h2 {
+  font-size: 24px;
+}
+
+.orderSummary > div {
+  > span {
+    font-size: 12px;
+  }
+
+  > strong {
+    font-size: 15px;
+
+    small {
+      font-size: 12px;
+    }
+  }
+}
+
+.detailStatus {
+  font-size: 12px;
+}
+
+.totalPrice {
+  font-size: 19px !important;
+}
+
+.detailSection {
+  > h3,
+  .sectionTitleRow h3 {
+    font-size: 20px;
+
+    > span {
+      font-size: 13px;
+    }
+  }
+}
+
+.progressItem {
+  strong {
+    font-size: 13px;
+  }
+
+  small {
+    font-size: 11px;
+  }
+}
+
+.stepCircle {
+  font-size: 12px;
+}
+
+.orderProduct {
+  > div {
+    strong {
+      font-size: 14px;
+    }
+
+    small {
+      font-size: 12px;
+    }
+  }
+
+  > p {
+    strong {
+      font-size: 14px;
+    }
+
+    small {
+      font-size: 12px;
+    }
+  }
+}
+
+.infoList {
+  dt {
+    font-size: 15px;
+  }
+
+  dd {
+    font-size: 16px;
+  }
+}
+
+.totalRow {
+  dt,
+  dd {
+    font-size: 17px;
+  }
+}
+
+.sectionTitleRow button {
+  font-size: 13px;
+}
+
+.historyList > div {
+  > span,
+  > strong,
+  > p {
+    font-size: 14px;
+  }
+
+  > span small {
+    font-size: 12px;
+  }
+}
+
+.shippingHeader {
+  h3 {
+    font-size: 18px;
+  }
+
+  p {
+    font-size: 12px;
+  }
+}
+
+.checkList {
+  h4 {
+    font-size: 14px;
+  }
+
+  label > span {
+    font-size: 12px;
+
+    strong {
+      font-size: 13px;
+    }
+  }
+}
+
+.shippingForm label {
+  > span {
+    font-size: 13px;
+  }
+
+  select,
+  input,
+  textarea {
+    font-size: 14px;
+  }
+}
+
+.detailFooter button {
+  font-size: 14px;
+}
+
+@media (max-width: 767px) {
+  .detailSection {
+    > h3,
+    .sectionTitleRow h3 {
+      font-size: 17px;
+    }
+  }
+
+  .infoList {
+    dt {
+      font-size: 13px;
+    }
+
+    dd {
+      font-size: 14px;
+    }
+  }
+}
+
+
+.detailPanel {
+  font-size: 15px;
+}
+
+.infoList dd {
+  font-size: 15px;
+}
+
+
+// ========================================
+// 모바일 필터 및 주문 카드 가독성
+// ========================================
+
+@media (max-width: 767px) {
+  .ornamentLine {
+    display: none;
+  }
+
+  .selectField select,
+  .resetButton {
+    border-color: #c8ddd8;
+    background: #f3f8f6;
+    color: #456f6b;
+    font-weight: 600;
+    text-align: center;
+    text-align-last: center;
+  }
+
+  .selectField select:focus,
+  .resetButton:hover {
+    border-color: #7eaaa5;
+    background: #eaf4f1;
+    color: #35625e;
+  }
+
+  .dataTable tbody {
+    gap: 12px;
+  }
+
+  .dataTable tbody tr {
+    padding: 16px;
+    gap: 16px 18px;
+    border-color: #d8e4df !important;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(57, 85, 78, 0.05);
+  }
+
+  .dataTable tbody td {
+    min-height: 0;
+    gap: 7px;
+    color: #3f3b37 !important;
+    font-size: 14px !important;
+    font-weight: 500;
+    line-height: 1.55;
+
+    &::before {
+      color: #4d7e7b;
+      font-size: 12px;
+      font-weight: 700;
+    }
+  }
+
+  .dataTable tbody td strong {
+    color: #37332f;
+    font-size: 14px !important;
+  }
+
+  .dataTable tbody td:nth-child(3) {
+    grid-column: 1 / -1;
+    padding: 11px 12px !important;
+    border-radius: 8px;
+    background: #f3f8f6;
+  }
+
+  .statusBadge {
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .detailButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
   }
 }

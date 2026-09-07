@@ -53,7 +53,7 @@ $radius-control: 8px;
   margin-bottom: 12px;
 
   h1 {
-    font-size: 24px;
+    font-size: 30px;
     font-weight: 700;
     color: $text-title;
     margin: 0;
@@ -300,8 +300,8 @@ $radius-control: 8px;
 .noticeIdCell strong {
   display: block;
   overflow: hidden;
-  color: $text-title;
-  font-weight: 600;
+  color: $text-body;
+  font-weight: 400;
   letter-spacing: -0.01em;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -314,7 +314,7 @@ $radius-control: 8px;
 }
 
 .noticeTitleText {
-  font-weight: 600; color: $text-title; display: inline-block; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;
+  font-weight: 400; color: $text-body; display: inline-block; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;
 }
 
 .statusBadge {
@@ -324,11 +324,32 @@ $radius-control: 8px;
   &.hidden, &.draft { background: $danger-subtle; color: $danger; }
 }
 
-.importantBadge {
-  display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; background: $warning-subtle; color: $warning;
-}
+.importantBadge,
 .normalBadge {
-  font-size: 11px; color: $text-caption;
+  min-width: 42px;
+  min-height: 24px;
+  padding: 0 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 1px solid;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.importantBadge {
+  border-color: $warning;
+  background: $warning-subtle;
+  color: $warning;
+}
+
+.normalBadge {
+  border-color: $border-color;
+  background: #faf8f5;
+  color: $text-caption;
 }
 
 .editBtn {
@@ -656,6 +677,10 @@ $radius-control: 8px;
 @media (max-width: 767px) {
   .ornamentLine {
     display: none;
+  }
+
+  .pageToolbar h1 {
+    font-size: 24px;
   }
 }
 

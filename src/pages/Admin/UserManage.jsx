@@ -603,6 +603,13 @@ const UserManage = () => {
         === 'admin'
     ).length
 
+  const activeAdminCount =
+    members.filter(
+      (member) =>
+        member.role === 'admin'
+        && member.status === 'active'
+    ).length
+
 
   const todayCount =
     members.filter(
@@ -817,25 +824,26 @@ const UserManage = () => {
 
 
       if (
-        draftStatus === 'suspended'
-        && selectedMember.status
-          !== 'suspended'
-        && !confirmSuspension
+        selectedMember.role === 'admin'
+        && selectedMember.status === 'active'
+        && (draftRole !== 'admin' || draftStatus !== 'active')
+        && activeAdminCount <= 1
       ) {
-        setConfirmSuspension(true)
+        setToastMessage(
+          '최소 한 명의 정상 관리자 계정이 필요합니다.'
+        )
 
         return
       }
 
 
       if (
-        selectedMember.role === 'admin'
-        && draftRole !== 'admin'
-        && adminCount <= 1
+        draftStatus === 'suspended'
+        && selectedMember.status
+          !== 'suspended'
+        && !confirmSuspension
       ) {
-        setToastMessage(
-          '최소 한 명의 관리자 계정이 필요합니다.'
-        )
+        setConfirmSuspension(true)
 
         return
       }
