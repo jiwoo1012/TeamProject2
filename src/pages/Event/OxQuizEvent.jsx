@@ -87,6 +87,7 @@ const OxQuizEvent = () => {
         eventId: EVENT_ID, eventTitle: EVENT_TITLE, rewardType: 'point',
         rewardRank: null, rewardName: `${finalCorrectCount}문제 정답 포인트`,
         rewardProductId: null, rewardPoints: finalPoints, isWinner: finalPoints > 0,
+        outcome: 'completed', correctCount: finalCorrectCount,
       })
       setSaveMessage(`${finalPoints.toLocaleString('ko-KR')}P가 지급되었습니다.`)
     } catch (error) {

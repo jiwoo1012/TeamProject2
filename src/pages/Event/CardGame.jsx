@@ -110,6 +110,7 @@ const CardGame = () => {
         eventId: EVENT_ID, eventTitle: EVENT_TITLE, rewardType: 'point',
         rewardRank: null, rewardName: `${pairCount}쌍 성공 포인트 (${outcome})`,
         rewardProductId: null, rewardPoints: finalScore, isWinner: finalScore > 0,
+        outcome, matchedPairs: pairCount,
       })
       setSaveMessage(finalScore > 0 ? `${finalScore.toLocaleString('ko-KR')}P가 지급되었습니다.` : '참여 내역이 저장되었습니다.')
     } catch (error) {
