@@ -42,9 +42,9 @@ const stylingImages = Object.values(
 )
 
 const banners = [
-  bannerOne,
-  bannerTwo,
-  bannerThree,
+  { image: bannerOne, to: `${PATHS.events}/roulette`, label: '막동이 룰렛 이벤트' },
+  { image: bannerTwo, to: `${PATHS.eventReady}/ox-quiz`, label: '막동이 OX 퀴즈 이벤트' },
+  { image: bannerThree, to: `${PATHS.eventReady}/card-game`, label: '짝꿍 카드 이벤트' },
 ]
 
 const PAGE_SIZE = 12
@@ -288,7 +288,7 @@ const ProductList = () => {
 
     return () =>
       window.clearInterval(timer)
-  }, [])
+  }, [bannerIndex])
 
   useEffect(() => {
     if (window.matchMedia('(max-width: 767px)').matches) {
@@ -883,21 +883,36 @@ const ProductList = () => {
           >
             {banners.map(
               (banner, index) => (
-                <img
-                  className={`${styles.banner} ${
+                <Link
+                  className={`${styles.bannerLink} ${
                     index ===
                     bannerIndex
                       ? styles.activeBanner
                       : ''
                   }`}
-                  src={banner}
-                  alt={`JAJAK 기획전 배너 ${
-                    index + 1
-                  }`}
-                  key={banner}
-                />
+                  to={banner.to}
+                  aria-label={`${banner.label} 페이지로 이동`}
+                  aria-hidden={index !== bannerIndex}
+                  tabIndex={index === bannerIndex ? 0 : -1}
+                  key={banner.image}
+                >
+                  <img className={styles.banner} src={banner.image} alt={banner.label} />
+                </Link>
               )
             )}
+            <div className={styles.bannerDots} role="tablist" aria-label="이벤트 배너 선택">
+              {banners.map((banner, index) => (
+                <button
+                  type="button"
+                  key={banner.image}
+                  className={index === bannerIndex ? styles.activeDot : ''}
+                  onClick={() => setBannerIndex(index)}
+                  role="tab"
+                  aria-selected={index === bannerIndex}
+                  aria-label={`${index + 1}번 배너 보기`}
+                />
+              ))}
+            </div>
           </div>
 
         </div>

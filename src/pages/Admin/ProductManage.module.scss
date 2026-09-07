@@ -1222,3 +1222,246 @@ $radius-control: 8px;
     font-size: 16px;
   }
 }
+
+// Mobile layout only. Desktop declarations above remain unchanged.
+@media (max-width: 767px) {
+  .page {
+    width: 100%;
+    min-width: 0;
+    padding: 20px 16px 28px;
+    overflow-x: hidden;
+  }
+
+  .pageToolbar {
+    gap: 12px;
+
+    h1 {
+      min-width: 0;
+      font-size: 24px;
+    }
+
+    button {
+      flex: 0 0 auto;
+      height: 36px;
+      padding: 0 12px;
+    }
+  }
+
+  .ornamentLine {
+    margin: 12px 0 20px;
+  }
+
+  .summaryArea {
+    margin-bottom: 16px;
+  }
+
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .summaryCard {
+    min-width: 0;
+    min-height: 112px;
+    padding: 14px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .summaryIcon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+
+    img {
+      width: 22px;
+      height: 22px;
+    }
+  }
+
+  .summaryContent {
+    width: 100%;
+    min-width: 0;
+
+    h3,
+    small {
+      overflow-wrap: anywhere;
+    }
+
+    p {
+      font-size: 20px;
+    }
+  }
+
+  .managementGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .mainSection,
+  .editPanel,
+  .analyticsCard {
+    min-width: 0;
+    padding: 16px;
+  }
+
+  .filterBar {
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .searchField {
+    flex: 1 0 100%;
+    min-width: 0;
+  }
+
+  .selectField {
+    flex: 1 1 0;
+    min-width: 0;
+
+    select {
+      width: 100%;
+    }
+  }
+
+  .resetButton {
+    flex: 0 0 auto;
+  }
+
+  .sectionHeading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+
+    .titleWrap {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .actions {
+      width: 100%;
+
+      .bulkButton,
+      .registerButton {
+        flex: 1 1 0;
+        min-width: 0;
+        padding-inline: 8px;
+      }
+    }
+  }
+
+  .tableWrap {
+    width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .dataTable {
+    min-width: 720px;
+  }
+
+  .statusBadge {
+    white-space: nowrap;
+  }
+
+  .pagination {
+    max-width: 100%;
+    gap: 4px;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 2px 0 4px;
+
+    button {
+      flex: 0 0 32px;
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .panelTopHeader h2 {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .selectedProductCard {
+    min-width: 0;
+
+    .cardThumb {
+      width: 68px;
+      height: 68px;
+    }
+  }
+
+  .formRow {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 6px;
+
+    input,
+    select {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+
+  .tagEditor {
+    width: 100%;
+  }
+
+  .pairingPicker {
+    grid-template-columns: minmax(0, 1fr);
+    max-height: 280px;
+  }
+
+  .tasteInputs,
+  .timeInputs,
+  .metricsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .albumRow {
+    gap: 8px;
+  }
+
+  .imageEditTile {
+    min-width: 0;
+    flex-basis: calc(50% - 4px);
+  }
+
+  .nextActionWrap,
+  .stepFooter,
+  .panelFooterActions {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .stepFooter .finalActions {
+    margin-left: auto;
+  }
+
+  .analyticsColumn {
+    min-width: 0;
+  }
+
+  .statusOverview {
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .activityBars div {
+    gap: 8px;
+
+    span {
+      width: 68px;
+    }
+  }
+
+  .toast {
+    right: 16px;
+    bottom: 20px;
+    left: 16px;
+    justify-content: space-between;
+  }
+}

@@ -1,6 +1,8 @@
-import { useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { collection, onSnapshot } from 'firebase/firestore'
 import eventsData from '../../data/events.json'
+import { db } from '../../firebase/firebase'
 import { PATHS } from '../../routes/paths'
 import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 
@@ -24,11 +26,26 @@ const PAGE_SIZE = 3
 
 
 const resolveBanner = (bannerUrl) => {
+  if (/^(data:|https?:\/\/)/.test(bannerUrl ?? '')) return bannerUrl
   const fileName = bannerUrl?.split('/').pop()
 
   return Object.entries(bannerImages).find(([path]) =>
     path.endsWith(`/${fileName}`)
   )?.[1]
+}
+
+const normalizeEvent = (source, fallbackId) => {
+  const event = source.event ?? source
+  return {
+    ...event,
+    id: event.eventId ?? source.id ?? fallbackId,
+    image: event.image ?? {},
+    eventPeriod: event.eventPeriod ?? { startDate: '', endDate: '' },
+    participationLimit: event.participationLimit ?? { type: 'per_user_total', maxCount: 1 },
+    precautions: event.precautions ?? [],
+    isActive: event.isActive !== false && event.status !== 'ended',
+    bannerSrc: resolveBanner(event.image?.bannerUrl),
+  }
 }
 
 
@@ -41,20 +58,25 @@ const formatDate = (date) => {
 
 const EventList = () => {
   const [currentPage, setCurrentPage] = useState(1)
+  const [events, setEvents] = useState(() => eventsData.map(
+    (item, index) => normalizeEvent(item, `event-${index + 1}`)
+  ))
   const eventGridRef = useRef(null)
 
+  useEffect(() => onSnapshot(collection(db, 'events'), (snapshot) => {
+    if (snapshot.empty) return
+    setEvents(snapshot.docs.map((item) => normalizeEvent(
+      { id: item.id, ...item.data() },
+      item.id
+    )))
+  }, (error) => {
+    console.error('이벤트 목록 조회 실패:', error)
+  }), [])
 
-  const events = eventsData.map(
-    ({ event }, index) => ({
-      ...event,
-
-      id: `event-${index + 1}`,
-
-      bannerSrc: resolveBanner(
-        event.image.bannerUrl
-      ),
-    })
-  )
+  useEffect(() => {
+    const lastPage = Math.max(1, Math.ceil(events.length / PAGE_SIZE))
+    setCurrentPage((page) => Math.min(page, lastPage))
+  }, [events.length])
 
 
   const totalPages = Math.max(
@@ -63,10 +85,10 @@ const EventList = () => {
   )
 
 
-  const visibleEvents = events.slice(
+  const visibleEvents = useMemo(() => events.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE
-  )
+  ), [currentPage, events])
 
   const featuredEvent = visibleEvents.find((event) => event.isActive)
 
@@ -205,6 +227,8 @@ const EventList = () => {
               destination = `${PATHS.eventReady}/ox-quiz`
             } else if (isCardGame) {
               destination = `${PATHS.eventReady}/card-game`
+            } else {
+              destination = `${PATHS.eventReady}/${encodeURIComponent(event.id)}`
             }
 
 

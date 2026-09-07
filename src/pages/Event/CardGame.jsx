@@ -52,7 +52,6 @@ const CardGame = () => {
   const hasFinishedRef = useRef(false)
   const scoreRef = useRef(0)
   const matchedCountRef = useRef(0)
-  const userRef = useRef(null)
 
   const [phase, setPhase] = useState('intro')
   const [previewSeconds, setPreviewSeconds] = useState(PREVIEW_SECONDS)
@@ -81,7 +80,6 @@ const CardGame = () => {
     let active = true
     const unsubscribe = subscribeToAuthState(async (currentUser) => {
       const member = currentUser && !currentUser.isAnonymous ? currentUser : null
-      userRef.current = member
       if (!member) return
 
       try {
@@ -99,12 +97,6 @@ const CardGame = () => {
   }, [])
 
   const saveParticipation = useCallback(async (finalScore, outcome, pairCount) => {
-    const user = userRef.current
-    if (!user) {
-      setSaveMessage('로그인 상태에서만 포인트와 참여 내역이 저장됩니다.')
-      return
-    }
-
     try {
       await saveEventParticipation({
         eventId: EVENT_ID, eventTitle: EVENT_TITLE, rewardType: 'point',
@@ -114,9 +106,11 @@ const CardGame = () => {
       })
       setSaveMessage(finalScore > 0 ? `${finalScore.toLocaleString('ko-KR')}P가 지급되었습니다.` : '참여 내역이 저장되었습니다.')
     } catch (error) {
-      setSaveMessage(error.message === 'ALREADY_PARTICIPATED'
-        ? '오늘의 참여 기회를 이미 사용했습니다.'
-        : '결과를 저장하지 못했습니다. 잠시 후 다시 확인해주세요.')
+      setSaveMessage(error.message === 'LOGIN_REQUIRED'
+        ? '로그인 상태에서만 포인트와 참여 내역이 저장됩니다.'
+        : error.message === 'ALREADY_PARTICIPATED'
+          ? '오늘의 참여 기회를 이미 사용했습니다.'
+          : '결과를 저장하지 못했습니다. 잠시 후 다시 확인해주세요.')
     }
   }, [])
 

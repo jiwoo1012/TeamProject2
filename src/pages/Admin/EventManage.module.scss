@@ -327,6 +327,39 @@ $radius-control: 8px;
   gap: 14px;
 }
 
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 20px;
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    box-sizing: border-box;
+    line-height: 1;
+    border: 1px solid $border-color;
+    border-radius: 50%;
+    color: $text-body;
+    background: $bg-surface;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    &.activePage {
+      color: #fff;
+      background: $primary;
+      border-color: $primary;
+    }
+  }
+}
+
 .emptyState {
   padding: 60px 0; text-align: center; color: $text-caption; font-size: 14px;
 }
@@ -478,7 +511,7 @@ $radius-control: 8px;
 
 .dateFields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .bannerUpload { display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 16 / 7; overflow: hidden; color: $text-caption; background: #f2efe9; border: 1px dashed $border-color; border-radius: 8px; cursor: pointer; img { width: 100%; height: 100%; object-fit: cover; } }
-.createButton { height: 40px; margin-top: 8px; color: #fff; background: $primary; border: 0; border-radius: $radius-control; font-size: 13px; font-weight: 700; cursor: pointer; &:hover { background: $primary-hover; } }
+.createButton { height: 40px; margin-top: 8px; color: #fff; background: $primary; border: 0; border-radius: $radius-control; font-size: 13px; font-weight: 700; cursor: pointer; &:hover { background: $primary-hover; } text-align: center;}
 .winnerManageBody { display: flex; flex-direction: column; gap: 10px; > p { margin: 0 0 6px; color: $text-caption; font-size: 12px; } }
 .winnerEventRow { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px; background: #fbfaf8; border: 1px solid $border-color; border-radius: 8px; span { min-width: 0; display: flex; flex-direction: column; gap: 3px; } strong { overflow: hidden; color: $text-title; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; } small { color: $text-caption; font-size: 11px; } button { flex-shrink: 0; padding: 6px 9px; color: $primary; background: #fff; border: 1px solid $primary; border-radius: 6px; font-size: 11px; cursor: pointer; } }
 
@@ -525,4 +558,261 @@ $radius-control: 8px;
 .toast {
   position: fixed; bottom: 32px; right: 32px; background: #2b302d; color: #ffffff; padding: 12px 18px; border-radius: 8px; box-shadow: $shadow-md; display: flex; align-items: center; gap: 12px; font-size: 13px; z-index: 1000;
   button { background: none; border: none; color: #9ea4a0; cursor: pointer; font-size: 16px; }
+}
+
+// Mobile layout only. Desktop declarations above remain unchanged.
+@media (max-width: 767px) {
+  .page {
+    width: 100%;
+    min-width: 0;
+    padding: 20px 16px 28px;
+    overflow-x: hidden;
+  }
+
+  .pageToolbar {
+    gap: 12px;
+
+    h1 {
+      min-width: 0;
+      font-size: 24px;
+    }
+
+    button {
+      flex: 0 0 auto;
+      height: 36px;
+      padding: 0 12px;
+    }
+  }
+
+  .ornamentLine {
+    margin: 12px 0 20px;
+  }
+
+  .topFilterBar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+
+    .tabGroup {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+
+      button {
+        width: 100%;
+        min-width: 0;
+        padding: 0 10px;
+        justify-content: center;
+      }
+    }
+  }
+
+  .managementButtons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+
+    .winnerButton,
+    .registerButton {
+      width: 100%;
+      min-width: 0;
+      padding: 0 10px;
+    }
+  }
+
+  .summaryArea {
+    margin-bottom: 16px;
+  }
+
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .summaryCard {
+    min-width: 0;
+    min-height: 112px;
+    padding: 14px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .summaryIcon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+
+    img {
+      width: 22px;
+      height: 22px;
+    }
+  }
+
+  .summaryContent {
+    width: 100%;
+    min-width: 0;
+
+    h3,
+    small {
+      overflow-wrap: anywhere;
+    }
+
+    p {
+      font-size: 20px;
+    }
+  }
+
+  .managementGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .mainSection,
+  .detailPanel,
+  .analyticsCard {
+    min-width: 0;
+    padding: 16px;
+  }
+
+  .filterBar {
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .searchField {
+    flex: 1 0 100%;
+    min-width: 0;
+  }
+
+  .selectField {
+    flex: 1 1 0;
+    min-width: 0;
+
+    select {
+      width: 100%;
+    }
+  }
+
+  .resetButton {
+    flex: 0 0 auto;
+  }
+
+  .eventCard {
+    min-width: 0;
+    padding: 14px;
+
+    .cardHeaderRow,
+    .cardBodyRow,
+    .cardFooterRow {
+      min-width: 0;
+    }
+
+    .cardHeaderRow {
+      align-items: flex-start;
+      gap: 8px;
+
+      .badges {
+        min-width: 0;
+        flex-wrap: wrap;
+      }
+
+      .evId {
+        flex: 0 0 auto;
+      }
+    }
+
+    .cardBodyRow {
+      align-items: flex-start;
+
+      .evTextInfo {
+        min-width: 0;
+      }
+    }
+
+    .cardFooterRow {
+      flex-wrap: wrap;
+      row-gap: 6px;
+    }
+  }
+
+  .pagination {
+    max-width: 100%;
+    gap: 4px;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 2px 0 4px;
+
+    button {
+      flex: 0 0 32px;
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .panelTopHeader h2 {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .selectedSummaryCard {
+    min-width: 0;
+
+    .scInfo {
+      min-width: 0;
+
+      dl div {
+        min-width: 0;
+
+        dd {
+          min-width: 0;
+          overflow-wrap: anywhere;
+        }
+      }
+    }
+  }
+
+  .detailTabNav {
+    width: 100%;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .dateFields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bannerUpload {
+    min-height: 120px;
+  }
+
+  .winnerEventRow {
+    align-items: flex-start;
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .panelFooterActions {
+    gap: 8px;
+
+    .deleteBtn,
+    .saveBtn {
+      flex: 1 1 0;
+    }
+  }
+
+  .analyticsColumn {
+    min-width: 0;
+  }
+
+  .toast {
+    right: 16px;
+    bottom: 20px;
+    left: 16px;
+    justify-content: space-between;
+  }
 }
