@@ -48,6 +48,7 @@ service cloud.firestore {
     function canUsePoints() {
       return request.resource.data.points is int
         && request.resource.data.points >= 0
+        && request.resource.data.points <= 10000
         && request.resource.data.points <= resource.data.points
         && request.resource.data
           .diff(resource.data)
@@ -69,6 +70,7 @@ service cloud.firestore {
           == participation.eventId + '_' + userId
         && request.resource.data.points
           == resource.data.points + participation.rewardPoints
+        && request.resource.data.points <= 10000
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'points',
           'lastEventRewardId',
@@ -208,7 +210,25 @@ service cloud.firestore {
           && historyId == 'event_' + request.resource.data.eventId + '_' + userId
           && get(
             /databases/$(database)/documents/eventParticipations/$(request.resource.data.eventId + '_' + userId)
-          ).data.rewardPoints == request.resource.data.amount);
+          ).data.rewardPoints == request.resource.data.amount)
+          || (isOwner(userId)
+          && request.resource.data.type == 'use'
+          && request.resource.data.amount is int
+          && request.resource.data.amount > 0
+          && request.resource.data.orderId is string
+          && historyId == 'order_' + request.resource.data.orderId
+          && getAfter(
+            /databases/$(database)/documents/orders/$(request.resource.data.orderId)
+          ).data.userId == userId
+          && getAfter(
+            /databases/$(database)/documents/orders/$(request.resource.data.orderId)
+          ).data.orderId == request.resource.data.orderId
+          && getAfter(
+            /databases/$(database)/documents/orders/$(request.resource.data.orderId)
+          ).data.usedPoints == request.resource.data.amount
+          && getAfter(
+            /databases/$(database)/documents/orders/$(request.resource.data.orderId)
+          ).data.status == 'paid');
 
         allow update, delete:
           if false;

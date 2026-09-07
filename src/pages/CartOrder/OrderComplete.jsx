@@ -152,7 +152,7 @@ const OrderComplete = () => {
       </section>
 
       <div className={styles.actions}>
-        <button type="button" className={styles.homeButton} onClick={() => navigate(PATHS.home)}>홈으로 이동</button>
+        <button type="button" className={styles.homeButton} onClick={() => navigate(PATHS.home, { state: { skipJourney: true } })}>홈으로 이동</button>
         <button type="button" className={styles.historyButton} onClick={() => navigate('/mypage/orders')}>주문 내역 확인</button>
       </div>
     </article>

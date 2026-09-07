@@ -1,257 +1,22 @@
 import {
+  useCallback,
+  useEffect,
   useMemo,
   useState,
 } from 'react'
 
+import {
+  getCollection,
+  updateDocument,
+} from '../../firebase/firestore'
+import {
+  ORDER_STATUS,
+  getOrderStatusLabel,
+} from '../../constants/orderStatus'
+
 import adminTopOrnament from '../../assets/images/admin/adminTopOrnament.svg'
 
 import styles from './OrdersManage.module.scss'
-
-
-// ========================================
-// 임시 주문 데이터
-// Firestore 연결 전 화면 확인용
-// ========================================
-
-const initialOrders = [
-  {
-    id: '20260907001',
-    customer: '홍길동',
-    phone: '010-1234-5678',
-    email: 'hong@gmail.com',
-    product: '복순도가 손막걸리 외 2건',
-    date: '2026.09.07',
-    time: '10:32',
-    amount: 45600,
-    payment: '결제 완료',
-    delivery: '배송 준비',
-    address: '서울시 강남구 테헤란로 123, 402호',
-    request: '부재 시 문 앞에 놓아주세요.',
-    courier: '',
-    trackingNumber: '',
-    shipDate: '2026-09-08',
-    packageStatus: '일반 포장',
-    memo: '',
-    items: [
-      {
-        name: '복순도가 손막걸리',
-        option: '935ml',
-        price: 12000,
-        quantity: 1,
-      },
-      {
-        name: '유기 방짜 술잔',
-        option: '기본',
-        price: 18000,
-        quantity: 1,
-      },
-      {
-        name: '곶감 호두말이',
-        option: '1세트',
-        price: 11600,
-        quantity: 1,
-      },
-    ],
-  },
-  {
-    id: '20260907002',
-    customer: '김지현',
-    phone: '010-3344-8821',
-    email: 'jihyun@gmail.com',
-    product: '느린마을 막걸리 외 1건',
-    date: '2026.09.07',
-    time: '09:48',
-    amount: 32400,
-    payment: '결제 완료',
-    delivery: '배송 중',
-    address: '서울시 마포구 월드컵북로 42',
-    request: '배송 전 연락 부탁드립니다.',
-    courier: 'CJ대한통운',
-    trackingNumber: '580123456789',
-    shipDate: '2026-09-07',
-    packageStatus: '일반 포장',
-    memo: '',
-    items: [
-      {
-        name: '느린마을 막걸리',
-        option: '750ml',
-        price: 12000,
-        quantity: 1,
-      },
-      {
-        name: '백자 술잔',
-        option: '2개 세트',
-        price: 20400,
-        quantity: 1,
-      },
-    ],
-  },
-  {
-    id: '20260906003',
-    customer: '이서연',
-    phone: '010-9832-1104',
-    email: 'seoyeon@gmail.com',
-    product: '문배술 외 1건',
-    date: '2026.09.06',
-    time: '17:21',
-    amount: 69000,
-    payment: '환불 요청',
-    delivery: '배송 준비',
-    address: '경기도 성남시 분당구 판교로 15',
-    request: '선물용입니다. 포장 확인 부탁드립니다.',
-    courier: '',
-    trackingNumber: '',
-    shipDate: '2026-09-08',
-    packageStatus: '선물 포장',
-    memo: '',
-    items: [
-      {
-        name: '문배술 40',
-        option: '375ml',
-        price: 45000,
-        quantity: 1,
-      },
-      {
-        name: '전통주 선물 포장',
-        option: '프리미엄',
-        price: 24000,
-        quantity: 1,
-      },
-    ],
-  },
-  {
-    id: '20260906004',
-    customer: '박민준',
-    phone: '010-2841-9983',
-    email: 'minjun@gmail.com',
-    product: '서울의 밤 외 2건',
-    date: '2026.09.06',
-    time: '15:05',
-    amount: 53800,
-    payment: '결제 완료',
-    delivery: '배송 완료',
-    address: '인천시 연수구 송도과학로 88',
-    request: '경비실에 맡겨주세요.',
-    courier: '한진택배',
-    trackingNumber: '420123789456',
-    shipDate: '2026-09-06',
-    packageStatus: '일반 포장',
-    memo: '',
-    items: [
-      {
-        name: '서울의 밤',
-        option: '375ml',
-        price: 23000,
-        quantity: 1,
-      },
-      {
-        name: '약과',
-        option: '8개입',
-        price: 12800,
-        quantity: 1,
-      },
-      {
-        name: '유리 술잔',
-        option: '2개 세트',
-        price: 18000,
-        quantity: 1,
-      },
-    ],
-  },
-  {
-    id: '20260905005',
-    customer: '최유진',
-    phone: '010-6621-3378',
-    email: 'yujin@gmail.com',
-    product: '화요 25 외 1건',
-    date: '2026.09.05',
-    time: '13:44',
-    amount: 62500,
-    payment: '결제 완료',
-    delivery: '배송 중',
-    address: '대전시 서구 둔산로 112',
-    request: '',
-    courier: '롯데택배',
-    trackingNumber: '239821774401',
-    shipDate: '2026-09-05',
-    packageStatus: '안전 포장',
-    memo: '',
-    items: [
-      {
-        name: '화요 25',
-        option: '375ml',
-        price: 32500,
-        quantity: 1,
-      },
-      {
-        name: '육포 안주 세트',
-        option: '기본',
-        price: 30000,
-        quantity: 1,
-      },
-    ],
-  },
-  {
-    id: '20260905006',
-    customer: '정하늘',
-    phone: '010-4490-2171',
-    email: 'haneul@gmail.com',
-    product: '복순도가 손막걸리',
-    date: '2026.09.05',
-    time: '11:22',
-    amount: 12000,
-    payment: '결제 완료',
-    delivery: '결제 완료',
-    address: '부산시 해운대구 센텀중앙로 67',
-    request: '',
-    courier: '',
-    trackingNumber: '',
-    shipDate: '2026-09-08',
-    packageStatus: '일반 포장',
-    memo: '',
-    items: [
-      {
-        name: '복순도가 손막걸리',
-        option: '935ml',
-        price: 12000,
-        quantity: 1,
-      },
-    ],
-  },
-  {
-    id: '20260904007',
-    customer: '윤서준',
-    phone: '010-2233-7790',
-    email: 'seojun@gmail.com',
-    product: '감홍로 외 1건',
-    date: '2026.09.04',
-    time: '18:31',
-    amount: 78000,
-    payment: '결제 완료',
-    delivery: '배송 완료',
-    address: '광주시 북구 첨단과기로 81',
-    request: '',
-    courier: 'CJ대한통운',
-    trackingNumber: '580924521789',
-    shipDate: '2026-09-04',
-    packageStatus: '안전 포장',
-    memo: '',
-    items: [
-      {
-        name: '감홍로',
-        option: '400ml',
-        price: 58000,
-        quantity: 1,
-      },
-      {
-        name: '전통 유리잔',
-        option: '2개입',
-        price: 20000,
-        quantity: 1,
-      },
-    ],
-  },
-]
 
 
 const quickFilters = [
@@ -273,19 +38,110 @@ const deliverySteps = [
 ]
 
 
-const weeklyData = [
-  { day: '09/01', order: 68, cancel: 22 },
-  { day: '09/02', order: 74, cancel: 30 },
-  { day: '09/03', order: 58, cancel: 18 },
-  { day: '09/04', order: 79, cancel: 25 },
-  { day: '09/05', order: 65, cancel: 20 },
-  { day: '09/06', order: 83, cancel: 28 },
-  { day: '09/07', order: 72, cancel: 17 },
-]
-
-
 const formatPrice = (price) =>
   `${Number(price).toLocaleString('ko-KR')}원`
+
+
+const formatOrderId = (orderId = '') => (
+  orderId.length > 3
+    ? `${orderId.slice(0, 3)}…`
+    : orderId
+)
+
+
+const todayOrderDate = new Intl.DateTimeFormat(
+  'ko-CA'
+).format(new Date()).replaceAll('-', '.')
+
+
+const getTimestampDate = (value) => {
+  const date = value?.toDate?.() || new Date(value || 0)
+
+  return Number.isNaN(date.getTime())
+    ? null
+    : date
+}
+
+
+const getPaymentMethodLabel = (method) => ({
+  card: '신용카드',
+  bank: '무통장 입금',
+  kakao: '카카오페이',
+}[method] || method || '-')
+
+
+const getDeliveryLabel = (status) => ({
+  [ORDER_STATUS.PAID]: '결제 완료',
+  [ORDER_STATUS.PREPARING]: '배송 준비',
+  [ORDER_STATUS.SHIPPED]: '배송 중',
+  [ORDER_STATUS.DELIVERED]: '배송 완료',
+  [ORDER_STATUS.CANCELLED]: '주문 취소',
+}[status] || getOrderStatusLabel(status))
+
+
+const normalizeOrder = (document, member) => {
+  const createdDate = getTimestampDate(document.createdAt)
+  const updatedDate = getTimestampDate(document.updatedAt)
+  const shipping = document.shipping || {}
+  const items = Array.isArray(document.items)
+    ? document.items.map((item) => ({
+        name: item.productName || item.name || '상품',
+        option: item.option || '기본',
+        price: Number(item.price || 0),
+        quantity: Number(item.quantity || 1),
+        imageUrl: item.imageUrl || '',
+      }))
+    : []
+  const firstItem = items[0]?.name || '주문 상품'
+  const product = items.length > 1
+    ? `${firstItem} 외 ${items.length - 1}건`
+    : firstItem
+  const isCancelled = document.status === ORDER_STATUS.CANCELLED
+
+  return {
+    id: document.id,
+    userId: document.userId || '',
+    customer: document.customerName || shipping.recipient || '회원',
+    phone: shipping.phone || '-',
+    email: member?.email || '-',
+    product,
+    date: createdDate
+      ? new Intl.DateTimeFormat('ko-CA').format(createdDate).replaceAll('-', '.')
+      : '-',
+    time: createdDate
+      ? new Intl.DateTimeFormat('ko-KR', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        }).format(createdDate)
+      : '-',
+    createdAtMs: createdDate?.getTime() || 0,
+    updatedTime: updatedDate
+      ? new Intl.DateTimeFormat('ko-KR', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        }).format(updatedDate)
+      : '-',
+    amount: Number(document.totalAmount || 0),
+    payment: isCancelled ? '취소 완료' : '결제 완료',
+    delivery: getDeliveryLabel(document.status),
+    status: document.status,
+    address: [shipping.address, shipping.detailAddress]
+      .filter(Boolean)
+      .join(' ') || '-',
+    request: shipping.memo || '',
+    courier: document.carrier || '',
+    trackingNumber: document.trackingNumber || '',
+    shipDate: document.expectedDate || '',
+    paymentMethod: getPaymentMethodLabel(document.paymentMethod),
+    productAmount: Number(document.productAmount || 0),
+    shippingFee: Number(document.shippingFee || 0),
+    discountAmount: Number(document.discountAmount || 0),
+    usedPoints: Number(document.usedPoints || 0),
+    items,
+  }
+}
 
 
 // ========================================
@@ -338,9 +194,45 @@ const TruckIcon = () => (
 )
 
 
+const SummaryIcon = ({ type }) => {
+  if (type === 'today') {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="4" y="5" width="16" height="15" rx="2" />
+        <path d="M8 3v4M16 3v4M4 10h16M8 14h3M8 17h6" />
+      </svg>
+    )
+  }
+
+  if (type === 'ready') {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5v-9Z" />
+        <path d="m3 7.5 9 4.5 9-4.5M12 12v9M8 5l9 4.5" />
+      </svg>
+    )
+  }
+
+  if (type === 'request') {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3 21 19H3L12 3Z" />
+        <path d="M12 9v4M12 16.5v.5" />
+      </svg>
+    )
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5" />
+    </svg>
+  )
+}
+
+
 const OrdersManage = () => {
   const [orders, setOrders] =
-    useState(initialOrders)
+    useState([])
 
   const [searchQuery, setSearchQuery] =
     useState('')
@@ -363,13 +255,20 @@ const OrdersManage = () => {
   const [isRefreshing, setIsRefreshing] =
     useState(false)
 
+  const [isLoading, setIsLoading] =
+    useState(true)
+
+  const [loadError, setLoadError] =
+    useState('')
+
+  const [isSaving, setIsSaving] =
+    useState(false)
+
   const [shippingForm, setShippingForm] =
     useState({
       courier: '',
       trackingNumber: '',
       shipDate: '',
-      packageStatus: '일반 포장',
-      memo: '',
     })
 
   const [checklist, setChecklist] =
@@ -389,14 +288,107 @@ const OrdersManage = () => {
     ) || null
 
 
+  const loadOrders = useCallback(async () => {
+    setIsLoading(true)
+    setLoadError('')
+
+    try {
+      const [orderDocuments, members] = await Promise.all([
+        getCollection('orders'),
+        getCollection('users'),
+      ])
+      const memberMap = new Map(
+        members.map((member) => [member.id, member])
+      )
+
+      setOrders(
+        orderDocuments.map((order) => (
+          normalizeOrder(order, memberMap.get(order.userId))
+        ))
+      )
+    } catch (error) {
+      console.error('관리자 주문 목록 조회 실패:', error)
+      setOrders([])
+      setLoadError('주문 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.')
+    } finally {
+      setIsLoading(false)
+      setIsRefreshing(false)
+    }
+  }, [])
+
+
+  useEffect(() => {
+    loadOrders()
+  }, [loadOrders])
+
+
   // ========================================
   // 지표
   // ========================================
 
-  const totalCount = 1234
-  const todayCount = 34
-  const readyCount = 12
-  const requestCount = 4
+  const totalCount = orders.length
+  const todayCount = orders.filter(
+    (order) => order.date === todayOrderDate
+  ).length
+  const readyCount = orders.filter(
+    (order) => (
+      !order.payment.includes('환불')
+      && !order.payment.includes('취소')
+      && (
+        order.delivery === '배송 준비'
+        || order.delivery === '결제 완료'
+      )
+    )
+  ).length
+  const shippingCount = orders.filter(
+    (order) => order.delivery === '배송 중'
+  ).length
+  const completedCount = orders.filter(
+    (order) => order.delivery === '배송 완료'
+  ).length
+  const requestCount = orders.filter(
+    (order) => (
+      order.payment.includes('환불')
+      || order.payment.includes('취소')
+    )
+  ).length
+  const statusTotal = Math.max(totalCount, 1)
+  const readyEnd = (readyCount / statusTotal) * 100
+  const shippingEnd = readyEnd + (shippingCount / statusTotal) * 100
+  const completedEnd = shippingEnd + (completedCount / statusTotal) * 100
+  const recentDates = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date()
+    date.setHours(0, 0, 0, 0)
+    date.setDate(date.getDate() - (6 - index))
+
+    return {
+      key: new Intl.DateTimeFormat('ko-CA')
+        .format(date)
+        .replaceAll('-', '.'),
+      day: new Intl.DateTimeFormat('ko-KR', {
+        month: '2-digit',
+        day: '2-digit',
+      }).format(date).replace('. ', '/').replace('.', ''),
+    }
+  })
+  const weeklyData = recentDates.map((date) => ({
+    ...date,
+    order: orders.filter((order) => order.date === date.key).length,
+    cancel: orders.filter((order) => (
+      order.date === date.key
+      && order.status === ORDER_STATUS.CANCELLED
+    )).length,
+  }))
+  const maxWeeklyCount = Math.max(
+    1,
+    ...weeklyData.flatMap((item) => [item.order, item.cancel])
+  )
+  const yesterdayCount = weeklyData.at(-2)?.order || 0
+  const orderChangeRate = yesterdayCount
+    ? ((todayCount - yesterdayCount) / yesterdayCount) * 100
+    : todayCount > 0
+      ? 100
+      : 0
 
 
   const summaryCards = [
@@ -405,32 +397,32 @@ const OrdersManage = () => {
       label: '전체 주문 수',
       value: totalCount,
       unit: '건',
-      caption: '+ 13.78%',
-      subCaption: '지난 주 대비',
+      caption: '현재',
+      subCaption: '조회 주문',
     },
     {
       key: 'today',
       label: '오늘 주문',
       value: todayCount,
       unit: '건',
-      caption: '+ 27.38%',
-      subCaption: '어제 대비',
+      caption: todayOrderDate.slice(5),
+      subCaption: '접수 기준',
     },
     {
       key: 'ready',
       label: '배송 준비',
       value: readyCount,
       unit: '건',
-      caption: '+ 6건',
-      subCaption: '전일 대비',
+      caption: '출고',
+      subCaption: '대기 주문',
     },
     {
       key: 'request',
       label: '취소 / 환불 요청',
       value: requestCount,
       unit: '건',
-      caption: '+ 3건',
-      subCaption: '전일 대비',
+      caption: '확인',
+      subCaption: '필요 주문',
     },
   ]
 
@@ -480,11 +472,24 @@ const OrdersManage = () => {
 
         if (
           quickFilter ===
+          '오늘 주문'
+        ) {
+          matchesQuick =
+            order.date ===
+            todayOrderDate
+        }
+
+        if (
+          quickFilter ===
           '배송 준비'
         ) {
           matchesQuick =
-            order.delivery ===
-            '배송 준비'
+            !order.payment.includes('환불')
+            && !order.payment.includes('취소')
+            && (
+              order.delivery === '배송 준비'
+              || order.delivery === '결제 완료'
+            )
         }
 
         if (
@@ -510,9 +515,8 @@ const OrdersManage = () => {
           '취소 / 환불'
         ) {
           matchesQuick =
-            order.payment.includes(
-              '환불'
-            )
+            order.payment.includes('환불')
+            || order.payment.includes('취소')
         }
 
         return (
@@ -575,11 +579,7 @@ const OrdersManage = () => {
 
   const handleRefresh = () => {
     setIsRefreshing(true)
-
-    setTimeout(() => {
-      setOrders([...initialOrders])
-      setIsRefreshing(false)
-    }, 550)
+    loadOrders()
   }
 
 
@@ -596,6 +596,33 @@ const OrdersManage = () => {
   }
 
 
+  const handleSummaryFilter = (key) => {
+    const filterByKey = {
+      total: '전체',
+      today: '오늘 주문',
+      ready: '배송 준비',
+      request: '취소 / 환불',
+    }
+
+    setSearchQuery('')
+    setOrderStatus('all')
+    setPaymentStatus('all')
+    setQuickFilter(filterByKey[key])
+  }
+
+
+  const activeSummaryKey =
+    quickFilter === '오늘 주문'
+      ? 'today'
+      : quickFilter === '배송 준비'
+        ? 'ready'
+        : quickFilter === '취소 / 환불'
+          ? 'request'
+          : quickFilter === '전체'
+            ? 'total'
+            : null
+
+
   // ========================================
   // 상세 열기
   // ========================================
@@ -610,11 +637,6 @@ const OrdersManage = () => {
         order.trackingNumber || '',
       shipDate:
         order.shipDate || '',
-      packageStatus:
-        order.packageStatus ||
-        '일반 포장',
-      memo:
-        order.memo || '',
     })
 
     setChecklist({
@@ -667,41 +689,103 @@ const OrdersManage = () => {
   // 배송 시작
   // ========================================
 
-  const handleStartShipping = () => {
+  const saveShipping = async ({ startShipping = false } = {}) => {
     if (!selectedOrder) return
 
-    if (
+    if (startShipping && (
       !shippingForm.courier ||
       !shippingForm.trackingNumber
-    ) {
+    )) {
       window.alert(
         '택배사와 송장번호를 입력해주세요.'
       )
       return
     }
 
-    setOrders((current) =>
-      current.map((order) =>
-        order.id === selectedOrder.id
-          ? {
-              ...order,
-              delivery: '배송 중',
-              courier:
-                shippingForm.courier,
-              trackingNumber:
-                shippingForm.trackingNumber,
-              shipDate:
-                shippingForm.shipDate,
-              packageStatus:
-                shippingForm.packageStatus,
-              memo:
-                shippingForm.memo,
-            }
-          : order
-      )
-    )
+    setIsSaving(true)
 
-    setSelectedOrderId(null)
+    try {
+      const updateData = {
+        carrier: shippingForm.courier,
+        trackingNumber: shippingForm.trackingNumber,
+        expectedDate: shippingForm.shipDate,
+      }
+
+      if (startShipping) {
+        updateData.status = ORDER_STATUS.SHIPPED
+      }
+
+      await updateDocument('orders', selectedOrder.id, updateData)
+      await loadOrders()
+
+      if (startShipping) {
+        setSelectedOrderId(null)
+      }
+    } catch (error) {
+      console.error('주문 배송 정보 저장 실패:', error)
+      window.alert('배송 정보를 저장하지 못했습니다. 다시 시도해주세요.')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+
+  const handleStartShipping = () => {
+    saveShipping({ startShipping: true })
+  }
+
+
+  const handleCompleteDelivery = async () => {
+    if (
+      !selectedOrder ||
+      selectedOrder.status !== ORDER_STATUS.SHIPPED ||
+      isSaving
+    ) {
+      return
+    }
+
+    if (!window.confirm('이 주문을 배송 완료 처리할까요?')) {
+      return
+    }
+
+    setIsSaving(true)
+
+    try {
+      await updateDocument('orders', selectedOrder.id, {
+        status: ORDER_STATUS.DELIVERED,
+      })
+      await loadOrders()
+      setSelectedOrderId(null)
+    } catch (error) {
+      console.error('배송 완료 처리 실패:', error)
+      window.alert('배송 완료 처리에 실패했습니다. 다시 시도해주세요.')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+
+  const handleCancelOrder = async () => {
+    if (!selectedOrder || isSaving) return
+
+    const shouldCancel = window.confirm('이 주문을 취소 처리할까요?')
+
+    if (!shouldCancel) return
+
+    setIsSaving(true)
+
+    try {
+      await updateDocument('orders', selectedOrder.id, {
+        status: ORDER_STATUS.CANCELLED,
+      })
+      await loadOrders()
+      setSelectedOrderId(null)
+    } catch (error) {
+      console.error('관리자 주문 취소 실패:', error)
+      window.alert('주문 취소 처리에 실패했습니다. 다시 시도해주세요.')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
 
@@ -743,7 +827,7 @@ const OrdersManage = () => {
         <button
           type="button"
           onClick={handleRefresh}
-          disabled={isRefreshing}
+          disabled={isRefreshing || isLoading}
           className={
             isRefreshing
               ? styles.refreshing
@@ -787,31 +871,18 @@ const OrdersManage = () => {
         >
           {summaryCards.map(
             (card) => (
-              <article
+              <button
                 key={card.key}
-                className={
-                  styles.summaryCard
-                }
+                type="button"
+                className={`${styles.summaryCard} ${styles[`summaryCard${card.key}`]} ${activeSummaryKey === card.key ? styles.summaryCardActive : ''}`}
+                aria-pressed={activeSummaryKey === card.key}
+                onClick={() => handleSummaryFilter(card.key)}
               >
                 <span
-                  className={`${styles.summaryIcon} ${styles[card.key]}`}
+                  className={styles.summaryIcon}
                   aria-hidden="true"
                 >
-                  {card.key ===
-                    'total' &&
-                    '▦'}
-
-                  {card.key ===
-                    'today' &&
-                    '◷'}
-
-                  {card.key ===
-                    'ready' &&
-                    '□'}
-
-                  {card.key ===
-                    'request' &&
-                    '!'}
+                  <SummaryIcon type={card.key} />
                 </span>
 
                 <div
@@ -837,13 +908,13 @@ const OrdersManage = () => {
 
                   <small>
                     <b>
-                      ▲ {card.caption}
+                      {card.caption}
                     </b>
 
                     {card.subCaption}
                   </small>
                 </div>
-              </article>
+              </button>
             )
           )}
         </div>
@@ -931,6 +1002,10 @@ const OrdersManage = () => {
                 <option value="배송 완료">
                   배송 완료
                 </option>
+
+                <option value="주문 취소">
+                  주문 취소
+                </option>
               </select>
             </label>
 
@@ -958,8 +1033,8 @@ const OrdersManage = () => {
                   결제 완료
                 </option>
 
-                <option value="환불 요청">
-                  환불 요청
+                <option value="취소 완료">
+                  취소 완료
                 </option>
               </select>
             </label>
@@ -1090,8 +1165,7 @@ const OrdersManage = () => {
               </thead>
 
               <tbody>
-                {filteredOrders.length >
-                0 ? (
+                {!isLoading && filteredOrders.length > 0 ? (
                   filteredOrders.map(
                     (order) => (
                       <tr
@@ -1104,8 +1178,12 @@ const OrdersManage = () => {
                         }
                       >
                         <td>
-                          <strong>
-                            {order.id}
+                          <strong
+                            className={styles.orderId}
+                            title={order.id}
+                            aria-label={`전체 주문번호 ${order.id}`}
+                          >
+                            {formatOrderId(order.id)}
                           </strong>
                         </td>
 
@@ -1136,8 +1214,8 @@ const OrdersManage = () => {
                         <td>
                           <span
                             className={`${styles.statusBadge} ${
-                              order.payment ===
-                              '환불 요청'
+                              order.payment.includes('취소')
+                              || order.payment.includes('환불')
                                 ? styles.refund
                                 : styles.paid
                             }`}
@@ -1195,8 +1273,9 @@ const OrdersManage = () => {
                         styles.emptyState
                       }
                     >
-                      조건에 맞는 주문이
-                      없습니다.
+                        {isLoading
+                          ? '주문 데이터를 불러오는 중입니다.'
+                          : loadError || '조건에 맞는 주문이 없습니다.'}
                     </td>
                   </tr>
                 )}
@@ -1244,12 +1323,17 @@ const OrdersManage = () => {
                 className={
                   styles.statusDonut
                 }
+                style={{
+                  '--ready-end': `${readyEnd}%`,
+                  '--shipping-end': `${shippingEnd}%`,
+                  '--completed-end': `${completedEnd}%`,
+                }}
               >
                 <div>
                   <span>전체</span>
 
                   <strong>
-                    1,234건
+                    {totalCount.toLocaleString('ko-KR')}건
                   </strong>
                 </div>
               </div>
@@ -1268,7 +1352,7 @@ const OrdersManage = () => {
                   </span>
 
                   <strong>
-                    222건
+                    {readyCount}건
                   </strong>
                 </li>
 
@@ -1284,7 +1368,7 @@ const OrdersManage = () => {
                   </span>
 
                   <strong>
-                    321건
+                    {shippingCount}건
                   </strong>
                 </li>
 
@@ -1300,7 +1384,7 @@ const OrdersManage = () => {
                   </span>
 
                   <strong>
-                    555건
+                    {completedCount}건
                   </strong>
                 </li>
 
@@ -1316,7 +1400,7 @@ const OrdersManage = () => {
                   </span>
 
                   <strong>
-                    86건
+                    {requestCount}건
                   </strong>
                 </li>
               </ul>
@@ -1390,8 +1474,8 @@ const OrdersManage = () => {
                           styles.orderBar
                         }
                         style={{
-                          height:
-                            `${item.order}%`,
+                          '--bar-height':
+                            `${(item.order / maxWeeklyCount) * 100}%`,
                         }}
                       />
 
@@ -1400,8 +1484,8 @@ const OrdersManage = () => {
                           styles.cancelBar
                         }
                         style={{
-                          height:
-                            `${item.cancel}%`,
+                          '--bar-height':
+                            `${(item.cancel / maxWeeklyCount) * 100}%`,
                         }}
                       />
                     </div>
@@ -1434,19 +1518,20 @@ const OrdersManage = () => {
                 </span>
 
                 <strong>
-                  + 27.3%
+                  {orderChangeRate >= 0 ? '+' : ''}
+                  {orderChangeRate.toFixed(1)}%
                 </strong>
               </div>
 
               <dl>
                 <div>
                   <dt>어제</dt>
-                  <dd>44건</dd>
+                  <dd>{yesterdayCount}건</dd>
                 </div>
 
                 <div>
                   <dt>오늘</dt>
-                  <dd>56건</dd>
+                  <dd>{todayCount}건</dd>
                 </div>
               </dl>
             </div>
@@ -1543,8 +1628,8 @@ const OrdersManage = () => {
                   <strong>
                     <i
                       className={`${styles.detailStatus} ${
-                        selectedOrder.payment ===
-                        '환불 요청'
+                        selectedOrder.payment.includes('취소')
+                        || selectedOrder.payment.includes('환불')
                           ? styles.refund
                           : styles.paid
                       }`}
@@ -1710,13 +1795,14 @@ const OrdersManage = () => {
                               styles.productThumb
                             }
                           >
-                            {index ===
-                            0
-                              ? '🍶'
-                              : index ===
-                                1
-                                ? '🥃'
-                                : '🎁'}
+                            {item.imageUrl ? (
+                              <img
+                                src={item.imageUrl}
+                                alt=""
+                              />
+                            ) : (
+                              index === 0 ? '🍶' : '🎁'
+                            )}
                           </span>
 
                           <div>
@@ -1806,7 +1892,7 @@ const OrdersManage = () => {
                     <div>
                       <dt>회원 번호</dt>
                       <dd>
-                        #102938
+                        {selectedOrder.userId || '-'}
                       </dd>
                     </div>
                   </dl>
@@ -1838,15 +1924,14 @@ const OrdersManage = () => {
                     <div>
                       <dt>결제 수단</dt>
                       <dd>
-                        신용카드
+                        {selectedOrder.paymentMethod}
                       </dd>
                     </div>
 
                     <div>
-                      <dt>카드 정보</dt>
+                      <dt>포인트 사용</dt>
                       <dd>
-                        삼성카드
-                        ****-5678
+                        {formatPrice(selectedOrder.usedPoints)}
                       </dd>
                     </div>
 
@@ -1856,8 +1941,7 @@ const OrdersManage = () => {
                         {formatPrice(
                           Math.max(
                             0,
-                            selectedOrder.amount -
-                              4000
+                            selectedOrder.productAmount
                           )
                         )}
                       </dd>
@@ -1866,13 +1950,15 @@ const OrdersManage = () => {
                     <div>
                       <dt>배송비</dt>
                       <dd>
-                        4,000원
+                        {formatPrice(selectedOrder.shippingFee)}
                       </dd>
                     </div>
 
                     <div>
                       <dt>할인 금액</dt>
-                      <dd>0원</dd>
+                      <dd>
+                        {formatPrice(selectedOrder.discountAmount)}
+                      </dd>
                     </div>
 
                     <div
@@ -2042,7 +2128,7 @@ const OrdersManage = () => {
                           selectedOrder.date
                         }
                         <small>
-                          15:10
+                          {selectedOrder.updatedTime}
                         </small>
                       </span>
 
@@ -2226,41 +2312,6 @@ const OrdersManage = () => {
 
                       <label>
                         <span>
-                          포장 상태
-                        </span>
-
-                        <select
-                          name="packageStatus"
-                          value={
-                            shippingForm.packageStatus
-                          }
-                          onChange={
-                            handleShippingChange
-                          }
-                        >
-                          <option value="일반 포장">
-                            일반 포장
-                          </option>
-
-                          <option value="안전 포장">
-                            안전 포장
-                          </option>
-
-                          <option value="선물 포장">
-                            선물 포장
-                          </option>
-                        </select>
-                      </label>
-                    </div>
-
-
-                    <div
-                      className={
-                        styles.formRow
-                      }
-                    >
-                      <label>
-                        <span>
                           송장번호
                         </span>
 
@@ -2276,8 +2327,14 @@ const OrdersManage = () => {
                           placeholder="송장번호 입력"
                         />
                       </label>
+                    </div>
 
 
+                    <div
+                      className={
+                        styles.formRow
+                      }
+                    >
                       <label>
                         <span>
                           출고 예정일
@@ -2294,40 +2351,20 @@ const OrdersManage = () => {
                           }
                         />
                       </label>
+
+
+                      <label>
+                        <span>
+                          현재 주문 상태
+                        </span>
+
+                        <input
+                          type="text"
+                          value={selectedOrder.delivery}
+                          readOnly
+                        />
+                      </label>
                     </div>
-
-
-                    <label
-                      className={
-                        styles.memoField
-                      }
-                    >
-                      <span>
-                        배송 메모 /
-                        출고 메모
-                      </span>
-
-                      <textarea
-                        name="memo"
-                        value={
-                          shippingForm.memo
-                        }
-                        onChange={
-                          handleShippingChange
-                        }
-                        maxLength={200}
-                        placeholder="배송 관련 메모를 입력해주세요."
-                      />
-
-                      <small>
-                        {
-                          shippingForm
-                            .memo
-                            .length
-                        }
-                        /200
-                      </small>
-                    </label>
                   </div>
 
                 </div>
@@ -2348,6 +2385,8 @@ const OrdersManage = () => {
                 className={
                   styles.cancelOrder
                 }
+                disabled={isSaving || selectedOrder.status === ORDER_STATUS.CANCELLED}
+                onClick={handleCancelOrder}
               >
                 주문 취소
               </button>
@@ -2358,8 +2397,10 @@ const OrdersManage = () => {
                   className={
                     styles.tempSave
                   }
+                  disabled={isSaving}
+                  onClick={() => saveShipping()}
                 >
-                  임시 저장
+                  {isSaving ? '저장 중' : '배송 정보 저장'}
                 </button>
 
                 <button
@@ -2368,11 +2409,24 @@ const OrdersManage = () => {
                     styles.startShipping
                   }
                   onClick={
-                    handleStartShipping
+                    selectedOrder.status === ORDER_STATUS.SHIPPED
+                      ? handleCompleteDelivery
+                      : handleStartShipping
+                  }
+                  disabled={
+                    isSaving ||
+                    selectedOrder.status === ORDER_STATUS.CANCELLED ||
+                    selectedOrder.status === ORDER_STATUS.DELIVERED
                   }
                 >
                   <TruckIcon />
-                  배송 시작
+                  {isSaving
+                    ? '처리 중'
+                    : selectedOrder.status === ORDER_STATUS.SHIPPED
+                      ? '배송 완료'
+                      : selectedOrder.status === ORDER_STATUS.DELIVERED
+                        ? '배송 완료'
+                        : '배송 시작'}
                 </button>
               </div>
             </footer>

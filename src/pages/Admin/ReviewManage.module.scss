@@ -1683,3 +1683,721 @@
     min-width: 780px;
   }
 }
+
+
+// ========================================
+// 주문관리와 맞춘 가독성 보정
+// ========================================
+
+.filterBar {
+  .searchField input,
+  .selectField select,
+  .resetButton {
+    font-size: 13px;
+  }
+}
+
+.ratingFilterRow {
+  > span {
+    font-size: 13px;
+  }
+
+  > div button {
+    min-width: 42px;
+    height: 30px;
+    font-size: 12px;
+  }
+}
+
+.sectionHeading {
+  min-height: 66px;
+
+  h2 {
+    font-size: 21px;
+  }
+
+  span {
+    font-size: 13px;
+  }
+}
+
+.reviewTable {
+  thead {
+    tr {
+      height: 52px;
+    }
+
+    th {
+      font-size: 14px;
+      vertical-align: middle;
+    }
+  }
+
+  tbody {
+    tr {
+      height: 64px;
+    }
+
+    td {
+      font-size: 14px;
+      line-height: 1.35;
+      vertical-align: middle;
+    }
+  }
+}
+
+.reviewId {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.productTableCell > span:last-child,
+.reviewSummary {
+  font-size: 14px;
+}
+
+.tableThumb {
+  width: 32px;
+  height: 32px;
+  flex-basis: 32px;
+}
+
+.stars {
+  font-size: 15px;
+}
+
+.statusBadge {
+  min-width: 58px;
+  min-height: 28px;
+  font-size: 12px;
+}
+
+.detailButton {
+  min-width: 66px;
+  height: 32px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+.pagination {
+  min-height: 62px;
+  font-size: 13px;
+
+  strong {
+    font-size: 14px;
+  }
+}
+
+.analyticsCard {
+  h2 {
+    font-size: 19px;
+  }
+}
+
+.topProductRow {
+  grid-template-columns: 92px minmax(0, 1fr) 34px;
+
+  > span,
+  > strong {
+    font-size: 12px;
+  }
+}
+
+.ratingLabel,
+.ratingBarRow > strong,
+.ratingBarRow > small,
+.averageRating,
+.analyticsEmpty {
+  font-size: 12px;
+}
+
+.averageRating strong {
+  font-size: 16px;
+}
+
+.detailPanel {
+  padding: 26px 24px 22px;
+}
+
+.detailHeading {
+  h2 {
+    font-size: 23px;
+  }
+
+  > button {
+    width: 34px;
+    height: 34px;
+    font-size: 25px;
+  }
+}
+
+.detailProduct > div {
+  strong {
+    font-size: 16px;
+  }
+
+  a {
+    font-size: 13px;
+  }
+}
+
+.detailInfo {
+  gap: 12px;
+
+  > div {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
+  dt,
+  dd,
+  .detailRating > span:last-child {
+    font-size: 14px;
+  }
+}
+
+.reviewContentArea,
+.attachmentArea {
+  h3 {
+    font-size: 14px;
+  }
+}
+
+.reviewContentArea > div,
+.noAttachment {
+  font-size: 14px;
+}
+
+.detailActions button {
+  min-width: 86px;
+  height: 36px;
+  font-size: 13px;
+}
+
+
+// ========================================
+// 주문관리 UI 기준 통일
+// ========================================
+
+.summaryArea {
+  margin-top: 1px;
+  margin-bottom: 20px;
+}
+
+.summaryGrid {
+  gap: 15px;
+}
+
+.summaryCard {
+  min-height: 122px;
+  padding: 20px 18px;
+
+  border-color: #e4dfd8;
+  border-radius: 9px;
+  box-shadow: 0 1px 2px rgba(54, 45, 38, 0.02);
+}
+
+.summaryIcon {
+  width: 37px;
+  height: 37px;
+  flex-basis: 37px;
+}
+
+.summaryContent {
+  gap: 4px;
+
+  small {
+    font-size: 13px;
+  }
+
+  strong {
+    font-size: 28px;
+
+    em {
+      font-size: 13px;
+    }
+  }
+
+  i {
+    margin-top: 8px;
+    font-size: 12px;
+  }
+}
+
+.managementGrid {
+  grid-template-columns: minmax(0, 1fr) 270px;
+  gap: 16px;
+  margin-top: 0;
+}
+
+.mainSection,
+.analyticsCard {
+  border-color: #8d877f;
+}
+
+.filterBar {
+  min-height: 66px;
+  padding: 14px 19px 8px;
+  align-items: center;
+}
+
+.ratingFilterRow {
+  min-height: 44px;
+  padding: 0 19px 13px;
+  align-items: center;
+}
+
+.ratingFilterRow > div button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.sectionHeading {
+  min-height: 59px;
+  padding: 0 20px;
+}
+
+.reviewTable {
+  thead {
+    background: #f5f0e8;
+
+    tr {
+      height: 48px;
+    }
+  }
+
+  tbody {
+    tr {
+      height: 58px;
+      border-bottom-color: #d8d2ca;
+
+      &:hover {
+        background: #faf8f5;
+      }
+    }
+
+    td {
+      padding: 0 8px;
+    }
+  }
+}
+
+.selectedRow {
+  background: #f5faf8 !important;
+}
+
+.statusBadge,
+.detailButton,
+.pagination button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.analyticsColumn {
+  gap: 14px;
+}
+
+.analyticsCard {
+  padding: 20px 18px;
+}
+
+.topProductList,
+.ratingDistribution {
+  margin-top: 18px;
+}
+
+
+// 공지관리 상단 요약 카드 크기 기준
+.summaryArea {
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+
+.summaryGrid {
+  gap: 16px;
+}
+
+.summaryCard {
+  min-height: 94px;
+  padding: 18px 20px;
+  gap: 16px;
+  border-radius: 12px;
+}
+
+.summaryIcon {
+  width: 44px;
+  height: 44px;
+  flex-basis: 44px;
+  border-radius: 12px;
+}
+
+.summaryContent {
+  gap: 2px;
+
+  small {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  strong {
+    font-size: 24px;
+    line-height: 1.2;
+
+    em {
+      font-size: 14px;
+      font-weight: 400;
+    }
+  }
+
+  i {
+    margin-top: 2px;
+    font-size: 12px;
+  }
+}
+
+
+// 표와 분석 카드의 밀도 보정
+.mainSection,
+.analyticsCard {
+  border-color: #e4dfd8;
+}
+
+.reviewSummary {
+  text-align: center !important;
+}
+
+.detailButton {
+  min-width: 58px;
+  height: 28px;
+  padding: 0 8px;
+  font-size: 11px;
+}
+
+.ratingBarRow {
+  grid-template-columns: 60px minmax(0, 1fr) 26px 30px;
+  gap: 6px;
+}
+
+.ratingLabel,
+.ratingBarRow > strong,
+.ratingBarRow > small {
+  min-width: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.ratingBarRow > strong,
+.ratingBarRow > small {
+  justify-self: end;
+  text-align: right;
+}
+
+
+// 필터와 상세 패널의 컨트롤 정렬
+.filterBar {
+  grid-template-columns: minmax(240px, 1fr) 96px 105px 96px 72px;
+  gap: 8px;
+}
+
+.searchField input,
+.selectField select,
+.resetButton {
+  height: 40px;
+  line-height: 40px;
+}
+
+.selectField select {
+  padding: 0 10px;
+}
+
+.resetButton {
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.detailPanel {
+  padding: 24px;
+  border-color: #e4dfd8;
+}
+
+.detailProduct {
+  margin-top: 20px;
+}
+
+.detailDivider {
+  margin: 17px 0;
+  background: #e4dfd8;
+}
+
+.detailInfo {
+  gap: 10px;
+
+  > div {
+    min-height: 30px;
+    align-items: center;
+  }
+}
+
+.reviewContentArea {
+  margin-top: 18px;
+
+  > div {
+    min-height: 80px;
+    padding: 12px;
+  }
+}
+
+.attachmentArea {
+  margin-top: 18px;
+}
+
+.detailActions {
+  justify-content: center;
+  gap: 8px;
+
+  button {
+    min-width: 82px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+}
+
+
+// ========================================
+// 모바일 재배치
+// ========================================
+
+@media (max-width: 767px) {
+  .topOrnament {
+    display: none;
+  }
+
+  .page {
+    padding: 18px 16px 40px;
+  }
+
+  .summaryArea {
+    margin-bottom: 16px;
+  }
+
+  .summaryGrid {
+    gap: 12px;
+  }
+
+  .managementGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .mainSection,
+  .analyticsColumn,
+  .analyticsCard,
+  .detailPanel {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .filterBar {
+    padding: 16px 14px 10px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .searchField {
+    width: 100%;
+    grid-column: 1 / -1;
+  }
+
+  .selectField,
+  .sortField,
+  .resetButton {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .selectField select,
+  .resetButton {
+    border-color: #c8ddd8;
+    background: #f3f8f6;
+    color: #456f6b;
+    font-weight: 600;
+    text-align: center;
+    text-align-last: center;
+  }
+
+  .selectField select:focus,
+  .resetButton:hover {
+    border-color: #7eaaa5;
+    background: #eaf4f1;
+    color: #35625e;
+  }
+
+  .resetButton {
+    grid-column: 2;
+  }
+
+  .ratingFilterRow {
+    min-height: 0;
+    padding: 2px 14px 14px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 9px;
+
+    > div {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 6px;
+
+      button {
+        width: 100%;
+        min-width: 0;
+        padding: 0;
+      }
+    }
+  }
+
+  .sectionHeading {
+    min-height: 56px;
+    padding: 0 16px;
+
+    h2 {
+      font-size: 19px;
+    }
+  }
+
+  .tableWrap {
+    padding: 12px;
+    overflow: visible;
+    box-sizing: border-box;
+  }
+
+  .reviewTable {
+    min-width: 0;
+    display: block;
+
+    thead {
+      display: none;
+    }
+
+    tbody {
+      display: grid;
+      gap: 12px;
+    }
+
+    tbody tr {
+      min-width: 0;
+      height: auto;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px 18px;
+      box-sizing: border-box;
+      border: 1px solid #d8e4df;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 3px 12px rgba(57, 85, 78, 0.05);
+    }
+
+    tbody td {
+      min-width: 0;
+      padding: 0;
+      display: grid;
+      align-content: start;
+      gap: 7px;
+      overflow: visible;
+      color: #3f3b37;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.55;
+      text-align: left;
+      text-overflow: clip;
+      white-space: normal;
+
+      &::before {
+        content: attr(data-label);
+        color: #4d7e7b;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      &:nth-child(1),
+      &:nth-child(2),
+      &:nth-child(5),
+      &:nth-child(8) {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+
+  .reviewSummary {
+    padding: 11px 12px !important;
+    border-radius: 8px;
+    background: #f3f8f6;
+    text-align: left !important;
+    overflow-wrap: anywhere;
+  }
+
+  .productTableCell {
+    gap: 10px;
+
+    > span:last-child {
+      font-size: 14px;
+      font-weight: 600;
+    }
+  }
+
+  .tableThumb {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+    border-radius: 6px;
+  }
+
+  .reviewId {
+    font-size: 14px !important;
+  }
+
+  .stars {
+    font-size: 16px;
+  }
+
+  .statusBadge {
+    justify-self: start;
+  }
+
+  .detailButton {
+    width: 100%;
+    height: 36px;
+  }
+
+  .pagination {
+    min-height: 58px;
+    padding: 0 12px;
+  }
+
+  .analyticsColumn {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .detailPanel {
+    padding: 20px;
+  }
+
+  .detailInfo > div {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+}

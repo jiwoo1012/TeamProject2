@@ -72,7 +72,7 @@ const mobileSiteLinks = [
   { label: 'AI 추천', to: '/ai' },
   { label: '이벤트', to: '/events' },
   { label: '마이페이지', to: '/mypage' },
-  { label: '공지사항', to: '/notice' },
+  { label: '공지사항', to: '/notices' },
 ]
 
 
