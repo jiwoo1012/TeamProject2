@@ -1,68 +1,72 @@
-// Page placeholder.
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { gsap } from 'gsap'
 import styles from './SplashIntro.module.scss'
 
-import sun from '../../assets/images/splash/splash-sun.png'
-import rain from '../../assets/images/splash/splash-rain.png'
-import laugh from '../../assets/images/splash/splash-laugh.png'
-import bubbleSmall from '../../assets/images/splash/splash-bubble-short.png'
-import bubbleWide from '../../assets/images/splash/splash-bubble-long.png'
-import bottle from '../../assets/images/splash/splash-bottle.png'
-import cup from '../../assets/images/splash/splash-cup.png'
-import food from '../../assets/images/splash/splash-kimchi-pancake.png'
-import paperBlue from '../../assets/images/splash/splash-bg-blue.webp'
-import pointingHand from '../../assets/images/main/journey/entrance-keypad-hand.png'
-
 const SplashIntro = ({ onComplete }) => {
-  const [pressed, setPressed] = useState(false)
-  const [leaving, setLeaving] = useState(false)
   const navigate = useNavigate()
+  const splashRef = useRef(null)
+  const progressRef = useRef(null)
+  const copyRef = useRef(null)
+  const completeRef = useRef(onComplete)
 
   useEffect(() => {
-    const exitTimer = window.setTimeout(() => setLeaving(true), 8000)
-    const completeTimer = window.setTimeout(() => {
-      if (onComplete) onComplete()
-      else navigate('/')
-    }, 8800)
+    completeRef.current = onComplete
+  }, [onComplete])
 
-    return () => {
-      window.clearTimeout(exitTimer)
-      window.clearTimeout(completeTimer)
+  useEffect(() => {
+    const media = gsap.matchMedia()
+    let hasCompleted = false
+
+    const complete = () => {
+      if (hasCompleted) return
+      hasCompleted = true
+      if (completeRef.current) completeRef.current()
+      else navigate('/', { replace: true })
     }
-  }, [navigate, onComplete])
+
+    media.add({
+      reduceMotion: '(prefers-reduced-motion: reduce)',
+      allowMotion: '(prefers-reduced-motion: no-preference)',
+    }, (context) => {
+      const isReducedMotion = context.conditions.reduceMotion
+      // 실제 다운로드 비율이 아닌 브랜드 인트로 연출용 진행률입니다.
+      const progress = { value: 0 }
+      const updateProgress = () => {
+        if (!progressRef.current) return
+        progressRef.current.textContent = String(Math.floor(progress.value))
+      }
+      updateProgress()
+
+      const timeline = gsap.timeline({ onComplete: complete })
+      timeline
+        .fromTo(copyRef.current, { '--reveal': '0%' }, {
+          '--reveal': '100%',
+          duration: isReducedMotion ? 0.4 : 3.3,
+          ease: 'none',
+        }, 0)
+        .to(progress, { value: 82, duration: isReducedMotion ? 0.4 : 2, ease: 'power2.inOut', onUpdate: updateProgress }, 0)
+        .to(progress, { value: 99, duration: isReducedMotion ? 0.2 : 1.1, ease: 'sine.out', onUpdate: updateProgress })
+        .to(progress, { value: 100, duration: 0.2, ease: 'none', onUpdate: updateProgress })
+        .to({}, { duration: 0.4 })
+
+      if (isReducedMotion) {
+        timeline.to(splashRef.current, { opacity: 0, duration: 0.3 })
+      } else {
+        timeline.to(splashRef.current, { yPercent: -100, duration: 1.1, ease: 'power4.inOut' })
+      }
+    })
+
+    return () => media.revert()
+  }, [navigate])
 
   return (
-    <section className={`${styles.splash} ${leaving ? styles.leaving : ''}`} style={{ '--splash-paper': `url(${paperBlue})` }} aria-label="막동 스플래시 인트로">
-      <div className={styles.scene}>
-        <img className={`${styles.sticker} ${styles.rain}`} src={rain} alt="" />
-        <img className={`${styles.sticker} ${styles.sun}`} src={sun} alt="" />
-        <div className={styles.laughShell}>
-          <img className={`${styles.sticker} ${styles.laugh}`} src={laugh} alt="" />
-        </div>
-        <img className={styles.cup} src={cup} alt="막걸리 잔" />
-        <div className={styles.foodShell}>
-          <img className={styles.food} src={food} alt="막걸리와 곁들이는 전" />
-        </div>
-        <div className={`${styles.bubble} ${styles.bubbleOne}`}><img src={bubbleSmall} alt="" /><span>달달한 게 좋아!</span></div>
-        <div className={`${styles.bubble} ${styles.bubbleTwo}`}><img src={bubbleWide} alt="" /><span>이런 한 상 괜찮아?</span></div>
-        <div className={`${styles.bubble} ${styles.bubbleThree}`}><img src={bubbleWide} alt="" /><span>기분이 어때 :-)</span></div>
-        <div className={`${styles.bubble} ${styles.bubbleFour}`}><img src={bubbleWide} alt="" /><span>오늘 하루 고생했어</span></div>
-        <div className={`${styles.bubble} ${styles.bubbleFive}`}><img src={bubbleWide} alt="" /><span>오늘은 어떤 술이 땡겨?</span></div>
-        <button className={`${styles.bottleButton} ${pressed ? styles.pressed : ''}`} type="button" onClick={() => setPressed((value) => !value)} aria-pressed={pressed} aria-label="막걸리 병 흔들기">
-          <img src={bottle} alt="막걸리 병" />
-        </button>
-        <img className={styles.pointingHand} src={pointingHand} alt="" />
-        <div className={styles.loading} role="status" aria-label="페이지를 준비하고 있어요">
-          <div className={styles.loadingLabel}>
-            <span>LOADING</span>
-            <span className={styles.loadingDots} aria-hidden="true">•••</span>
-          </div>
-          <div className={styles.loadingTrack} aria-hidden="true">
-            <span className={styles.loadingFill} />
-          </div>
-        </div>
-      </div>
+    <section ref={splashRef} className={styles.splash} aria-label="자작 시작 화면">
+      <p ref={copyRef} className={styles.copy}>
+        당신의 하루에, 자작.
+        <span className={styles.copyReveal} aria-hidden="true">당신의 하루에, 자작.</span>
+      </p>
+      <span ref={progressRef} className={styles.progress} aria-hidden="true">0</span>
     </section>
   )
 }

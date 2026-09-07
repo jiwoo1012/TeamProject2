@@ -35,6 +35,7 @@ import makdongCharacter from '../../assets/characters/M007_Poses01.png'
 import eventsData from '../../data/events.json'
 import { getCollection } from '../../firebase/firestore'
 import styles from './MainPage.module.scss'
+import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -54,7 +55,7 @@ const mainEvents = eventsData.map(({ event }, index) => ({
   ...event,
   id: `event-${index + 1}`,
   bannerSrc: resolveEventBanner(event.image.bannerUrl),
-}))
+})).filter((event) => event.image.bannerUrl !== '/banner/eventBanner-4.png')
 
 const makdongTraits = [
   { icon: '✣', title: '다정한 안내자', description: '전통주의 매력을\n쉽고 재미있게 소개해요.' },
@@ -100,8 +101,18 @@ const MainPage = () => {
   )
   const [bestSellerProducts, setBestSellerProducts] = useState([])
   const [isHeroDismissed, setIsHeroDismissed] = useState(
-    () => sessionStorage.getItem(HERO_DISMISSED_KEY) === 'true'
+    () => !window.matchMedia('(max-width: 767px)').matches
+      && sessionStorage.getItem(HERO_DISMISSED_KEY) === 'true'
   )
+  useEffect(() => {
+    const mobileViewport = window.matchMedia('(max-width: 767px)')
+    const handleMobileViewport = () => {
+      if (mobileViewport.matches) setIsHeroDismissed(false)
+    }
+    handleMobileViewport()
+    mobileViewport.addEventListener('change', handleMobileViewport)
+    return () => mobileViewport.removeEventListener('change', handleMobileViewport)
+  }, [])
   const mainContentRef = useRef(null)
   const transitionRef = useRef(null)
   const isTransitioningRef = useRef(false)
@@ -128,6 +139,7 @@ const MainPage = () => {
   const isHeroSunCompleteRef = useRef(false)
 
   const handleHeroExit = useCallback(() => {
+    if (window.matchMedia('(max-width: 767px)').matches) return
     if (sessionStorage.getItem(HERO_DISMISSED_KEY) === 'true') return
 
     sessionStorage.setItem(HERO_DISMISSED_KEY, 'true')
@@ -289,6 +301,7 @@ const MainPage = () => {
 
   return (
     <div className={styles.page} data-main-page>
+      <MobileTopButton contentRef={aiIntroRef} />
       {/* 여정 인트로 섹션 */}
       {!isIntroSkipped && <JourneySection onSkip={handleSkipIntro} />}
 
@@ -515,7 +528,7 @@ const MainPage = () => {
             <span>다정한 친구, <em>막동이</em></span>
           </h2>
           <p className={styles.makdongDescription}>
-            우리 술이 있는 순간마다 막동이가 다정함을 건넵니다.
+            우리 술이 있는 순간마다 막동이가 다정함을 건넵니다.{' '}
             <br />
             전통주의 즐거움을 전하는 막동이와 함께해요.
           </p>

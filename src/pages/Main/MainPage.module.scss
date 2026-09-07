@@ -1,4 +1,4 @@
-﻿@use '../../styles/variables' as *;
+@use '../../styles/variables' as *;
 
 :global(body:has([data-main-page]) header) {
   position: fixed;
@@ -40,6 +40,10 @@
   z-index: 2;
   min-height: 300svh;
   background: $color-bg;
+
+  @media (max-width: 767px) {
+    min-height: 0;
+  }
 }
 .mainContentDismissed {
   visibility: hidden;
@@ -67,8 +71,14 @@
 
   @media (max-width: 767px) {
     --hero-arch-radius: calc((100vw - 40px) * 0.45);
+    --hero-photo-transform: translateY(-6px) scale(1.04);
+    --hero-mobile-image-height: calc(clamp(280px, calc(100svh - 290px), 380px) + #{$space-8});
+    --hero-mobile-image-margin: clamp(108px, 28vw, 110px);
 
+    position: relative;
     width: calc(100% - 40px);
+    // 상단 여백 + 이미지 위치/높이 + 버튼 아래 32px까지 확보합니다.
+    height: calc(84px + var(--hero-mobile-image-margin) + var(--hero-mobile-image-height) + 60px + #{$space-4} + 75px + #{$space-4} + #{$space-8});
     min-height: 0;
     padding: 84px 0 52px;
   }
@@ -104,6 +114,10 @@
     height: 100%;
     object-fit: cover;
     object-position: 65% bottom;
+
+    @media (max-width: 767px) {
+      transform: var(--hero-photo-transform);
+    }
   }
 }
 
@@ -209,9 +223,10 @@
 
   @media (max-width: 767px) {
     width: 90%;
-    height: clamp(280px, calc(100svh - 290px), 380px);
+    height: var(--hero-mobile-image-height);
     min-height: 0;
-    margin: clamp(108px, 28vw, 110px) auto 0;
+    margin: var(--hero-mobile-image-margin) auto 0;
+    top: $space-4;
   }
 
   @media (min-width: 1200px) {
@@ -281,6 +296,8 @@
     height: 100%;
     min-height: 0;
     object-position: 65% bottom;
+
+    transform: var(--hero-photo-transform);
   }
 
   @media (min-width: 1200px) {
@@ -441,7 +458,7 @@
   @media (max-width: 767px) {
     top: auto;
     right: auto;
-    bottom: -75px;
+    bottom: calc(-75px - #{$space-4});
     display: grid;
     min-width: 136px;
     min-height: 48px;
@@ -476,8 +493,14 @@
 
   @media (max-width: 767px) {
     position: relative;
-    padding: 88px 20px 56px;
+    min-height: 0;
+    justify-content: flex-start;
+    padding: $space-8 $side-margin-mobile 56px;
     overflow: hidden;
+    // 배경 이미지와 같은 레이어에서 페이드 처리해 경계의 얇은 잔상을 막습니다.
+    background-image:
+      linear-gradient(0deg, $color-bg 0 $space-4, rgba($color-bg, 0.72) 50px, rgba($color-bg, 0) 120px),
+      url('../../assets/images/main/ai-recommendation/main-ai-bg.webp');
 
     &::before {
       position: absolute;
@@ -492,15 +515,7 @@
     }
 
     &::after {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      z-index: 0;
-      height: 120px;
-      background: linear-gradient(0deg, $color-bg 0%, rgba(248, 246, 242, 0.72) 42%, transparent 100%);
-      content: '';
-      pointer-events: none;
+      content: none;
     }
   }
 
@@ -1882,6 +1897,14 @@
     line-height: 1.35;
     text-overflow: ellipsis;
     white-space: nowrap;
+
+    @media (max-width: 767px) {
+      font-size: $font-size-lg;
+      line-height: 1.4;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      flex-shrink: 0;
+    }
   }
 }
 
@@ -2653,7 +2676,7 @@
 @media (max-width: 767px) {
   .makdongSection {
     min-height: auto;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 14px;
     padding: 112px 20px 132px;
     background: linear-gradient(
@@ -2672,6 +2695,7 @@
 
   .makdongVisual {
     width: min(100%, 430px);
+    min-width: 0;
     height: clamp(300px, 48svh, 430px);
     margin: 0 auto;
     grid-column: 1;
@@ -2685,7 +2709,10 @@
 
   .makdongCopy {
     width: auto;
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
+    padding-inline: $space-4;
     grid-column: 1;
     grid-row: 2;
     justify-self: stretch;
@@ -2712,19 +2739,36 @@
   .makdongCopy h2 {
     margin-bottom: 22px;
     font-size: clamp(36px, 10vw, 50px);
+
+    span {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
   }
 
   .makdongTraits {
-    width: calc(100% - 32px);
+    width: 100%;
     margin: 36px auto 0;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     box-sizing: border-box;
     border: 1px solid rgba(248, 246, 242, 0.22);
   }
 
+  .makdongDescription {
+    font-size: $font-size-lg;
+    line-height: 1.75;
+    word-break: normal;
+    text-align: justify;
+    text-align-last: left;
+
+    br {
+      display: none;
+    }
+  }
+
   .makdongTrait {
     min-height: 154px;
-    padding: 22px 12px;
+    padding: $space-6 $space-2;
     grid-template-rows: 50px auto 1fr;
     box-sizing: border-box;
     border: 0;
@@ -2743,10 +2787,16 @@
 
     strong {
       margin: 12px 0 6px;
+      font-size: $font-size-md;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
     }
 
     p {
       align-self: start;
+      font-size: $font-size-sm;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
     }
   }
 }
@@ -2794,12 +2844,12 @@
   .makdongButton {
     display: inline-grid;
     width: auto;
-    min-width: 0;
-    min-height: 44px;
-    padding: 0 20px;
+    min-width: 160px;
+    min-height: 52px;
+    padding: 0 $space-6;
     place-items: center;
     border-radius: $radius-pill;
-    font-size: 13px;
+    font-size: $font-size-md;
     font-weight: $font-weight-bold;
     line-height: 1;
     text-align: center;
@@ -2884,4 +2934,91 @@
 
 .featureCopy h2 {
   letter-spacing: -0.025em;
+}
+
+/* =========================================================
+   Main page section spacing normalization
+   - 주요 섹션의 시작/끝 여백을 같은 리듬으로 정리
+   - BEST SELLER 제목과 카드 사이의 과한 간격 축소
+   - 기존 GSAP / ScrollTrigger / sticky 구조는 유지
+   ========================================================= */
+
+@media (min-width: 1200px) {
+  .aiIntro {
+    padding: 112px 80px 72px;
+  }
+
+  .featureSection {
+    padding-top: 112px;
+    padding-bottom: 72px;
+  }
+
+  .bestSeller {
+    --best-seller-card-stack-y: 28px;
+  }
+
+  .bestSellerStage {
+    padding-top: 112px;
+    padding-bottom: 72px;
+
+    h2 {
+      translate: 0;
+    }
+  }
+
+  .eventsGrid {
+    padding-top: 72px;
+    padding-bottom: 72px;
+  }
+
+  .eventsCopy {
+    top: 112px;
+  }
+
+  .makdongSection {
+    padding-top: 112px;
+    padding-bottom: 72px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .aiIntro,
+  .featureSection,
+  .eventsGrid,
+  .makdongSection {
+    padding-top: 100px;
+    padding-bottom: 72px;
+  }
+
+  .bestSeller {
+    --best-seller-card-stack-y: 24px;
+  }
+
+  .bestSellerStage {
+    padding-top: 100px;
+    padding-bottom: 72px;
+  }
+}
+
+@media (max-width: 767px) {
+  .aiIntro,
+  .featureSection,
+  .eventsGrid,
+  .makdongSection {
+    padding-top: 80px;
+    padding-bottom: 64px;
+  }
+
+  .bestSeller {
+    --best-seller-card-stack-y: 0px;
+  }
+
+  .bestSellerStage {
+    padding-top: 80px;
+    padding-bottom: 64px;
+  }
+
+  .bestSellerContent {
+    margin-top: 12px;
+  }
 }

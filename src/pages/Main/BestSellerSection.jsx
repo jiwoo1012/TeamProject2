@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Link } from 'react-router-dom'
 
 import bestSellerTransitionImage from '../../assets/images/main/best-seller/bestseller.png'
+import jadeBottleSetImage from '../../assets/images/main/best-seller/bestseller-products01.png'
 import styles from './MainPage.module.scss'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -271,7 +272,7 @@ const BestSellerSection = ({
                   >
                     {product.brandManufacturer && <span>{product.brandManufacturer}</span>}
                     <img
-                      src={product.imageSrc ?? resolveProductImage(product.imageUrl)}
+                      src={product.productId === 'gft_001' ? jadeBottleSetImage : product.imageSrc ?? resolveProductImage(product.imageUrl)}
                       alt={product.productName}
                     />
                     <strong>{product.productName}</strong>
