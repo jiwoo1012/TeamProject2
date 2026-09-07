@@ -104,6 +104,7 @@ const AdminLayout = lazy(() => import('./pages/Admin/AdminLayout'))
 const Dashboard = lazy(() => import('./pages/Admin/Dashboard'))
 const UserManage = lazy(() => import('./pages/Admin/UserManage'))
 const ProductManage = lazy(() => import('./pages/Admin/ProductManage'))
+const OrdersManage = lazy(() => import('./pages/Admin/OrdersManage'))
 const AiLogManage = lazy(() => import('./pages/Admin/AiLogManage'))
 const EventManage = lazy(() => import('./pages/Admin/EventManage'))
 const NoticeManage = lazy(() => import('./pages/Admin/NoticeManage'))
@@ -208,514 +209,154 @@ const App = () => {
       <Suspense fallback={null}>
         <Routes>
 
-        {/* ========================================
-            독립 페이지
-            Header / Footer 없이 사용
-        ======================================== */}
-
-        {/* Splash */}
-
-        <Route
-          path="/intro"
-          element={
-            <SplashIntro />
-          }
-        />
-
-
-        {/* ========================================
-            회원가입 후 취향 등록
-            Header / Footer 없이 사용
-        ======================================== */}
-
-        <Route
-          path="/preference"
-          element={
-            <PreferenceSurvey />
-          }
-        />
-
-        <Route
-          path="/preference/questions"
-          element={
-            <PreferenceQuestions />
-          }
-        />
-
-
-        {/* ========================================
-            Header O / Footer X
-            로그인 / 회원가입 / 취향 안전 확인
-            / AI 추천
-        ======================================== */}
-
-        <Route
-          element={
-            <SiteLayout
-              hideFooter
-            />
-          }
-        >
-
           {/* ========================================
-              Auth
+              독립 페이지
+              Header / Footer 없이 사용
           ======================================== */}
 
-          {/* 로그인 */}
+          {/* Splash */}
 
           <Route
-            path="/login"
+            path="/intro"
             element={
-              <Login />
-            }
-          />
-
-
-          {/* 회원가입 */}
-
-          <Route
-            path="/signup"
-            element={
-              <Signup />
+              <SplashIntro />
             }
           />
 
 
           {/* ========================================
-              취향 등록 후 안전 확인 흐름
+              회원가입 후 취향 등록
+              Header / Footer 없이 사용
           ======================================== */}
 
-          {/* 취향 질문 완료 → 안전 확인 안내 */}
-
           <Route
-            path="/preference/safety-intro"
+            path="/preference"
             element={
-              <PreferenceSafetyIntro />
+              <PreferenceSurvey />
             }
           />
 
-
-          {/* 알레르기 / 피해야 할 재료 선택 */}
-
           <Route
-            path="/preference/safety"
+            path="/preference/questions"
             element={
-              <PreferenceSafety />
-            }
-          />
-
-
-          {/* 최종 취향 등록 완료 */}
-
-          <Route
-            path="/preference/complete"
-            element={
-              <PreferenceComplete />
+              <PreferenceQuestions />
             }
           />
 
 
           {/* ========================================
-              AI 추천
               Header O / Footer X
-          ======================================== */}
-
-          {/* AI 추천 인트로 */}
-
-          <Route
-            path="/ai"
-            element={
-              <AiIntro />
-            }
-          />
-
-
-          {/* AI 추천 설문 */}
-
-          <Route
-            path="/ai/survey"
-            element={
-              <AiSurvey />
-            }
-          />
-
-
-          {/* AI 추천 결과 */}
-
-          <Route
-            path="/ai/result"
-            element={
-              <AiResult />
-            }
-          />
-
-
-          {/* 내 취향 분석 */}
-
-          <Route
-            path="/ai/preference"
-            element={
-              <AiPreference />
-            }
-          />
-
-        </Route>
-
-
-        {/* ========================================
-            일반 사용자 페이지
-            Header / Footer / MobileBottomNav 적용
-        ======================================== */}
-
-        <Route
-          element={
-            <SiteLayout />
-          }
-        >
-
-          {/* Main */}
-
-          <Route
-            path="/"
-            element={
-              <MainPage />
-            }
-          />
-
-
-          {/* ========================================
-              Brand
+              로그인 / 회원가입 / 취향 안전 확인
+              / AI 추천
           ======================================== */}
 
           <Route
-            path="/brand"
             element={
-              <BrandIntro />
-            }
-          />
-
-          <Route
-            path="/brand/makdong"
-            element={
-              <MakdongIntro />
-            }
-          />
-
-
-          {/* 기존 Header 링크 대응 */}
-
-          <Route
-            path="/brand/story"
-            element={
-              <Navigate
-                to="/brand/makdong"
-                replace
+              <SiteLayout
+                hideFooter
               />
-            }
-          />
-
-
-          {/* ========================================
-              Shop
-          ======================================== */}
-
-          <Route
-            path="/shop"
-            element={
-              <ProductList />
-            }
-          />
-
-          <Route
-            path="/shop/:productId"
-            element={
-              <ProductDetail />
-            }
-          />
-
-
-          {/* ========================================
-              Cart / Order
-          ======================================== */}
-
-          <Route
-            path="/cart"
-            element={
-              <Cart />
-            }
-          />
-
-          <Route
-            path="/checkout"
-            element={
-              <Checkout />
-            }
-          />
-
-          <Route
-            path="/order-complete"
-            element={
-              <OrderComplete />
-            }
-          />
-
-
-          {/* ========================================
-              Event
-          ======================================== */}
-
-          {/* 이벤트 목록 */}
-
-          <Route
-            path="/events"
-            element={
-              <EventList />
-            }
-          />
-
-
-          {/* 이벤트 시작 안내 */}
-
-          <Route
-            path="/events/ready/:eventType"
-            element={
-              <EventReady />
-            }
-          />
-
-
-          {/* 룰렛 이벤트 */}
-
-          <Route
-            path="/events/roulette"
-            element={
-              <RouletteEvent />
-            }
-          />
-
-
-          {/* OX 퀴즈 이벤트 */}
-
-          <Route
-            path="/events/ox-quiz"
-            element={
-              <OxQuizEvent />
-            }
-          />
-
-
-          {/* 카드 게임 이벤트 */}
-
-          <Route
-            path="/events/card-game"
-            element={
-              <CardGame />
-            }
-          />
-
-
-          {/* ========================================
-              Support
-          ======================================== */}
-
-          {/* 자주 묻는 질문 */}
-
-          <Route
-            path="/faq"
-            element={
-              <FAQ />
-            }
-          />
-
-
-          {/* 1:1 질문하기 */}
-
-          <Route
-            path="/inquiry"
-            element={
-              <InquiryQnA />
-            }
-          />
-
-
-          {/* 공지사항 목록 */}
-
-          <Route
-            path="/notices"
-            element={
-              <NoticeList />
-            }
-          />
-
-
-          {/* 공지사항 상세 */}
-
-          <Route
-            path="/notices/:noticeId"
-            element={
-              <NoticeDetail />
-            }
-          />
-
-
-          {/* ========================================
-              MyPage
-          ======================================== */}
-
-          <Route
-            path="/mypage"
-            element={
-              <MyPageLayout />
             }
           >
 
-            {/* 마이페이지 홈 */}
+            {/* ========================================
+                Auth
+            ======================================== */}
+
+            {/* 로그인 */}
 
             <Route
-              index
+              path="/login"
               element={
-                <MyHome />
+                <Login />
               }
             />
 
 
-            {/* 회원 정보 관리 */}
+            {/* 회원가입 */}
 
             <Route
-              path="profile"
+              path="/signup"
               element={
-                <ProfileEdit />
+                <Signup />
               }
             />
 
 
-            {/* 배송지 관리 */}
+            {/* ========================================
+                취향 등록 후 안전 확인 흐름
+            ======================================== */}
+
+            {/* 취향 질문 완료 → 안전 확인 안내 */}
 
             <Route
-              path="addresses"
+              path="/preference/safety-intro"
               element={
-                <AddressBook />
+                <PreferenceSafetyIntro />
               }
             />
 
 
-            {/* 포인트 */}
+            {/* 알레르기 / 피해야 할 재료 선택 */}
 
             <Route
-              path="points"
+              path="/preference/safety"
               element={
-                <PointHistory />
+                <PreferenceSafety />
               }
             />
 
 
-            {/* 주문 내역 */}
+            {/* 최종 취향 등록 완료 */}
 
             <Route
-              path="orders"
+              path="/preference/complete"
               element={
-                <OrderHistory />
+                <PreferenceComplete />
               }
             />
 
 
-            {/* 주문 상세 */}
+            {/* ========================================
+                AI 추천
+                Header O / Footer X
+            ======================================== */}
+
+            {/* AI 추천 인트로 */}
 
             <Route
-              path="orders/:orderId"
+              path="/ai"
               element={
-                <OrderDetail />
+                <AiIntro />
               }
             />
 
 
-            {/* 찜 */}
+            {/* AI 추천 설문 */}
 
             <Route
-              path="wishlist"
+              path="/ai/survey"
               element={
-                <WishList />
+                <AiSurvey />
               }
             />
 
 
-            {/* 자주 구매 */}
+            {/* AI 추천 결과 */}
 
             <Route
-              path="frequent"
+              path="/ai/result"
               element={
-                <FrequentPurchase />
+                <AiResult />
               }
             />
 
 
-            {/* 취소 · 반품 · 교환 내역 */}
+            {/* 내 취향 분석 */}
 
             <Route
-              path="claims"
-              element={
-                <ClaimHistory />
-              }
-            />
-
-
-            {/* 문의 내역 */}
-
-            <Route
-              path="inquiries"
-              element={
-                <InquiryHistory />
-              }
-            />
-
-
-            {/* AI 추천 기록 */}
-
-            <Route
-              path="ai-history"
-              element={
-                <AiHistory />
-              }
-            />
-
-
-            {/* 내 취향 분석
-                기존 AI 취향 분석 페이지 사용 */}
-
-            <Route
-              path="preference"
+              path="/ai/preference"
               element={
                 <AiPreference />
-              }
-            />
-
-
-            {/* 이벤트 참여 내역 */}
-
-            <Route
-              path="events"
-              element={
-                <EventHistory />
-              }
-            />
-
-
-            {/* 이벤트 당첨 내역 */}
-
-            <Route
-              path="event-winnings"
-              element={
-                <EventWinningHistory />
-              }
-            />
-
-
-            {/* 마이페이지 에러 */}
-
-            <Route
-              path="error"
-              element={
-                <MyPageErrorContent />
               }
             />
 
@@ -723,111 +364,481 @@ const App = () => {
 
 
           {/* ========================================
-              404
+              일반 사용자 페이지
+              Header / Footer / MobileBottomNav 적용
           ======================================== */}
 
           <Route
-            path="*"
             element={
-              <NotFound />
+              <SiteLayout />
             }
-          />
+          >
 
-        </Route>
+            {/* Main */}
+
+            <Route
+              path="/"
+              element={
+                <MainPage />
+              }
+            />
 
 
-        {/* ========================================
-            관리자 페이지
-            일반 Header / Footer 사용하지 않음
-        ======================================== */}
+            {/* ========================================
+                Brand
+            ======================================== */}
 
-        <Route
-          path="/admin"
-          element={
-            <AdminLayout />
-          }
-        >
+            <Route
+              path="/brand"
+              element={
+                <BrandIntro />
+              }
+            />
 
-          {/* 관리자 대시보드 */}
+            <Route
+              path="/brand/makdong"
+              element={
+                <MakdongIntro />
+              }
+            />
+
+
+            {/* 기존 Header 링크 대응 */}
+
+            <Route
+              path="/brand/story"
+              element={
+                <Navigate
+                  to="/brand/makdong"
+                  replace
+                />
+              }
+            />
+
+
+            {/* ========================================
+                Shop
+            ======================================== */}
+
+            <Route
+              path="/shop"
+              element={
+                <ProductList />
+              }
+            />
+
+            <Route
+              path="/shop/:productId"
+              element={
+                <ProductDetail />
+              }
+            />
+
+
+            {/* ========================================
+                Cart / Order
+            ======================================== */}
+
+            <Route
+              path="/cart"
+              element={
+                <Cart />
+              }
+            />
+
+            <Route
+              path="/checkout"
+              element={
+                <Checkout />
+              }
+            />
+
+            <Route
+              path="/order-complete"
+              element={
+                <OrderComplete />
+              }
+            />
+
+
+            {/* ========================================
+                Event
+            ======================================== */}
+
+            {/* 이벤트 목록 */}
+
+            <Route
+              path="/events"
+              element={
+                <EventList />
+              }
+            />
+
+
+            {/* 이벤트 시작 안내 */}
+
+            <Route
+              path="/events/ready/:eventType"
+              element={
+                <EventReady />
+              }
+            />
+
+
+            {/* 룰렛 이벤트 */}
+
+            <Route
+              path="/events/roulette"
+              element={
+                <RouletteEvent />
+              }
+            />
+
+
+            {/* OX 퀴즈 이벤트 */}
+
+            <Route
+              path="/events/ox-quiz"
+              element={
+                <OxQuizEvent />
+              }
+            />
+
+
+            {/* 카드 게임 이벤트 */}
+
+            <Route
+              path="/events/card-game"
+              element={
+                <CardGame />
+              }
+            />
+
+
+            {/* ========================================
+                Support
+            ======================================== */}
+
+            {/* 자주 묻는 질문 */}
+
+            <Route
+              path="/faq"
+              element={
+                <FAQ />
+              }
+            />
+
+
+            {/* 1:1 질문하기 */}
+
+            <Route
+              path="/inquiry"
+              element={
+                <InquiryQnA />
+              }
+            />
+
+
+            {/* 공지사항 목록 */}
+
+            <Route
+              path="/notices"
+              element={
+                <NoticeList />
+              }
+            />
+
+
+            {/* 공지사항 상세 */}
+
+            <Route
+              path="/notices/:noticeId"
+              element={
+                <NoticeDetail />
+              }
+            />
+
+
+            {/* ========================================
+                MyPage
+            ======================================== */}
+
+            <Route
+              path="/mypage"
+              element={
+                <MyPageLayout />
+              }
+            >
+
+              {/* 마이페이지 홈 */}
+
+              <Route
+                index
+                element={
+                  <MyHome />
+                }
+              />
+
+
+              {/* 회원 정보 관리 */}
+
+              <Route
+                path="profile"
+                element={
+                  <ProfileEdit />
+                }
+              />
+
+
+              {/* 배송지 관리 */}
+
+              <Route
+                path="addresses"
+                element={
+                  <AddressBook />
+                }
+              />
+
+
+              {/* 포인트 */}
+
+              <Route
+                path="points"
+                element={
+                  <PointHistory />
+                }
+              />
+
+
+              {/* 주문 내역 */}
+
+              <Route
+                path="orders"
+                element={
+                  <OrderHistory />
+                }
+              />
+
+
+              {/* 주문 상세 */}
+
+              <Route
+                path="orders/:orderId"
+                element={
+                  <OrderDetail />
+                }
+              />
+
+
+              {/* 찜 */}
+
+              <Route
+                path="wishlist"
+                element={
+                  <WishList />
+                }
+              />
+
+
+              {/* 자주 구매 */}
+
+              <Route
+                path="frequent"
+                element={
+                  <FrequentPurchase />
+                }
+              />
+
+
+              {/* 취소 · 반품 · 교환 내역 */}
+
+              <Route
+                path="claims"
+                element={
+                  <ClaimHistory />
+                }
+              />
+
+
+              {/* 문의 내역 */}
+
+              <Route
+                path="inquiries"
+                element={
+                  <InquiryHistory />
+                }
+              />
+
+
+              {/* AI 추천 기록 */}
+
+              <Route
+                path="ai-history"
+                element={
+                  <AiHistory />
+                }
+              />
+
+
+              {/* 내 취향 분석
+                  기존 AI 취향 분석 페이지 사용 */}
+
+              <Route
+                path="preference"
+                element={
+                  <AiPreference />
+                }
+              />
+
+
+              {/* 이벤트 참여 내역 */}
+
+              <Route
+                path="events"
+                element={
+                  <EventHistory />
+                }
+              />
+
+
+              {/* 이벤트 당첨 내역 */}
+
+              <Route
+                path="event-winnings"
+                element={
+                  <EventWinningHistory />
+                }
+              />
+
+
+              {/* 마이페이지 에러 */}
+
+              <Route
+                path="error"
+                element={
+                  <MyPageErrorContent />
+                }
+              />
+
+            </Route>
+
+
+            {/* ========================================
+                404
+            ======================================== */}
+
+            <Route
+              path="*"
+              element={
+                <NotFound />
+              }
+            />
+
+          </Route>
+
+
+          {/* ========================================
+              관리자 페이지
+              일반 Header / Footer 사용하지 않음
+          ======================================== */}
 
           <Route
-            index
+            path="/admin"
             element={
-              <Dashboard />
+              <AdminLayout />
             }
-          />
+          >
+
+            {/* 관리자 대시보드 */}
+
+            <Route
+              index
+              element={
+                <Dashboard />
+              }
+            />
 
 
-          {/* 회원 관리 */}
+            {/* 회원 관리 */}
 
-          <Route
-            path="users"
-            element={
-              <UserManage />
-            }
-          />
-
-
-          {/* 상품 관리 */}
-
-          <Route
-            path="products"
-            element={
-              <ProductManage />
-            }
-          />
+            <Route
+              path="users"
+              element={
+                <UserManage />
+              }
+            />
 
 
-          {/* 이벤트 관리 */}
+            {/* 상품 관리 */}
 
-          <Route
-            path="events"
-            element={
-              <EventManage />
-            }
-          />
-
-
-          {/* AI 추천 기록 */}
-
-          <Route
-            path="ai-logs"
-            element={
-              <AiLogManage />
-            }
-          />
+            <Route
+              path="products"
+              element={
+                <ProductManage />
+              }
+            />
 
 
-          {/* 공지사항 관리 */}
+            {/* 주문 관리 */}
 
-          <Route
-            path="notices"
-            element={
-              <NoticeManage />
-            }
-          />
-
-
-          {/* 리뷰 관리 */}
-
-          <Route
-            path="reviews"
-            element={
-              <ReviewManage />
-            }
-          />
+            <Route
+              path="orders"
+              element={
+                <OrdersManage />
+              }
+            />
 
 
-          {/* 관리자 에러 */}
+            {/* 이벤트 관리 */}
 
-          <Route
-            path="error"
-            element={
-              <AdminErrorContent />
-            }
-          />
+            <Route
+              path="events"
+              element={
+                <EventManage />
+              }
+            />
 
-        </Route>
+
+            {/* AI 추천 기록 */}
+
+            <Route
+              path="ai-logs"
+              element={
+                <AiLogManage />
+              }
+            />
+
+
+            {/* 공지사항 관리 */}
+
+            <Route
+              path="notices"
+              element={
+                <NoticeManage />
+              }
+            />
+
+
+            {/* 리뷰 관리 */}
+
+            <Route
+              path="reviews"
+              element={
+                <ReviewManage />
+              }
+            />
+
+
+            {/* 관리자 에러 */}
+
+            <Route
+              path="error"
+              element={
+                <AdminErrorContent />
+              }
+            />
+
+          </Route>
 
         </Routes>
       </Suspense>

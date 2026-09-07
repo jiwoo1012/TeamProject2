@@ -1,206 +1,379 @@
-.scrollWrapper {
+@use '../../styles/variables' as *;
+.aiIntro {
   position: relative;
-  height: 300vh; // 스크롤 길이를 확보해야 스크롤 애니메이션이 동작합니다.
-  background-color: #121417;
-}
-
-.sticky {
-  position: sticky;
-  top: 0;
 
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - 96px);
+  min-height: 680px;
 
   overflow: hidden;
 
-  background: #111;
-}
-
-/* 뒤쪽 - 화면 꽉 채우는 흐린 영상 */
-.backgroundVideo {
-  position: absolute;
-  inset: -30px;
-
-  width: calc(100% + 60px);
-  height: calc(100% + 60px);
-
-  object-fit: cover;
-  object-position: center;
-
-  filter: blur(22px);
-  transform: scale(1.06);
-
-  opacity: 0.75;
-
-  z-index: 0;
-}
-
-/* 앞쪽 - 실제 보여줄 영상 */
-.video {
-  position: absolute;
-  inset: 0;
-
-  width: 100%;
-  height: 100%;
-
-  object-fit: contain;
-  object-position: center;
-
-  z-index: 1;
-}
-
-/* 텍스트가 영상에 묻히지 않도록 */
-.dim {
-  position: absolute;
-  inset: 0;
-
-  z-index: 2;
-
-  pointer-events: none;
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(0, 0, 0, 0.38) 0%,
-      rgba(0, 0, 0, 0.12) 28%,
-      rgba(0, 0, 0, 0) 55%
-    );
-}
-
-.overlay {
-  position: absolute;
-  inset: 0;
-
-  z-index: 3;
-
-  pointer-events: none;
-}
-
-.surveyButton {
-  position: absolute;
-  left: 50%;
-  bottom: 80px;
-
-  z-index: 10;
+  background: #faf9f5;
 
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+}
 
-  padding: 16px 30px;
 
-  // 기본 상태는 깔끔한 흰색 버튼
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  border-radius: 999px;
+/* ========================================
+   카드 원형 확대
 
-  background: rgba(255, 255, 255, 0.94);
+   rotate와 scale을 같은 요소에 적용하면
+   transform이 서로 덮어쓰기 때문에
+   반드시 wrapper를 분리한다.
+======================================== */
 
-  font-size: 16px;
-  font-weight: 600;
-  color: #2f241c;
+.orbitScale {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  width: 0;
+  height: 0;
+
+  pointer-events: none;
+
+  will-change: transform;
+
+  animation:
+    orbitMoveAndZoom 5.5s
+    cubic-bezier(0.4, 0, 0.2, 1)
+    forwards;
+}
+
+
+/* ========================================
+   카드 원형 회전
+======================================== */
+
+.orbit {
+  position: absolute;
+
+  left: 0;
+  top: 0;
+
+  width: 0;
+  height: 0;
+
+  animation:
+    orbitRotate 42s
+    linear
+    infinite;
+}
+
+
+/* ========================================
+   카드 하나
+======================================== */
+
+.card {
+  --radius: clamp(
+    500px,
+    46vw,
+    780px
+  );
+
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: clamp(
+    200px,
+    10vw,
+    150px
+  );
+
+  aspect-ratio: 0.78;
+
+  border-radius: 24px;
+
+  background: #e7e6e4;
+
+  /*
+    상품 이미지가 카드
+    바깥으로 삐져나오지 않도록 추가
+  */
+  overflow: hidden;
+
+  transform:
+    translate(-50%, -50%)
+    rotate(var(--angle))
+    translateY(
+      calc(var(--radius) * -1)
+    );
+}
+
+
+/* ========================================
+   상품 이미지
+======================================== */
+
+.cardImage {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+/* ========================================
+   가운데 콘텐츠
+======================================== */
+
+.content {
+  position: relative;
+  z-index: 5;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+
+  transform: translateY(-1vh);
+
+  isolation: isolate;
+}
+
+.content::before {
+  content: '';
+
+  position: absolute;
+  z-index: -1;
+
+  left: 50%;
+  top: 42%;
+
+  width: clamp(440px, 44vw, 760px);
+  height: clamp(320px, 34vw, 560px);
+
+  transform: translate(-50%, -50%);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(253, 251, 249, 0.88) 0%,
+      rgba(253, 251, 249, 0.72) 34%,
+      rgba(253, 251, 249, 0.44) 58%,
+      rgba(253, 251, 249, 0.18) 76%,
+      rgba(253, 251, 249, 0) 100%
+    );
+
+  filter: blur(18px);
+
+  pointer-events: none;
+}
+
+/* ========================================
+   타이틀
+======================================== */
+
+.title {
+  margin: 0;
+
+  color: $color-text-primary;
+
+  font-family: $font-family-display;
+
+  font-size:
+    clamp(
+      44px,
+      4.4vw,
+      76px
+    );
+
+  font-weight: $font-weight-bold;
+
+  line-height: 1.25;
+
+  letter-spacing: -0.045em;
+
+  white-space: nowrap;
+
+  text-shadow:
+    0 2px 10px
+    rgba(253, 251, 249, 0.45);
+}
+
+
+.titleLine {
+  display: block;
+
+  min-height: 1.25em;
+}
+
+
+
+/* ========================================
+   한 글자씩 아래 → 위 등장
+======================================== */
+
+.character {
+  display: inline-block;
+
+  opacity: 0;
+
+  transform:
+    translateY(32px);
+
+  animation:
+    characterReveal
+    0.55s
+    cubic-bezier(
+      0.22,
+      1,
+      0.36,
+      1
+    )
+    forwards;
+
+  animation-delay:
+    calc(
+      0.45s +
+      var(--char-index) *
+      0.105s
+    );
+}
+
+/* ========================================
+   안내 문구
+======================================== */
+.subCopy {
+  margin-top: 60px;
+  margin-bottom: 0;
+
+  color: $color-text-secondary;
+
+  font-family: $font-family-base;
+  font-size: 20px;
+  font-weight: $font-weight-medium;
+  line-height: 1.6;
+
+  letter-spacing: -0.01em;
+}
+
+.subHighlight {
+  color: $color-primary;
+  font-weight: $font-weight-bold;
+}
+
+/* ========================================
+   추천 버튼
+======================================== */
+
+.surveyButton {
+  position: relative;
+  z-index: 1;
+
+  margin-top: 28px;
+
+  min-width: 310px;
+
+  padding:
+    20px
+    34px;
+
+  border: 1px solid rgba($color-primary, 0.6);
+  border-radius: $radius-pill;
+
+  overflow: hidden;
+
+  background: rgba($color-surface, 0.82);
+
+  color: $color-text-primary;
+
+  font-family: $font-family-base;
+  font-size: 22px;
+  font-weight: $font-weight-semibold;
 
   cursor: pointer;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
   opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
 
-  transform:
-    translateX(-50%)
-    translateY(35px);
+  transform: translateY(20px);
 
-  transition:
-    opacity 0.6s ease,
-    transform 0.6s ease,
-    background 0.35s ease,
-    border-color 0.35s ease,
-    box-shadow 0.35s ease,
-    visibility 0.6s;
-
-  backdrop-filter: blur(10px);
-
-  // glow가 버튼 뒤에서만 보이도록
-  isolation: isolate;
-
-  // 민트 연기처럼 퍼지는 오라
-  &::before {
-    content: '';
-
-    position: absolute;
-    top: 50%;
-    left: 50%;
-
-    width: calc(100% + 30px);
-    height: calc(100% + 24px);
-
-    border-radius: inherit;
-
-    background:#fff;
-
-    filter: blur(13px);
-
-    opacity: 0;
-
-    transform:
-      translate(-50%, -50%)
-      scale(0.85);
-
-    transition:
-      opacity 0.4s ease,
-      transform 0.45s ease;
-
-    pointer-events: none;
-
-    z-index: -1;
-  }
-}
-
-
-/* 마지막까지 스크롤하면 등장 */
-.surveyButton.show {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-
-  transform:
-    translateX(-50%)
-    translateY(0);
-}
-
-
-/* 호버 */
-.surveyButton.show:hover {
-  // 연기 색과 맞춘 아주 연한 민트빛
-  background:
-    linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.98),
-      rgba(227, 255, 249, 0.96)
-    );
-
-  border-color: rgba(137, 224, 214, 0.9);
+  animation:
+    buttonReveal
+    0.7s
+    ease
+    3.2s
+    forwards;
 
   box-shadow:
-      0 0 8px rgba(51, 210, 195, 0.9),
-      0 0 18px rgba(51, 210, 195, 0.65),
-      0 0 34px rgba(51, 210, 195, 0.42);
+    0 8px 24px
+    rgba(44, 35, 27, 0.06);
+
+  transition:
+    color 0.4s ease,
+    transform 0.25s ease,
+    border-color 0.4s ease,
+    box-shadow 0.3s ease;
+}
+
+
+/* 왼쪽 → 오른쪽 wipe */
+.surveyButton::before {
+  content: '';
+
+  position: absolute;
+  z-index: -1;
+
+  inset: 0;
+
+  background:
+    $color-primary;
 
   transform:
-    translateX(-50%)
+    scaleX(0);
+
+  transform-origin:
+    left center;
+
+  transition:
+    transform
+    0.48s
+    cubic-bezier(
+      0.4,
+      0,
+      0.2,
+      1
+    );
+}
+
+
+.surveyButton:hover {
+  color: $color-white;
+
+  border-color:
+    $color-primary;
+
+  transform:
     translateY(-3px);
 
-  &::before {
-    opacity: 1;
+  box-shadow:
+    0 12px 28px
+    rgba(
+      $color-primary,
+      0.18
+    );
+}
 
-    transform:
-      translate(-50%, -50%)
-      scale(1);
-  }
 
-  .buttonArrow {
-    transform: translateX(5px);
-  }
+.surveyButton:hover::before {
+  transform:
+    scaleX(1);
 }
 
 
@@ -208,11 +381,207 @@
   display: inline-block;
 
   transition:
-    transform 0.3s ease,
-    color 0.3s ease;
+    transform
+    0.3s ease;
 }
 
 
-.surveyButton.show:hover .buttonArrow {
-  color: #4caea6;
+.surveyButton:hover
+.buttonArrow {
+  transform:
+    translateX(6px);
+}
+/* ========================================
+   Animation
+======================================== */
+
+@keyframes orbitRotate {
+  from {
+    transform:
+      rotate(0deg);
+  }
+
+  to {
+    transform:
+      rotate(360deg);
+  }
+}
+
+
+@keyframes orbitMoveAndZoom {
+  0% {
+    transform:
+      translateY(0)
+      scale(0.55);
+  }
+
+  100% {
+    transform:
+      translateY(65vh)
+      scale(1);
+  }
+}
+
+
+@keyframes characterReveal {
+  0% {
+    opacity: 0;
+
+    transform:
+      translateY(32px);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+@keyframes buttonReveal {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* ========================================
+   Tablet
+======================================== */
+
+@media (max-width: 1024px) {
+  .aiIntro {
+    height:
+      calc(
+        100vh - 80px
+      );
+  }
+
+  .card {
+    --radius:
+      clamp(
+        300px,
+        44vw,
+        470px
+      );
+
+    width:
+      clamp(
+        90px,
+        12vw,
+        130px
+      );
+
+    border-radius: 22px;
+  }
+
+  .surveyButton {
+    margin-top: 48px;
+
+    min-width: 270px;
+
+    font-size: 19px;
+  }
+}
+
+
+/* ========================================
+   Mobile
+======================================== */
+
+@media (max-width: 767px) {
+  .aiIntro {
+    height:
+      calc(
+        100svh - 64px
+      );
+
+    min-height: 600px;
+  }
+
+  .orbitScale {
+    top: 50%;
+  }
+
+  .card {
+    --radius:
+      clamp(
+        230px,
+        68vw,
+        330px
+      );
+
+    width:
+      clamp(
+        76px,
+        22vw,
+        105px
+      );
+
+    border-radius: 18px;
+  }
+
+  .title {
+    font-size:
+      clamp(
+        34px,
+        10vw,
+        48px
+      );
+  }
+
+  .surveyButton {
+    margin-top: 44px;
+
+    min-width: 230px;
+
+    padding:
+      17px
+      26px;
+
+    font-size: 17px;
+  }
+}
+
+
+/* ========================================
+   접근성
+   모션 감소 설정 사용자
+======================================== */
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .orbitScale {
+    animation: none;
+
+    transform:
+      scale(1.18);
+  }
+
+  .orbit {
+    animation-duration: 120s;
+  }
+
+  .character,
+  .surveyButton {
+    animation: none;
+
+    opacity: 1;
+
+    transform: none;
+  }
 }

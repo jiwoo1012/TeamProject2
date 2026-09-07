@@ -1,292 +1,316 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import aiIntroVideo from '../../assets/videos/ai-intro.mp4'
+
+import liquorsData from '../../data/products/liquors.json'
+import AiLoginModal from '../../components/ai/AiLoginModal'
+
 import styles from './AiIntro.module.scss'
 
-const SECTIONS = [
-  {
-    at: 0.05,
-    title: 'AI 큐레이터',
-    desc: '당신의 취향을 읽습니다',
-  },
-  {
-    at: 0.35,
-    title: '데이터 분석',
-    desc: '단맛, 산미, 바디감, 향까지',
-  },
-  {
-    at: 0.65,
-    title: '맞춤 추천',
-    desc: '나에게 꼭 맞는 전통주를 찾아드려요',
-  },
+
+const MESSAGE_LINES = [
+  '막둥이에게',
+  '주안상을',
+  '추천받아보세요!',
 ]
+
+const CARD_COUNT = 16
+
+
+// ========================================
+// 상품 이미지 불러오기
+// ========================================
+
+const productImages = import.meta.glob(
+  '../../assets/images/products/**/*.{png,jpg,jpeg,webp}',
+  {
+    eager: true,
+    import: 'default',
+  }
+)
+
+
+// ========================================
+// JSON 이미지 경로와 실제 이미지 연결
+// ========================================
+
+const resolveProductImage = (product) => {
+  const imagePath =
+    product?.image ||
+    product?.imageUrl ||
+    product?.thumbnail ||
+    product?.thumbnailUrl
+
+  if (!imagePath) return ''
+
+  const fileName = imagePath
+    .replace(/\\/g, '/')
+    .split('/')
+    .pop()
+
+  const matchedImage =
+    Object.entries(productImages).find(
+      ([path]) =>
+        path.endsWith(`/${fileName}`)
+    )
+
+  return matchedImage?.[1] || ''
+}
+
+
+// ========================================
+// liquors 데이터 형태 대응
+// ========================================
+
+const liquorProducts =
+  Array.isArray(liquorsData)
+    ? liquorsData
+    : liquorsData?.products || []
+
+
+// 카드에 사용할 상품 16개
+const CARD_PRODUCTS =
+  liquorProducts.slice(
+    0,
+    CARD_COUNT
+  )
+
 
 const AiIntro = () => {
   const navigate = useNavigate()
 
-  const wrapperRef = useRef(null)
-  const videoRef = useRef(null)
+  const [
+    isLoginModalOpen,
+    setIsLoginModalOpen,
+  ] = useState(false)
 
-  // 목표 스크롤 진행도 (0 ~ 1)
-  const progressRef = useRef(0)
-
-  // 부드러운 보간용 현재 진행도
-  const currentProgressRef = useRef(0)
-
-  // 비디오 전체 길이
-  const durationRef = useRef(0)
-
-  const rafRef = useRef(null)
-
-  const [activeIdx, setActiveIdx] = useState(0)
-  const [isComplete, setIsComplete] = useState(false)
 
   // ========================================
-  // 1. 비디오 메타데이터 로드
+  // 추천 받기
   // ========================================
-  useEffect(() => {
-    const video = videoRef.current
 
-    if (!video) return
-
-    const handleLoadedMetadata = () => {
-      durationRef.current = video.duration || 0
-
-      // 첫 프레임 강제 렌더링
-      video.currentTime = 0.001
-    }
-
-    if (video.readyState >= 1) {
-      handleLoadedMetadata()
-    } else {
-      video.addEventListener(
-        'loadedmetadata',
-        handleLoadedMetadata
-      )
-    }
-
-    return () => {
-      video.removeEventListener(
-        'loadedmetadata',
-        handleLoadedMetadata
-      )
-    }
-  }, [])
-
-  // ========================================
-  // 2. 스크롤 위치 계산
-  // ========================================
-  useEffect(() => {
-    const wrapper = wrapperRef.current
-
-    if (!wrapper) return
-
-    const handleScroll = () => {
-      const rect = wrapper.getBoundingClientRect()
-
-      const wrapperHeight = wrapper.offsetHeight
-      const viewportHeight = window.innerHeight
-
-      const scrollableDistance =
-        wrapperHeight - viewportHeight
-
-      if (scrollableDistance <= 0) return
-
-      const scrolled = -rect.top
-
-      const progress = Math.min(
-        Math.max(
-          scrolled / scrollableDistance,
-          0
-        ),
-        1
-      )
-
-      progressRef.current = progress
-
-      // 현재 보여줄 텍스트 계산
-      const idx = SECTIONS.reduce(
-        (acc, section, i) =>
-          progress >= section.at ? i : acc,
-        0
-      )
-
-      setActiveIdx(idx)
-
-      // 거의 마지막까지 스크롤했을 때 버튼 등장
-      setIsComplete(progress >= 0.97)
-    }
-
-    window.addEventListener(
-      'scroll',
-      handleScroll,
-      {
-        passive: true,
-      }
-    )
-
-    handleScroll()
-
-    return () => {
-      window.removeEventListener(
-        'scroll',
-        handleScroll
-      )
-    }
-  }, [])
-
-  // ========================================
-  // 3. 스크롤과 비디오 currentTime 동기화
-  // ========================================
-  useEffect(() => {
-    const video = videoRef.current
-
-    const render = () => {
-      if (
-        video &&
-        durationRef.current > 0
-      ) {
-        // LERP 방식으로 스크롤 위치를 부드럽게 추종
-        currentProgressRef.current +=
-          (
-            progressRef.current -
-            currentProgressRef.current
-          ) * 0.1
-
-        const targetTime =
-          currentProgressRef.current *
-          durationRef.current
-
-        // 영상이 준비된 경우에만 시간 이동
-        if (
-          video.readyState >= 2 &&
-          Math.abs(
-            video.currentTime - targetTime
-          ) > 0.01
-        ) {
-          video.currentTime = targetTime
-        }
-      }
-
-      rafRef.current =
-        requestAnimationFrame(render)
-    }
-
-    rafRef.current =
-      requestAnimationFrame(render)
-
-    return () => {
-      if (rafRef.current) {
-        cancelAnimationFrame(
-          rafRef.current
-        )
-      }
-    }
-  }, [])
-
-  // ========================================
-  // 4. AI 추천 설문 이동
-  // ========================================
   const handleSurveyClick = () => {
+    setIsLoginModalOpen(true)
+  }
+
+
+  // ========================================
+  // 비회원으로 추천 받기
+  // ========================================
+
+  const handleGuestClick = () => {
+    setIsLoginModalOpen(false)
+
     navigate('/ai/survey')
   }
 
+
+  // ========================================
+  // 로그인
+  // ========================================
+
+  const handleLoginClick = () => {
+    setIsLoginModalOpen(false)
+
+    navigate('/login')
+  }
+
+
+  // ========================================
+  // 모달 닫기
+  // ========================================
+
+  const handleModalClose = () => {
+    setIsLoginModalOpen(false)
+  }
+
+
+  let charIndex = 0
+
+
   return (
-    <div
-      ref={wrapperRef}
-      className={styles.scrollWrapper}
-    >
-      <div className={styles.sticky}>
+    <main className={styles.aiIntro}>
 
-        {/* AI 인트로 영상 */}
-        <video
-          ref={videoRef}
-          className={styles.video}
-          src={aiIntroVideo}
-          muted
-          playsInline
-          preload="auto"
-        />
+      {/* ========================================
+          카드 원형
+          기존 위치 / 크기 / 확대 / 회전 유지
+      ======================================== */}
 
-        {/* 스크롤에 따라 변경되는 설명 */}
-        <div className={styles.overlay}>
-          {SECTIONS.map(
-            (section, i) => (
-              <div
-                key={section.title}
-                className={`
-                  ${styles.textBlock}
-                  ${
-                    i === activeIdx
-                      ? styles.active
-                      : ''
+      <div className={styles.orbitScale}>
+        <div className={styles.orbit}>
+
+          {Array.from(
+            { length: CARD_COUNT },
+            (_, index) => {
+              const angle =
+                (360 / CARD_COUNT) *
+                index
+
+              const product =
+                CARD_PRODUCTS.length > 0
+                  ? CARD_PRODUCTS[
+                      index %
+                        CARD_PRODUCTS.length
+                    ]
+                  : null
+
+              const productImage =
+                resolveProductImage(
+                  product
+                )
+
+              return (
+                <div
+                  key={
+                    product?.id ??
+                    index
                   }
-                `}
-              >
-                <h2>
-                  {section.title}
-                </h2>
+                  className={
+                    styles.card
+                  }
+                  style={{
+                    '--angle':
+                      `${angle}deg`,
+                  }}
+                >
+                  {productImage && (
+                    <img
+                      src={productImage}
+                      alt={
+                        product?.name ||
+                        '전통주 상품'
+                      }
+                      className={
+                        styles.cardImage
+                      }
+                    />
+                  )}
+                </div>
+              )
+            }
+          )}
 
-                <p>
-                  {section.desc}
-                </p>
-              </div>
+        </div>
+      </div>
+
+
+      {/* ========================================
+          중앙 콘텐츠
+      ======================================== */}
+
+      <div className={styles.content}>
+
+        {/* 제목 */}
+        <h1 className={styles.title}>
+
+          {MESSAGE_LINES.map(
+            (
+              line,
+              lineIndex
+            ) => (
+              <span
+                key={line}
+                className={
+                  styles.titleLine
+                }
+              >
+                {[...line].map(
+                  (
+                    char,
+                    index
+                  ) => {
+                    const currentIndex =
+                      charIndex++
+
+                    return (
+                      <span
+                        key={
+                          `${lineIndex}-${index}`
+                        }
+                        className={
+                          styles.character
+                        }
+                        style={{
+                          '--char-index':
+                            currentIndex,
+                        }}
+                      >
+                        {char}
+                      </span>
+                    )
+                  }
+                )}
+              </span>
             )
           )}
-        </div>
 
-        {/* 마지막까지 스크롤하면 등장 */}
+        </h1>
+
+
+        {/* 소요 시간 안내 */}
+        <p className={styles.subCopy}>
+          몇 가지만 알려주세요.
+
+          <span
+            className={
+              styles.subHighlight
+            }
+          >
+            {' '}약 30초
+          </span>
+
+          면 충분해요!
+        </p>
+
+
+        {/* 추천 버튼 */}
         <button
           type="button"
-          className={`
-            ${styles.surveyButton}
-            ${
-              isComplete
-                ? styles.show
-                : ''
-            }
-          `}
-          onClick={handleSurveyClick}
-          tabIndex={
-            isComplete ? 0 : -1
+          className={
+            styles.surveyButton
           }
-          aria-hidden={!isComplete}
+          onClick={
+            handleSurveyClick
+          }
         >
-          막둥이에게 주안상 추천받기
+          <span>
+            주안상 추천 받기
+          </span>
+
           <span
             className={
               styles.buttonArrow
             }
+            aria-hidden="true"
           >
             →
           </span>
         </button>
 
-        {/* 진행 바 */}
-        <div
-          className={
-            styles.progressBar
-          }
-        >
-          <div
-            className={
-              styles.progressFill
-            }
-            style={{
-              transform: `scaleX(${
-                activeIdx ===
-                SECTIONS.length - 1
-                  ? 1
-                  : (activeIdx + 1) /
-                    SECTIONS.length
-              })`,
-            }}
-          />
-        </div>
-
       </div>
-    </div>
+
+
+      {/* ========================================
+          로그인 안내 모달
+      ======================================== */}
+
+      <AiLoginModal
+        isOpen={
+          isLoginModalOpen
+        }
+        onClose={
+          handleModalClose
+        }
+        onGuest={
+          handleGuestClick
+        }
+        onLogin={
+          handleLoginClick
+        }
+      />
+
+    </main>
   )
 }
+
 
 export default AiIntro
