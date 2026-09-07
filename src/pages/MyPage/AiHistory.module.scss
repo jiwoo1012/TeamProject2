@@ -1,5 +1,535 @@
-/* Page styles. */
-.page { min-height: 55vh; padding: 0 5% 4rem; }
-.content { max-width: 1100px; margin: 0 auto; }
-.content h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 5vw, 3.5rem); }
-.content p { color: #665e58; }
+.page {
+  width: 100%;
+  padding-bottom: 80px;
+}
+
+
+/* =========================
+   전체 흰색 콘텐츠 패널
+========================= */
+
+.contentCard {
+  width: 100%;
+  min-height: 720px;
+  padding: 34px 38px 32px;
+  border-radius: 18px;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+
+/* =========================
+   제목
+========================= */
+
+.pageHeader {
+  padding-bottom: 18px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid #9d958a;
+
+  h1 {
+    margin: 0;
+    color: #342c25;
+    font-size: 25px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.03em;
+  }
+}
+
+
+/* =========================
+   요약
+========================= */
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  min-height: 78px;
+  margin-bottom: 28px;
+  border: 1px solid #e7e1da;
+  border-radius: 9px;
+  background: #fff;
+  overflow: hidden;
+}
+
+
+.summaryItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  padding: 17px 20px;
+
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 15px;
+    right: 0;
+    width: 1px;
+    height: calc(100% - 30px);
+    background: #eee9e3;
+  }
+}
+
+
+.summaryIcon {
+  display: block;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #e5e4e1;
+}
+
+
+.summaryText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  span {
+    color: #726b64;
+    font-size: 11px;
+  }
+
+  strong {
+    color: #342d27;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+  }
+}
+
+
+/* =========================
+   최근 저장한 추천
+========================= */
+
+.recentSection {
+  padding-bottom: 26px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e8e2db;
+
+  > h2 {
+    margin: 0 0 14px;
+    color: #403832;
+    font-size: 14px;
+    font-weight: 700;
+  }
+}
+
+
+.recentList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+
+.recentCard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 88px;
+  padding: 12px 37px 12px 12px;
+  border: 1px solid #e5dfd8;
+  border-radius: 8px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    border-color: #9ebdb3;
+    box-shadow: 0 4px 14px rgba(50, 42, 34, 0.05);
+  }
+}
+
+
+.recentThumbnail {
+  flex-shrink: 0;
+  width: 86px;
+  height: 64px;
+  margin-right: 13px;
+  border-radius: 4px;
+  background: #dededb;
+}
+
+
+.recentInfo {
+  min-width: 0;
+
+  > strong {
+    display: block;
+    margin-bottom: 4px;
+    overflow: hidden;
+    color: #3a332d;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+
+.recentDate {
+  display: block;
+  margin-bottom: 7px;
+  color: #9b948d;
+  font-size: 9px;
+}
+
+
+.keywordList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+
+  span {
+    padding: 2px 6px;
+    border-radius: 10px;
+    background: #eef5f2;
+    color: #568678;
+    font-size: 8px;
+  }
+}
+
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  right: 13px;
+  color: #548f81;
+  font-size: 27px;
+  font-weight: 300;
+  transform: translateY(-50%);
+}
+
+
+/* =========================
+   추천 목록
+========================= */
+
+.historySection {
+  width: 100%;
+}
+
+
+.historyTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 13px;
+
+  h2 {
+    margin: 0 0 10px;
+    color: #403832;
+    font-size: 14px;
+    font-weight: 700;
+  }
+}
+
+
+.filters {
+  display: flex;
+  gap: 6px;
+}
+
+
+.filterButton {
+  height: 27px;
+  padding: 0 12px;
+  border: 1px solid #d9d3cc;
+  border-radius: 15px;
+  background: #fff;
+  color: #716a63;
+  font-size: 9px;
+  cursor: pointer;
+  transition: 0.2s ease;
+
+  &:hover {
+    border-color: #619484;
+    color: #568778;
+  }
+}
+
+
+.activeFilter {
+  border-color: #568b7b;
+  background: #568b7b;
+  color: #fff;
+
+  &:hover {
+    background: #568b7b;
+    color: #fff;
+  }
+}
+
+
+.sortSelect {
+  min-width: 83px;
+  height: 29px;
+  padding: 0 8px;
+  border: 1px solid #dad4cd;
+  border-radius: 5px;
+  outline: none;
+  background: #fff;
+  color: #756e67;
+  font-size: 9px;
+  cursor: pointer;
+
+  &:focus {
+    border-color: #769f92;
+  }
+}
+
+
+/* =========================
+   기록 카드
+========================= */
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+
+.historyCard {
+  display: flex;
+  min-height: 90px;
+  align-items: center;
+  padding: 11px 12px;
+  border: 1px solid #e5dfd8;
+  border-radius: 8px;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+
+.historyThumbnail {
+  flex-shrink: 0;
+  width: 72px;
+  height: 66px;
+  margin-right: 13px;
+  border-radius: 4px;
+  background: #dededb;
+}
+
+
+.historyContent {
+  flex: 1;
+  min-width: 0;
+}
+
+
+.historyTitle {
+  margin-bottom: 9px;
+
+  span {
+    display: block;
+    margin-bottom: 2px;
+    color: #aaa29a;
+    font-size: 8px;
+  }
+
+  strong {
+    display: block;
+    overflow: hidden;
+    color: #4a423b;
+    font-size: 10px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+
+.products {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+.product {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 5px;
+}
+
+
+.productImage {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 3px;
+  background: #e0dfdc;
+}
+
+
+.productText {
+  min-width: 0;
+
+  span {
+    display: block;
+    margin-bottom: 1px;
+    color: #aaa29a;
+    font-size: 7px;
+  }
+
+  strong {
+    display: block;
+    max-width: 82px;
+    overflow: hidden;
+    color: #625a53;
+    font-size: 8px;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+
+.detailButton {
+  display: flex;
+  flex-shrink: 0;
+  height: 28px;
+  align-items: center;
+  gap: 5px;
+  margin-left: 13px;
+  padding: 0 9px;
+  border: 1px solid #91b0a6;
+  border-radius: 4px;
+  background: #fff;
+  color: #57877a;
+  font-size: 8px;
+  cursor: pointer;
+  transition: 0.2s ease;
+
+  span {
+    font-size: 13px;
+  }
+
+  &:hover {
+    background: #f1f6f4;
+  }
+}
+
+
+/* =========================
+   페이지네이션
+========================= */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  margin-top: 21px;
+
+  button {
+    display: flex;
+    width: 25px;
+    height: 25px;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #706a64;
+    font-size: 9px;
+    cursor: pointer;
+
+    &:disabled {
+      color: #c8c3bd;
+      cursor: default;
+    }
+
+    &:hover:not(:disabled) {
+      background: #f0eeea;
+    }
+  }
+}
+
+
+.activePage {
+  background: #568b7b !important;
+  color: #fff !important;
+}
+
+
+/* =========================
+   반응형
+========================= */
+
+@media (max-width: 1024px) {
+  .contentCard {
+    padding: 30px 28px;
+  }
+
+  .productText {
+    strong {
+      max-width: 65px;
+    }
+  }
+}
+
+
+@media (max-width: 768px) {
+  .contentCard {
+    min-height: auto;
+    padding: 24px 20px;
+    border-radius: 14px;
+  }
+
+  .summary {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryItem {
+    justify-content: flex-start;
+
+    &:not(:last-child)::after {
+      top: auto;
+      right: 16px;
+      bottom: 0;
+      left: 16px;
+      width: auto;
+      height: 1px;
+    }
+  }
+
+  .recentList {
+    grid-template-columns: 1fr;
+  }
+
+  .historyTop {
+    flex-direction: column;
+  }
+
+  .products {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .historyThumbnail {
+    display: none;
+  }
+
+  .historyCard {
+    align-items: flex-start;
+  }
+
+  .detailButton {
+    align-self: center;
+  }
+}

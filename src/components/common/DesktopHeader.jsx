@@ -693,7 +693,7 @@ const DesktopHeader = () => {
             {/* 내 취향 분석 */}
 
             <Link
-              to="/ai/preference"
+              to="/mypage/preference"
               className={
                 styles.snbLink
               }

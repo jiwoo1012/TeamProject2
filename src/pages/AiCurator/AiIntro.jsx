@@ -1,7 +1,18 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import {
+  useEffect,
+  useState,
+} from 'react'
+
+import {
+  useNavigate,
+} from 'react-router-dom'
 
 import liquorsData from '../../data/products/liquors.json'
+
+import {
+  subscribeToAuthState,
+} from '../../firebase/auth'
+
 import AiLoginModal from '../../components/ai/AiLoginModal'
 
 import styles from './AiIntro.module.scss'
@@ -33,24 +44,33 @@ const productImages = import.meta.glob(
 // JSON 이미지 경로와 실제 이미지 연결
 // ========================================
 
-const resolveProductImage = (product) => {
+const resolveProductImage = (
+  product
+) => {
   const imagePath =
     product?.image ||
     product?.imageUrl ||
     product?.thumbnail ||
     product?.thumbnailUrl
 
-  if (!imagePath) return ''
+  if (!imagePath) {
+    return ''
+  }
 
-  const fileName = imagePath
-    .replace(/\\/g, '/')
-    .split('/')
-    .pop()
+  const fileName =
+    imagePath
+      .replace(/\\/g, '/')
+      .split('/')
+      .pop()
 
   const matchedImage =
-    Object.entries(productImages).find(
+    Object.entries(
+      productImages
+    ).find(
       ([path]) =>
-        path.endsWith(`/${fileName}`)
+        path.endsWith(
+          `/${fileName}`
+        )
     )
 
   return matchedImage?.[1] || ''
@@ -62,7 +82,9 @@ const resolveProductImage = (product) => {
 // ========================================
 
 const liquorProducts =
-  Array.isArray(liquorsData)
+  Array.isArray(
+    liquorsData
+  )
     ? liquorsData
     : liquorsData?.products || []
 
@@ -76,7 +98,18 @@ const CARD_PRODUCTS =
 
 
 const AiIntro = () => {
-  const navigate = useNavigate()
+  const navigate =
+    useNavigate()
+
+  const [
+    currentUser,
+    setCurrentUser,
+  ] = useState(null)
+
+  const [
+    isAuthReady,
+    setIsAuthReady,
+  ] = useState(false)
 
   const [
     isLoginModalOpen,
@@ -85,11 +118,71 @@ const AiIntro = () => {
 
 
   // ========================================
+  // 로그인 상태 확인
+  // ========================================
+
+  useEffect(() => {
+    const unsubscribe =
+      subscribeToAuthState(
+        (user) => {
+          setCurrentUser(
+            user
+          )
+
+          setIsAuthReady(
+            true
+          )
+        }
+      )
+
+    return () => {
+      if (
+        typeof unsubscribe ===
+        'function'
+      ) {
+        unsubscribe()
+      }
+    }
+  }, [])
+
+
+  // ========================================
+  // 실제 로그인 회원 여부
+  //
+  // Firebase Anonymous Auth는
+  // user 객체가 있어도 비회원으로 처리
+  // ========================================
+
+  const isMember =
+    Boolean(
+      currentUser &&
+      !currentUser.isAnonymous
+    )
+
+
+  // ========================================
   // 추천 받기
+  //
+  // 회원 → 바로 설문
+  // 비회원 → 로그인 안내 모달
   // ========================================
 
   const handleSurveyClick = () => {
-    setIsLoginModalOpen(true)
+    if (!isAuthReady) {
+      return
+    }
+
+    if (isMember) {
+      navigate(
+        '/ai/survey'
+      )
+
+      return
+    }
+
+    setIsLoginModalOpen(
+      true
+    )
   }
 
 
@@ -98,9 +191,13 @@ const AiIntro = () => {
   // ========================================
 
   const handleGuestClick = () => {
-    setIsLoginModalOpen(false)
+    setIsLoginModalOpen(
+      false
+    )
 
-    navigate('/ai/survey')
+    navigate(
+      '/ai/survey'
+    )
   }
 
 
@@ -109,9 +206,13 @@ const AiIntro = () => {
   // ========================================
 
   const handleLoginClick = () => {
-    setIsLoginModalOpen(false)
+    setIsLoginModalOpen(
+      false
+    )
 
-    navigate('/login')
+    navigate(
+      '/login'
+    )
   }
 
 
@@ -120,7 +221,9 @@ const AiIntro = () => {
   // ========================================
 
   const handleModalClose = () => {
-    setIsLoginModalOpen(false)
+    setIsLoginModalOpen(
+      false
+    )
   }
 
 
@@ -128,25 +231,47 @@ const AiIntro = () => {
 
 
   return (
-    <main className={styles.aiIntro}>
-
+    <main
+      className={
+        styles.aiIntro
+      }
+    >
       {/* ========================================
           카드 원형
+
           기존 위치 / 크기 / 확대 / 회전 유지
       ======================================== */}
 
-      <div className={styles.orbitScale}>
-        <div className={styles.orbit}>
-
+      <div
+        className={
+          styles.orbitScale
+        }
+      >
+        <div
+          className={
+            styles.orbit
+          }
+        >
           {Array.from(
-            { length: CARD_COUNT },
-            (_, index) => {
+            {
+              length:
+                CARD_COUNT,
+            },
+
+            (
+              _,
+              index
+            ) => {
               const angle =
-                (360 / CARD_COUNT) *
+                (
+                  360 /
+                  CARD_COUNT
+                ) *
                 index
 
               const product =
-                CARD_PRODUCTS.length > 0
+                CARD_PRODUCTS.length >
+                0
                   ? CARD_PRODUCTS[
                       index %
                         CARD_PRODUCTS.length
@@ -161,6 +286,8 @@ const AiIntro = () => {
               return (
                 <div
                   key={
+                    product
+                      ?.productId ??
                     product?.id ??
                     index
                   }
@@ -174,7 +301,9 @@ const AiIntro = () => {
                 >
                   {productImage && (
                     <img
-                      src={productImage}
+                      src={
+                        productImage
+                      }
                       alt={
                         product?.name ||
                         '전통주 상품'
@@ -188,7 +317,6 @@ const AiIntro = () => {
               )
             }
           )}
-
         </div>
       </div>
 
@@ -197,11 +325,18 @@ const AiIntro = () => {
           중앙 콘텐츠
       ======================================== */}
 
-      <div className={styles.content}>
-
+      <div
+        className={
+          styles.content
+        }
+      >
         {/* 제목 */}
-        <h1 className={styles.title}>
 
+        <h1
+          className={
+            styles.title
+          }
+        >
           {MESSAGE_LINES.map(
             (
               line,
@@ -242,12 +377,16 @@ const AiIntro = () => {
               </span>
             )
           )}
-
         </h1>
 
 
         {/* 소요 시간 안내 */}
-        <p className={styles.subCopy}>
+
+        <p
+          className={
+            styles.subCopy
+          }
+        >
           몇 가지만 알려주세요.
 
           <span
@@ -255,7 +394,8 @@ const AiIntro = () => {
               styles.subHighlight
             }
           >
-            {' '}약 30초
+            {' '}
+            약 30초
           </span>
 
           면 충분해요!
@@ -263,6 +403,7 @@ const AiIntro = () => {
 
 
         {/* 추천 버튼 */}
+
         <button
           type="button"
           className={
@@ -270,6 +411,9 @@ const AiIntro = () => {
           }
           onClick={
             handleSurveyClick
+          }
+          disabled={
+            !isAuthReady
           }
         >
           <span>
@@ -285,12 +429,11 @@ const AiIntro = () => {
             →
           </span>
         </button>
-
       </div>
 
 
       {/* ========================================
-          로그인 안내 모달
+          비로그인 사용자용 로그인 안내 모달
       ======================================== */}
 
       <AiLoginModal
@@ -307,7 +450,6 @@ const AiIntro = () => {
           handleLoginClick
         }
       />
-
     </main>
   )
 }
