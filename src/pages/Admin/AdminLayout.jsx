@@ -40,6 +40,11 @@ const menuItems = [
     icon: 'product',
   },
   {
+    label: '주문 관리',
+    to: '/admin/orders',
+    icon: 'order',
+  },
+  {
     label: '이벤트 관리',
     to: '/admin/events',
     icon: 'event',
@@ -81,6 +86,7 @@ const MenuIcon = ({ type }) => {
         <rect x="14" y="14" width="7" height="7" rx="1" />
       </>
     ),
+
     users: (
       <>
         <circle cx="9" cy="8" r="3" />
@@ -88,12 +94,23 @@ const MenuIcon = ({ type }) => {
         <path d="M16 5.5a3 3 0 0 1 0 5.8M16.5 14a5 5 0 0 1 4 5" />
       </>
     ),
+
     product: (
       <>
         <path d="m4 7.5 8-4 8 4-8 4-8-4Z" />
         <path d="M4 7.5v9l8 4 8-4v-9M12 11.5v9" />
       </>
     ),
+
+    order: (
+      <>
+        <path d="M6 3h12v18H6z" />
+        <path d="M9 7h6" />
+        <path d="M9 11h6" />
+        <path d="M9 15h3" />
+      </>
+    ),
+
     event: (
       <>
         <rect x="3" y="5" width="18" height="16" rx="2" />
@@ -101,18 +118,21 @@ const MenuIcon = ({ type }) => {
         <path d="m12 13 .8 1.7 1.9.3-1.4 1.3.4 1.9-1.7-.9-1.7.9.4-1.9-1.4-1.3 1.9-.3.8-1.7Z" />
       </>
     ),
+
     ai: (
       <>
         <path d="m12 3 1.2 3.8L17 8l-3.8 1.2L12 13l-1.2-3.8L7 8l3.8-1.2L12 3Z" />
         <path d="m18.5 13 .7 2.3 2.3.7-2.3.7-.7 2.3-.7-2.3-2.3-.7 2.3-.7.7-2.3ZM5 14l.6 1.9 1.9.6-1.9.6L5 19l-.6-1.9-1.9-.6 1.9-.6L5 14Z" />
       </>
     ),
+
     notice: (
       <>
         <path d="M4 13V8.5A2.5 2.5 0 0 1 6.5 6H10l7-3v16l-7-3H6.5A2.5 2.5 0 0 1 4 13Z" />
         <path d="m8 16 1 5h4l-1-4M20 8v6" />
       </>
     ),
+
     review: (
       <>
         <path d="M21 12a8 8 0 0 1-8 8H6l-3 2v-7a8 8 0 1 1 18-3Z" />
@@ -123,7 +143,14 @@ const MenuIcon = ({ type }) => {
 
   return (
     <span className={styles.menuIcon} aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         {paths[type]}
       </svg>
     </span>
@@ -246,6 +273,7 @@ const AdminLayout = () => {
     }
   }, [isSidebarOpen])
 
+
   const handleMobileLogout = async () => {
     try {
       await signOut(auth)
@@ -279,6 +307,7 @@ const AdminLayout = () => {
           <span />
         </button>
 
+
         {isSidebarOpen && (
           <button
             type="button"
@@ -288,13 +317,16 @@ const AdminLayout = () => {
           />
         )}
 
+
         {/* ========================================
             관리자 사이드바
         ======================================== */}
 
         <aside
           id="admin-sidebar"
-          className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}
+          className={`${styles.sidebar} ${
+            isSidebarOpen ? styles.sidebarOpen : ''
+          }`}
         >
 
           <button
@@ -306,6 +338,7 @@ const AdminLayout = () => {
             <span />
             <span />
           </button>
+
 
           <nav
             ref={navRef}
@@ -345,8 +378,15 @@ const AdminLayout = () => {
             ))}
           </nav>
 
-          <section className={styles.mobileUtilityArea} aria-label="관리자 바로가기">
-            <div className={styles.mobileUtilityTitle}>사이트 바로가기</div>
+
+          <section
+            className={styles.mobileUtilityArea}
+            aria-label="관리자 바로가기"
+          >
+            <div className={styles.mobileUtilityTitle}>
+              사이트 바로가기
+            </div>
+
             <div className={styles.mobileSiteLinks}>
               {mobileSiteLinks.map((item) => (
                 <Link
@@ -359,8 +399,16 @@ const AdminLayout = () => {
                 </Link>
               ))}
             </div>
-            <button type="button" className={styles.mobileLogoutButton} onClick={handleMobileLogout}>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 17 5-5-5-5M15 12H3M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5" /></svg>
+
+            <button
+              type="button"
+              className={styles.mobileLogoutButton}
+              onClick={handleMobileLogout}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m10 17 5-5-5-5M15 12H3M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5" />
+              </svg>
+
               로그아웃
             </button>
           </section>
@@ -390,11 +438,9 @@ const AdminLayout = () => {
         ======================================== */}
 
         <main className={styles.content}>
-
           <div className={styles.contentViewport}>
             <Outlet />
           </div>
-
         </main>
 
       </div>
