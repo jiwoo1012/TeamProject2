@@ -33,7 +33,7 @@ const PreferenceComplete = () => {
   // ==============================
 
   const handleGoMyPage = () => {
-    navigate('/mypage')
+    navigate('/mypage/preference')
   }
 
 

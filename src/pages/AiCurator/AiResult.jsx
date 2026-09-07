@@ -5,13 +5,14 @@ import {
   useState,
 } from 'react'
 
+import AiRecommendationLoading from './AiRecommendationLoading'
+
 import {
   useLocation,
   useNavigate,
 } from 'react-router-dom'
 
 import {
-  connectFunctionsEmulator,
   getFunctions,
   httpsCallable,
 } from 'firebase/functions'
@@ -104,17 +105,10 @@ const getAiImageName = (product) =>
 const functions =
   getFunctions(app)
 
-if (import.meta.env.DEV) {
-  try {
-    connectFunctionsEmulator(
-      functions,
-      '127.0.0.1',
-      5001
-    )
-  } catch (error) {
-    // 무시
-  }
-}
+
+// ========================================
+// Callable Function
+// ========================================
 
 const recommendJajak =
   httpsCallable(
@@ -285,6 +279,11 @@ const AiResult = () => {
   ] = useState(true)
 
   const [
+    isResultReady,
+    setIsResultReady,
+  ] = useState(false)
+
+  const [
     errorMessage,
     setErrorMessage,
   ] = useState('')
@@ -388,6 +387,7 @@ const AiResult = () => {
       async () => {
         try {
           setIsLoading(true)
+          setIsResultReady(false)
           setErrorMessage('')
 
           const response =
@@ -423,6 +423,10 @@ const AiResult = () => {
           setRecommendationResponse(
             data
           )
+
+          setIsResultReady(
+            true
+          )
         } catch (error) {
           console.error(
             'JAJAK 추천 불러오기 실패:',
@@ -433,7 +437,11 @@ const AiResult = () => {
               error
             )
           )
-        } finally {
+
+          setIsResultReady(
+            false
+          )
+
           setIsLoading(false)
         }
       }
@@ -1114,38 +1122,12 @@ const AiResult = () => {
 
   if (isLoading) {
     return (
-      <main
-        className={
-          styles.aiResult
-        }
-      >
-        <section
-          className={`${styles.section} ${styles.introSection}`}
-        >
-          <div
-            className={
-              styles.introInner
-            }
-          >
-            <div
-              className={
-                styles.introText
-              }
-            >
-              <h1>
-                막둥이가 정성을 담아
-                <br />
-                주안상을 차리고 있어요!
-              </h1>
-              <p>
-                오늘의 취향에 딱 맞는 안주와 술을
-                <br />
-                정갈하게 모으고 있습니다.
-              </p>
-            </div>
-          </div>
-        </section>
-      </main>
+      <AiRecommendationLoading
+        isComplete={isResultReady}
+        onComplete={() => {
+          setIsLoading(false)
+        }}
+      />
     )
   }
 
