@@ -1,3 +1,4 @@
+@use 'sass:color';
 // ==========================================
 // 테마 토큰 (어드민 전사 통일)
 // ==========================================
@@ -84,7 +85,7 @@ $radius-control: 8px;
     &:hover:not(:disabled) {
       background: #fdfcf9;
       color: $primary;
-      border-color: lighten($primary, 20%);
+      border-color: color.adjust($primary, $lightness: 20%);
       svg { transform: rotate(90deg); }
     }
 
@@ -225,7 +226,7 @@ $radius-control: 8px;
   &:hover {
     transform: translateY(-2px);
     box-shadow: $shadow-md;
-    border-color: lighten($primary, 20%);
+    border-color: color.adjust($primary, $lightness: 20%);
   }
 
   &.activeCard {
@@ -342,7 +343,7 @@ $radius-control: 8px;
   transition: all 0.15s ease;
 
   &:hover {
-    border-color: lighten($primary, 20%);
+    border-color: color.adjust($primary, $lightness: 20%);
     box-shadow: $shadow-sm;
     transform: translateY(-1px);
   }
