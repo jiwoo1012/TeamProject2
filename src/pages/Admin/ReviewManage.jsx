@@ -8,7 +8,6 @@ import {
 import { Link } from 'react-router-dom'
 
 import {
-  Timestamp,
   collection,
   deleteDoc,
   doc,
@@ -138,6 +137,13 @@ const formatDate = (value) => {
   return date.toLocaleDateString(
     'ko-CA'
   )
+}
+
+
+const formatReviewId = (reviewId = '') => {
+  if (reviewId.length <= 3) return reviewId
+
+  return `${reviewId.slice(0, 3)}…`
 }
 
 
@@ -282,218 +288,6 @@ const StarRating = ({
 
 
 // ========================================
-// 시연용 데이터
-// ========================================
-
-const mockReviews = [
-  {
-    id: 'RV-39487',
-    productId: 'liq_001',
-    nickname: 'jajak',
-    rating: 5,
-    content:
-      '너무 부드럽고 맛있어요! 은은한 단맛도 좋고 다음에도 또 주문하고 싶습니다.',
-    status: 'visible',
-    reportCount: 0,
-    createdAt:
-      Timestamp.fromDate(
-        new Date(
-          '2026-09-01T09:30:00+09:00'
-        )
-      ),
-    isMock: true,
-  },
-  {
-    id: 'RV-39486',
-    productId: 'liq_014',
-    nickname: '주말한잔',
-    rating: 4,
-    content:
-      '향이 깔끔하고 음식이랑 같이 마시기 좋았습니다.',
-    status: 'visible',
-    reportCount: 0,
-    createdAt:
-      Timestamp.fromDate(
-        new Date(
-          '2026-08-31T14:10:00+09:00'
-        )
-      ),
-    isMock: true,
-  },
-  {
-    id: 'RV-39485',
-    productId: 'food_006',
-    nickname: '전통주탐험가',
-    rating: 3,
-    content:
-      '구성은 괜찮았는데 양이 조금 더 많았으면 좋았을 것 같아요.',
-    status: 'visible',
-    reportCount: 0,
-    createdAt:
-      Timestamp.fromDate(
-        new Date(
-          '2026-08-30T18:45:00+09:00'
-        )
-      ),
-    isMock: true,
-  },
-  {
-    id: 'RV-39484',
-    productId: 'liq_003',
-    nickname: '달빛주막',
-    rating: 5,
-    content:
-      '선물용으로 주문했는데 패키지도 정갈하고 맛도 만족스러웠어요.',
-    status: 'visible',
-    reportCount: 0,
-    createdAt:
-      Timestamp.fromDate(
-        new Date(
-          '2026-08-29T11:20:00+09:00'
-        )
-      ),
-    isMock: true,
-  },
-  {
-    id: 'RV-39483',
-    productId: 'food_002',
-    nickname: '안주연구소',
-    rating: 4,
-    content:
-      '짭짤해서 막걸리와 잘 어울립니다. 재구매 의사 있어요.',
-    status: 'visible',
-    reportCount: 0,
-    createdAt:
-      Timestamp.fromDate(
-        new Date(
-          '2026-08-28T20:05:00+09:00'
-        )
-      ),
-    isMock: true,
-  },
-  {
-    id: 'RV-39482',
-    productId: 'liq_009',
-    nickname: '한잔의여유',
-    rating: 2,
-    content:
-      '배송 포장 상태가 조금 아쉬웠습니다. 상품은 괜찮았어요.',
-    status: 'visible',
-    reportCount: 1,
-    createdAt:
-      Timestamp.fromDate(
-        new Date(
-          '2026-08-27T16:40:00+09:00'
-        )
-      ),
-    isMock: true,
-  },
-  {
-    id: 'RV-39481',
-    productId: 'gift_001',
-    nickname: '선물고민끝',
-    rating: 5,
-    content:
-      '선물용으로 만족스럽습니다. 구성품 안내도 이해하기 쉬웠어요.',
-    status: 'visible',
-    reportCount: 0,
-    createdAt:
-      Timestamp.fromDate(
-        new Date(
-          '2026-08-26T10:15:00+09:00'
-        )
-      ),
-    isMock: true,
-  },
-  {
-    id: 'RV-39480',
-    productId: 'liq_014',
-    nickname: '소소한저녁',
-    rating: 1,
-    content:
-      '배송 지연 관련 안내가 늦어서 아쉬웠습니다.',
-    status: 'hidden',
-    reportCount: 3,
-    createdAt:
-      Timestamp.fromDate(
-        new Date(
-          '2026-08-25T13:50:00+09:00'
-        )
-      ),
-    isMock: true,
-  },
-  {
-    id: 'RV-39479',
-    productId: 'food_006',
-    nickname: '오늘의안주',
-    rating: 4,
-    content:
-      '양이 넉넉해서 여럿이 나눠 먹기 좋았습니다.',
-    status: 'visible',
-    reportCount: 0,
-    createdAt:
-      Timestamp.fromDate(
-        new Date(
-          '2026-08-24T19:25:00+09:00'
-        )
-      ),
-    isMock: true,
-  },
-  {
-    id: 'RV-39478',
-    productId: 'liq_001',
-    nickname: '전통주입문',
-    rating: 5,
-    content:
-      '처음 마셔보는 전통주였는데 부담 없이 즐기기 좋았습니다.',
-    status: 'visible',
-    reportCount: 0,
-    createdAt:
-      Timestamp.fromDate(
-        new Date(
-          '2026-08-23T08:45:00+09:00'
-        )
-      ),
-    isMock: true,
-  },
-  {
-    id: 'RV-39477',
-    productId: 'glass_002',
-    nickname: '홈바꾸미기',
-    rating: 4,
-    content:
-      '사진과 비슷하고 사용감이 좋아요. 포장도 단단했습니다.',
-    status: 'visible',
-    reportCount: 0,
-    createdAt:
-      Timestamp.fromDate(
-        new Date(
-          '2026-08-22T17:10:00+09:00'
-        )
-      ),
-    isMock: true,
-  },
-  {
-    id: 'RV-39476',
-    productId: 'liq_007',
-    nickname: '비오는날한잔',
-    rating: 2,
-    content:
-      '상품 설명과 향의 인상이 조금 달라 기대보다 아쉬웠습니다.',
-    status: 'hidden',
-    reportCount: 1,
-    createdAt:
-      Timestamp.fromDate(
-        new Date(
-          '2026-08-21T21:30:00+09:00'
-        )
-      ),
-    isMock: true,
-  },
-]
-
-
-// ========================================
 // 리뷰 관리
 // ========================================
 
@@ -610,11 +404,7 @@ const ReviewManage = () => {
             })
           )
 
-        const nextReviews =
-          firestoreReviews.length >
-          0
-            ? firestoreReviews
-            : mockReviews
+        const nextReviews = firestoreReviews
 
         setReviews(nextReviews)
 
@@ -1031,14 +821,6 @@ const ReviewManage = () => {
 
   const toggleVisibility =
     async (review) => {
-      if (review.isMock) {
-        setToastMessage(
-          '시연용 리뷰는 상태를 변경하지 않습니다.'
-        )
-
-        return
-      }
-
       const nextStatus =
         review.status ===
         'visible'
@@ -1106,18 +888,6 @@ const ReviewManage = () => {
   const deleteReview =
     async () => {
       if (!confirmReview) {
-        return
-      }
-
-      if (
-        confirmReview.isMock
-      ) {
-        setConfirmReview(null)
-
-        setToastMessage(
-          '시연용 리뷰는 삭제하지 않습니다.'
-        )
-
         return
       }
 
@@ -1829,17 +1599,20 @@ const ReviewManage = () => {
                               className={
                                 styles.reviewId
                               }
+                              data-label="리뷰 ID"
                               title={
                                 review.id
                               }
                             >
                               {
-                                review.id
+                                formatReviewId(
+                                  review.id
+                                )
                               }
                             </td>
 
 
-                            <td>
+                            <td data-label="상품">
                               <div
                                 className={
                                   styles.productTableCell
@@ -1873,14 +1646,14 @@ const ReviewManage = () => {
                             </td>
 
 
-                            <td>
+                            <td data-label="작성자">
                               {maskNickname(
                                 review.nickname
                               )}
                             </td>
 
 
-                            <td>
+                            <td data-label="평점">
                               <StarRating
                                 rating={
                                   review.rating
@@ -1893,6 +1666,7 @@ const ReviewManage = () => {
                               className={
                                 styles.reviewSummary
                               }
+                              data-label="리뷰 내용"
                               title={
                                 review.content
                               }
@@ -1903,14 +1677,14 @@ const ReviewManage = () => {
                             </td>
 
 
-                            <td>
+                            <td data-label="작성일">
                               {formatDate(
                                 review.createdAt
                               )}
                             </td>
 
 
-                            <td>
+                            <td data-label="상태">
                               <span
                                 className={`${styles.statusBadge} ${styles[review.status]}`}
                               >
@@ -1924,7 +1698,7 @@ const ReviewManage = () => {
                             </td>
 
 
-                            <td>
+                            <td data-label="관리">
                               <button
                                 type="button"
                                 className={

@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
-import { getCollection, getDocument } from '../../firebase/firestore'
-import { saveEventParticipation } from '../../services/eventParticipation'
+import { getCollection } from '../../firebase/firestore'
+import { getEventParticipationAvailability, saveEventParticipation } from '../../services/eventParticipation'
 import { PATHS } from '../../routes/paths'
 import eventsData from '../../data/events.json'
-import backgroundImage from '../../assets/images/eventPage/background2.jpg'
 import rouletteBack from '../../assets/images/eventPage/roulette3.png'
-import rouletteWheel from '../../assets/images/eventPage/roulette2.png'
 import rouletteFront from '../../assets/images/eventPage/roulette1.png'
 import makdong from '../../assets/characters/M007_Poses07.png'
 import running2 from '../../assets/images/eventPage/running2.png'
@@ -58,6 +56,47 @@ const PRIZE_WEIGHTS = {
 }
 
 const PRIZES = Object.values(PRIZE_WEIGHTS)
+const TOTAL_PRIZE_WEIGHT = PRIZES.reduce((total, prize) => total + prize.weight, 0)
+
+/*
+  칸 너비를 당첨 확률에 맞게 다시 배분한다.
+  전부 60도씩 똑같이 나누면 1등도 6등이랑 크기가 같아서
+  "당첨되기 어렵다"는 느낌이 안 살기 때문에,
+  확률이 낮을수록(1등) 칸이 좁아지고 확률이 높을수록(6등) 넓어지게 한다.
+  weight를 그대로 쓰면 1등이 3.6도로 너무 얇아져 텍스트가 안 들어가서
+  제곱근으로 완만하게 눌러서 배분한다.
+  기존 wheelAngle(0/60/120/...)은 각 상품이 원 위에서 어느 순서로
+  앉는지 정하는 힌트로만 쓰고, 실제 각도는 여기서 다시 계산해 덮어쓴다.
+*/
+const wheelOrder = [...PRIZES].sort((a, b) => a.wheelAngle - b.wheelAngle)
+const totalVisualWeight = wheelOrder.reduce((sum, prize) => sum + Math.sqrt(prize.weight), 0)
+
+let wheelCursor = 0
+wheelOrder.forEach((prize) => {
+  const span = (Math.sqrt(prize.weight) / totalVisualWeight) * 360
+  prize.wheelAngle = wheelCursor + (span / 2)
+  prize.wheelSpan = span
+  wheelCursor += span
+})
+
+const WHEEL_CENTER = { x: 948 * 0.4604, y: 454 }
+const WHEEL_RADIUS = 380
+const wheelPoint = (angle, radius) => {
+  const radians = angle * Math.PI / 180
+  return { x: WHEEL_CENTER.x + radius * Math.sin(radians), y: WHEEL_CENTER.y - radius * Math.cos(radians) }
+}
+
+const wheelSegments = PRIZES.map((prize) => {
+  const halfSpan = prize.wheelSpan / 2
+  const start = wheelPoint(prize.wheelAngle - halfSpan, WHEEL_RADIUS)
+  const end = wheelPoint(prize.wheelAngle + halfSpan, WHEEL_RADIUS)
+  const label = wheelPoint(prize.wheelAngle, 282)
+  return {
+    ...prize,
+    path: `M ${WHEEL_CENTER.x} ${WHEEL_CENTER.y} L ${start.x} ${start.y} A ${WHEEL_RADIUS} ${WHEEL_RADIUS} 0 0 1 ${end.x} ${end.y} Z`,
+    label,
+  }
+})
 
 const resolveProductImage = (imageUrl) =>
   Object.entries(productImages).find(([path]) =>
@@ -113,14 +152,14 @@ const RouletteEvent = () => {
       }
 
       try {
-        const [participation, memberData] = await Promise.all([
-          getDocument('eventParticipations', `${EVENT_ID}_${member.uid}`),
+        const [availability, memberData] = await Promise.all([
+          getEventParticipationAvailability(EVENT_ID, event.participationLimit),
           getCurrentUserData(member.uid),
         ])
         const admin = memberData?.role === 'admin'
         if (active) {
           setIsAdmin(admin)
-          setHasParticipated(Boolean(participation) && !admin)
+          setHasParticipated(!availability.canParticipate && !admin)
         }
       } catch {
         if (active) setErrorMessage('참여 정보를 불러오지 못했습니다.')
@@ -139,7 +178,7 @@ const RouletteEvent = () => {
       active = false
       unsubscribe()
     }
-  }, [])
+  }, [event.participationLimit])
 
   useEffect(() => {
     document.body.classList.toggle('jajak-roulette-spinning', isSpinning)
@@ -186,12 +225,16 @@ const RouletteEvent = () => {
       rewardRank: prize.rank, rewardName: prize.name,
       rewardProductId: prize.productId ?? null,
       rewardPoints: prize.points ?? 0, isWinner: true,
+      outcome: 'completed', participationLimit: event.participationLimit,
     })
   }
 
   const animateWheel = (prize) => new Promise((resolve) => {
     const wheel = wheelRef.current
-    const landingOffset = (Math.random() * 44) - 22
+    // 칸 너비가 상품마다 달라서, 좁은 칸(1등 등)에서 화살표가
+    // 옆 칸으로 넘어가지 않게 여유(6도)를 두고 그 안에서만 랜덤 착지한다.
+    const maxLandingOffset = Math.max((prize.wheelSpan / 2) - 6, 2)
+    const landingOffset = (Math.random() * 2 - 1) * maxLandingOffset
     const landingAngle = (prize.wheelAngle + landingOffset + 360) % 360
     const currentRotation = currentRotationRef.current
     const finalAdjustment = (360 - ((currentRotation + landingAngle) % 360)) % 360
@@ -255,10 +298,7 @@ const RouletteEvent = () => {
   }
 
   return (
-    <main
-      className={`${styles.page} ${isSpinning ? styles.isSpinning : ''}`}
-      style={{ '--roulette-background': `url(${backgroundImage})` }}
-    >
+    <main className={`${styles.page} ${isSpinning ? styles.isSpinning : ''}`}>
       <div className={styles.runningTrail} aria-hidden="true" />
       <div className={styles.runningTrack} aria-hidden="true">
         <img className={styles.runningFrame} src={running2} alt="" />
@@ -271,7 +311,18 @@ const RouletteEvent = () => {
 
           <div ref={stageRef} className={styles.rouletteStage}>
             <img className={styles.rouletteBack} src={rouletteBack} alt="" />
-            <img ref={wheelRef} className={styles.rouletteWheel} src={rouletteWheel} alt="1등부터 6등까지의 경품 룰렛" />
+            <svg ref={wheelRef} className={styles.rouletteWheel} viewBox="0 0 948 908" role="img" aria-label="1등부터 6등까지의 경품 룰렛">
+              <title>경품 룰렛: {PRIZES.map((prize) => `${prize.rank}등 ${prize.name}`).join(', ')}</title>
+              {wheelSegments.map((prize) => (
+                <g key={prize.rank} className={`${styles.wheelSegment} ${prize.rank === 1 ? styles.wheelGold : prize.rank % 2 === 0 ? styles.wheelCream : styles.wheelMint}`}>
+                  <path d={prize.path} />
+                  <g transform={`translate(${prize.label.x} ${prize.label.y})`}>
+                    <text className={styles.wheelRank} textAnchor="middle" dominantBaseline="middle">{prize.rank}등</text>
+                  </g>
+                </g>
+              ))}
+              <circle className={styles.wheelRim} cx={WHEEL_CENTER.x} cy={WHEEL_CENTER.y} r={WHEEL_RADIUS} />
+            </svg>
             <img className={styles.rouletteFront} src={rouletteFront} alt="" />
             <button
               className={styles.spinButton}
@@ -326,20 +377,32 @@ const RouletteEvent = () => {
       <section className={styles.prizeSection} aria-labelledby="prize-title">
         <h2 id="prize-title"><span>→</span> 경품 안내 <span>←</span></h2>
         <div className={styles.prizeGrid}>
-          {prizesWithImages.map((prize) => (
-            <article className={styles.prizeCard} key={prize.rank}>
-              <span className={`${styles.rank} ${prize.rank === 1 ? styles.firstRank : ''}`}>{prize.rank}등</span>
+          {prizesWithImages.filter((prize) => prize.type === 'product').map((prize) => (
+            <article className={`${styles.prizeCard} ${prize.rank === 1 ? styles.grandPrize : ''}`} key={prize.rank}>
+              <span className={`${styles.rank} ${prize.rank === 1 ? styles.firstRank : prize.rank === 2 ? styles.secondRank : styles.thirdRank}`}>{prize.rank}등</span>
               <h3>{prize.name}</h3>
-              {prize.type === 'product' ? (
                 <div className={styles.prizeImage}>
                   <img src={prize.imageSrc} alt={prize.name} />
                 </div>
-              ) : (
-                <div className={styles.pointIcon} aria-label="포인트">P</div>
-              )}
               <p>{prize.description}</p>
             </article>
           ))}
+        </div>
+        <div className={styles.pointRewards}>
+          <h3>포인트 경품</h3>
+          <div className={styles.pointGrid}>
+            {PRIZES.filter((prize) => prize.type === 'point').map((prize) => (
+              <article className={styles.pointReward} key={prize.rank}>
+                <span className={styles.pointRank}>{prize.rank}등</span>
+                <div className={styles.pointAmount}>
+                  <span className={styles.pointIcon} aria-hidden="true">P</span>
+                  <h4>{prize.name}</h4>
+                </div>
+                <p>당첨 확률 {Number((prize.weight / TOTAL_PRIZE_WEIGHT * 100).toFixed(2))}%</p>
+              </article>
+            ))}
+          </div>
+          <p className={styles.pointNote}>{PRIZES.find((prize) => prize.type === 'point')?.description}</p>
         </div>
       </section>
 

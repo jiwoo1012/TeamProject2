@@ -727,6 +727,89 @@ $radius-control: 8px;
   button { padding: 0 12px; color: #fff; background: $primary; border-radius: 5px; }
 }
 
+.stepIndicator {
+  align-self: flex-end;
+  color: $text-caption;
+  font-size: 12px;
+
+  span { color: $primary; font-weight: 700; }
+}
+
+.fieldGuide, .selectionCount {
+  margin: 0;
+  color: $text-caption;
+  font-size: 11px;
+}
+
+.selectionCount { text-align: right; color: $primary; font-weight: 600; }
+
+.pairingPicker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  max-height: 330px;
+  padding: 2px;
+  overflow-y: auto;
+
+  label {
+    position: relative;
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr);
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    padding: 7px;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color .2s ease, background-color .2s ease;
+
+    input { position: absolute; opacity: 0; pointer-events: none; }
+    span { width: 36px; height: 36px; overflow: hidden; background: #f4f2eb; border-radius: 4px; }
+    img { width: 100%; height: 100%; object-fit: cover; }
+    strong { overflow: hidden; color: $text-body; font-size: 11px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+  }
+}
+
+.selectedPairing {
+  border-color: $primary !important;
+  background: $primary-subtle;
+}
+
+.detailFields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  background: #f7f5f0;
+  border: 1px solid $border-color;
+  border-radius: 6px;
+}
+
+.tasteInputs, .timeInputs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+
+  label {
+    display: grid;
+    gap: 4px;
+    color: $text-body;
+    font-size: 11px;
+  }
+
+  input {
+    width: 100%;
+    min-width: 0;
+    height: 32px;
+    padding: 0 8px;
+    color: $text-title;
+    background: #fbfaf8;
+    border: 1px solid $border-color;
+    border-radius: 5px;
+  }
+}
+
 .albumRow {
   display: flex;
   flex-wrap: wrap;
@@ -786,6 +869,63 @@ $radius-control: 8px;
   }
 }
 
+.imageEditTile {
+  position: relative;
+  display: flex;
+  flex: 1 1 calc(50% - 6px);
+  min-width: 118px;
+  height: 112px;
+  overflow: hidden;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  color: #fff;
+  background: #eae7df;
+  border: 1px solid $border-color;
+  border-radius: 6px;
+  cursor: pointer;
+
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &::after {
+    position: absolute;
+    inset: auto 0 0;
+    height: 38px;
+    content: '';
+    background: rgba(0, 0, 0, 0.58);
+  }
+
+  strong {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding: 10px 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .emptyImage {
+    position: absolute;
+    inset: 0 0 38px;
+    display: grid;
+    place-items: center;
+    color: $text-caption;
+    font-size: 11px;
+  }
+
+  &:hover, &:focus-visible {
+    border-color: $primary;
+    box-shadow: 0 0 0 2px rgba($primary, 0.12);
+  }
+}
+
 .metricsGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -826,10 +966,30 @@ $radius-control: 8px;
 
 .nextActionWrap {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
   margin-top: 6px;
 
+  > button {
+    flex: 0 0 auto;
+    min-width: max-content;
+  }
+
+  .deleteBtn {
+    height: 34px;
+    padding: 0 14px;
+    color: $danger;
+    background: #fff;
+    border: 1px solid $danger;
+    border-radius: 5px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
   .nextBtn {
+    margin-left: auto;
     background: none;
     border: none;
     color: $primary;
@@ -840,6 +1000,12 @@ $radius-control: 8px;
 
     &:hover { text-decoration: underline; }
   }
+}
+
+.detailFieldsTitle {
+  color: $text-title;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .stepFooter {

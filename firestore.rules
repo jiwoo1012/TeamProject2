@@ -11,12 +11,10 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-
     function isOwner(userId) {
       return signedIn()
         && request.auth.uid == userId;
     }
-
 
     function isAdmin() {
       return signedIn()
@@ -24,7 +22,6 @@ service cloud.firestore {
           /databases/$(database)/documents/users/$(request.auth.uid)
         ).data.role == 'admin';
     }
-
 
 
     // ========================================
@@ -39,7 +36,6 @@ service cloud.firestore {
         && request.resource.data.points == 1000;
     }
 
-
     function keepsMemberAuthority() {
       return request.resource.data.uid == resource.data.uid
         && request.resource.data.email == resource.data.email
@@ -48,7 +44,6 @@ service cloud.firestore {
         && request.resource.data.points == resource.data.points
         && request.resource.data.createdAt == resource.data.createdAt;
     }
-
 
     function canUsePoints() {
       return request.resource.data.points is int
@@ -64,12 +59,10 @@ service cloud.firestore {
           ]);
     }
 
-
     function canEarnEventPoints(userId) {
       let participation = getAfter(
         /databases/$(database)/documents/eventParticipations/$(request.resource.data.lastEventRewardId)
       ).data;
-
       return isOwner(userId)
         && request.resource.data.points is int
         && participation.userId == userId
@@ -78,16 +71,12 @@ service cloud.firestore {
         && request.resource.data.points
           == resource.data.points + participation.rewardPoints
         && request.resource.data.points <= 10000
-        && request.resource.data
-          .diff(resource.data)
-          .affectedKeys()
-          .hasOnly([
-            'points',
-            'lastEventRewardId',
-            'updatedAt'
-          ]);
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'points',
+          'lastEventRewardId',
+          'updatedAt'
+        ]);
     }
-
 
 
     // ========================================
@@ -112,7 +101,6 @@ service cloud.firestore {
     }
 
 
-
     // ========================================
     // 장바구니 검증
     // ========================================
@@ -128,7 +116,6 @@ service cloud.firestore {
     }
 
 
-
     // ========================================
     // USERS
     // ========================================
@@ -139,11 +126,9 @@ service cloud.firestore {
         if isOwner(userId)
         && isValidMemberCreate(userId);
 
-
       allow read:
         if isOwner(userId)
         || isAdmin();
-
 
       allow update:
         if (
@@ -156,10 +141,8 @@ service cloud.firestore {
         )
         || isAdmin();
 
-
       allow delete:
         if isAdmin();
-
 
 
       // ========================================
@@ -173,33 +156,10 @@ service cloud.firestore {
           if isOwner(userId)
           || isAdmin();
 
-
         // 수정은 회원 본인만 가능
         allow create, update, delete:
           if isOwner(userId);
       }
-
-
-
-      // ========================================
-      // AI RECOMMENDATIONS
-      // ========================================
-
-      match /recommendations/{recommendationId} {
-
-        // 회원 본인은 자신의 AI 추천 기록 조회 가능
-        // 관리자는 전체 회원 추천 기록 조회 가능
-        allow read:
-          if isOwner(userId)
-          || isAdmin();
-
-
-        // 추천 생성은 Cloud Functions Admin SDK에서 처리
-        // 클라이언트에서 직접 생성 / 수정 / 삭제 금지
-        allow create, update, delete:
-          if false;
-      }
-
 
 
       // ========================================
@@ -211,16 +171,13 @@ service cloud.firestore {
         allow read:
           if isOwner(userId);
 
-
         allow create, update:
           if isOwner(userId)
           && isValidAddress();
 
-
         allow delete:
           if isOwner(userId);
       }
-
 
 
       // ========================================
@@ -232,80 +189,51 @@ service cloud.firestore {
         allow read:
           if isOwner(userId);
 
-
         allow create, update:
           if isOwner(userId)
           && isValidCartItem(productId);
-
 
         allow delete:
           if isOwner(userId);
       }
 
-
-
-      // ========================================
-      // POINT HISTORY
-      // ========================================
-
       match /pointHistory/{historyId} {
-
         allow read:
           if isOwner(userId);
 
-
         allow create:
           if isAdmin()
-
-          || (
-            isOwner(userId)
-            && request.resource.data.type == 'earn'
-            && request.resource.data.amount is int
-            && request.resource.data.amount > 0
-            && historyId.matches(
-              'event_' +
-              request.resource.data.eventId +
-              '_' +
-              userId +
-              '.*'
-            )
-            && get(
-              /databases/$(database)/documents/eventParticipations/$(request.resource.data.eventId + '_' + userId)
-            ).data.rewardPoints == request.resource.data.amount
-          )
-
-          || (
-            isOwner(userId)
-            && request.resource.data.type == 'use'
-            && request.resource.data.amount is int
-            && request.resource.data.amount > 0
-            && request.resource.data.orderId is string
-            && historyId
-              == 'order_' + request.resource.data.orderId
-
-            && getAfter(
-              /databases/$(database)/documents/orders/$(request.resource.data.orderId)
-            ).data.userId == userId
-
-            && getAfter(
-              /databases/$(database)/documents/orders/$(request.resource.data.orderId)
-            ).data.orderId == request.resource.data.orderId
-
-            && getAfter(
-              /databases/$(database)/documents/orders/$(request.resource.data.orderId)
-            ).data.usedPoints == request.resource.data.amount
-
-            && getAfter(
-              /databases/$(database)/documents/orders/$(request.resource.data.orderId)
-            ).data.status == 'paid'
-          );
-
+          || (isOwner(userId)
+          && request.resource.data.type == 'earn'
+          && request.resource.data.amount is int
+          && request.resource.data.amount > 0
+          && historyId.matches('event_' + request.resource.data.eventId + '_' + userId + '.*')
+          && get(
+            /databases/$(database)/documents/eventParticipations/$(request.resource.data.eventId + '_' + userId)
+          ).data.rewardPoints == request.resource.data.amount)
+          || (isOwner(userId)
+          && request.resource.data.type == 'use'
+          && request.resource.data.amount is int
+          && request.resource.data.amount > 0
+          && request.resource.data.orderId is string
+          && historyId == 'order_' + request.resource.data.orderId
+          && getAfter(
+            /databases/$(database)/documents/orders/$(request.resource.data.orderId)
+          ).data.userId == userId
+          && getAfter(
+            /databases/$(database)/documents/orders/$(request.resource.data.orderId)
+          ).data.orderId == request.resource.data.orderId
+          && getAfter(
+            /databases/$(database)/documents/orders/$(request.resource.data.orderId)
+          ).data.usedPoints == request.resource.data.amount
+          && getAfter(
+            /databases/$(database)/documents/orders/$(request.resource.data.orderId)
+          ).data.status == 'paid');
 
         allow update, delete:
           if false;
       }
     }
-
 
 
     // ========================================
@@ -320,11 +248,9 @@ service cloud.firestore {
         if resource.data.status == 'published'
         || isAdmin();
 
-
       allow create, update, delete:
         if isAdmin();
     }
-
 
 
     // ========================================
@@ -383,6 +309,7 @@ service cloud.firestore {
 
         && request.resource.data.status == 'visible'
         && request.resource.data.reportCount == 0
+
         && request.resource.data.createdAt is timestamp;
     }
 
@@ -426,11 +353,9 @@ service cloud.firestore {
             == resource.data.authorId
         );
 
-
       allow create:
         if signedIn()
         && isValidReviewCreate();
-
 
       allow update:
         if isAdmin()
@@ -438,7 +363,6 @@ service cloud.firestore {
           signedIn()
           && isValidReviewOwnerUpdate()
         );
-
 
       allow delete:
         if isAdmin()
@@ -450,7 +374,6 @@ service cloud.firestore {
     }
 
 
-
     // ========================================
     // PRODUCTS
     // ========================================
@@ -460,11 +383,9 @@ service cloud.firestore {
       allow read:
         if true;
 
-
       allow create, update, delete:
         if isAdmin();
     }
-
 
 
     // ========================================
@@ -476,11 +397,9 @@ service cloud.firestore {
       allow read:
         if true;
 
-
       allow create, update, delete:
         if isAdmin();
     }
-
 
 
     // ========================================
@@ -492,11 +411,9 @@ service cloud.firestore {
       allow read:
         if true;
 
-
       allow create, update, delete:
         if isAdmin();
     }
-
 
 
     // ========================================
@@ -510,7 +427,6 @@ service cloud.firestore {
         && request.resource.data.userId
           == request.auth.uid;
 
-
       allow read:
         if (
           signedIn()
@@ -519,10 +435,8 @@ service cloud.firestore {
         )
         || isAdmin();
 
-
       allow update:
         if isAdmin()
-
         || (
           signedIn()
 
@@ -530,10 +444,7 @@ service cloud.firestore {
             == request.auth.uid
 
           && resource.data.status
-            in [
-              'paid',
-              'preparing'
-            ]
+            in ['paid', 'preparing']
 
           && request.resource.data.status
             == 'cancelled'
@@ -547,11 +458,9 @@ service cloud.firestore {
             ])
         );
 
-
       allow delete:
         if false;
     }
-
 
 
     // ========================================
@@ -562,10 +471,9 @@ service cloud.firestore {
 
       // 일반 사용자:
       // 자신의 참여 내역만 조회
-      //
+
       // 관리자:
       // 전체 회원 참여 내역 조회 가능
-
       allow read:
         if (
           signedIn()
@@ -574,128 +482,53 @@ service cloud.firestore {
         )
         || isAdmin();
 
-
       // 이벤트 결과 저장 / 포인트 지급 /
       // 당첨 정보 변경 등은
       // 클라이언트에서 직접 처리하지 않음
-
       allow create:
         if isAdmin()
-
-        || (
-          signedIn()
-
-          && request.resource.data.userId
-            == request.auth.uid
-
-          && participationId
-            == request.resource.data.eventId
-              + '_'
-              + request.auth.uid
-
-          && request.resource.data.rewardPoints is int
-
-          && request.resource.data.rewardPoints >= 0
-
-          && (
-            (
-              request.resource.data.eventId == 'event-1'
-
-              && request.resource.data.rewardPoints
-                in [
-                  0,
-                  100,
-                  1000,
-                  5000
-                ]
-            )
-
-            || (
-              request.resource.data.eventId == 'event-2'
-
-              && request.resource.data.rewardPoints <= 2500
-
-              && request.resource.data.rewardPoints % 100 == 0
-            )
-
-            || (
-              request.resource.data.eventId == 'event-3'
-
-              && request.resource.data.rewardPoints <= 5000
-
-              && request.resource.data.rewardPoints % 500 == 0
-            )
+        || (signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && participationId
+          == request.resource.data.eventId + '_' + request.auth.uid
+        && request.resource.data.rewardPoints is int
+        && request.resource.data.rewardPoints >= 0
+        && (
+          (
+            request.resource.data.eventId == 'event-1'
+            && request.resource.data.rewardPoints in [0, 100, 1000, 5000]
           )
-        );
-
+          || (
+            request.resource.data.eventId == 'event-2'
+            && request.resource.data.rewardPoints <= 2500
+            && request.resource.data.rewardPoints % 100 == 0
+          )
+          || (
+            request.resource.data.eventId == 'event-3'
+            && request.resource.data.rewardPoints <= 5000
+            && request.resource.data.rewardPoints % 500 == 0
+          )
+        ));
 
       allow update:
         if isAdmin()
-
-        || (
-          signedIn()
-
-          && resource.data.userId
-            == request.auth.uid
-
-          && request.resource.data.userId
-            == request.auth.uid
-
-          && request.resource.data.eventId
-            == resource.data.eventId
-
-          && participationId
-            == request.resource.data.eventId
-              + '_'
-              + request.auth.uid
-
-          && request.resource.data.participationCount
-            == resource.data.get(
-              'participationCount',
-              1
-            ) + 1
-
+        || (signedIn()
+          && resource.data.userId == request.auth.uid
+          && request.resource.data.userId == request.auth.uid
+          && request.resource.data.eventId == resource.data.eventId
+          && participationId == request.resource.data.eventId + '_' + request.auth.uid
+          && request.resource.data.participationCount == resource.data.get('participationCount', 1) + 1
           && request.resource.data.rewardPoints is int
-
           && request.resource.data.rewardPoints >= 0
-
           && (
-            (
-              request.resource.data.eventId == 'event-1'
-
-              && request.resource.data.rewardPoints
-                in [
-                  0,
-                  100,
-                  1000,
-                  5000
-                ]
-            )
-
-            || (
-              request.resource.data.eventId == 'event-2'
-
-              && request.resource.data.rewardPoints <= 2500
-
-              && request.resource.data.rewardPoints % 100 == 0
-            )
-
-            || (
-              request.resource.data.eventId == 'event-3'
-
-              && request.resource.data.rewardPoints <= 5000
-
-              && request.resource.data.rewardPoints % 500 == 0
-            )
-          )
-        );
-
+            (request.resource.data.eventId == 'event-1' && request.resource.data.rewardPoints in [0, 100, 1000, 5000])
+            || (request.resource.data.eventId == 'event-2' && request.resource.data.rewardPoints <= 2500 && request.resource.data.rewardPoints % 100 == 0)
+            || (request.resource.data.eventId == 'event-3' && request.resource.data.rewardPoints <= 5000 && request.resource.data.rewardPoints % 500 == 0)
+          ));
 
       allow delete:
         if false;
     }
-
-
 
     // ========================================
     // INQUIRIES
@@ -729,12 +562,10 @@ service cloud.firestore {
     }
 
 
-
     match /inquiries/{inquiryId} {
 
       // ========================================
       // 문의 등록
-      //
       // 회원 / 비회원 모두 가능
       // ========================================
 
@@ -767,10 +598,8 @@ service cloud.firestore {
         );
 
 
-
       // ========================================
       // 문의 조회
-      //
       // 회원: 자신의 문의만
       // 관리자: 전체 문의
       // ========================================
@@ -782,13 +611,12 @@ service cloud.firestore {
           && resource.data.userId
             == request.auth.uid
         )
-        || isAdmin();
 
+        || isAdmin();
 
 
       // ========================================
       // 문의 답변 / 상태 수정
-      //
       // 관리자만 가능
       // ========================================
 
@@ -796,17 +624,14 @@ service cloud.firestore {
         if isAdmin();
 
 
-
       // ========================================
       // 문의 삭제
-      //
       // 관리자만 가능
       // ========================================
 
       allow delete:
         if isAdmin();
     }
-
 
 
     // ========================================

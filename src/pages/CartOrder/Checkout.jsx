@@ -8,7 +8,6 @@ import { auth, db } from '../../firebase/firebase'
 import { addDocument, getCollection, updateDocument } from '../../firebase/firestore'
 import { PATHS } from '../../routes/paths'
 import { getCart, saveCart, syncRemoteCart } from '../../utils/cartStorage'
-import { products as fallbackProducts } from '../../data/products'
 import cartTopOrnament from '../../assets/images/mypage/cartTopOrnament.svg'
 import cartStepOrnament from '../../assets/images/mypage/cartStepOrnament.svg'
 import styles from './Checkout.module.scss'
@@ -66,27 +65,11 @@ const getDiscountAmount = (product) => {
 }
 
 const getValidatedOrderItems = async (items) => {
-  let firestoreProducts = []
-
-  try {
-    firestoreProducts = await getCollection('products')
-  } catch (error) {
-    console.error('Firestore 상품 조회 실패, 기준 상품 데이터로 대체합니다:', error)
-  }
-
-  const firestoreProductIds = new Set(
-    firestoreProducts.map((product) => String(product.productId || product.id).replace(/^liq-/, 'liq_')),
-  )
-  const productCatalog = [
-    ...firestoreProducts,
-    ...fallbackProducts.filter((product) => (
-      !firestoreProductIds.has(String(product.productId).replace(/^liq-/, 'liq_'))
-    )),
-  ]
+  const firestoreProducts = await getCollection('products')
 
   return items.map((requestedItem) => {
     const requestedProductId = String(requestedItem.id ?? '').replace(/^liq-/, 'liq_')
-    const product = productCatalog.find((item) => (
+    const product = firestoreProducts.find((item) => (
       String(item.productId || item.id).replace(/^liq-/, 'liq_') === requestedProductId
     ))
     const quantity = Math.floor(Number(requestedItem.quantity))
@@ -130,7 +113,7 @@ const Checkout = () => {
   const [agreed, setAgreed] = useState(false)
   const [pointInput, setPointInput] = useState(() => String(location.state?.usedPoints || 0))
   const [activeModal, setActiveModal] = useState(null)
-  const [profileDraft, setProfileDraft] = useState({ name: '', phone: '', email: '' })
+  const [profileDraft, setProfileDraft] = useState({ name: '', email: '' })
   const [savedAddresses, setSavedAddresses] = useState([])
   const [selectedAddressId, setSelectedAddressId] = useState('')
   const [isAddingAddress, setIsAddingAddress] = useState(false)
@@ -249,7 +232,6 @@ const Checkout = () => {
 
   const member = {
     name: memberData?.nickname || currentUser?.displayName || '회원',
-    phone: memberData?.phone || '등록되지 않음',
     email: memberData?.email || currentUser?.email || '등록되지 않음',
   }
 
@@ -267,10 +249,9 @@ const Checkout = () => {
 
   const saveProfile = async () => {
     const nickname = profileDraft.name.trim()
-    const phone = profileDraft.phone.trim()
 
-    if (!nickname || !phone) {
-      setProfileError('성함과 휴대폰 번호를 입력해주세요.')
+    if (!nickname) {
+      setProfileError('성함을 입력해주세요.')
       return
     }
 
@@ -279,9 +260,9 @@ const Checkout = () => {
     setIsSavingProfile(true)
     setProfileError('')
     try {
-      await updateDocument('users', currentUser.uid, { nickname, phone })
+      await updateDocument('users', currentUser.uid, { nickname })
       await updateProfile(currentUser, { displayName: nickname })
-      setMemberData((current) => ({ ...current, nickname, phone }))
+      setMemberData((current) => ({ ...current, nickname }))
       setActiveModal(null)
     } catch (error) {
       console.error('기본정보 저장 실패:', error)
@@ -333,7 +314,6 @@ const Checkout = () => {
       setShipping((current) => ({
         ...current,
         recipient: member.name,
-        phone: member.phone === '등록되지 않음' ? '' : member.phone,
       }))
     }
   }
@@ -437,6 +417,13 @@ const Checkout = () => {
       const validatedDiscountAmount = validatedItems.reduce((sum, item) => sum + item.discount * item.quantity, 0)
       const validatedItemTotal = Math.max(validatedProductAmount - validatedDiscountAmount, 0)
       const orderRef = doc(collection(db, 'orders'))
+      const pointHistoryRef = doc(
+        db,
+        'users',
+        currentUser.uid,
+        'pointHistory',
+        `order_${orderRef.id}`,
+      )
       const orderedAt = new Date().toISOString()
       const requestedPoints = Math.min(Number(pointInput) || 0, validatedItemTotal)
       let orderSnapshot
@@ -483,6 +470,13 @@ const Checkout = () => {
           transaction.update(userRef, {
             points: latestPoints - appliedPoints,
             updatedAt: serverTimestamp(),
+          })
+          transaction.set(pointHistoryRef, {
+            type: 'use',
+            amount: appliedPoints,
+            reason: '주문 결제 사용',
+            orderId: orderRef.id,
+            createdAt: serverTimestamp(),
           })
         }
       })
@@ -604,7 +598,6 @@ const Checkout = () => {
               </div>
               <dl className={styles.ordererInfo}>
                 <div><dt>주문자 성함</dt><dd>{member.name}</dd></div>
-                <div><dt>휴대폰 번호</dt><dd>{member.phone}</dd></div>
                 <div><dt>이메일</dt><dd>{member.email}</dd></div>
               </dl>
             </div>
@@ -736,7 +729,6 @@ const Checkout = () => {
                 <p className={styles.modalNotice}>안전한 주문을 위해 회원 정보를 한 번 더 확인해주세요.</p>
                 <div className={styles.profileFields}>
                   <label><span>성함</span><input value={profileDraft.name} onChange={(event) => setProfileDraft((current) => ({ ...current, name: event.target.value }))} /></label>
-                  <label><span>휴대폰 번호</span><input value={profileDraft.phone} onChange={(event) => setProfileDraft((current) => ({ ...current, phone: event.target.value }))} /></label>
                   <label><span>이메일</span><input type="email" value={profileDraft.email} readOnly /></label>
                 </div>
                 {profileError && <p className={styles.addressError} role="alert">{profileError}</p>}

@@ -1,72 +1,353 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as mixins;
+@use './eventShared' as event;
 
-.page { position: relative; isolation: isolate; min-height: 100vh; padding: $space-30 0 $space-20; color: $color-text-primary; background: $color-white; font-family: $font-family-base; }
-.page::before { position: absolute; z-index: -1; inset: 0; content: ''; pointer-events: none; background-image: var(--event-texture); background-repeat: repeat; background-size: 620px auto; opacity: 0.8; }
-.container { width: calc(100% - (#{$side-margin-desktop} * 2)); max-width: 1600px; margin-inline: auto; }
-.hero { position: relative; display: flex; align-items: center; min-height: 240px; padding: $space-8 34% $space-8 9%; overflow: visible; color: $color-white; background: rgba($color-primary-light, .78); border-radius: $radius-xl; box-shadow: 0 $space-3 $space-6 rgba($color-text-primary, .08); }
-.alcohol { flex: 0 0 auto; width: 200px; margin-right: $space-10; }
-.heroText { position: relative; z-index: 2; }
-.heroText > p { font-size: $font-size-5xl; font-weight: $font-weight-bold; }
-.heroText h1 { margin-top: $space-2; font-size: $font-size-3xl; font-weight: $font-weight-bold; line-height: $line-height-tight; }
-.heroText span { display: block; margin-top: $space-2; font-size: $font-size-md; }
-.makdongCrop { position: absolute; right: 7%; bottom: 0; width: min(34%, 430px); height: 350px; overflow: hidden; pointer-events: none; }
-.makdong { position: absolute; top: 0; left: 50%; width: min(500px, 90%); max-width: none; transform: translateX(-50%); }
+.page {
+  min-height: 100vh;
+  // 이벤트 준비 / 공지사항 페이지와 같은 상단 여백을 사용한다.
+  padding: $space-20 0 $space-16;
+  color: $color-text-primary;
+  font-family: $font-family-base;
+  background: $color-bg;
+}
 
-.eventGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: $grid-gutter; margin-top: $space-20; }
-.eventCard { overflow: hidden; background: $color-white; border: 1px solid rgba($color-taupe, .32); border-radius: $radius-xl; box-shadow: 0 $space-2 $space-5 rgba($color-text-primary, .05); transition: transform $transition-base ease, box-shadow $transition-base ease; }
-.eventCard:hover { transform: translateY(-$space-2); box-shadow: 0 $space-4 $space-8 rgba($color-text-primary, .1); }
-.imageArea { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: rgba($color-surface, .55); }
-.imageArea img { width: 100%; height: 100%; object-fit: cover; transition: transform $transition-base ease, filter $transition-base ease; }
-.eventCard:hover .imageArea img { transform: scale(1.025); }
-.status { position: absolute; top: $space-5; left: $space-5; padding: $space-2 $space-5; color: $color-white; font-size: $font-size-sm; background: $color-primary; border-radius: $radius-pill; }
-.endedCard .imageArea img { filter: grayscale(1) saturate(.55); opacity: .72; }
-.endedCard .status { background: $color-text-muted; }
-.cardContent { display: flex; align-items: center; flex-direction: column; min-height: 272px; padding: $space-10 $space-8 $space-8; text-align: center; }
-.cardContent h2 { font-size: $font-size-2xl; font-weight: $font-weight-bold; }
-.cardContent p { margin-top: $space-4; color: $color-text-muted; font-size: $font-size-md; }
-.cardContent time { margin-top: $space-5; font-size: $font-size-sm; }
-.cardContent > a { display: flex; align-items: center; justify-content: center; width: 100%; margin-top: auto; padding: $space-3 $space-5; color: $color-white; background: $color-primary-light;  border-radius: $radius-md; transition: background $transition-fast ease, transform $transition-fast ease; }
-.cardContent > a:hover { background: $color-primary; transform: translateY(-2px); }
-.cardContent > a span { margin-left: $space-6; }
-.endedCard .cardContent > a { background: $color-text-muted; border-color: $color-text-muted; }
-.endedCard .cardContent > a:hover { background: $color-text-secondary; }
+.container { @include mixins.container; }
 
-.pagination { @include mixins.flex-center; gap: $space-8; padding-top: $space-20; }
-.pagination button { @include mixins.flex-center; min-width: 48px; height: 48px; color: $color-text-primary; font-size: $font-size-md; border-radius: 50%; transition: color $transition-fast ease, background $transition-fast ease; }
-.pagination button:hover:not(:disabled) { color: $color-white; background: $color-primary-light; }
-.pagination button:disabled { opacity: .3; }
-.pagination .currentPage { color: $color-white; background: $color-primary-light; }
+.hero {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  min-height: 300px;
+  padding: $space-10 42% $space-10 $space-12;
+  overflow: visible;
+  color: $color-white;
+  background:
+    radial-gradient(ellipse at 78% 28%, rgba($color-primary-light, .6), transparent 55%),
+    linear-gradient(135deg, $color-primary-light -75%, $color-primary 58%, $color-primary 100%);
+  border-radius: $radius-xl;
+  box-shadow: 0 $space-3 $space-6 rgba($color-text-primary, .08);
+
+  // 한지는 얇은 상단 띠 안에서만 보이게 해 콘텐츠를 가리지 않는다.
+  &::before {
+    position: absolute;
+    inset: 0 0 auto;
+    height: $space-3;
+    border-radius: $radius-xl $radius-xl 0 0;
+    background: url('../../assets/images/common/header-hanji.webp') center bottom / 100% auto no-repeat;
+    opacity: .6;
+    content: '';
+    pointer-events: none;
+  }
+
+  &::after {
+    position: absolute;
+    z-index: 0;
+    inset: 0 0 0 48%;
+    border-radius: 0 $radius-xl $radius-xl 0;
+    background-image:
+      radial-gradient(circle at center, rgba($color-white, .08) 2px, transparent 3px),
+      radial-gradient(circle at 55% 52%, transparent 40%, rgba($color-white, .07) 40.5% 41%, transparent 41.5%);
+    background-size: $space-6 $space-6, 100% 100%;
+    mask-image: linear-gradient(to right, transparent, $color-white 30%);
+    content: '';
+    pointer-events: none;
+  }
+}
+.heroText { position: relative; z-index: 2; min-width: 0; }
+.heroText > p {
+  @include event.ribbon-shape;
+  display: inline-block;
+  padding: $space-2 $space-8;
+  color: $color-primary;
+  background: $color-bg;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: .16em;
+}
+.heroText h1 {
+  margin-top: $space-4;
+  font-family: $font-family-display;
+  font-size: clamp(#{$font-size-3xl}, 3vw, #{$font-size-4xl});
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  word-break: keep-all;
+}
+.heroText span { display: block; max-width: 32em; margin-top: $space-4; font-size: $font-size-sm; line-height: $line-height-relaxed; word-break: keep-all; }
+.makdongCrop {
+  position: absolute;
+  z-index: 1;
+  top: -$space-8;
+  right: 5%;
+  bottom: $space-4;
+  width: 34%;
+  overflow: visible;
+  pointer-events: none;
+
+  &::before {
+    position: absolute;
+    left: 12%;
+    right: 12%;
+    bottom: 0;
+    height: $space-8;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba($color-text-primary, .28), rgba($color-text-primary, .08) 45%, transparent 72%);
+    content: '';
+  }
+}
+.makdong {
+  position: absolute;
+  bottom: $space-1;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 $space-2 $space-3 rgba($color-text-primary, .12));
+}
+
+
+.sectionHeading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: $space-5;
+  margin: $space-8 0 $space-6;
+
+  h2 { font-size: $font-size-2xl; font-weight: $font-weight-semibold; line-height: $line-height-tight; word-break: keep-all; }
+  > span { flex-shrink: 0; color: $color-text-secondary; font-size: $font-size-sm; }
+}
+
+.eventGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: $grid-gutter;
+}
+
+.eventCard {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: $radius-xl;
+  transition: border-color $transition-base ease, box-shadow $transition-base ease;
+
+  &:hover { border-color: rgba($color-primary, .5); box-shadow: 0 $space-3 $space-8 rgba($color-text-primary, .06); }
+}
+
+.imageArea {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: $color-surface;
+
+  > img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.gameBanner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(90% 120% at 0% 0%, rgba($color-primary-light, .08), transparent 60%),
+    linear-gradient(135deg, $color-bg, $color-white);
+
+  &::before {
+    position: absolute;
+    width: 70%;
+    aspect-ratio: 1;
+    right: -10%;
+    bottom: -35%;
+    border: 1px solid rgba($color-primary, .12);
+    border-radius: 50%;
+    box-shadow: 0 0 0 $space-8 rgba($color-primary-light, .035);
+    content: '';
+  }
+}
+
+.status {
+  position: absolute;
+  z-index: 2;
+  top: $space-4;
+  left: $space-4;
+  padding: $space-1 $space-3;
+  color: $color-white;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  background: $color-primary;
+  border-radius: $radius-pill;
+}
+
+.gameBadge {
+  position: absolute;
+  z-index: 2;
+  bottom: $space-4;
+  left: $space-3;
+  padding: $space-1 $space-5;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: .04em;
+  white-space: nowrap;
+  @include event.chance-ribbon;
+}
+
+.cardCharacter {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  width: 85%;
+  height: 90%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 $space-2 $space-3 rgba($color-text-primary, .15));
+  transition: transform $transition-base ease;
+  pointer-events: none;
+}
+
+.eventCard:hover .cardCharacter { transform: translateY(-$space-1) rotate(2deg); }
+
+.cardContent {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: $space-6;
+
+  h2 { font-size: $font-size-xl; font-weight: $font-weight-bold; line-height: $line-height-tight; word-break: keep-all; overflow-wrap: anywhere; }
+  p { margin-top: $space-3; color: $color-text-secondary; font-size: $font-size-sm; line-height: $line-height-relaxed; word-break: keep-all; overflow-wrap: anywhere; }
+  time { display: block; margin-top: $space-4; color: $color-text-secondary; font-size: $font-size-xs; line-height: $line-height-base; }
+  > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-6;
+    min-height: 44px;
+    margin-top: $space-5;
+    padding: $space-3 $space-5;
+    font-size: $font-size-sm;
+    @include event.btn-primary;
+    span { font-size: $font-size-xl; line-height: 1; }
+  }
+}
+
+.featuredGrid {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  grid-template-rows: repeat(2, minmax(240px, auto));
+
+  .eventCard:not(.featuredCard) {
+    display: grid;
+    grid-template-columns: minmax(0, .85fr) minmax(0, 1fr);
+    .imageArea { aspect-ratio: auto; min-height: 240px; }
+    .cardContent { justify-content: center; }
+  }
+}
+
+.featuredCard {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+
+  .imageArea { flex: 1; min-height: 280px; aspect-ratio: auto; }
+  .cardCharacter { right: 8%; width: 75%; height: 96%; }
+  .cardContent { flex: 0; padding: $space-8; }
+  .cardContent h2 { max-width: 15em; font-size: $font-size-3xl; }
+  .cardContent p { font-size: $font-size-md; }
+  .gameBadge { bottom: $space-6; left: $space-5; }
+  .status { top: $space-6; left: $space-6; }
+}
+
+.endedCard {
+  .imageArea > img { filter: grayscale(.7); opacity: .8; }
+  .status { background: $color-text-secondary; }
+  .cardContent > a { background: $color-text-secondary; border-color: $color-text-secondary; }
+  .cardContent > a:hover { background: $color-text-primary; }
+}
+
+.pagination {
+  @include mixins.flex-center;
+  gap: $space-2;
+  padding-top: $space-8;
+  button {
+    @include mixins.flex-center;
+    min-width: 44px;
+    height: 44px;
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
+    border-radius: 50%;
+    transition: color $transition-fast ease, background $transition-fast ease;
+    &:hover:not(:disabled) { background: $color-surface; }
+    &:disabled { opacity: .3; }
+  }
+  .currentPage { color: $color-white; background: $color-primary; }
+}
+
+.cardContent > a:focus-visible,
+.pagination button:focus-visible {
+  outline: 2px solid $color-primary;
+  outline-offset: $space-1;
+}
 
 @include mixins.tablet {
-  .page { padding-top: $space-20; }
-  .container { width: calc(100% - (#{$side-margin-tablet} * 2)); }
-  .hero { justify-content: center; min-height: 210px; padding: $space-8 $space-10; }
-  .alcohol { width: 112px; margin-right: $space-8; }
-  .heroText { max-width: 620px; }
-  .heroText > p { font-size: $font-size-4xl; }
-  .heroText h1 { font-size: $font-size-2xl; }
-  .heroText span { line-height: $line-height-relaxed; }
-  .makdongCrop { display: none; }
+  .hero { min-height: 280px; padding: $space-8 40% $space-8 $space-8; }
+  .heroText h1 { font-size: $font-size-3xl; }
+  .makdongCrop { top: -$space-4; right: 2%; width: 36%; }
   .eventGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .featuredGrid {
+    grid-template-rows: auto;
+    .eventCard:not(.featuredCard) {
+      display: flex;
+      .imageArea { min-height: 220px; aspect-ratio: 4 / 3; }
+    }
+  }
+  .featuredCard {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    .imageArea { min-height: 320px; }
+    .cardContent { justify-content: center; }
+  }
 }
 
 @include mixins.mobile {
-  .page { padding: $space-10 0 $space-20; }
-  .page::before { background-size: 500px auto; opacity: .3; }
-  .container { width: calc(100% - (#{$side-margin-mobile} * 2)); }
-  .hero { align-items: center; flex-direction: column; justify-content: center; min-height: 0; padding: $space-8 $space-5; text-align: center; }
-  .alcohol { width: 80px; margin: 0 0 $space-4; }
-  .heroText { width: 100%; max-width: none; padding-right: 0; }
-  .heroText > p { font-size: $font-size-3xl; }
-  .heroText h1 { max-width: 320px; margin: $space-2 auto 0; font-size: $font-size-xl; line-height: $line-height-relaxed; }
-  .heroText span { margin-top: $space-4; font-size: $font-size-sm; }
-  .makdongCrop { display: none; }
-  .eventGrid { grid-template-columns: 1fr; margin-top: $space-12; }
-  .imageArea { aspect-ratio: 16 / 9; }
-  .cardContent { min-height: 248px; padding: $space-8 $space-5 $space-6; }
-  .cardContent h2 { font-size: $font-size-xl; }
-  .cardContent p { font-size: $font-size-sm; }
-  .pagination { gap: $space-2; padding-top: $space-12; }
-  .pagination button { min-width: 42px; height: 42px; font-size: $font-size-md; }
+  .page { padding: $space-10 0 $space-12; }
+  .hero { flex-direction: column; min-height: 0; gap: $space-5; padding: $space-8 $space-5 $space-4; text-align: center; }
+  .hero::after { inset: 40% 0 0; border-radius: 0 0 $radius-xl $radius-xl; }
+  .heroText > p { font-size: $font-size-xs; }
+  .heroText h1 { font-size: $font-size-2xl; }
+  .heroText span { max-width: 24em; margin-inline: auto; font-size: $font-size-sm; }
+  .makdongCrop { position: relative; inset: auto; width: min(100%, 240px); height: 240px; flex-shrink: 0; }
+  .sectionHeading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: $space-3;
+    margin-top: $space-8;
+    h2 { font-size: $font-size-xl; }
+    > span { font-size: $font-size-xs; }
+  }
+  .eventGrid { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; gap: $space-5; }
+  .featuredGrid .eventCard:not(.featuredCard) {
+    display: flex;
+    .imageArea { min-height: 0; aspect-ratio: 16 / 9; }
+  }
+  .featuredCard {
+    grid-column: auto;
+    grid-row: auto;
+    .imageArea { flex: auto; min-height: 0; aspect-ratio: 4 / 3; }
+    .cardContent { padding: $space-6; }
+    .cardContent h2 { font-size: $font-size-2xl; }
+    .cardContent p { font-size: $font-size-sm; }
+  }
+  .cardContent > a { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eventCard, .cardCharacter, .cardContent > a, .pagination button { transition: none; }
+  .eventCard:hover .cardCharacter { transform: none; }
 }

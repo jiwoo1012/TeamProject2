@@ -1,21 +1,25 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as mixins;
 
-.page { --detail-header-height: 72px; min-height: 100vh; padding: $space-8 0 $space-24; color: $color-text-primary; background-color: $color-primary-light; background-image: linear-gradient(180deg, $color-bg 0, $color-bg 28%, rgba($color-primary-light, .22) 58%, rgba($color-primary-light, .72) 82%, $color-primary-light 100%); background-repeat: no-repeat; background-position: top left; background-size: 100% 145vh; background-attachment: scroll; font-family: $font-family-base; }
+.page { --detail-header-height: 72px; min-height: 100vh; padding: $space-8 0 $space-24; color: $color-text-primary; background-color: $color-bg; background-image: linear-gradient(180deg, $color-bg 0, $color-bg 28%, $color-bg 100%); background-repeat: no-repeat; background-position: top left; background-size: 100% 145vh; background-attachment: scroll; font-family: $font-family-base; }
 .layout { --detail-top-height: min(calc(100dvh - var(--detail-header-height) - #{$space-16}), calc(100vw - (#{$side-margin-desktop} * 2) - 330px - #{$space-8} - 204px), 874px); display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: $space-8; align-items: start; width: calc(100% - (#{$side-margin-desktop} * 2)); max-width: 1440px; margin-inline: auto; }
 .mainColumn { min-width: 0; }
 .gallery { display: grid; grid-template-columns: var(--detail-top-height) minmax(180px, 1fr); gap: $space-6; align-items: stretch; width: 100%; height: var(--detail-top-height); }
 .mainImage, .thumbnails img { overflow: hidden; background: $color-surface; border-radius: $radius-lg; }
-.mainImage { aspect-ratio: 1; }
+.mainImage { position: relative; aspect-ratio: 1; }
 .mainImage img, .thumbnails img { width: 100%; height: 100%; object-fit: cover; }
+.mainImage .previewImage { position: absolute; inset: 0; opacity: 0; transition: opacity $transition-base ease; pointer-events: none; }
+.mainImage .activePreviewImage { opacity: 1; }
+.thumbnails img { cursor: pointer; transition: filter $transition-fast ease, transform $transition-fast ease; }
+.thumbnails img:hover, .thumbnails img:focus-visible { filter: brightness(.9); transform: scale(.98); }
 .thumbnails { display: grid; grid-template-rows: repeat(3, 1fr); gap: $space-3; min-height: 0; }
 .tabs { position: relative; display: flex; gap: $space-16; margin-top: $space-16; padding-bottom: calc(100% * 47 / 1053); }
-.tabs::after { position: absolute; bottom: 0; left: 0; width: 100%; aspect-ratio: 1053 / 47; content: ''; background: $color-white; mask: url('../../assets/images/eventPage/pattern3.png') center / contain no-repeat; }
+.tabs::after { position: absolute; bottom: 0; left: 0; width: 100%; aspect-ratio: 1624 / 73; content: ''; background: url('../../assets/images/eventPage/pattern2.png') center / contain no-repeat; }
 .tabs button { position: relative; z-index: 1; padding: 0 $space-8 $space-4; color: $color-primary; font-size: $font-size-lg; font-weight: $font-weight-medium; transition: color $transition-base ease; }
-.tabs .activeTab { color: $color-white; }
+.tabs .activeTab { color: $color-surface; }
 .detailContent { min-height: 900px; margin-top: $space-16; overflow: hidden; color: $color-text-primary; background-color: $color-bg; background-image: url('../../assets/images/eventPage/background2.jpg'); background-repeat: repeat; background-position: top center; background-size: 60% auto; border-radius: $radius-lg; }
 .detailContent img { display: block; width: 100%; }
-.brandStory { @include mixins.flex-center; flex-direction: column; min-height: 520px; padding: $space-4 $space-10; text-align: center; }
+.brandStory { @include mixins.flex-center; flex-direction: column; min-height: 520px; padding: $space-4 $space-10; text-align: center; background: radial-gradient(circle at center, transparent 24%, rgba($color-taupe, .12) 58%, rgba($color-text-primary, .52) 100%); }
 .brandStory img { width: min(34%, 240px); height: auto; object-fit: contain; }
 .brandStory h2 {font-family: $font-family-display; font-size: $font-size-5xl; }
 .brandStory p { max-width: 500px; margin-top: $space-4; font-size: $font-size-md; line-height: $line-height-relaxed; }
@@ -25,22 +29,43 @@
 .styledCategory { position: absolute; z-index: 1; top: $space-12; left: $space-12; font-size: $font-size-md; font-weight: $font-weight-semibold; }
 .styledTitle { position: absolute; z-index: 1; right: $space-12; bottom: $space-12; left: $space-12; display: grid; grid-template-columns: 1fr minmax(260px, 1fr); align-items: center; }
 .styledTitle h2 { font-family: $font-family-display; font-size: $font-size-5xl; line-height: $line-height-tight; }
-.styledTitle p { padding: $space-4 $space-6; color: $color-text-primary; font-size: $font-size-sm; line-height: $line-height-base; background: rgba($color-bg, .3); border-radius: $radius-md; backdrop-filter: blur(1px); }
+.styledTitle p { padding: $space-4 $space-6; color: $color-text-primary; font-size: $font-size-sm; line-height: $line-height-base; background: rgba($color-bg, .5); border-radius: $radius-md; backdrop-filter: blur(1px); }
 .tastingSection { padding: $space-20 $space-10; text-align: center; }
 .tastingSection h2 { font-family: $font-family-display; font-size: $font-size-5xl; }
 .tastingGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: $space-8; max-width: 840px; margin: $space-12 auto 0; }
 .tastingNote { display: flex; flex-direction: column; gap: $space-3; align-items: center; color: $color-primary; font-size: $font-size-md; font-weight: $font-weight-semibold; }
-.tastingNote strong { @include mixins.flex-center; width: clamp(112px, 12vw, 150px); aspect-ratio: 1; color: $color-white; font-size: $font-size-2xl; background: $color-primary; border-radius: 50%; box-shadow: 0 $space-2 $space-4 rgba($color-text-primary, .18); }
+.tastingNote strong { @include mixins.flex-center; position: relative; isolation: isolate; width: clamp(112px, 12vw, 150px); aspect-ratio: 1; color: $color-primary; font-size: $font-size-2xl; background: conic-gradient($color-primary var(--taste-value), rgba($color-white, 1) 0); border-radius: 50%; box-shadow: 0 $space-2 $space-4 rgba($color-text-primary, .18); }
+.tastingNote strong::before { position: absolute; z-index: -1; inset: $space-3; content: ''; background: rgba($color-bg, 1); border-radius: 50%; }
+.tastingNote strong span { position: relative; z-index: 1; }
 .detailOrnament { width: calc(100% - (#{$space-20})); margin: 0 auto; }
 .detailOrnament img { width: 100%; height: auto; object-fit: contain; }
-.faqSection { display: grid; grid-template-columns: minmax(220px, .7fr) 1.3fr; gap: $space-10; align-items: end; margin: 0 $space-10; padding: $space-10 $space-8 $space-16 $space-8}
+.faqSection { display: grid; grid-template-columns: minmax(220px, .7fr) 2fr; gap: $space-10; margin: 0 $space-10; padding: $space-10 $space-8 $space-16 $space-8}
 .faqSection > img { align-self: end; max-height: 430px; object-fit: contain; object-position: bottom; }
 .faqSection h2 { margin-bottom: $space-8; font-family: $font-family-display; font-size: $font-size-4xl; text-align: left; }
 .faqSection dl { display: grid; gap: $space-6; }
-.faqSection dt { font-size: $font-size-md; font-weight: $font-weight-bold; line-height: $line-height-base; }
+.faqSection dt { width: fit-content; padding: $space-1 $space-4; font-size: $font-size-md; font-weight: $font-weight-bold; line-height: $line-height-base; background: rgba($color-primary-light, .3); border-radius: $radius-pill; }
 .faqSection dd { margin-top: $space-2; color: $color-text-secondary; font-size: $font-size-sm; line-height: $line-height-relaxed; }
-.secondStylingImage { min-height: 520px; }
-.secondStylingImage img { height: 100%; min-height: 520px; object-fit: cover; }
+.editorialSections { display: grid; gap: $space-8; padding: $space-4 0 $space-16; }
+.editorialPanel { position: relative; min-height: 380px; overflow: hidden; color: $color-white; }
+.editorialPanel > img { position: absolute; inset: 0; height: 100%; object-fit: cover; }
+.editorialPanel::after { position: absolute; inset: 0; content: ''; background: rgba($color-primary, .7); }
+.editorialOverlay { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: center; min-height: 380px; padding: $space-12 $space-20; }
+.editorialOverlay > p { margin-bottom: $space-2; font-size: $font-size-lg; font-weight: $font-weight-semibold; }
+.editorialOverlay > h2 { font-family: $font-family-display; font-size: $font-size-5xl; line-height: $line-height-tight; }
+.editorialOverlay > span { max-width: 720px; margin-top: $space-5; font-size: $font-size-md; line-height: $line-height-relaxed; }
+.keywordEditorial { align-items: center; text-align: center; }
+.keywordEditorial > h2 { word-spacing: $space-4; }
+.factEditorial > dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-3 $space-10; max-width: 100%; margin-top: $space-8; }
+.factEditorial > dl > div { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: $space-3; padding-bottom: $space-2; border-bottom: 1px solid rgba($color-white, .38); }
+.factEditorial dt { color: rgba($color-white, .72); font-size: $font-size-sm; }
+.factEditorial dd { font-size: $font-size-sm; font-weight: $font-weight-semibold; text-align: center;}
+.gourmetMoment { padding: 0 $space-16 $space-20; text-align: center; }
+.gourmetMoment > h2 { font-family: $font-family-display; font-size: $font-size-4xl; }
+.gourmetMoment > div { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: $space-16; margin-top: $space-12; }
+.gourmetMoment article { display: flex; flex-direction: column; align-items: center; gap: $space-5; }
+.gourmetMoment article > span { @include mixins.flex-center; width: 92px; aspect-ratio: 1; padding: $space-5; background: $color-white; border-radius: 50%; }
+.gourmetMoment article img { width: 100%; height: 100%; object-fit: contain; }
+.gourmetMoment article p { font-size: $font-size-sm; line-height: $line-height-relaxed; }
 .cautionSection { padding: $space-20 $space-12; color: $color-white; background: $color-taupe; }
 .cautionSection h2 { font-family: $font-family-display; font-size: $font-size-4xl; text-align: center; }
 .cautionSection ul { display: grid; gap: $space-6; margin-top: $space-12; }
@@ -78,6 +103,7 @@
 .foodGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: $grid-gutter; }
 
 .purchasePanel { position: sticky; top: calc(var(--detail-header-height) + #{$space-3}); display: flex; flex-direction: column; height: var(--detail-top-height); padding: $space-6; background: $color-bg; border: 1px solid $color-border; border-radius: $radius-lg; box-shadow: 0 $space-2 $space-6 rgba($color-text-primary, .08); }
+.expandedPurchasePanel { height: auto; min-height: var(--detail-top-height); }
 .brand { margin-bottom: $space-2; color: $color-text-muted; font-size: $font-size-xs; }
 .purchasePanel > h1 { font-size: $font-size-xl; font-weight: $font-weight-semibold; line-height: $line-height-tight; }
 .lowStockLabel { margin-left: $space-2; color: $color-error; font-size: $font-size-xs; font-weight: $font-weight-semibold; vertical-align: middle; }
@@ -175,7 +201,16 @@
   .faqSection { grid-template-columns: 1fr; margin-inline: $space-4; padding: $space-12 $space-8; }
   .faqSection > img { width: min(68%, 260px); margin-inline: auto; }
   .faqSection h2 { font-size: $font-size-3xl; }
-  .secondStylingImage, .secondStylingImage img { min-height: 360px; }
+  .editorialSections { gap: $space-5; padding-bottom: $space-10; }
+  .editorialPanel, .editorialOverlay { min-height: 320px; }
+  .editorialOverlay { padding: $space-8; }
+  .editorialOverlay > h2 { font-size: $font-size-3xl; }
+  .editorialOverlay > span { font-size: $font-size-sm; }
+  .factEditorial > dl { grid-template-columns: 1fr; gap: $space-2; margin-top: $space-6; }
+  .gourmetMoment { padding: $space-16 $space-24; }
+  .gourmetMoment > h2 { font-size: $font-size-3xl; }
+  .gourmetMoment > div { grid-template-columns: 1fr; gap: $space-8; margin-top: $space-8; }
+  .gourmetMoment article > span { width: 84px; }
   .cautionSection { padding: $space-16 $space-8; }
   .cautionSection h2 { font-size: $font-size-3xl; }
   .cautionSection ul { margin-top: $space-8; }
