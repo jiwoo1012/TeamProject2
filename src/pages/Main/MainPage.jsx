@@ -36,6 +36,7 @@ import eventsData from '../../data/events.json'
 import { getCollection } from '../../firebase/firestore'
 import styles from './MainPage.module.scss'
 import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
+import MainSectionNav from '../../components/ui/MainSectionNav/MainSectionNav'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -55,7 +56,7 @@ const mainEvents = eventsData.map(({ event }, index) => ({
   ...event,
   id: `event-${index + 1}`,
   bannerSrc: resolveEventBanner(event.image.bannerUrl),
-})).filter((event) => event.image.bannerUrl !== '/banner/eventBanner-4.png')
+}))
 
 const makdongTraits = [
   { icon: '✣', title: '다정한 안내자', description: '전통주의 매력을\n쉽고 재미있게 소개해요.' },
@@ -302,6 +303,7 @@ const MainPage = () => {
   return (
     <div className={styles.page} data-main-page>
       <MobileTopButton contentRef={aiIntroRef} />
+      <MainSectionNav contentRef={aiIntroRef} />
       {/* 여정 인트로 섹션 */}
       {!isIntroSkipped && <JourneySection onSkip={handleSkipIntro} />}
 
@@ -354,7 +356,7 @@ const MainPage = () => {
       </section>
 
       {/* AI 맞춤 추천 소개 섹션 */}
-      <section ref={aiIntroRef} className={styles.aiIntro} aria-labelledby="ai-intro-title">
+      <section id="ai-intro-section" ref={aiIntroRef} className={styles.aiIntro} aria-labelledby="ai-intro-title">
         <div className={styles.aiIntroContent}>
         <div className={styles.moodHeading}>
           <p className={styles.moodLabel} aria-label="HAPPY, RAINY, SWEET">
@@ -431,7 +433,7 @@ const MainPage = () => {
       </section>
 
       {/* 자작 브랜드 스토리 섹션 */}
-      <section ref={featureSectionRef} className={styles.featureSection} aria-labelledby="feature-title">
+      <section id="feature-section" ref={featureSectionRef} className={styles.featureSection} aria-labelledby="feature-title">
         <div className={styles.featureCopy}>
           <h2 id="feature-title">
             <span>자작은 술잔에</span>
@@ -466,7 +468,7 @@ const MainPage = () => {
       />
 
       {/* 이벤트 섹션 */}
-      <section ref={eventsGridRef} className={styles.eventsGrid} aria-labelledby="events-grid-title">
+      <section id="events-grid-section" ref={eventsGridRef} className={styles.eventsGrid} aria-labelledby="events-grid-title">
         <div className={styles.eventsCopy}>
           <p>EVENTS</p>
           <h2 id="events-grid-title">
@@ -515,6 +517,7 @@ const MainPage = () => {
 
       {/* 막동이 소개 페이지 진입 섹션 */}
       <section
+        id="makdong-section"
         ref={makdongSectionRef}
         className={styles.makdongSection}
         aria-labelledby="makdong-title"

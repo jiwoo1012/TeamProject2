@@ -485,8 +485,22 @@
   position: absolute; top: 32px; right: 40px; z-index: 7;
   display: inline-flex; gap: 10px; align-items: center; padding: 10px 0;
   border: 0; color: #fffaf2; background: transparent; font: inherit;
-  font-size: 13px; font-weight: 700; letter-spacing: 0.12em;
+  font-size: 16.9px; font-weight: 700; letter-spacing: 0.12em;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.65); cursor: pointer;
+  transition: color v.$transition-fast;
+}
+.skipButton:hover,
+.skipButton:focus-visible {
+  color: v.$color-primary-light;
+}
+.stage .skipButton,
+.stage .skipButton * {
+  cursor: pointer !important;
+}
+.stage:has(.skipButton:hover) .keypadHand,
+:global(body):has(.skipButton:hover) .sceneScrollCursor {
+  opacity: 0 !important;
+  visibility: hidden !important;
 }
 .skipArrow {
   width: 0;

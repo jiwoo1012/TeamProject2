@@ -84,10 +84,49 @@ const recommendedProducts = liquors
   }))
 
 
+/* ========================================
+   상품 카테고리별 세부 종류
+
+   호버한 카테고리에 맞는 세부 종류를
+   메가메뉴 두 번째 컬럼에 보여주기 위한 데이터.
+   세부 종류가 없는 카테고리는 items를 비워둔다.
+======================================== */
+
+const shopSubcategories = {
+  liquor: {
+    title: '전통주 종류',
+    items: [
+      { label: '탁주', to: '/shop?type=takju' },
+      { label: '약주 · 청주', to: '/shop?type=yakju' },
+      { label: '과실주', to: '/shop?type=fruit' },
+      { label: '증류주', to: '/shop?type=distilled' },
+      { label: '리큐르 · 기타상품', to: '/shop?type=liqueur' },
+    ],
+  },
+  food: {
+    title: '안주 종류',
+    items: [
+      { label: '간편식', to: '/shop?category=food&detail=간편식' },
+      { label: '디저트', to: '/shop?category=food&detail=디저트' },
+      { label: '상온안주', to: '/shop?category=food&detail=상온안주' },
+    ],
+  },
+  glass: {
+    title: '잔 종류',
+    items: [],
+  },
+  gift: {
+    title: '선물 세트',
+    items: [],
+  },
+}
+
+
 const DesktopHeader = () => {
   const navigate = useNavigate()
 
   const [openMenu, setOpenMenu] = useState(null)
+  const [hoveredShopCategory, setHoveredShopCategory] = useState('liquor')
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [user, setUser] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
@@ -288,11 +327,12 @@ const DesktopHeader = () => {
               className={
                 styles.gnbItem
               }
-              onMouseEnter={() =>
+              onMouseEnter={() => {
+                setHoveredShopCategory('liquor')
                 openMegaMenu(
                   'shop'
                 )
-              }
+              }}
             >
               <Link
                 to="/shop"
@@ -411,11 +451,10 @@ const DesktopHeader = () => {
                 toggleSearch
               }
             >
-              <img
-                src={
-                  searchIcon
-                }
-                alt=""
+              <span
+                className={styles.iconGlyph}
+                style={{ '--icon-src': `url(${searchIcon})` }}
+                aria-hidden="true"
               />
             </button>
 
@@ -445,11 +484,10 @@ const DesktopHeader = () => {
                   closeSearch
                 }
               >
-                <img
-                  src={
-                    loginIcon
-                  }
-                  alt=""
+                <span
+                  className={styles.iconGlyph}
+                  style={{ '--icon-src': `url(${loginIcon})` }}
+                  aria-hidden="true"
                 />
               </Link>
 
@@ -513,11 +551,10 @@ const DesktopHeader = () => {
                 closeSearch
               }
             >
-              <img
-                src={
-                  wishlistIcon
-                }
-                alt=""
+              <span
+                className={styles.iconGlyph}
+                style={{ '--icon-src': `url(${wishlistIcon})` }}
+                aria-hidden="true"
               />
             </Link>
 
@@ -534,11 +571,10 @@ const DesktopHeader = () => {
                 closeSearch
               }
             >
-              <img
-                src={
-                  cartIcon
-                }
-                alt=""
+              <span
+                className={styles.iconGlyph}
+                style={{ '--icon-src': `url(${cartIcon})` }}
+                aria-hidden="true"
               />
             </Link>
 
@@ -765,6 +801,9 @@ const DesktopHeader = () => {
               className={
                 styles.snbLink
               }
+              onMouseEnter={() =>
+                setHoveredShopCategory('liquor')
+              }
               onClick={
                 closeMegaMenu
               }
@@ -776,6 +815,9 @@ const DesktopHeader = () => {
               to="/shop?category=food"
               className={
                 styles.snbLink
+              }
+              onMouseEnter={() =>
+                setHoveredShopCategory('food')
               }
               onClick={
                 closeMegaMenu
@@ -789,6 +831,9 @@ const DesktopHeader = () => {
               className={
                 styles.snbLink
               }
+              onMouseEnter={() =>
+                setHoveredShopCategory('glass')
+              }
               onClick={
                 closeMegaMenu
               }
@@ -801,6 +846,9 @@ const DesktopHeader = () => {
               className={
                 styles.snbLink
               }
+              onMouseEnter={() =>
+                setHoveredShopCategory('gift')
+              }
               onClick={
                 closeMegaMenu
               }
@@ -812,7 +860,11 @@ const DesktopHeader = () => {
 
 
           {/* ========================================
-              전통주 종류
+              카테고리 세부 종류
+
+              왼쪽 카테고리를 호버하면 그에 맞는
+              세부 종류로 바뀐다. 세부 종류가 없으면
+              빈 상태로 둔다.
           ======================================== */}
 
           <div
@@ -821,73 +873,32 @@ const DesktopHeader = () => {
             }
           >
 
-            <span
-              className={
-                styles.columnTitle
-              }
-            >
-              전통주 종류
-            </span>
+            {shopSubcategories[hoveredShopCategory].items.length > 0 && (
+              <>
+                <span
+                  className={
+                    styles.columnTitle
+                  }
+                >
+                  {shopSubcategories[hoveredShopCategory].title}
+                </span>
 
-            <Link
-              to="/shop?type=takju"
-              className={
-                styles.snbLink
-              }
-              onClick={
-                closeMegaMenu
-              }
-            >
-              탁주
-            </Link>
-
-            <Link
-              to="/shop?type=yakju"
-              className={
-                styles.snbLink
-              }
-              onClick={
-                closeMegaMenu
-              }
-            >
-              약주 · 청주
-            </Link>
-
-            <Link
-              to="/shop?type=fruit"
-              className={
-                styles.snbLink
-              }
-              onClick={
-                closeMegaMenu
-              }
-            >
-              과실주
-            </Link>
-
-            <Link
-              to="/shop?type=distilled"
-              className={
-                styles.snbLink
-              }
-              onClick={
-                closeMegaMenu
-              }
-            >
-              증류주
-            </Link>
-
-            <Link
-              to="/shop?type=liqueur"
-              className={
-                styles.snbLink
-              }
-              onClick={
-                closeMegaMenu
-              }
-            >
-              리큐르 · 기타상품
-            </Link>
+                {shopSubcategories[hoveredShopCategory].items.map(({ label, to }) => (
+                  <Link
+                    to={to}
+                    className={
+                      styles.snbLink
+                    }
+                    onClick={
+                      closeMegaMenu
+                    }
+                    key={label}
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </>
+            )}
 
           </div>
 

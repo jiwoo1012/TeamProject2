@@ -1,10 +1,15 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as mixins;
+
 .surveyPage,
 .guestPage,
 .loadingPage {
   width: 100%;
   min-height: calc(100vh - 70px);
 
-  background: #f7f5f0;
+  background: $color-bg;
+  font-family: $font-family-base;
+  color: $color-text-primary;
 }
 
 
@@ -13,7 +18,7 @@
 ======================================== */
 
 .surveyPage {
-  padding: 48px 24px 80px;
+  padding: $space-12 $space-6 $space-20;
 }
 
 .surveyContainer {
@@ -30,7 +35,7 @@
 .progressArea {
   width: min(100%, 660px);
 
-  margin: 0 auto 24px;
+  margin: 0 auto $space-6;
 }
 
 .progressTop {
@@ -38,45 +43,45 @@
   align-items: center;
   justify-content: space-between;
 
-  margin-bottom: 11px;
+  margin-bottom: $space-3;
 }
 
 .surveyType {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
 
-  color: #8e857e;
+  color: $color-text-muted;
 }
 
 .progressText {
   display: flex;
   align-items: baseline;
 
-  gap: 4px;
+  gap: $space-1;
 
-  color: #a09891;
+  color: $color-text-muted;
 
   strong {
-    font-size: 20px;
-    font-weight: 700;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
 
-    color: #559f98;
+    color: $color-primary;
   }
 
   span {
-    font-size: 13px;
+    font-size: $font-size-xs;
   }
 }
 
 .progressBar {
   width: 100%;
-  height: 5px;
+  height: $space-1;
 
   overflow: hidden;
 
-  border-radius: 999px;
+  border-radius: $radius-pill;
 
-  background: #e5e2dd;
+  background: $color-border;
 }
 
 .progressFill {
@@ -87,11 +92,11 @@
   background:
     linear-gradient(
       90deg,
-      #559f98,
-      #99ccc6
+      $color-primary,
+      $color-primary-light
     );
 
-  transition: width 0.4s ease;
+  transition: width $transition-base ease;
 }
 
 
@@ -102,26 +107,26 @@
 .questionCard {
   width: 100%;
 
-  padding: 50px 64px 46px;
+  padding: $space-12 $space-16 $space-12;
 
   border: 1px solid
-    rgba(67, 54, 45, 0.06);
+    rgba($color-text-primary, 0.06);
 
-  border-radius: 24px;
+  border-radius: $radius-xl;
 
-  background: #fffdfb;
+  background: $color-bg;
 
   box-shadow:
-    0 14px 45px
-      rgba(56, 45, 37, 0.06);
+    0 $space-3 $space-12
+      rgba($color-text-primary, 0.06);
 }
 
 .safetyCard {
   background:
     linear-gradient(
       180deg,
-      #fffdfb 0%,
-      #fbfdfc 100%
+      $color-bg 0%,
+      $color-bg 100%
     );
 }
 
@@ -137,30 +142,30 @@
 
   width: fit-content;
 
-  min-width: 52px;
+  min-width: $space-12;
 
-  margin: 0 auto 21px;
+  margin: 0 auto $space-5;
 
-  padding: 7px 16px;
+  padding: $space-2 $space-4;
 
   border: 1px solid
-    rgba(75, 154, 147, 0.42);
+    rgba($color-primary, 0.42);
 
-  border-radius: 999px;
+  border-radius: $radius-pill;
 
   background:
-    rgba(80, 158, 151, 0.06);
+    rgba($color-primary, 0.06);
 
-  font-size: 13px;
-  font-weight: 700;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
 
   letter-spacing: 0.02em;
 
-  color: #4f9993;
+  color: $color-primary;
 }
 
 .questionHeader {
-  margin-bottom: 32px;
+  margin-bottom: $space-8;
 
   text-align: center;
 }
@@ -168,22 +173,22 @@
 .questionTitle {
   margin: 0;
 
-  font-size: 27px;
-  font-weight: 700;
-  line-height: 1.4;
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-base;
 
-  color: #332820;
+  color: $color-text-primary;
 
   word-break: keep-all;
 }
 
 .questionDescription {
-  margin: 11px 0 0;
+  margin: $space-3 0 0;
 
-  font-size: 14px;
-  line-height: 1.65;
+  font-size: $font-size-sm;
+  line-height: $line-height-relaxed;
 
-  color: #817871;
+  color: $color-text-secondary;
 
   word-break: keep-all;
 }
@@ -191,19 +196,19 @@
 .questionHint {
   display: inline-block;
 
-  margin-top: 12px;
+  margin-top: $space-3;
 
-  padding: 5px 10px;
+  padding: $space-1 $space-2;
 
-  border-radius: 999px;
+  border-radius: $radius-pill;
 
   background:
-    rgba(82, 157, 150, 0.07);
+    rgba($color-primary, 0.07);
 
-  font-size: 11px;
-  font-weight: 600;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
 
-  color: #619f99;
+  color: $color-primary;
 }
 
 
@@ -215,7 +220,7 @@
   display: flex;
   flex-direction: column;
 
-  gap: 10px;
+  gap: $space-2;
 
   width: min(100%, 660px);
 
@@ -228,58 +233,58 @@
   justify-content: space-between;
 
   width: 100%;
-  min-height: 62px;
+  min-height: $space-16;
 
-  padding: 12px 20px;
+  padding: $space-3 $space-5;
 
-  border: 1px solid #ded9d3;
-  border-radius: 12px;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
 
-  background: #fff;
+  background: $color-white;
 
-  color: #453a32;
+  color: $color-text-primary;
 
   text-align: left;
 
   cursor: pointer;
 
   transition:
-    border-color 0.2s ease,
-    background 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+    border-color $transition-fast ease,
+    background $transition-fast ease,
+    transform $transition-fast ease,
+    box-shadow $transition-fast ease;
 
   &:hover {
     border-color:
-      rgba(76, 157, 149, 0.55);
+      rgba($color-primary, 0.55);
 
     background:
-      rgba(83, 163, 155, 0.035);
+      rgba($color-primary, 0.035);
 
     transform: translateY(-1px);
 
     box-shadow:
-      0 5px 16px
-        rgba(54, 45, 38, 0.045);
+      0 $space-1 $space-4
+        rgba($color-text-primary, 0.045);
   }
 }
 
 .optionButton.selected {
-  border-color: #55a098;
+  border-color: $color-primary;
 
   background:
-    rgba(83, 163, 155, 0.075);
+    rgba($color-primary, 0.075);
 
   box-shadow:
     inset 0 0 0 1px
-      rgba(83, 163, 155, 0.08);
+      rgba($color-primary, 0.08);
 }
 
 .optionContent {
   display: flex;
   align-items: center;
 
-  gap: 15px;
+  gap: $space-4;
 }
 
 .optionEmoji {
@@ -289,32 +294,32 @@
 
   flex-shrink: 0;
 
-  width: 32px;
+  width: $space-8;
 
-  font-size: 21px;
+  font-size: $font-size-xl;
 }
 
 .optionText {
   display: flex;
   flex-direction: column;
 
-  gap: 2px;
+  gap: $space-1;
 }
 
 .optionLabel {
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 1.5;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  line-height: $line-height-base;
 
   word-break: keep-all;
 }
 
 .optionSubLabel {
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.5;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-regular;
+  line-height: $line-height-base;
 
-  color: #968d86;
+  color: $color-text-muted;
 
   word-break: keep-all;
 }
@@ -331,35 +336,35 @@
 
   flex-shrink: 0;
 
-  width: 21px;
-  height: 21px;
+  width: $space-5;
+  height: $space-5;
 
-  border: 1.5px solid #bdb6af;
+  border: 1.5px solid $color-text-muted;
   border-radius: 50%;
 
-  font-size: 12px;
-  font-weight: 700;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
 
-  color: #fff;
+  color: $color-white;
 
   transition:
-    border-color 0.2s ease,
-    background 0.2s ease;
+    border-color $transition-fast ease,
+    background $transition-fast ease;
 }
 
 .selectIndicatorActive {
-  border-color: #55a098;
+  border-color: $color-primary;
 
-  background: #55a098;
+  background: $color-primary;
 }
 
 .radioDot {
-  width: 9px;
-  height: 9px;
+  width: $space-2;
+  height: $space-2;
 
   border-radius: 50%;
 
-  background: #55a098;
+  background: $color-primary;
 }
 
 
@@ -373,7 +378,7 @@
   grid-template-columns:
     repeat(2, 1fr);
 
-  gap: 10px;
+  gap: $space-2;
 
   width: min(100%, 660px);
 
@@ -388,46 +393,46 @@
   display: flex;
   align-items: center;
 
-  gap: 10px;
+  gap: $space-2;
 
   width: 100%;
-  min-height: 48px;
+  min-height: $space-12;
 
-  padding: 10px 14px;
+  padding: $space-2 $space-3;
 
-  border: 1px solid #ddd8d2;
-  border-radius: 10px;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
 
-  background: #fff;
+  background: $color-white;
 
-  font-size: 13px;
-  font-weight: 500;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
 
-  color: #544940;
+  color: $color-text-primary;
 
   text-align: left;
 
   cursor: pointer;
 
   transition:
-    border-color 0.2s ease,
-    background 0.2s ease,
-    transform 0.2s ease;
+    border-color $transition-fast ease,
+    background $transition-fast ease,
+    transform $transition-fast ease;
 
   &:hover {
     border-color:
-      rgba(76, 157, 149, 0.55);
+      rgba($color-primary, 0.55);
 
     background:
-      rgba(82, 160, 153, 0.035);
+      rgba($color-primary, 0.035);
   }
 }
 
 .safetySelected {
-  border-color: #55a098;
+  border-color: $color-primary;
 
   background:
-    rgba(83, 163, 155, 0.075);
+    rgba($color-primary, 0.075);
 }
 
 .checkbox {
@@ -437,25 +442,25 @@
 
   flex-shrink: 0;
 
-  width: 18px;
-  height: 18px;
+  width: $space-4;
+  height: $space-4;
 
-  border: 1px solid #bbb4ad;
-  border-radius: 4px;
+  border: 1px solid $color-text-muted;
+  border-radius: $radius-sm;
 
-  background: #fff;
+  background: $color-white;
 
-  font-size: 11px;
-  font-weight: 700;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
 
-  color: #4c9992;
+  color: $color-primary;
 }
 
 .safetySelected .checkbox {
-  border-color: #55a098;
+  border-color: $color-primary;
 
   background:
-    rgba(83, 163, 155, 0.08);
+    rgba($color-primary, 0.08);
 }
 
 
@@ -469,55 +474,55 @@
   display: flex;
   flex-direction: column;
 
-  gap: 8px;
+  gap: $space-2;
 
-  margin-top: 4px;
+  margin-top: $space-1;
 
-  padding: 16px;
+  padding: $space-4;
 
-  border-radius: 10px;
+  border-radius: $radius-md;
 
   background:
-    rgba(83, 163, 155, 0.045);
+    rgba($color-primary, 0.045);
 
   label {
-    font-size: 12px;
-    font-weight: 600;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
 
-    color: #625750;
+    color: $color-text-secondary;
   }
 
   input {
     width: 100%;
-    height: 44px;
+    height: $space-10;
 
-    padding: 0 14px;
+    padding: 0 $space-3;
 
-    border: 1px solid #d9d3cd;
-    border-radius: 8px;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
 
-    background: #fff;
+    background: $color-white;
 
-    font-size: 13px;
+    font-size: $font-size-xs;
 
-    color: #453a32;
+    color: $color-text-primary;
 
     outline: none;
 
     transition:
-      border-color 0.2s ease,
-      box-shadow 0.2s ease;
+      border-color $transition-fast ease,
+      box-shadow $transition-fast ease;
 
     &::placeholder {
-      color: #b5ada7;
+      color: $color-text-muted;
     }
 
     &:focus {
-      border-color: #58a39c;
+      border-color: $color-primary;
 
       box-shadow:
         0 0 0 3px
-          rgba(83, 163, 155, 0.09);
+          rgba($color-primary, 0.09);
     }
   }
 }
@@ -531,46 +536,46 @@
   display: flex;
   align-items: center;
 
-  gap: 12px;
+  gap: $space-3;
 
   width: min(100%, 660px);
 
-  margin: 34px auto 0;
+  margin: $space-8 auto 0;
 }
 
 .prevButton,
 .nextButton {
   text-align: center;
-  height: 50px;
+  height: $space-12;
 
-  border-radius: 8px;
+  border-radius: $radius-md;
 
-  font-size: 14px;
-  font-weight: 600;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
 
   cursor: pointer;
 
   transition:
-    background 0.22s ease,
-    border-color 0.22s ease,
-    color 0.22s ease,
-    transform 0.22s ease,
-    box-shadow 0.22s ease;
+    background $transition-fast ease,
+    border-color $transition-fast ease,
+    color $transition-fast ease,
+    transform $transition-fast ease,
+    box-shadow $transition-fast ease;
 }
 
 .prevButton {
-  width: 125px;
+  width: $space-30;
 
-  border: 1px solid #d8d2cc;
+  border: 1px solid $color-border;
 
-  background: #fff;
+  background: $color-white;
 
-  color: #756a62;
+  color: $color-text-secondary;
 
   &:hover {
-    border-color: #aaa19a;
+    border-color: $color-text-muted;
 
-    color: #443930;
+    color: $color-text-primary;
   }
 }
 
@@ -579,35 +584,35 @@
   align-items: center;
   justify-content: center;
 
-  gap: 9px;
+  gap: $space-2;
 
   flex: 1;
 
-  border: 1px solid #529c95;
+  border: 1px solid $color-primary;
 
   background:
     linear-gradient(
       135deg,
-      #549d96,
-      #66b1a9
+      $color-primary,
+      $color-primary-light
     );
 
-  color: #fff;
+  color: $color-white;
 
   &:not(:disabled):hover {
     transform: translateY(-1px);
 
     box-shadow:
-      0 7px 20px
-        rgba(78, 150, 145, 0.22);
+      0 $space-2 $space-5
+        rgba($color-primary, 0.22);
   }
 
   &:disabled {
-    border-color: #d9d6d1;
+    border-color: $color-border;
 
-    background: #dedbd6;
+    background: $color-surface;
 
-    color: #aaa39d;
+    color: $color-text-muted;
 
     cursor: not-allowed;
 
@@ -621,14 +626,14 @@
 ======================================== */
 
 .helperText {
-  margin: 17px 0 0;
+  margin: $space-4 0 0;
 
   text-align: center;
 
-  font-size: 11px;
-  line-height: 1.5;
+  font-size: $font-size-xs;
+  line-height: $line-height-base;
 
-  color: #aaa29c;
+  color: $color-text-muted;
 }
 
 
@@ -652,18 +657,18 @@
 }
 
 .loadingSpinner {
-  width: 32px;
-  height: 32px;
+  width: $space-8;
+  height: $space-8;
 
   border: 3px solid
-    rgba(78, 150, 145, 0.13);
+    rgba($color-primary, 0.13);
 
-  border-top-color: #4e9691;
+  border-top-color: $color-primary;
 
   border-radius: 50%;
 
   animation:
-    loadingSpin 0.8s
+    loadingSpin calc(#{$transition-base} * 3)
       linear infinite;
 }
 
@@ -678,13 +683,13 @@
    Tablet
 ======================================== */
 
-@media (max-width: 1023px) {
+@include mixins.tablet {
   .surveyPage {
-    padding: 40px 28px 70px;
+    padding: $space-10 $side-margin-tablet $space-16;
   }
 
   .questionCard {
-    padding: 44px 44px 42px;
+    padding: $space-10 $space-10 $space-10;
   }
 }
 
@@ -693,79 +698,79 @@
    Mobile
 ======================================== */
 
-@media (max-width: 767px) {
+@include mixins.mobile {
   .surveyPage {
-    padding: 26px 14px 50px;
+    padding: $space-6 $space-3 $space-12;
   }
 
   .progressArea {
-    margin-bottom: 18px;
+    margin-bottom: $space-4;
   }
 
   .questionCard {
-    padding: 32px 17px 27px;
+    padding: $space-8 $space-4 $space-6;
 
-    border-radius: 18px;
+    border-radius: $radius-xl;
   }
 
   .questionNumber {
-    margin-bottom: 17px;
+    margin-bottom: $space-4;
 
-    padding: 6px 13px;
+    padding: $space-1 $space-3;
 
-    font-size: 12px;
+    font-size: $font-size-xs;
   }
 
   .questionHeader {
-    margin-bottom: 25px;
+    margin-bottom: $space-6;
   }
 
   .questionTitle {
-    font-size: 21px;
+    font-size: $font-size-xl;
   }
 
   .questionDescription {
-    font-size: 12px;
+    font-size: $font-size-xs;
   }
 
   .questionHint {
-    margin-top: 10px;
+    margin-top: $space-2;
 
-    font-size: 10px;
+    font-size: $font-size-xs;
   }
 
 
   /* options */
 
   .optionButton {
-    min-height: 58px;
+    min-height: $space-16;
 
-    padding: 11px 13px;
+    padding: $space-3 $space-3;
 
-    border-radius: 10px;
+    border-radius: $radius-md;
   }
 
   .optionContent {
-    gap: 9px;
+    gap: $space-2;
   }
 
   .optionEmoji {
-    width: 27px;
+    width: $space-6;
 
-    font-size: 19px;
+    font-size: $font-size-lg;
   }
 
   .optionLabel {
-    font-size: 13px;
+    font-size: $font-size-xs;
   }
 
   .optionSubLabel {
-    font-size: 11px;
+    font-size: $font-size-xs;
   }
 
   .selectIndicator {
-    width: 19px;
-    height: 19px;
+    width: $space-5;
+    height: $space-5;
   }
 
 
@@ -780,9 +785,9 @@
   }
 
   .safetyOption {
-    min-height: 47px;
+    min-height: $space-12;
 
-    font-size: 12px;
+    font-size: $font-size-xs;
   }
 
   .otherInputArea {
@@ -793,23 +798,49 @@
   /* buttons */
 
   .buttonArea {
-    margin-top: 27px;
+    margin-top: $space-6;
   }
 
   .prevButton {
-    width: 92px;
+    width: $space-24;
   }
 
   .prevButton,
   .nextButton {
-    height: 47px;
+    height: $space-12;
 
-    font-size: 13px;
+    font-size: $font-size-xs;
   }
 
   .helperText {
-    margin-top: 13px;
+    margin-top: $space-3;
 
-    font-size: 10px;
+    font-size: $font-size-xs;
   }
+}
+.guideCharacter { display: block; width: $space-24; height: $space-24; margin: 0 auto $space-4; object-fit: contain; }
+.optionButton.selected, .safetyOption.safetySelected {
+  color: $color-white;
+  background: $color-primary;
+  border-color: $color-primary;
+  box-shadow: inset 0 0 0 1px $color-primary;
+}
+.selected .optionSubLabel { color: rgba($color-white, .9); }
+.selectIndicator, .checkbox { width: $space-6; height: $space-6; font-size: $font-size-md; }
+.selected .selectIndicator, .safetySelected .checkbox { color: $color-primary; border-color: $color-white; background: $color-white; }
+.radioDot { width: $space-3; height: $space-3; background: $color-primary; }
+.optionContent, .optionText { min-width: 0; }
+.optionButton { gap: $space-3; }
+.optionButton:focus-visible, .safetyOption:focus-visible, .prevButton:focus-visible, .nextButton:focus-visible {
+  outline: 2px solid $color-primary;
+  outline-offset: $space-1;
+}
+.safetyCard { background: linear-gradient($color-bg, rgba($color-primary, .04)); }
+@include mixins.mobile {
+  .surveyPage { padding-inline: $side-margin-mobile; }
+  .guideCharacter { width: $space-16; height: $space-16; margin-bottom: $space-3; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .progressFill, .optionButton, .safetyOption, .selectIndicator, .prevButton, .nextButton, .otherInputArea input { transition: none; }
+  .optionButton:hover, .nextButton:not(:disabled):hover { transform: none; }
 }

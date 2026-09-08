@@ -1350,6 +1350,7 @@
 
   @media (min-width: 1200px) {
     align-self: center;
+    transform: translateY(-56px);
   }
 }
 
@@ -1995,9 +1996,11 @@
   font-weight: $font-weight-bold;
 
   @media (min-width: 1200px) {
-    margin-bottom: 48px;
+    margin-bottom: 32px;
     color: $color-bg;
-    font-size: clamp(26px, 2vw, 32px);
+    font-size: clamp(56px, 5.5vw, 96px);
+    line-height: 1;
+    letter-spacing: -0.03em;
   }
 
   @media (max-width: 767px) {
@@ -2972,7 +2975,7 @@
   }
 
   .eventsCopy {
-    top: 112px;
+    top: 140px;
   }
 
   .makdongSection {

@@ -3,7 +3,9 @@ import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { serverTimestamp } from 'firebase/firestore'
 import ProductCard from '../../components/ui/ProductCard/ProductCard'
 import Pagination from '../../components/ui/Pagination/Pagination'
+import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 import { fetchProducts, getManagedProducts } from '../../services/productCatalog'
+import { products as productReferenceData } from '../../data/products'
 import { getCart, saveCart } from '../../utils/cartStorage'
 import { subscribeToAuthState } from '../../firebase/auth'
 import { getCollection, setDocument, deleteDocument } from '../../firebase/firestore'
@@ -11,8 +13,6 @@ import { PATHS } from '../../routes/paths'
 import bannerOne from '../../assets/images/banner/eventBanner.png'
 import bannerTwo from '../../assets/images/banner/eventBanner-1.png'
 import bannerThree from '../../assets/images/banner/eventBanner-5.png'
-import productListOrnament from '../../assets/images/eventPage/pattern2.png'
-import categoryPattern from '../../assets/images/eventPage/pattern.png'
 import styles from './ProductList.module.scss'
 
 const productImages = import.meta.glob(
@@ -31,7 +31,7 @@ const alcoholExplainImages = import.meta.glob(
   }
 )
 
-const stylingImages = Object.values(
+const stylingImageFiles =
   import.meta.glob(
     '../../assets/images/products/stylingProduct/**/*.{png,jpg,jpeg,webp}',
     {
@@ -39,7 +39,31 @@ const stylingImages = Object.values(
       import: 'default',
     }
   )
+
+const stylingImages = Object.values(stylingImageFiles)
+
+const detailImageFiles = import.meta.glob(
+  '../../assets/images/products/productDetail/**/*.{png,jpg,jpeg,webp}',
+  { eager: true, import: 'default' }
 )
+
+const resolveHoverImage = (product) => {
+  // Match the detail gallery's local asset mapping and uploaded-image overrides.
+  const referenceImageUrl = productReferenceData.find((item) => item.productId === product.productId)?.imageUrl
+    ?? product.imageUrl
+  const folder = (referenceImageUrl ?? '').replace(/\.[^.]+$/, '')
+  const localImages = Object.entries(detailImageFiles)
+    .filter(([path]) => path.includes(`/productDetail/${folder}/`))
+    .sort(([a], [b]) => a.localeCompare(b, 'ko', { numeric: true }))
+    .map(([, source]) => source)
+
+  if (!product.detailImageUrls?.length) return localImages[1]
+
+  return Array.from(
+    { length: Math.max(3, localImages.length) },
+    (_, index) => product.detailImageUrls[index] || localImages[index]
+  ).filter(Boolean)[1]
+}
 
 const banners = [
   { image: bannerOne, to: `${PATHS.events}/roulette`, label: '막동이 룰렛 이벤트' },
@@ -75,6 +99,7 @@ const seededStylingImages = [...stylingImages]
   .slice(0, 18)
 
 const ProductList = () => {
+  const pageRef = useRef(null)
   const stageRef = useRef(null)
   const productsRef = useRef(null)
   const cartToastTimerRef = useRef(null)
@@ -87,7 +112,6 @@ const ProductList = () => {
     searchParams.get('search')?.trim() ?? ''
 
   const [bannerIndex, setBannerIndex] = useState(0)
-  const [revealProgress, setRevealProgress] = useState(0)
   const [categoryId, setCategoryId] = useState('all')
   const [detailFilter, setDetailFilter] = useState('전체')
   const [priceFilter, setPriceFilter] = useState('all')
@@ -291,44 +315,6 @@ const ProductList = () => {
   }, [bannerIndex])
 
   useEffect(() => {
-    if (window.matchMedia('(max-width: 767px)').matches) {
-      setRevealProgress(1)
-      return undefined
-    }
-
-    let frameId
-
-    const updateProgress = () => {
-      const stage = stageRef.current
-
-      if (!stage) return
-
-      const bannerHeight = stage.firstElementChild?.offsetHeight ?? 0
-      const progress = Math.min(
-        1,
-        Math.max(0, -stage.getBoundingClientRect().top / Math.max(bannerHeight, 1))
-      )
-
-      setRevealProgress(progress)
-    }
-
-    const handleScroll = () => {
-      window.cancelAnimationFrame(frameId)
-      frameId = window.requestAnimationFrame(updateProgress)
-    }
-
-    updateProgress()
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    window.addEventListener('resize', handleScroll)
-
-    return () => {
-      window.cancelAnimationFrame(frameId)
-      window.removeEventListener('scroll', handleScroll)
-      window.removeEventListener('resize', handleScroll)
-    }
-  }, [])
-
-  useEffect(() => {
     const category =
       searchParams.get('category')
 
@@ -349,8 +335,11 @@ const ProductList = () => {
         ({ id }) => id === category
       )
     ) {
+      const detail =
+        searchParams.get('detail')
+
       setCategoryId(category)
-      setDetailFilter('전체')
+      setDetailFilter(detail || '전체')
     } else if (
       type &&
       headerTypeMap[type]
@@ -863,7 +852,8 @@ const ProductList = () => {
   ]
 
   return (
-    <div className={styles.page}>
+    <div className={styles.page} ref={pageRef}>
+      <MobileTopButton contentRef={pageRef} />
       <section
         className={
           styles.revealStage
@@ -919,106 +909,36 @@ const ProductList = () => {
 
       <div
         className={styles.shopBody}
-        style={{
-          '--sheet-rise': `${revealProgress * -120}px`,
-        }}
       >
         <div
           className={styles.catalog}
         >
-          <div
-            className={styles.categoryRevealCircle}
-            aria-hidden="true"
-          />
-
           {showFilters && (
-            <nav
-              className={
-                styles.mainCategories
-              }
-              aria-label="상품 대분류"
-            >
-              <p className={styles.categoryGuide}>어떤 제품을 찾고계신가요?</p>
-              {mainCategories.map(
-                (
-                  category,
-                  index
-                ) => (
-                  <div
-                    className={
-                      styles.categoryGroup
-                    }
-                    key={category.id}
-                  >
-                    <button
-                      className={`${
-                        categoryId ===
-                        category.id
-                          ? styles.activeCategory
-                          : ''
-                      } ${
-                        category.id ===
-                        'all'
-                          ? styles.allCategory
-                          : ''
-                      }`}
-                      type="button"
-                      onClick={() =>
-                        handleCategory(
-                          category.id
-                        )
-                      }
-                    >
-                      {category.id !==
-                        'all' && (
-                        <img
-                          src={resolveImage(
-                            category
-                              .data[0]
-                              ?.imageUrl
-                          )}
-                          alt=""
-                          aria-hidden="true"
-                        />
-                      )}
-
-                      <span
-                        className={
-                          styles.categoryLabel
-                        }
-                      >
-                        {category.label}
+            <nav className={styles.mainCategories} aria-label="상품 대분류">
+              {mainCategories.map((category) => (
+                <button
+                  key={category.id}
+                  className={styles.categoryButton + ' ' + (categoryId === category.id ? styles.activeCategory : '')}
+                  type="button"
+                  aria-pressed={categoryId === category.id}
+                  onClick={() => handleCategory(category.id)}
+                >
+                  <span className={styles.categoryImage} aria-hidden="true">
+                    {category.id === 'all' ? (
+                      <span className={styles.allCategoryGrid}>
+                        {mainCategories.slice(1).map((item) => (
+                          <img key={item.id} src={resolveImage(item.data[0]?.imageUrl)} alt="" />
+                        ))}
                       </span>
-                    </button>
-
-                    {index <
-                      mainCategories.length -
-                        1 && (
-                      <img
-                        className={
-                          styles.categoryPattern
-                        }
-                        src={
-                          categoryPattern
-                        }
-                        alt=""
-                        aria-hidden="true"
-                      />
+                    ) : (
+                      <img src={resolveImage(category.data[0]?.imageUrl)} alt="" />
                     )}
-                  </div>
-                )
-              )}
+                  </span>
+                  <span className={styles.categoryLabel}>{category.label}</span>
+                </button>
+              ))}
             </nav>
           )}
-
-          <img
-            className={
-              styles.topOrnament
-            }
-            src={productListOrnament}
-            alt=""
-            aria-hidden="true"
-          />
 
           <section
             className={
@@ -1041,7 +961,7 @@ const ProductList = () => {
               <p>
                 {searchKeyword
                   ? `${filteredProducts.length}개의 상품을 찾았어요.`
-                  : `${filteredProducts.length}개의 상품이 있습니다.`}
+                  : `${filteredProducts.length}개 상품`}
               </p>
             </header>
 
@@ -1213,6 +1133,7 @@ const ProductList = () => {
                     (product) => (
                       <ProductCard
                         product={product}
+                        hoverImageSrc={resolveHoverImage(product)}
                         isWished={wishes.has(
                           product.productId
                         )}

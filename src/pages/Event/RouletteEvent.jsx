@@ -4,6 +4,7 @@ import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
 import { getCollection } from '../../firebase/firestore'
 import { getEventParticipationAvailability, saveEventParticipation } from '../../services/eventParticipation'
 import { PATHS } from '../../routes/paths'
+import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 import eventsData from '../../data/events.json'
 import rouletteBack from '../../assets/images/eventPage/roulette3.png'
 import rouletteFront from '../../assets/images/eventPage/roulette1.png'
@@ -123,6 +124,7 @@ const formatToday = () =>
 
 const RouletteEvent = () => {
   const event = eventsData[0].event
+  const pageRef = useRef(null)
   const wheelRef = useRef(null)
   const stageRef = useRef(null)
   const currentRotationRef = useRef(0)
@@ -303,7 +305,8 @@ const RouletteEvent = () => {
   }
 
   return (
-    <main className={`${styles.page} ${isSpinning ? styles.isSpinning : ''}`}>
+    <main className={`${styles.page} ${isSpinning ? styles.isSpinning : ''}`} ref={pageRef}>
+      <MobileTopButton contentRef={pageRef} />
       <div className={styles.runningTrail} aria-hidden="true" />
       <div className={styles.runningTrack} aria-hidden="true">
         <img className={styles.runningFrame} src={running2} alt="" />

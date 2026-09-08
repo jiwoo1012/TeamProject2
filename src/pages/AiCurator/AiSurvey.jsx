@@ -6,6 +6,7 @@ import { doc, getDoc } from 'firebase/firestore'
 import { auth, db } from '../../firebase/firebase'
 
 import GuestChoiceModal from './GuestChoiceModal'
+import makdongImage from '../../assets/characters/M007_Poses03.png'
 
 import styles from './AiSurvey.module.scss'
 
@@ -919,6 +920,8 @@ const AiSurvey = () => {
               : ''
           }`}
         >
+
+          <img className={styles.guideCharacter} src={makdongImage} alt="취향 선택을 안내하는 막동이" />
 
           {/* Q */}
           <span

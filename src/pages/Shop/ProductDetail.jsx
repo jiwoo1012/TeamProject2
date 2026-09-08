@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { collection, getDocs, query, serverTimestamp, where } from 'firebase/firestore'
 import ProductCard from '../../components/ui/ProductCard/ProductCard'
+import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 import { products as productReferenceData } from '../../data/products'
 import { fetchProducts, getManagedProducts } from '../../services/productCatalog'
 import pairings from '../../data/pairings.json'
@@ -119,6 +120,7 @@ const MiniPairingCard = ({
 
 const ProductDetail = () => {
   const { productId } = useParams()
+  const pageRef = useRef(null)
   const noticeTimerRef = useRef(null)
 
   const [activeTab, setActiveTab] = useState('detail')
@@ -729,7 +731,8 @@ const ProductDetail = () => {
 
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} ref={pageRef}>
+      <MobileTopButton contentRef={pageRef} />
       <div className={styles.layout}>
 
         <div className={styles.mainColumn}>

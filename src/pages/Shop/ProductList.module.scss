@@ -3,7 +3,7 @@
 
 .page { --shop-header-height: 72px; overflow: clip; color: $color-text-primary; background: $color-bg; font-family: $font-family-base; }
 .revealStage { position: relative; min-height: 100vh; background: $color-bg; }
-.stickyFrame { position: sticky; z-index: 0; top: var(--shop-header-height); height: clamp(200px, 28.23vw, 542px); overflow: hidden; line-height: 0; background: $color-bg; }
+.stickyFrame { position: sticky; z-index: 0; top: var(--shop-header-height); width: calc(100% - #{$side-margin-desktop} * 2); height: clamp(200px, 28.23vw, 542px); margin-inline: auto; overflow: hidden; border-radius: $radius-xl; line-height: 0; background: $color-bg; }
 .bannerSlider, .bannerLink, .banner { position: absolute; inset: 0; width: 100%; height: 100%; }
 .bannerLink { display: block; opacity: 0; pointer-events: none; transition: opacity 0.5s ease, transform 0.5s ease; }
 .banner { display: block; object-fit: contain; }
@@ -12,60 +12,53 @@
 .bannerDots button { width: 9px; height: 9px; padding: 0; background: rgba($color-bg, .7); border: 1px solid rgba($color-text-primary, .3); border-radius: $radius-pill; box-shadow: 0 1px 3px rgba($color-text-primary, .14); transition: width $transition-fast ease, background-color $transition-fast ease, transform $transition-fast ease; }
 .bannerDots button:hover { transform: scale(1.15); }
 .bannerDots .activeDot { width: 24px; background: $color-primary; border-color: $color-primary; }
-.tastePanel { position: relative; z-index: 1; width: 100%; padding: $space-24 $side-margin-desktop $space-16; color: $color-text-primary; text-align: center; }
+.tastePanel { position: relative; z-index: 1; isolation: isolate; width: 100%; padding: $space-16 $side-margin-desktop; color: $color-bg; text-align: center; }
+.tastePanel::before { position: absolute; z-index: -1; top: 0; bottom: 0; left: 50%; width: 100vw; content: ''; background: $color-primary; transform: translateX(-50%); }
 .tasteContent { width: min(90vw, 760px); margin-inline: auto; text-align: center; }
 .tasteContent h1 { font-family: $font-family-display; font-size: clamp($font-size-4xl, 5vw, 72px); line-height: $line-height-tight; }
-.tasteContent p { margin-top: $space-6; color: $color-text-muted; font-size: $font-size-lg; line-height: $line-height-base; }
-.tasteContent a { display: inline-block; margin-top: $space-8; padding: $space-3 $space-6; color: $color-primary; background: $color-bg; border-radius: $radius-md; transition: background $transition-fast ease, transform $transition-fast ease; }
-.tasteContent a:hover { background: $color-primary;color: $color-bg; transform: translateY(-2px); }
+.tasteContent p { margin-top: $space-6; color: rgba($color-bg, .8); font-size: $font-size-lg; line-height: $line-height-base; }
+.tasteContent a { display: inline-block; margin-top: $space-8; padding: $space-4 $space-8; color: $color-primary; font-weight: $font-weight-semibold; background: $color-bg; border-radius: $radius-pill; transition: background $transition-fast ease, transform $transition-fast ease, box-shadow $transition-fast ease; }
+.tasteContent a:hover { box-shadow: 0 $space-3 $space-6 rgba(#000, .18); transform: translateY(-2px); }
 
-.shopBody { position: relative; z-index: 1; margin-top: calc(60px + var(--sheet-rise, 0px)); background: transparent; transition: margin-top 80ms linear; will-change: margin-top; }
-.catalog { position: relative; isolation: isolate; background: transparent; }
-.catalog::before { position: absolute; z-index: 0; top: 50px; right: 0; bottom: 0; left: 0; content: ''; background: $color-bg; pointer-events: none; }
-.categoryRevealCircle { position: absolute; z-index: 1; top: -60px; left: 50%; width: max(112vw, 1440px); height: 400px; background: $color-bg; border-radius: 50%; transform: translateX(-50%); pointer-events: none; }
-.topOrnament { position: relative; z-index: 1; display: block; width: calc(100% - (#{$side-margin-desktop} * 2)); height: auto; margin:$space-16 auto $space-16; }
-.mainCategories { @include mixins.container; @include mixins.flex-center; position: relative; z-index: 1; gap: clamp($space-3, 2vw, $space-8); padding: $space-16 0 $space-20; }
-.categoryGuide { position: absolute; top: $space-5; left: 50%; color: $color-text-secondary; font-size: $font-size-sm; transform: translateX(-50%); white-space: nowrap; }
-.categoryGroup { @include mixins.flex-center; gap: clamp($space-3, 2vw, $space-8); }
-.categoryGroup button { @include mixins.flex-center; position: relative; isolation: isolate; width: clamp(90px, 10vw, 120px); aspect-ratio: 1; overflow: hidden; color: $color-bg; font-size: $font-size-xl; text-align: center; background: $color-taupe; border: 2px solid transparent; border-radius: 50%; transition: border-color $transition-base, box-shadow $transition-base, transform $transition-base; }
-.categoryGroup button::after { position: absolute; z-index: -1; inset: 0; content: ''; background: rgba($color-taupe, .72); transition: background $transition-base; }
-.categoryGroup button img { position: absolute; z-index: -2; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform $transition-base, filter $transition-base; }
-.categoryGroup button:hover {  box-shadow: 0 $space-4 $space-8 rgba($color-text-primary, .22); transform: translateY(-$space-2); }
-// .categoryGroup button:hover::after { background: rgba($color-taupe, .52); }
-.categoryGroup button:hover img { filter: saturate(1.08); transform: scale(1.1); }
-.categoryGroup .activeCategory { color: $color-bg; transform: scale(1.08); }
-.categoryGroup .activeCategory:hover { transform: scale(1.08) translateY(-$space-1); }
-.categoryGroup .activeCategory::after { background: rgba($color-primary-light,0);}
-.categoryGroup .allCategory { color: $color-bg; background: $color-taupe; border: 2px solid $color-taupe;  }
-.categoryGroup .allCategory::after { background: transparent; }
-.categoryGroup .allCategory.activeCategory { color: $color-taupe; background: $color-bg; }
-.categoryPattern { flex: 0 0 auto; width: 80px; height: 50px; object-fit: contain; transform: rotate(90deg); }
-.categoryLabel { position: relative; z-index: 1; color: inherit; font-size: inherit; font-weight: $font-weight-semibold; transition: opacity $transition-fast ease; }
-.activeCategory .categoryLabel { opacity: 0; }
-.activeCategory.allCategory .categoryLabel { opacity: 1; }
-.productSection { position: relative; z-index: 1; width: calc(100% - #{$side-margin-desktop}); max-width: 1600px; margin-inline: auto; scroll-margin-top: calc(var(--shop-header-height) + #{$space-8}); }
-.sectionHeader { padding-bottom: $space-20; text-align: center; }
-.sectionHeader h2 { font-family: $font-family-display; font-size: clamp($font-size-5xl, 6vw, 72px); }
-.sectionHeader p { margin-top: $space-3; font-size: $font-size-lg; }
-.filterBar { @include mixins.flex-between; gap: $space-6; padding-bottom: $space-12; }
-.detailFilters { display: flex; flex-wrap: wrap; gap: $space-3; }
-.detailFilterItem { position: relative; }
-.detailFilterItem::before { position: absolute; top: -$space-10; right: -$space-3; left: -$space-3; height: $space-12; content: ''; }
-.detailFilters button { min-width: 84px; padding: $space-2 $space-5; color: $color-text-secondary; text-align: center; background: $color-bg; border: 1px solid $color-border; border-radius: $radius-pill; transition: color $transition-fast ease, background $transition-fast ease, border-color $transition-fast ease, transform $transition-fast ease; }
-.detailFilters button:hover { color: $color-bg; background: $color-primary; border-color: $color-primary-light; transform: translateY(-3px); }
-.detailFilters .activeFilter { color: $color-bg; background: $color-primary; border-color: $color-primary; }
-.detailFilters .activeFilter:hover { background: $color-primary; border-color: $color-primary; }
-.detailFilters .alcoholInfoButton { position: absolute; z-index: 2; top: -$space-8; left: 50%; min-width: 0; width: 28px; height: 28px; padding: 0; color: $color-primary-light; font-size: $font-size-xl; font-weight: bold; line-height: 1; background: transparent; border: 0; opacity: 0; transform: translate(-50%, $space-2); pointer-events: none; }
-.detailFilterItem:hover .alcoholInfoButton, .alcoholInfoButton:focus-visible { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
-.detailFilters .alcoholInfoButton:hover { color: $color-text-secondary; background: $color-bg; transform: translate(-50%, -2px); }
-.selects { display: flex; flex-shrink: 0; gap: $space-3; }
-.selects label { position: relative; min-width: 132px; color: $color-text-secondary; }
-.selects label::after { position: absolute; top: 50%; right: $space-4; content: '▼'; pointer-events: none; transform: translateY(-58%); color: $color-text-secondary;}
+.shopBody { position: relative; z-index: 1; background: $color-bg; }
+.catalog { position: relative; background: $color-bg; }
+.mainCategories { display: flex; justify-content: center; gap: $space-8; width: calc(100% - #{$side-margin-desktop}); max-width: 1600px; margin-inline: auto; padding: $space-10 0 $space-8; border-bottom: 1px solid $color-border; }
+.categoryButton { display: flex; flex-direction: column; align-items: center; gap: $space-3; width: $space-24; padding: 0 0 $space-3; color: $color-text-muted; background: transparent; border: 0; border-bottom: 2px solid transparent; transition: color $transition-fast ease, border-color $transition-fast ease; }
+.categoryImage { display: block; width: $space-24; height: $space-24; overflow: hidden; background: $color-surface; border-radius: $radius-lg; }
+.categoryImage > img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform $transition-base ease; }
+.allCategoryGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; width: 100%; height: 100%; }
+.allCategoryGrid img { display: block; width: 100%; height: 100%; min-height: 0; object-fit: cover; }
+.categoryLabel { font-size: $font-size-sm; font-weight: $font-weight-medium; white-space: nowrap; }
+.categoryButton:hover { color: $color-text-primary; }
+.categoryButton:hover .categoryImage > img { transform: scale(1.04); }
+.categoryButton.activeCategory { color: $color-primary; border-bottom-color: $color-primary; }
+.activeCategory .categoryLabel { font-weight: $font-weight-bold; }
+.categoryButton:focus-visible { outline: 2px solid $color-primary; outline-offset: $space-1; border-radius: $radius-sm; }
+.productSection { position: relative; z-index: 1; width: calc(100% - #{$side-margin-desktop}); max-width: 1600px; margin-inline: auto; padding-top: $space-8; scroll-margin-top: calc(var(--shop-header-height) + #{$space-8}); }
+.sectionHeader { display: flex; flex-wrap: wrap; align-items: baseline; gap: $space-3; padding-bottom: $space-12; text-align: left; }
+.sectionHeader h2 { font-family: $font-family-base; font-size: $font-size-3xl; font-weight: $font-weight-semibold; line-height: $line-height-tight; overflow-wrap: anywhere; }
+.sectionHeader p { color: $color-text-muted; font-size: $font-size-sm; }
+.filterBar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: $space-4 $space-6; padding-bottom: $space-8; }
+.detailFilters { display: flex; flex-wrap: wrap; align-items: center; gap: $space-2; }
+.detailFilterItem { position: relative; display: flex; align-items: center; }
+.detailFilters button { padding: $space-2 $space-4; color: $color-text-secondary; font-size: $font-size-sm; line-height: $line-height-base; white-space: nowrap; background: transparent; border: 1px solid $color-border; border-radius: $radius-pill; transition: color $transition-fast ease, background-color $transition-fast ease, border-color $transition-fast ease; }
+.detailFilters button:hover { color: $color-primary; border-color: $color-primary; }
+.detailFilters .activeFilter, .detailFilters .activeFilter:hover { color: $color-bg; font-weight: $font-weight-medium; background: $color-primary; border-color: $color-primary; }
+.detailFilters .alcoholInfoButton { position: absolute; z-index: 2; bottom: calc(100% + #{$space-1}); left: 50%; display: flex; align-items: center; justify-content: center; width: $space-6; height: $space-6; padding: 0; color: $color-primary; background: $color-bg; opacity: 0; transform: translateX(-50%); pointer-events: none; }
+.detailFilterItem::before { position: absolute; bottom: 100%; left: 0; width: 100%; height: $space-2; content: ''; }
+.detailFilterItem:hover .alcoholInfoButton, .detailFilterItem:focus-within .alcoholInfoButton { opacity: 1; pointer-events: auto; }
+.selects { display: flex; flex-shrink: 0; gap: $space-4; margin-left: auto; }
+.selects label { position: relative; min-width: 0; }
+.selects label::after { position: absolute; top: 50%; right: 0; content: '⌄'; pointer-events: none; transform: translateY(-60%); color: $color-text-muted; }
 .selects span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-.selects select { padding: $space-2 $space-8 $space-2 $space-4; background: $color-bg; border: 1px solid $color-border ; border-radius: $radius-md; }
-.productGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: $space-10; }
+.selects select { width: 100%; padding: $space-2 $space-6 $space-2 0; color: $color-text-primary; font-size: $font-size-sm; font-weight: $font-weight-medium; background: transparent; border: 0; border-radius: 0; }
+.productGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: $space-12 $space-10; }
 .productsGradient { position: relative; isolation: isolate; padding-top: $space-3; }
-.productsGradient::before { position: absolute; z-index: -1; top: 0; bottom: 0; left: 50%; width: 100vw; content: ''; background-color: $color-primary-light; background-image: linear-gradient(180deg, $color-bg 0%, rgba($color-primary-light, .5) 30%, $color-primary-light 50%); background-repeat: no-repeat; background-size: 100% 280vh; transform: translateX(-50%); }
+.productsGradient nav[aria-label="상품 목록 페이지"] { padding-bottom: $space-8; }
+.productsGradient nav[aria-label="상품 목록 페이지"] button { color: $color-text-primary; font-weight: $font-weight-medium; transition: background $transition-fast ease, color $transition-fast ease; }
+.productsGradient nav[aria-label="상품 목록 페이지"] button:hover:not(:disabled) { background: rgba($color-primary, .1); }
+.productsGradient nav[aria-label="상품 목록 페이지"] button[aria-current="page"] { color: $color-bg; background: $color-primary; }
+.productsGradient nav[aria-label="상품 목록 페이지"] button[aria-current="page"]:hover { background: $color-primary; }
 .sectionHeader, .filterBar, .productGrid, .empty { animation: categoryTransition .55s cubic-bezier(.22, 1, .36, 1) both; }
 .empty { padding: $space-30 0; text-align: center; }
 @keyframes categoryTransition { from { opacity: 0; transform: translateY($space-5); } to { opacity: 1; transform: translateY(0); } }
@@ -93,20 +86,14 @@
 .cartToast > a:hover { color: $color-primary; transform: translateX($space-1); }
 @keyframes toastOpen { 0% { opacity: 0; transform: translate(-50%, $space-5); } 10%, 78% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, $space-3); } }
 
-.stylingMarquee { overflow: hidden; background: $color-primary-light; }
-.marqueeTrack { display: flex; align-items: stretch; width: max-content; gap: $grid-gutter; line-height: 0; animation: marquee 90s linear infinite; padding: 100px 0 ;}
+.stylingMarquee { overflow: hidden; background: $color-bg; border-top: 1px solid $color-border; }
+.marqueeTrack { display: flex; align-items: stretch; width: max-content; gap: $grid-gutter; line-height: 0; animation: marquee 90s linear infinite; padding: 72px 0 ;}
 .marqueeTrack img { display: block; width: clamp(260px, 24vw, 420px); aspect-ratio: 1.15; object-fit: cover; border-radius: $radius-lg; }
 @keyframes marquee { to { transform: translateX(calc(-50% - (#{$grid-gutter} / 2))); } }
 
 @include mixins.tablet {
+  .stickyFrame { width: calc(100% - #{$side-margin-tablet} * 2); }
   .tastePanel { padding-inline: $side-margin-tablet; }
-  .mainCategories { gap: $space-2; }
-  .categoryGroup { gap: $space-2; }
-  .categoryGroup button { width: 112px; font-size: $font-size-xl; }
-  .categoryPattern { width: 52px; height: 31px; }
-  .topOrnament { width: calc(100% - (#{$side-margin-tablet} * 2)); }
-  .filterBar { align-items: flex-start; flex-direction: column; }
-  .selects { align-self: flex-end; }
   .productGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .productSection { width: calc(100% - #{$side-margin-tablet}); }
   .alcoholModal { grid-template-columns: minmax(360px, .95fr) 1.05fr; gap: $space-6; padding: $space-6; }
@@ -116,43 +103,19 @@
 @include mixins.mobile {
   .page { --shop-header-height: 58px; margin-bottom: -88px; }
   .revealStage { min-height: 0; background: $color-bg; }
-  .stickyFrame { position: relative; top: auto; height: auto; overflow: visible; }
+  .stickyFrame { position: relative; top: auto; width: 100%; height: auto; margin-inline: 0; border-radius: 0; overflow: visible; }
   .bannerSlider { position: relative; inset: auto; width: 100%; height: auto; aspect-ratio: 1920 / 542; overflow: hidden; }
   .bannerLink, .banner { width: 100%; height: 100%; }
   .banner { object-fit: cover; }
   .bannerDots { bottom: $space-2; }
   .bannerDots button { width: 7px; height: 7px; }
   .bannerDots .activeDot { width: 20px; }
-  .shopBody { margin-top: 0; background: $color-bg; transition: none; }
-  .catalog::before { top: 0; }
-  .categoryRevealCircle { display: none; }
   .tastePanel { width: 100%; padding: $space-16 $side-margin-mobile; }
   .tasteContent { width: 100%; }
   .tasteContent h1 { font-size: $font-size-3xl; }
   .tasteContent p { font-size: $font-size-sm; }
   .tasteContent p br { display: none; }
   .tasteContent a { margin-top: $space-6; }
-  .catalog { padding-top: $space-10; }
-  .topOrnament { width: calc(100% - (#{$side-margin-mobile} * 2)); margin-bottom: $space-8; margin-top: $space-10;}
-  .mainCategories { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); justify-content: center; width: calc(100% - (#{$side-margin-mobile} * 2)); max-width: 360px; gap: $space-6 0; padding: $space-16 0 $space-12; overflow: visible; }
-  .categoryGuide { top: $space-2; font-size: $font-size-xs; }
-  .categoryGroup { position: relative; display: flex; grid-column: span 2; justify-content: center; min-width: 0; }
-  .categoryGroup button { width: clamp(78px, 23vw, 88px); font-size: $font-size-md; }
-  .categoryPattern { position: absolute; top: 50%; right: 0; display: block; width: 28px; height: 17px; transform: translate(50%, -50%) rotate(90deg); transform-origin: center; }
-  .categoryGroup:nth-child(4) .categoryPattern { display: none; }
-  .categoryGroup:nth-child(5) { grid-column: 2 / span 2; }
-  .categoryGroup:nth-child(6) { grid-column: 4 / span 2; }
-  .sectionHeader { padding-bottom: $space-12; }
-  .sectionHeader h2 { font-size: $font-size-5xl; }
-  .filterBar { align-items: stretch; flex-direction: column; padding-bottom: $space-8; }
-  .detailFilters { justify-content: center; flex-wrap: wrap; padding-bottom: 0; overflow: visible; }
-  .detailFilterItem { display: flex; align-items: center; padding-top: $space-5; }
-  .detailFilterItem::before { display: none; }
-  .detailFilters button { min-width: 0; padding: $space-2 $space-4; font-size: $font-size-sm; }
-  .detailFilters .alcoholInfoButton { position: absolute; top: -$space-1; left: 50%; width: 24px; height: 24px; padding: 0; opacity: 1; font-size: $font-size-lg; transform: translateX(-50%); pointer-events: auto; }
-  .detailFilters .alcoholInfoButton:hover { transform: translateX(-50%) scale(1.05); }
-  .selects { width: 100%; }
-  .selects label { flex: 1; min-width: 0; }
   .productGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-10 $space-3; }
   .productSection { width: calc(100% - (#{$side-margin-mobile} * 2)); }
   .marqueeTrack img { width: 240px; }
@@ -169,4 +132,30 @@
 
 @media (prefers-reduced-motion: reduce) {
   .marqueeTrack { animation-duration: .01ms; animation-iteration-count: 1; }
+}
+
+@include mixins.tablet {
+  .mainCategories { width: calc(100% - #{$side-margin-tablet}); }
+}
+
+@include mixins.mobile {
+  .mainCategories { width: calc(100% - (#{$side-margin-mobile} * 2)); justify-content: space-between; gap: $space-2; padding: $space-6 0 $space-5; }
+  .categoryButton { flex: 1; min-width: 0; width: auto; gap: $space-2; padding-bottom: $space-2; }
+  .categoryImage { width: 100%; max-width: $space-16; height: auto; aspect-ratio: 1; border-radius: $radius-md; }
+  .categoryLabel { font-size: $font-size-xs; }
+  .productSection { padding-top: $space-6; }
+  .sectionHeader { padding-bottom: $space-8; }
+  .sectionHeader h2 { font-size: $font-size-2xl; }
+  .sectionHeader p { font-size: $font-size-xs; }
+  .filterBar { align-items: stretch; flex-direction: column; gap: $space-4; padding-bottom: $space-4; }
+  .detailFilters { gap: $space-2; }
+  .detailFilters button { padding: $space-2 $space-3; font-size: $font-size-xs; }
+  .detailFilters .alcoholInfoButton { position: static; order: 1; width: $space-5; height: $space-5; margin-left: $space-1; padding: 0; opacity: 1; transform: none; pointer-events: auto; }
+  .detailFilterItem::before { display: none; }
+  .selects { width: 100%; justify-content: flex-end; padding-top: $space-3; border-top: 1px solid $color-border; }
+  .selects label { min-width: $space-24; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .categoryImage > img { transition: none; }
 }

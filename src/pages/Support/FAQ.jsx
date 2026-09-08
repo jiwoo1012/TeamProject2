@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PATHS } from '../../routes/paths'
+import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 import styles from './FAQ.module.scss'
 import searchIconImage from '../../assets/icons/searchIcon.png'
 import inquiryIconImage from '../../assets/icons/inquiryIcon.png'
@@ -54,6 +55,7 @@ const TOP_CATEGORY = '질문 TOP'
 const CATEGORY_FILTERS = [TOP_CATEGORY, ...Array.from(new Set(FAQ_ITEMS.map((item) => item.category)))]
 
 const FAQ = () => {
+  const pageRef = useRef(null)
   const [activeCategory, setActiveCategory] = useState(TOP_CATEGORY)
   const [openIndex, setOpenIndex] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
@@ -66,7 +68,8 @@ const FAQ = () => {
       .some((value) => value.toLowerCase().includes(normalizedQuery)))
 
   return (
-    <section className={styles.page}>
+    <section className={styles.page} ref={pageRef}>
+      <MobileTopButton contentRef={pageRef} />
       <div className={styles.content}>
         <h1>자주 묻는 질문</h1>
 

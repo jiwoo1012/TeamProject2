@@ -42,6 +42,7 @@ const BestSellerSection = ({
     ? products
     : fallbackProducts
   const cardCount = displayProducts.length
+  const productsKey = displayProducts.map((product) => product.productId ?? product.id).join('|')
 
   useLayoutEffect(() => {
     const section = sectionRef.current
@@ -60,6 +61,7 @@ const BestSellerSection = ({
       const cards = cardRefs.current.slice(0, cardCount)
       const isDesktopStepMode = window.matchMedia('(hover: hover) and (pointer: fine)').matches
       gsap.set(cards, { autoAlpha: 0, y: 48, scale: 0.94 })
+      setIsRevealComplete(false)
 
       const setCardsForStep = (step) => {
         cards.forEach((card, index) => {
@@ -229,10 +231,11 @@ const BestSellerSection = ({
       transitionActiveRef.current = false
       context.revert()
     }
-  }, [cardCount, nextSectionRef, sectionRef, transitionActiveRef])
+  }, [cardCount, productsKey, nextSectionRef, sectionRef, transitionActiveRef])
 
   return (
     <section
+      id="best-seller-section"
       ref={sectionRef}
       className={styles.bestSeller}
       style={{
