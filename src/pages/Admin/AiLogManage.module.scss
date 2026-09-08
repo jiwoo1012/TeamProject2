@@ -1,1141 +1,116 @@
-@use '../../styles/variables' as v;
+@use '../../styles/admin/adminVariables' as *;
+@use '../../styles/admin/adminMixins' as *;
+@use '../../styles/admin/adminCommon' as *;
 
 
 // ========================================
-// 전체
+// PAGE
 // ========================================
 
 .page {
+  @extend %admin-page;
+
   width: 100%;
+  max-width: none;
   min-width: 0;
-  min-height: 100%;
+
+  margin: 0;
 
   padding:
-    v.$space-8
-    v.$space-10
-    56px;
+    34px
+    0
+    50px;
 
   box-sizing: border-box;
-
-  background: #f8f6f2;
-  color: #49443f;
-}
-
-
-.page button,
-.page input,
-.page select {
-  font: inherit;
 }
 
 
 // ========================================
-// 제목
-// ========================================
-
-.pageHeader {
-  min-height: 48px;
-
-  display: flex;
-  align-items: center;
-
-  h1 {
-    margin: 0;
-
-    color: #302c28;
-    font-size: 30px;
-    font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.04em;
-  }
-}
-
-
-// ========================================
-// 전통 문양
-// ========================================
-
-.topOrnament {
-  display: block;
-
-  width: 100%;
-  height: auto;
-
-  margin-top: 6px;
-  margin-bottom: -2px;
-
-  pointer-events: none;
-}
-
-
-// ========================================
-// 요약 카드
+// SUMMARY
 // ========================================
 
 .summaryArea {
-  margin-top: 0;
+  @extend %admin-summary-area;
+
+  position: relative;
+  z-index: 1;
+
+  margin-top: -50px;
 }
 
 
 .summaryGrid {
-  display: grid;
+  @extend %admin-summary-grid;
 
-  grid-template-columns:
-    repeat(
-      4,
-      minmax(0, 1fr)
-    );
+  width: 90%;
 
-  gap: 18px;
+  margin:
+    0
+    auto;
 }
 
 
-.summaryCard {
-  min-width: 0;
-  min-height: 112px;
-
-  padding: 18px 24px;
+.summarySvg {
+  width: 24px;
+  height: 24px;
 
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-
-  box-sizing: border-box;
-
-  border: 1px solid #e4dfd8;
-  border-radius: 9px;
-  background: #fff;
-}
-
-
-.summaryIcon {
-  width: 42px;
-  height: 42px;
-
-  flex: 0 0 42px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
 
   svg {
-    width: 18px;
-    height: 18px;
+    width: 100%;
+    height: 100%;
 
     fill: none;
-    stroke: currentcolor;
-    stroke-width: 1.6;
+    stroke: currentColor;
+
+    stroke-width: 1.7;
     stroke-linecap: round;
     stroke-linejoin: round;
   }
 }
 
 
-.summaryTotal {
-  color: #65927d;
-  background: #eff7f1;
-}
-
-
-.summaryWeek {
-  color: #6896a9;
-  background: #eff6f8;
-}
-
-
-.summarySuccess {
-  color: #dd7068;
-  background: #fff1ee;
-}
-
-
-.summaryFail {
-  color: #bd8738;
-  background: #fff8ed;
-}
-
-
-.summaryContent {
-  min-width: 0;
-
-  display: grid;
-  gap: 9px;
-
-  > span {
-    color: #35312d;
-    font-size: 15px;
-    font-weight: 600;
-  }
-
-  strong {
-    display: flex;
-    align-items: baseline;
-    gap: 7px;
-
-    color: #111;
-    font-size: 31px;
-    line-height: 1;
-    font-weight: 700;
-    letter-spacing: -0.04em;
-
-    em {
-      color: #4f4943;
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 500;
-    }
-  }
-}
-
-
 // ========================================
-// 본문
+// MANAGEMENT LAYOUT
 // ========================================
 
 .managementGrid {
-  margin-top: 23px;
+  @extend %admin-management-grid;
 
-  display: grid;
+  width: 100%;
+  min-width: 0;
 
-  grid-template-columns:
-    minmax(0, 1fr)
-    295px;
-
-  gap: 17px;
-
-  align-items: start;
+  margin: 0;
 }
 
 
 // ========================================
-// 왼쪽
+// MAIN SECTION
 // ========================================
 
 .mainSection {
   min-width: 0;
 
-  overflow: hidden;
+  @include admin-panel;
 
-  border: 1px solid #8b847c;
-  border-radius: 15px;
-  background: #fff;
+  padding: 20px;
 }
 
 
 // ========================================
-// 검색 / 필터
+// FILTER
 // ========================================
-
-.filterBar {
-  padding:
-    21px
-    25px
-    15px;
-
-  display: grid;
-
-  grid-template-columns:
-    minmax(250px, 1fr)
-    105px
-    105px
-    66px;
-
-  align-items: center;
-  gap: 9px;
-}
-
-
-.searchField {
-  position: relative;
-
-  input {
-    width: 100%;
-    height: 43px;
-
-    box-sizing: border-box;
-
-    padding:
-      0
-      12px
-      0
-      45px;
-
-    border: 1px solid #99928a;
-    border-radius: 6px;
-    outline: 0;
-    background: #fff;
-
-    color: #4f4943;
-    font-size: 11px;
-
-    &::placeholder {
-      color: #68625c;
-    }
-
-    &:focus {
-      border-color: #548983;
-    }
-  }
-
-  svg {
-    position: absolute;
-
-    top: 50%;
-    left: 13px;
-
-    width: 21px;
-    height: 21px;
-
-    transform:
-      translateY(-50%);
-
-    fill: none;
-    stroke: #171615;
-    stroke-width: 2;
-
-    pointer-events: none;
-  }
-}
-
 
 .selectField {
-  min-width: 0;
+  display: block;
 
   select {
-    width: 100%;
-    height: 43px;
-
-    box-sizing: border-box;
-
-    padding: 0 10px;
-
-    border: 1px solid #99928a;
-    border-radius: 6px;
-    outline: 0;
-    background: #fff;
-
-    color: #524c46;
-    font-size: 11px;
-
-    cursor: pointer;
-
-    &:focus {
-      border-color: #548983;
-    }
+    min-width: 128px;
   }
 }
 
-
-.resetButton {
-  width: 66px;
-  height: 43px;
-
-  border: 1px solid #99928a;
-  border-radius: 6px;
-  background: #fff;
-
-  color: #514b45;
-  font-size: 11px;
-
-  cursor: pointer;
-
-  &:hover {
-    border-color: #548983;
-    color: #548983;
-  }
-}
-
-
-// ========================================
-// 목록 제목
-// ========================================
-
-.listHeading {
-  min-height: 69px;
-
-  padding: 0 27px;
-
-  display: flex;
-  align-items: center;
-  gap: 13px;
-
-  border-bottom:
-    1px solid #e4ded7;
-
-  h2 {
-    margin: 0;
-
-    color: #3e3934;
-    font-size: 19px;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-  }
-
-  span {
-    color: #6f6963;
-    font-size: 11px;
-  }
-}
-
-
-// ========================================
-// 테이블
-// ========================================
-
-.tableWrap {
-  width: 100%;
-  overflow-x: auto;
-}
-
-
-.logTable {
-  width: 100%;
-  min-width: 830px;
-
-  table-layout: fixed;
-  border-collapse: collapse;
-
-  thead {
-    background: #f0e9df;
-
-    tr {
-      height: 44px;
-    }
-
-    th {
-      padding: 0 8px;
-
-      color: #5b554f;
-      font-size: 8.5px;
-      font-weight: 600;
-
-      text-align: center;
-      white-space: nowrap;
-    }
-  }
-
-  tbody {
-    tr {
-      height: 49px;
-
-      border-bottom:
-        1px solid #cfc8c0;
-
-      transition:
-        background 0.15s ease;
-
-      &:hover {
-        background: #faf8f5;
-      }
-
-      &:last-child {
-        border-bottom: 0;
-      }
-    }
-
-    td {
-      padding: 0 8px;
-
-      overflow: hidden;
-
-      color: #4f4a44;
-      font-size: 8px;
-
-      text-align: center;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-
-  th:nth-child(1) {
-    width: 12%;
-  }
-
-  th:nth-child(2) {
-    width: 10%;
-  }
-
-  th:nth-child(3) {
-    width: 10%;
-  }
-
-  th:nth-child(4) {
-    width: 13%;
-  }
-
-  th:nth-child(5) {
-    width: 21%;
-  }
-
-  th:nth-child(6) {
-    width: 16%;
-  }
-
-  th:nth-child(7) {
-    width: 8%;
-  }
-
-  th:nth-child(8) {
-    width: 10%;
-  }
-}
-
-
-.selectedRow {
-  background: #f5faf8 !important;
-}
-
-
-.preferenceCell,
-.productCell {
-  text-align: left !important;
-}
-
-
-// ========================================
-// 회원 유형
-// ========================================
-
-.memberBadge {
-  min-width: 40px;
-  height: 22px;
-
-  padding: 0 8px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  box-sizing: border-box;
-
-  border: 1px solid;
-  border-radius: 999px;
-
-  font-size: 7px;
-}
-
-
-.member {
-  border-color: #91beb8;
-  background: #f7fbfa;
-  color: #4d8a84;
-}
-
-
-.guest {
-  border-color: #bbb6af;
-  background: #faf9f7;
-  color: #77716a;
-}
-
-
-// ========================================
-// 성공 / 실패
-// ========================================
-
-.statusBadge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-
-  font-size: 7px;
-
-  i {
-    width: 7px;
-    height: 7px;
-
-    flex: 0 0 7px;
-
-    border-radius: 50%;
-  }
-}
-
-
-.successStatus {
-  color: #4f8982;
-
-  i {
-    background: #4f8982;
-  }
-}
-
-
-.failStatus {
-  color: #e36962;
-
-  i {
-    background: #e36962;
-  }
-}
-
-
-.detailButton {
-  min-width: 54px;
-  height: 25px;
-
-  padding: 0 8px;
-
-  border: 1px solid #c7c0b7;
-  border-radius: 4px;
-  background: #fff;
-
-  color: #514b45;
-  font-size: 7px;
-
-  cursor: pointer;
-
-  &:hover {
-    border-color: #548983;
-    color: #548983;
-  }
-}
-
-
-.emptyState {
-  height: 180px !important;
-
-  color: #918b84 !important;
-  font-size: 10px !important;
-}
-
-
-// ========================================
-// 페이지네이션
-// ========================================
-
-.pagination {
-  min-height: 70px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 17px;
-
-  border-top:
-    1px solid #ddd7cf;
-
-  button {
-    min-width: 26px;
-    height: 26px;
-
-    padding: 0;
-
-    border: 0;
-    background: transparent;
-
-    color: #292725;
-    font-size: 10px;
-
-    cursor: pointer;
-
-    &:disabled {
-      opacity: 0.3;
-      cursor: default;
-    }
-  }
-}
-
-
-.currentPage {
-  color: #548983 !important;
-  font-weight: 700;
-}
-
-
-// ========================================
-// 오른쪽 기본 통계
-// ========================================
-
-.analyticsColumn {
-  min-width: 0;
-
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-
-.analyticsCard,
-.detailPanel {
-  box-sizing: border-box;
-
-  border: 1px solid #8b847c;
-  border-radius: 15px;
-  background: #fff;
-}
-
-
-.analyticsCard {
-  padding: 25px 20px;
-
-  h2 {
-    margin: 0;
-
-    color: #3e3934;
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-  }
-}
-
-
-// ========================================
-// 회원 / 비회원
-// ========================================
-
-.memberRatioArea {
-  min-height: 128px;
-
-  margin-top: 18px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 25px;
-}
-
-
-.donutChart {
-  position: relative;
-
-  width: 112px;
-  height: 112px;
-
-  flex: 0 0 112px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-
-  background:
-    conic-gradient(
-      #d7d7d5 0 75%,
-      #598d87 75% 100%
-    );
-
-  &::after {
-    content: '';
-
-    position: absolute;
-    inset: 19px;
-
-    border-radius: 50%;
-    background: #fff;
-  }
-
-  > div {
-    position: relative;
-    z-index: 1;
-
-    text-align: center;
-
-    span {
-      display: block;
-
-      color: #5e5953;
-      font-size: 7px;
-    }
-
-    strong {
-      display: block;
-
-      margin-top: 3px;
-
-      color: #37332f;
-      font-size: 10px;
-    }
-  }
-}
-
-
-.ratioLegend {
-  margin: 0;
-  padding: 0;
-
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-
-  list-style: none;
-
-  li {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-
-    color: #56514b;
-    font-size: 7px;
-
-    i {
-      width: 7px;
-      height: 7px;
-
-      border-radius: 50%;
-    }
-  }
-}
-
-
-.memberDot {
-  background: #568b85;
-}
-
-
-.guestDot {
-  background: #df786d;
-}
-
-
-.ratioNotice {
-  min-height: 37px;
-
-  margin-top: 13px;
-  padding: 8px 10px;
-
-  box-sizing: border-box;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-
-  border-radius: 7px;
-  background: #a9c8c4;
-
-  color: #fff;
-  font-size: 7px;
-  line-height: 1.4;
-}
-
-
-// ========================================
-// TOP 5
-// ========================================
-
-.topHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-
-  select {
-    height: 24px;
-    padding: 0 7px;
-
-    border: 1px solid #8db0ac;
-    border-radius: 3px;
-    outline: 0;
-
-    background: #fff;
-
-    color: #625d57;
-    font-size: 6px;
-  }
-}
-
-
-.topProductList {
-  margin-top: 24px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-
-.topProductRow {
-  display: grid;
-
-  grid-template-columns:
-    14px
-    75px
-    minmax(0, 1fr)
-    24px;
-
-  align-items: center;
-  gap: 6px;
-}
-
-
-.rank {
-  width: 13px;
-  height: 13px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 2px;
-  background: #548983;
-
-  color: #fff;
-  font-size: 6px;
-  font-weight: 700;
-}
-
-
-.topProductRow > strong {
-  overflow: hidden;
-
-  color: #4e4943;
-  font-size: 6.5px;
-  font-weight: 600;
-
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-
-.barTrack {
-  height: 7px;
-
-  overflow: hidden;
-
-  border-radius: 2px;
-  background: #dddeda;
-
-  i {
-    display: block;
-    height: 100%;
-
-    background: #548983;
-  }
-}
-
-
-.topProductRow > small {
-  color: #928c85;
-  font-size: 6px;
-  text-align: right;
-}
-
-
-// ========================================
-// 상세 패널
-// ========================================
-
-.detailPanel {
-  min-height: 514px;
-
-  padding: 27px 25px 22px;
-
-  h2 {
-    margin: 0 0 30px;
-
-    color: #3c3733;
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-  }
-}
-
-
-.detailPage {
-  min-height: 415px;
-
-  display: flex;
-  flex-direction: column;
-}
-
-
-// ========================================
-// 상세 섹션 공통
-// ========================================
-
-.detailSection {
-  margin-bottom: 31px;
-
-  h3 {
-    position: relative;
-
-    margin: 0 0 20px;
-
-    padding-left: 14px;
-
-    color: #3e3934;
-    font-size: 10px;
-    font-weight: 700;
-
-    &::before {
-      content: '';
-
-      position: absolute;
-
-      top: -2px;
-      bottom: -2px;
-      left: 0;
-
-      width: 2px;
-
-      background: #548983;
-    }
-  }
-
-  &:last-of-type {
-    margin-bottom: 0;
-  }
-}
-
-
-// ========================================
-// 기본 정보 / 취향 / 시스템
-// ========================================
-
-.detailInfoList {
-  margin: 0;
-
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-
-  > div {
-    display: grid;
-
-    grid-template-columns:
-      75px
-      minmax(0, 1fr);
-
-    align-items: center;
-    gap: 8px;
-  }
-
-  dt,
-  dd {
-    margin: 0;
-  }
-
-  dt {
-    color: #5f5953;
-    font-size: 6.5px;
-    font-weight: 600;
-  }
-
-  dd {
-    min-width: 0;
-
-    color: #48433e;
-    font-size: 6.5px;
-    font-weight: 500;
-
-    overflow-wrap: anywhere;
-  }
-}
-
-
-// ========================================
-// 추천 결과
-// ========================================
-
-.resultList {
-  margin: 0;
-
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-
-  > div {
-    display: grid;
-
-    grid-template-columns:
-      77px
-      minmax(0, 1fr);
-
-    gap: 8px;
-  }
-
-  dt,
-  dd {
-    margin: 0;
-  }
-
-  dt {
-    color: #59534d;
-    font-size: 6.5px;
-    font-weight: 600;
-  }
-
-  dd {
-    color: #4f4943;
-    font-size: 6px;
-    line-height: 1.55;
-  }
-}
-
-
-// ========================================
-// 추천 이유
-// ========================================
-
-.reasonBox {
-  min-height: 66px;
-
-  padding: 12px;
-
-  box-sizing: border-box;
-
-  border-radius: 9px;
-
-  background: #dedede;
-
-  color: #615b55;
-  font-size: 6.5px;
-  line-height: 1.65;
-}
-
-
-// ========================================
-// 이전 / 다음
-// ========================================
-
-.nextArea {
-  margin-top: auto;
-
-  display: flex;
-  justify-content: flex-end;
-}
-
-
-.prevArea {
-  margin-top: auto;
-
-  display: flex;
-  justify-content: flex-start;
-}
-
-
-.nextButton,
-.prevButton {
-  padding: 4px 0;
-
-  border: 0;
-  background: transparent;
-
-  color: #548983;
-  font-size: 8px;
-  font-weight: 500;
-
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
-
-
-.errorText {
-  color: #dc665e !important;
-}
-
-
-// ========================================
-// 접근성
-// ========================================
 
 .srOnly {
   position: absolute;
@@ -1148,13 +123,7 @@
 
   overflow: hidden;
 
-  clip: rect(
-    0,
-    0,
-    0,
-    0
-  );
-
+  clip: rect(0, 0, 0, 0);
   white-space: nowrap;
 
   border: 0;
@@ -1162,41 +131,1059 @@
 
 
 // ========================================
-// 반응형
+// LIST HEADING
 // ========================================
 
-@media (max-width: 1300px) {
-  .summaryGrid {
-    grid-template-columns:
-      repeat(2, 1fr);
-  }
+.sectionHeading {
+  min-height: 58px;
 
-  .managementGrid {
-    grid-template-columns:
-      minmax(0, 1fr)
-      260px;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-  .filterBar {
-    grid-template-columns:
-      minmax(200px, 1fr)
-      100px
-      100px
-      62px;
+  gap: 20px;
+
+  padding:
+    0
+    15px;
+
+  margin-bottom: 14px;
+}
+
+
+.titleWrap {
+  min-width: 0;
+
+  h2 {
+    margin: 0;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.4;
+
+    letter-spacing:
+      -0.02em;
   }
 }
 
 
-@media (max-width: 1050px) {
-  .managementGrid {
-    grid-template-columns: 1fr;
+.logCount {
+  flex-shrink: 0;
+
+  color:
+    $admin-text-secondary;
+
+  font-size: 15px;
+
+  strong {
+    color:
+      $admin-primary-dark;
+
+    font-size: 15px;
+    font-weight: 700;
+  }
+}
+
+
+// ========================================
+// TABLE
+// ========================================
+
+.tableWrap {
+  width: 100%;
+  min-width: 0;
+
+  overflow-x: auto;
+
+  border:
+    1px solid
+    $admin-border;
+
+  border-radius:
+    $admin-radius-md;
+
+  background:
+    $admin-surface;
+
+  -webkit-overflow-scrolling:
+    touch;
+}
+
+
+.logTable {
+  width: 100%;
+  min-width: 930px;
+
+  border-collapse:
+    collapse;
+
+  table-layout:
+    fixed;
+
+  th,
+  td {
+    padding:
+      15px
+      12px;
+
+    border-bottom:
+      1px solid
+      $admin-border;
+
+    text-align: left;
+    vertical-align: middle;
+
+    font-size: 12px;
+
+    white-space: nowrap;
   }
 
-  .analyticsColumn {
+  th {
+    background:
+      #f8f9f8;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing:
+      -0.01em;
+  }
+
+  td {
+    overflow: hidden;
+
+    color:
+      $admin-text-primary;
+
+    text-overflow: ellipsis;
+  }
+
+  tbody tr {
+    cursor: pointer;
+
+    transition:
+      background 0.18s ease;
+  }
+
+  tbody tr:hover {
+    background:
+      #fafcfb;
+  }
+
+  tbody tr:last-child {
+    td {
+      border-bottom: 0;
+    }
+  }
+
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 12%;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 10%;
+  }
+
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 10%;
+  }
+
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 13%;
+  }
+
+  th:nth-child(5),
+  td:nth-child(5) {
+    width: 21%;
+  }
+
+  th:nth-child(6),
+  td:nth-child(6) {
+    width: 16%;
+  }
+
+  th:nth-child(7),
+  td:nth-child(7) {
+    width: 8%;
+  }
+
+  th:nth-child(8),
+  td:nth-child(8) {
+    width: 10%;
+
+    text-align: center;
+  }
+}
+
+
+.selectedRow {
+  background:
+    rgba(
+      86,
+      138,
+      128,
+      0.065
+    ) !important;
+}
+
+
+.logId {
+  color:
+    $admin-text-muted;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+
+.preferenceCell,
+.productCell {
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.productCell {
+  font-weight: 700;
+}
+
+
+.dateCell {
+  display: inline-flex;
+  flex-direction: column;
+
+  gap: 2px;
+
+  line-height: 1.25;
+
+  small {
+    color:
+      $admin-text-muted;
+
+    font-size: 10px;
+  }
+}
+
+
+// ========================================
+// DETAIL BUTTON
+// ========================================
+
+.detailButton {
+  min-height: 30px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    11px;
+
+  border:
+    1px solid
+    $admin-border-dark;
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    $admin-surface;
+
+  color:
+    $admin-text-secondary;
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+
+  &:hover {
+    color:
+      $admin-primary-dark;
+
+    border-color:
+      rgba(
+        86,
+        138,
+        128,
+        0.5
+      );
+
+    background:
+      $admin-primary-light;
+  }
+}
+
+
+// ========================================
+// PAGINATION
+// ========================================
+
+.pagination {
+  min-height: 64px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  padding:
+    16px
+    12px;
+
+  border-top:
+    1px solid
+    $admin-border;
+
+  button {
+    width: 32px;
+    height: 32px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border:
+      1px solid
+      transparent;
+
+    border-radius:
+      $admin-radius-sm;
+
+    background:
+      transparent;
+
+    color:
+      $admin-text-secondary;
+
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+      background 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
+
+    &:hover:not(:disabled) {
+      color:
+        $admin-primary-dark;
+
+      background:
+        $admin-primary-light;
+    }
+
+    &:disabled {
+      opacity: 0.35;
+
+      cursor: default;
+    }
+  }
+}
+
+
+.activePage {
+  color:
+    $admin-surface !important;
+
+  border-color:
+    $admin-primary !important;
+
+  background:
+    $admin-primary !important;
+}
+
+
+// ========================================
+// ANALYTICS
+// ========================================
+
+.analyticsColumn {
+  position: sticky;
+
+  top: 24px;
+
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
+}
+
+
+.memberRatioArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 18px;
+
+  margin-top: 2px;
+}
+
+
+.donutChart {
+  position: relative;
+
+  width: 148px;
+  height: 148px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    conic-gradient(
+      $admin-primary
+        0
+        75%,
+      #d69a95
+        75%
+        100%
+    );
+
+  &::after {
+    position: absolute;
+
+    width: 104px;
+    height: 104px;
+
+    border-radius: 50%;
+
+    background:
+      $admin-surface;
+
+    content: '';
+  }
+
+  > div {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 3px;
+
+    text-align: center;
+
+    span {
+      color:
+        $admin-text-muted;
+
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    strong {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+
+      gap: 3px;
+
+      color:
+        $admin-text-primary;
+
+      font-size: 25px;
+      font-weight: 700;
+      line-height: 1.15;
+
+      small {
+        color:
+          $admin-text-secondary;
+
+        font-size: 10px;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+
+.ratioLegend {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+
+  li {
+    min-height: 28px;
+
     display: grid;
 
     grid-template-columns:
-      repeat(2, 1fr);
+      8px
+      minmax(0, 1fr);
+
+    align-items: center;
+
+    gap: 8px;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 11px;
+  }
+
+  i {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+  }
+}
+
+
+.memberDot {
+  background:
+    $admin-primary;
+}
+
+
+.guestDot {
+  background:
+    #d69a95;
+}
+
+
+.ratioNotice {
+  min-height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  margin-top: 16px;
+
+  padding:
+    9px
+    10px;
+
+  box-sizing: border-box;
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    $admin-primary-light;
+
+  color:
+    $admin-primary-dark;
+
+  font-size: 9px;
+  line-height: 1.45;
+
+  text-align: center;
+}
+
+
+.periodSelect {
+  min-height: 28px;
+
+  padding:
+    0
+    8px;
+
+  border:
+    1px solid
+    $admin-border-dark;
+
+  border-radius:
+    $admin-radius-sm;
+
+  outline: 0;
+
+  background:
+    $admin-surface;
+
+  color:
+    $admin-text-secondary;
+
+  font: inherit;
+  font-size: 9px;
+
+  cursor: pointer;
+
+  &:focus {
+    border-color:
+      $admin-primary;
+  }
+}
+
+
+.topProductList {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+
+.topProductRow {
+  display: grid;
+
+  grid-template-columns:
+    20px
+    minmax(0, 82px)
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 7px;
+}
+
+
+.rank {
+  width: 18px;
+  height: 18px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius:
+    4px;
+
+  background:
+    $admin-primary;
+
+  color:
+    $admin-surface;
+
+  font-size: 8px;
+  font-weight: 700;
+}
+
+
+.topProductRow > strong {
+  overflow: hidden;
+
+  color:
+    $admin-text-secondary;
+
+  font-size: 10px;
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.barTrack {
+  height: 6px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background:
+    #edf0ee;
+
+  i {
+    display: block;
+
+    height: 100%;
+
+    border-radius: inherit;
+
+    background:
+      $admin-primary;
+  }
+}
+
+
+.topProductRow > small {
+  color:
+    $admin-text-muted;
+
+  font-size: 9px;
+
+  text-align: right;
+}
+
+
+// ========================================
+// DETAIL PANEL
+// ========================================
+
+.detailPanel {
+  min-width: 0;
+
+  @include admin-panel;
+
+  padding: 20px;
+
+  animation:
+    fadeIn
+    0.2s
+    ease-out;
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+.panelTopHeader {
+  min-height: 46px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding-bottom: 10px;
+
+  margin-bottom: 16px;
+
+  border-bottom:
+    1px solid
+    $admin-border;
+
+  > div {
+    display: flex;
+    align-items: baseline;
+
+    gap: 8px;
+  }
+
+  h2 {
+    margin:
+      7px
+      0
+      0;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.35;
+
+    letter-spacing:
+      -0.02em;
+  }
+
+  > button {
+    width: 30px;
+    height: 30px;
+
+    flex:
+      0
+      0
+      30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    background:
+      #f4f5f4;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 19px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+      color 0.18s ease,
+      background 0.18s ease;
+
+    &:hover {
+      color:
+        $admin-text-primary;
+
+      background:
+        #eceeed;
+    }
+  }
+}
+
+
+.stepLabel {
+  color:
+    $admin-text-muted;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+
+.detailPage {
+  min-height: 430px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+
+.detailSection {
+  margin-bottom: 24px;
+
+  h3 {
+    position: relative;
+
+    margin:
+      0
+      0
+      14px;
+
+    padding-left: 9px;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.35;
+
+    &::before {
+      position: absolute;
+
+      top: 1px;
+      bottom: 1px;
+      left: 0;
+
+      width: 3px;
+
+      border-radius: 999px;
+
+      background:
+        $admin-primary;
+
+      content: '';
+    }
+  }
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+}
+
+
+.detailInfoList,
+.resultList {
+  margin: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  > div {
+    display: grid;
+
+    grid-template-columns:
+      92px
+      minmax(0, 1fr);
+
+    align-items: center;
+
+    gap: 10px;
+  }
+
+  dt,
+  dd {
+    margin: 0;
+  }
+
+  dt {
+    color:
+      $admin-text-muted;
+
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  dd {
+    min-width: 0;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+  }
+}
+
+
+.resultList {
+  > div {
+    align-items: start;
+  }
+}
+
+
+.reasonBox {
+  min-height: 78px;
+
+  padding:
+    12px
+    13px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid
+    $admin-border;
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    #f7f8f7;
+
+  color:
+    $admin-text-secondary;
+
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+
+.nextArea,
+.prevArea {
+  margin-top: auto;
+
+  display: flex;
+
+  padding-top: 8px;
+}
+
+
+.nextArea {
+  justify-content: flex-end;
+}
+
+
+.prevArea {
+  justify-content: flex-start;
+}
+
+
+.nextButton,
+.prevButton {
+  min-height: 30px;
+
+  padding:
+    0
+    4px;
+
+  border: 0;
+
+  background:
+    transparent;
+
+  color:
+    $admin-primary-dark;
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+
+.errorText {
+  color:
+    $admin-danger !important;
+
+  font-weight: 700 !important;
+}
+
+
+// ========================================
+// RESPONSIVE - 1180
+// ========================================
+
+@media (max-width: 1180px) {
+  .managementGrid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .analyticsColumn {
+    position: static;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 12px;
+
+    align-items: start;
   }
 
   .detailPanel {
@@ -1205,53 +1192,243 @@
 }
 
 
-@media (max-width: 760px) {
-  .page {
-    padding:
-      24px
-      18px
-      45px;
-  }
+// ========================================
+// RESPONSIVE - 850
+// ========================================
 
-  .pageHeader {
-    h1 {
-      font-size: 24px;
-    }
+@media (max-width: 850px) {
+  .summaryArea {
+    margin-top:
+      -8px;
   }
 
   .summaryGrid {
-    grid-template-columns: 1fr;
+    width: 100%;
   }
 
-  .filterBar {
-    display: flex;
-    flex-wrap: wrap;
-
-    .searchField {
-      flex:
-        1
-        0
-        100%;
-    }
-
-    .selectField {
-      flex:
-        1
-        1
-        35%;
-    }
-
-    .resetButton {
-      flex: 1;
-      width: auto;
-    }
+  .mainSection {
+    padding: 16px;
   }
 
   .analyticsColumn {
-    grid-template-columns: 1fr;
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 12px;
+
+    align-items: start;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 767
+// ========================================
+
+@media (max-width: 767px) {
+  .page {
+    padding-bottom:
+      30px;
+  }
+
+  .summaryArea {
+    margin-top: 0;
+  }
+
+  .summaryGrid {
+    width: 100%;
+
+    margin-inline: auto;
+  }
+
+  .mainSection {
+    padding: 14px;
+  }
+
+  .selectField {
+    width: 100%;
+    min-width: 0;
+
+    select {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
+  .sectionHeading {
+    min-height: auto;
+
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-top: 20px;
+    margin-bottom: 16px;
+
+    padding:
+      0
+      2px;
+  }
+
+  .titleWrap {
+    h2 {
+      margin: 0;
+
+      font-size: 22px;
+      line-height: 1.3;
+    }
+  }
+
+  .logCount {
+    font-size: 13px;
+
+    strong {
+      font-size: 16px;
+    }
+  }
+
+  .tableWrap {
+    overscroll-behavior-inline:
+      contain;
   }
 
   .logTable {
-    min-width: 820px;
+    min-width: 880px;
+  }
+
+  .analyticsColumn {
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 12px;
+
+    align-items: start;
+  }
+
+  .donutChart {
+    width: 118px;
+    height: 118px;
+
+    &::after {
+      width: 82px;
+      height: 82px;
+    }
+
+    > div {
+      strong {
+        font-size: 22px;
+
+        small {
+          font-size: 9px;
+        }
+      }
+    }
+  }
+
+  .ratioLegend {
+    li {
+      min-height: 24px;
+
+      font-size: 10px;
+    }
+  }
+
+  .ratioNotice {
+    margin-top: 12px;
+
+    padding:
+      8px;
+
+    font-size: 8px;
+  }
+
+  .topProductRow {
+    grid-template-columns:
+      18px
+      minmax(0, 62px)
+      minmax(0, 1fr)
+      auto;
+
+    gap: 5px;
+  }
+
+  .topProductRow > strong {
+    font-size: 9px;
+  }
+
+  .topProductRow > small {
+    font-size: 8px;
+  }
+
+  .detailPanel {
+    padding: 16px;
+
+    scroll-margin-top:
+      92px;
+  }
+
+  .panelTopHeader {
+    h2 {
+      font-size: 20px;
+    }
+  }
+
+  .detailInfoList,
+  .resultList {
+    > div {
+      grid-template-columns:
+        82px
+        minmax(0, 1fr);
+    }
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - VERY SMALL
+// ========================================
+
+@media (max-width: 520px) {
+  .analyticsColumn {
+    gap: 10px;
+  }
+
+  .donutChart {
+    width: 104px;
+    height: 104px;
+
+    &::after {
+      width: 72px;
+      height: 72px;
+    }
+  }
+
+  .topProductRow {
+    grid-template-columns:
+      16px
+      minmax(0, 54px)
+      minmax(0, 1fr)
+      auto;
+  }
+
+  .detailInfoList,
+  .resultList {
+    > div {
+      grid-template-columns:
+        74px
+        minmax(0, 1fr);
+    }
   }
 }

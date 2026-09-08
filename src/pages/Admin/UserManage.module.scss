@@ -1,1232 +1,1601 @@
-@use 'sass:color';
-// ==========================================
-// 변수 및 테마 토큰 (전통의 멋 + 현대적 어드민)
-// ==========================================
-$bg-canvas: #f8f6f2;          // 은은한 한지/미색 바탕
-$bg-surface: #ffffff;         // 카드/테이블 기본 흰색 바탕
-$primary: #3b5f54;            // 차분한 단청 쑥색 (Point)
-$primary-hover: #2e4b42;
-$primary-subtle: #edf3f0;     // 연한 쑥색 배경
+@use '../../styles/admin/adminVariables' as *;
+@use '../../styles/admin/adminMixins' as *;
+@use '../../styles/admin/adminCommon' as *;
 
-$text-title: #222524;         // 메인 텍스트
-$text-body: #4a504d;          // 서브 텍스트
-$text-caption: #7a827e;       // 캡션/안내
-$border-color: #e8e6df;       // 답답하지 않은 연한 미색 보더
 
-$danger: #b24840;             // 차분한 단청 적색 (이용 정지/경고)
-$danger-subtle: #fbeeed;
+// ========================================
+// PAGE
+// ========================================
 
-$shadow-sm: 0 2px 8px rgba(34, 37, 36, 0.04);
-$shadow-md: 0 6px 18px rgba(34, 37, 36, 0.06);
-$radius-card: 14px;
-$radius-control: 8px;
-
-// ==========================================
-// 공통 레이아웃
-// ==========================================
 .page {
+  @extend %admin-page;
+
   width: 100%;
+  max-width: none;
   min-width: 0;
-  padding: 32px 40px;
-  background-color: $bg-canvas;
-  min-height: 100vh;
-  color: $text-body;
+
+  margin: 0;
+
+  // 바깥 좌우/상단 여백은
+  // AdminLayout의 contentViewport가 담당
+  padding:
+    34px
+    0
+    50px;
+
   box-sizing: border-box;
 }
+
+
+// ========================================
+// SUMMARY
+// ========================================
+
+.summaryArea {
+  @extend %admin-summary-area;
+
+  position: relative;
+  z-index: 1;
+
+  // 전통 문양 안쪽에 카드가 살짝 들어가는 정도만 유지
+  margin-top: -50px;
+}
+
+
+.summaryGrid {
+  @extend %admin-summary-grid;
+
+  width: 90%;
+
+  margin:
+    0
+    auto;
+}
+
+
+// ========================================
+// MANAGEMENT LAYOUT
+// ========================================
+
+.managementGrid {
+  @extend %admin-management-grid;
+
+  width: 100%;
+  min-width: 0;
+
+  margin: 0;
+}
+
+
+// ========================================
+// MEMBER SECTION
+// ========================================
+
+.memberSection {
+  min-width: 0;
+
+  @include admin-panel;
+
+  padding: 20px;
+}
+
+
+// ========================================
+// FILTER
+// ========================================
+
+.selectField {
+  display: block;
+
+  select {
+    min-width: 128px;
+  }
+}
+
+
+// ========================================
+// SCREEN READER
+// ========================================
 
 .srOnly {
   position: absolute;
+
   width: 1px;
   height: 1px;
+
   padding: 0;
   margin: -1px;
+
   overflow: hidden;
+
   clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+
   border: 0;
 }
 
-// ==========================================
-// 툴바 & 타이틀 (새로고침 버튼 스타일 개선)
-// ==========================================
-.pageToolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
 
-  h1 {
-    font-size: 30px;
-    font-weight: 700;
-    color: $text-title;
-    margin: 0;
-    letter-spacing: -0.02em;
-  }
-
-  button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    height: 38px;
-    padding: 0 16px;
-    font-size: 13px;
-    font-weight: 500;
-    color: $text-body;
-    background: $bg-surface;
-    border: 1px solid $border-color;
-    border-radius: $radius-control;
-    box-shadow: $shadow-sm;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s ease;
-
-    svg {
-      width: 15px;
-      height: 15px;
-      stroke: currentColor;
-      stroke-width: 2.2;
-      fill: none;
-      flex-shrink: 0;
-      transition: transform 0.3s ease;
-    }
-
-    &:hover:not(:disabled) {
-      background: #fdfcf9;
-      color: $primary;
-      border-color: color.adjust($primary, $lightness: 20%);
-      box-shadow: 0 2px 10px rgba(59, 95, 84, 0.08);
-
-      svg {
-        transform: rotate(180deg);
-      }
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-  }
-}
-
-// 전통 문양 선
-.ornamentLine {
-  width: 100%;
-  display: block;
-  margin: 1rem 0 1.8rem;
-  overflow: hidden;
-
-  img {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-}
-
-// ==========================================
-// 상단 요약 카드 (Summary Cards - 균형 및 여백 보정)
-// ==========================================
-.summaryArea {
-  margin-bottom: 24px;
-}
-
-.summaryGrid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.summaryCard {
-  background: $bg-surface;
-  border: 1px solid $border-color;
-  border-radius: $radius-card;
-  padding: 18px 20px;          // 상하 패딩을 슬림하고 일정하게 정렬
-  text-align: left;
-  display: flex;
-  align-items: center;          // 상단 치우침 완화하고 중앙 정렬감 부여
-  gap: 16px;
-  min-height: 94px;             // 카드 높이 일관성 유지
-  box-sizing: border-box;
-  box-shadow: $shadow-sm;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  min-width: 0;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: $shadow-md;
-    border-color: color.adjust($primary, $lightness: 20%);
-  }
-
-  &.summaryCardActive {
-    border-color: $primary;
-    background: #fdfefd;
-    box-shadow: 0 0 0 1.5px $primary, $shadow-sm;
-  }
-}
-
-.summaryIcon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: $primary-subtle;
-  color: $primary;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  svg {
-    width: 20px;
-    height: 20px;
-    stroke: currentColor;
-    stroke-width: 2;
-    fill: none;
-  }
-}
-
-.summaryCardsuspended .summaryIcon {
-  background: $danger-subtle;
-  color: $danger;
-}
-
-.summaryContent {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
-  flex: 1;
-  min-width: 0;
-
-  h3 {
-    font-size: 13px;
-    font-weight: 500;
-    color: $text-caption;
-    margin: 0;
-  }
-
-  p {
-    margin: 0;
-    font-size: 24px;
-    color: $text-title;
-    font-weight: 700;
-    line-height: 1.2;
-
-    span {
-      font-size: 14px;
-      font-weight: 400;
-      color: $text-caption;
-      margin-left: 3px;
-    }
-  }
-
-  small {
-    font-size: 12px;
-    color: $text-caption;
-    margin-top: 2px;
-  }
-}
-
-// ==========================================
-// 메인 그리드
-// ==========================================
-.managementGrid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
-  gap: 20px;
-  align-items: start;
-}
-
-// ==========================================
-// 회원 목록 섹션 (Main Content)
-// ==========================================
-.memberSection {
-  min-width: 0;
-  background: $bg-surface;
-  border: 1px solid $border-color;
-  border-radius: $radius-card;
-  padding: 24px;
-  box-shadow: $shadow-sm;
-}
-
-// 검색 및 필터 바
-.filterBar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 24px;         // 아래 목록 헤더와의 간격을 넉넉히 확보
-  flex-wrap: wrap;
-}
-
-.searchField {
-  flex: 1;
-  min-width: 240px;
-  position: relative;
-  display: flex;
-  align-items: center;
-
-  svg {
-    position: absolute;
-    left: 12px;
-    width: 16px;
-    height: 16px;
-    stroke: $text-caption;
-    stroke-width: 2;
-    fill: none;
-  }
-
-  input {
-    width: 100%;
-    height: 40px;
-    padding: 0 14px 0 36px;
-    background: #fbfaf8;
-    border: 1px solid $border-color;
-    border-radius: $radius-control;
-    font-size: 13px;
-    color: $text-title;
-    transition: all 0.2s;
-
-    &::placeholder {
-      color: #9ea4a0;
-    }
-
-    &:focus {
-      outline: none;
-      border-color: $primary;
-      background: $bg-surface;
-      box-shadow: 0 0 0 2px rgba($primary, 0.1);
-    }
-  }
-}
-
-.selectField {
-  select {
-    height: 40px;
-    padding: 0 32px 0 12px;
-    background: #fbfaf8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a827e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 10px center;
-    border: 1px solid $border-color;
-    border-radius: $radius-control;
-    font-size: 13px;
-    color: $text-body;
-    appearance: none;
-    cursor: pointer;
-    transition: border-color 0.2s;
-
-    &:focus {
-      outline: none;
-      border-color: $primary;
-    }
-  }
-}
-
-.resetButton {
-  height: 40px;
-  padding: 0 14px;
-  background: transparent;
-  border: 1px solid $border-color;
-  border-radius: $radius-control;
-  font-size: 13px;
-  color: $text-caption;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    color: $text-title;
-    background: #f5f4ef;
-  }
-}
+// ========================================
+// SECTION HEADING
+// ========================================
 
 .sectionHeading {
+  min-height: 52px;
+
   display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 20px;
+  padding-left: 15px;
+
+  margin-bottom: 14px;
+
+  > div {
+    min-width: 0;
+  }
 
   h2 {
-    font-size: 16px;
+    margin-top: -40px;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 23px;
     font-weight: 700;
-    color: $text-title;
-    margin: 0;
-  }
+    line-height: 1.4;
 
-  span {
-    font-size: 13px;
-    color: $primary;
-    font-weight: 600;
+    letter-spacing:
+      -0.02em;
   }
 }
 
-// ==========================================
-// 테이블
-// ==========================================
+
+.memberCount {
+  flex-shrink: 0;
+  padding-right: 15px;
+
+  color:
+    $admin-text-secondary;
+
+  font-size: 15px;
+
+  strong {
+    color:
+      $admin-primary-dark;
+
+    font-size: 15px;
+    font-weight: 700;
+  }
+}
+
+
+// ========================================
+// TABLE WRAP
+// ========================================
+
 .tableWrap {
+  width: 100%;
+  min-width: 0;
+
   overflow-x: auto;
+
+  border:
+    1px solid
+    $admin-border;
+
+  border-radius:
+    $admin-radius-md;
+
+  background:
+    $admin-surface;
 }
+
+
+// ========================================
+// TABLE
+// ========================================
 
 .memberTable {
   width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  font-size: 13px;
 
-  th {
-    padding: 12px 14px;
-    background: #faf8f5;
-    color: $text-caption;
-    font-weight: 600;
-    border-bottom: 1px solid $border-color;
+  border-collapse:
+    collapse;
+
+  table-layout:
+    fixed;
+
+  th,
+  td {
+    padding:
+      15px
+      12px;
+
+    border-bottom:
+      1px solid
+      $admin-border;
+
+    text-align: left;
+    vertical-align: middle;
+
+    font-size: 12px;
+
     white-space: nowrap;
   }
 
+  th {
+    background:
+      #f8f9f8;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing:
+      -0.01em;
+  }
+
   td {
-    padding: 14px;
-    border-bottom: 1px solid #f0eee8;
-    color: $text-body;
-    vertical-align: middle;
+    color:
+      $admin-text-primary;
   }
 
   tbody tr {
-    transition: background-color 0.15s;
+    transition:
+      background
+      0.18s ease;
+  }
 
-    &:hover {
-      background-color: #faf9f5;
-    }
+  tbody tr:hover {
+    background:
+      #fafcfb;
+  }
 
-    &.selectedRow {
-      background-color: $primary-subtle;
+  tbody tr:last-child {
+    td {
+      border-bottom: 0;
     }
+  }
+
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 13%;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 11%;
+  }
+
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 14%;
+  }
+
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 11%;
+  }
+
+  th:nth-child(5),
+  td:nth-child(5) {
+    width: 15%;
+  }
+
+  th:nth-child(6),
+  td:nth-child(6) {
+    width: 11%;
+  }
+
+  th:nth-child(7),
+  td:nth-child(7) {
+    width: 11%;
+  }
+
+  th:nth-child(8),
+  td:nth-child(8) {
+    width: 14%;
+
+    text-align: center;
   }
 }
 
-// 뱃지 디자인
-.statusBadge, .roleBadge {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 6px;
+
+// ========================================
+// SELECTED ROW
+// ========================================
+
+.selectedRow {
+  background:
+    rgba(
+      86,
+      138,
+      128,
+      0.065
+    ) !important;
+}
+
+
+// ========================================
+// MEMBER TABLE TEXT
+// ========================================
+
+.memberId {
+  color:
+    $admin-text-muted;
+
   font-size: 11px;
-  font-weight: 600;
 }
 
-.statusBadge {
-  &.active {
-    background: $primary-subtle;
-    color: $primary;
-  }
 
-  &.suspended {
-    background: $danger-subtle;
-    color: $danger;
-  }
+.memberName {
+  overflow: hidden;
+
+  display: block;
+
+  color:
+    $admin-text-primary;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
 }
 
-.roleBadge {
-  background: #f0eee8;
-  color: $text-caption;
+
+.memberEmail,
+.lastLogin {
+  overflow: hidden;
+
+  display: block;
+
+  color:
+    $admin-text-secondary;
+
+  text-overflow: ellipsis;
 }
+
+
+// ========================================
+// VIEW BUTTON
+// ========================================
 
 .viewButton {
-  padding: 6px 12px;
-  background: $bg-surface;
-  border: 1px solid $border-color;
-  border-radius: 6px;
-  font-size: 12px;
-  color: $text-title;
+  min-height: 30px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    11px;
+
+  border:
+    1px solid
+    $admin-border-dark;
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    $admin-surface;
+
+  color:
+    $admin-text-secondary;
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+
   cursor: pointer;
-  transition: all 0.2s;
+
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
 
   &:hover {
-    background: $primary;
-    color: #ffffff;
-    border-color: $primary;
+    color:
+      $admin-primary-dark;
+
+    border-color:
+      rgba(
+        86,
+        138,
+        128,
+        0.5
+      );
+
+    background:
+      $admin-primary-light;
   }
 }
 
-.emptyState {
-  padding: 60px 0;
-  text-align: center;
-  color: $text-caption;
-  font-size: 14px;
-}
 
-// ==========================================
-// 페이지네이션
-// ==========================================
+// ========================================
+// PAGINATION
+// ========================================
+
 .pagination {
+  min-height: 64px;
+
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 4px;
-  margin-top: 24px;
+  justify-content: center;
+
+  gap: 6px;
+
+  padding:
+    16px
+    12px;
+
+  border-top:
+    1px solid
+    $admin-border;
 
   button {
-    min-width: 32px;
+    width: 32px;
     height: 32px;
-    padding: 0;
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid $border-color;
-    background: $bg-surface;
-    border-radius: 6px;
-    font-size: 13px;
-    line-height: 1;
-    color: $text-body;
+
+    border:
+      1px solid
+      transparent;
+
+    border-radius:
+      $admin-radius-sm;
+
+    background:
+      transparent;
+
+    color:
+      $admin-text-secondary;
+
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
     cursor: pointer;
-    transition: all 0.15s;
+
+    transition:
+      background 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
 
     &:hover:not(:disabled) {
-      border-color: $primary;
-      color: $primary;
-    }
+      color:
+        $admin-primary-dark;
 
-    &.activePage {
-      background: $primary;
-      border-color: $primary;
-      color: #ffffff;
-      font-weight: 600;
+      background:
+        $admin-primary-light;
     }
 
     &:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
+      opacity: 0.35;
+
+      cursor: default;
     }
   }
 }
 
-// ==========================================
-// 우측 패널 (분석 / 상세)
-// ==========================================
-.analyticsColumn, .detailPanel {
+
+.activePage {
+  color:
+    $admin-surface !important;
+
+  border-color:
+    $admin-primary !important;
+
+  background:
+    $admin-primary !important;
+}
+
+
+// ========================================
+// ANALYTICS COLUMN
+// ========================================
+
+.analyticsColumn {
+  position: sticky;
+
+  top: 24px;
+
+  min-width: 0;
+
   display: flex;
   flex-direction: column;
+
   gap: 16px;
 }
 
-.analyticsCard, .detailPanel {
-  background: $bg-surface;
-  border: 1px solid $border-color;
-  border-radius: $radius-card;
-  padding: 20px;
-  box-shadow: $shadow-sm;
-}
 
-.analyticsHeader, .detailHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
+// ========================================
+// STATUS OVERVIEW
+// ========================================
 
-  h2 {
-    font-size: 15px;
-    font-weight: 700;
-    color: $text-title;
-    margin: 0;
-  }
-
-  span {
-    font-size: 11px;
-    color: #a0a6a2;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-  }
-
-  button {
-    background: none;
-    border: none;
-    font-size: 18px;
-    color: $text-caption;
-    cursor: pointer;
-    &:hover { color: $text-title; }
-  }
-}
-
-// 도넛 차트 영역
 .statusOverview {
   display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.statusDonut {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  background: conic-gradient($primary var(--active-rate, 100%), #e8e6df 0);
-  display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  position: relative;
 
-  &::before {
-    content: '';
-    position: absolute;
-    width: 66px;
-    height: 66px;
-    border-radius: 50%;
-    background: $bg-surface;
+  gap: 20px;
+
+  ul {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 9px;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
   }
-
-  span, strong {
-    position: relative;
-    z-index: 1;
-  }
-
-  span {
-    font-size: 11px;
-    color: $text-caption;
-  }
-
-  strong {
-    font-size: 15px;
-    color: $text-title;
-  }
-}
-
-.statusOverview ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1;
 
   li {
-    display: flex;
+    display: grid;
+
+    grid-template-columns:
+      8px
+      minmax(0, 1fr)
+      auto;
+
     align-items: center;
-    justify-content: space-between;
-    font-size: 12px;
 
-    span:nth-child(2) {
-      margin-left: 6px;
-      color: $text-body;
-      flex: 1;
-    }
-
-    strong {
-      color: $text-title;
-    }
-  }
-}
-
-.activeDot, .suspendedDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-.activeDot { background-color: $primary; }
-.suspendedDot { background-color: $danger; }
-
-// 활동 바 차트
-.activityBars {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-
-  div {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 12px;
-
-    span {
-      width: 80px;
-      color: $text-caption;
-      flex-shrink: 0;
-    }
-
-    i {
-      flex: 1;
-      height: 6px;
-      background: #f0eee8;
-      border-radius: 4px;
-      overflow: hidden;
-      display: block;
-
-      b {
-        display: block;
-        height: 100%;
-        background: $primary;
-        border-radius: 4px;
-
-        transition: width 280ms ease-out;
-      }
-    }
-
-    strong {
-      width: 32px;
-      text-align: right;
-      color: $text-title;
-    }
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .activityBars b {
-    transition: none;
-  }
-}
-
-
-.analyticsCaption {
-  margin: 16px 0 0 0;
-  font-size: 11px;
-  color: #a5aca7;
-  text-align: right;
-}
-
-// ==========================================
-// 상세 정보 모달/패널 추가 속성
-// ==========================================
-.profileSummary {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid $border-color;
-  margin-bottom: 16px;
-
-  div {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-
-    strong {
-      font-size: 15px;
-      color: $text-title;
-    }
-
-    span {
-      font-size: 12px;
-      color: $text-caption;
-    }
-
-    small {
-      font-size: 11px;
-      color: #9aa19d;
-      margin-top: 4px;
-      line-height: 1.3;
-    }
-  }
-}
-
-.avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: $primary-subtle;
-  color: $primary;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.detailBlock {
-  margin-bottom: 18px;
-
-  h3 {
-    font-size: 13px;
-    font-weight: 700;
-    color: $text-title;
-    margin: 0 0 10px;
-  }
-
-  dl {
-    margin: 0;
-    display: flex;
-    flex-direction: column;
     gap: 8px;
 
-    div {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
+    min-height: 28px;
 
-      dt { color: $text-caption; }
-      dd { margin: 0; color: $text-title; font-weight: 500; }
-    }
-  }
-}
+    color:
+      $admin-text-secondary;
 
-.accountFields {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-
-  label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     font-size: 12px;
-    color: $text-caption;
-
-    select {
-      width: 130px;
-      height: 34px;
-      padding: 0 24px 0 10px;
-      font-size: 12px;
-      border: 1px solid $border-color;
-      border-radius: 6px;
-      background: #fbfaf8;
-      color: $text-title;
-      cursor: pointer;
-    }
-  }
-}
-
-.activityCards {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-
-  article {
-    background: #faf8f5;
-    padding: 10px 12px;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    span {
-      font-size: 11px;
-      color: $text-caption;
-    }
 
     strong {
-      font-size: 14px;
-      color: $text-title;
+      color:
+        $admin-text-primary;
+
+      font-size: 12px;
       font-weight: 700;
     }
   }
 }
 
-.suspensionConfirm {
-  background: $danger-subtle;
-  border: 1px solid rgba($danger, 0.2);
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 12px;
 
-  strong { color: $danger; font-weight: 600; }
-  span { color: $text-body; font-size: 11px; }
+// ========================================
+// DONUT
+// ========================================
 
-  button {
-    align-self: flex-end;
-    margin-top: 6px;
-    padding: 4px 10px;
-    font-size: 11px;
-    border-radius: 4px;
-    background: #fff;
-    border: 1px solid rgba($danger, 0.3);
-    color: $danger;
-    cursor: pointer;
-  }
-}
+.statusDonut {
+  --active-rate: 0%;
 
-.detailFooter {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
+  position: relative;
 
-  button {
-    flex: 1;
-    height: 38px;
-    border-radius: $radius-control;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
+  width: 148px;
+  height: 148px;
 
-  .suspendButton {
-    background: #fff;
-    border: 1px solid rgba($danger, 0.3);
-    color: $danger;
-
-    &:hover {
-      background: $danger-subtle;
-    }
-  }
-
-  .saveButton {
-    background: $primary;
-    border: 1px solid $primary;
-    color: #fff;
-
-    &:hover:not(:disabled) {
-      background: $primary-hover;
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-  }
-}
-
-// ==========================================
-// 토스트 (Toast)
-// ==========================================
-.toast {
-  position: fixed;
-  bottom: 32px;
-  right: 32px;
-  background: #2b302d;
-  color: #ffffff;
-  padding: 12px 18px;
-  border-radius: 8px;
-  box-shadow: $shadow-md;
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 13px;
-  z-index: 1000;
+  justify-content: center;
 
-  button {
-    background: none;
-    border: none;
-    color: #9ea4a0;
-    cursor: pointer;
-    font-size: 16px;
-    &:hover { color: #fff; }
-  }
-}
+  border-radius: 50%;
 
-// ==========================================
-// 반응형
-// ==========================================
-@media (max-width: 1180px) {
-  .page {
-    padding: 24px;
-  }
+  background:
+    conic-gradient(
+      $admin-primary
+        0
+        var(--active-rate),
+      #ead9d6
+        var(--active-rate)
+        100%
+    );
 
-  .summaryGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  &::after {
+    position: absolute;
 
-  .managementGrid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
+    width: 104px;
+    height: 104px;
 
-@media (max-width: 767px) {
-  .page {
-    padding: 0 0 32px;
+    border-radius: 50%;
+
+    background:
+      $admin-surface;
+
+    content: '';
   }
 
-  .pageToolbar {
-    gap: 12px;
+  > div {
+    position: relative;
+    z-index: 1;
 
-    h1 {
-      font-size: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 1px;
+
+    span {
+      color:
+        $admin-text-muted;
+
+      font-size: 10px;
+      font-weight: 600;
     }
 
-    button {
-      height: 36px;
-      padding: 0 12px;
-      font-size: 12px;
-    }
-  }
+    strong {
+      color:
+        $admin-text-primary;
 
-  .ornamentLine {
-    display: none;
-  }
+      font-size: 25px;
+      font-weight: 700;
 
-  .summaryArea {
-    margin-bottom: 18px;
-  }
-
-  .summaryGrid {
-    gap: 10px;
-  }
-
-  .summaryCard {
-    min-height: 124px;
-    padding: 14px 12px;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .summaryIcon {
-    width: 38px;
-    height: 38px;
-
-    svg {
-      width: 18px;
-      height: 18px;
-    }
-  }
-
-  .summaryContent {
-    h3 {
-      font-size: 12px;
-      line-height: 1.35;
-    }
-
-    p {
-      font-size: 22px;
-
-      span {
-        font-size: 12px;
-      }
+      line-height: 1.15;
     }
 
     small {
-      font-size: 11px;
-      line-height: 1.35;
+      color:
+        $admin-text-secondary;
+
+      font-size: 10px;
     }
   }
+}
 
-  .memberSection,
-  .analyticsCard,
-  .detailPanel {
-    padding: 16px;
-  }
 
-  .filterBar {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    margin-bottom: 20px;
-  }
+// ========================================
+// DONUT DOT
+// ========================================
 
-  .searchField {
-    grid-column: 1 / -1;
-    min-width: 0;
-  }
+.activeDot,
+.suspendedDot {
+  width: 7px;
+  height: 7px;
 
-  .selectField {
-    min-width: 0;
+  display: block;
 
-    select {
-      width: 100%;
-    }
-  }
+  border-radius: 50%;
+}
 
-  .resetButton {
+
+.activeDot {
+  background:
+    $admin-primary;
+}
+
+
+.suspendedDot {
+  background:
+    #d6aaa5;
+}
+
+
+// ========================================
+// ACTIVITY BAR
+// ========================================
+
+.activityBars {
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
+}
+
+
+.activityBarItem {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+
+  > i {
+    position: relative;
+
     width: 100%;
-  }
+    height: 7px;
 
-  .tableWrap {
-    overflow: visible;
-  }
-
-  .memberTable {
     display: block;
 
-    thead {
-      display: none;
-    }
+    overflow: hidden;
 
-    tbody {
-      display: grid;
-      gap: 10px;
-    }
+    border-radius:
+      999px;
 
-    tr {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px 18px;
-      padding: 18px 16px 16px;
-      border: 1px solid $border-color;
-      border-radius: 10px;
-      background: $bg-surface;
-    }
+    background:
+      #eef0ef;
 
-    td {
-      min-width: 0;
-      min-height: 42px;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 6px;
-      color: $text-title;
-      font-size: 13px;
-      font-weight: 500;
-      line-height: 1.45;
-      overflow-wrap: anywhere;
-      border-bottom: 0;
+    > b {
+      height: 100%;
 
-      &::before {
-        color: $text-caption;
-        font-size: 11px;
-        font-weight: 600;
-        line-height: 1.2;
-      }
+      display: block;
 
-      &:nth-child(1)::before { content: '회원 ID'; }
-      &:nth-child(2)::before { content: '이름'; }
-      &:nth-child(3)::before { content: '이메일'; }
-      &:nth-child(4)::before { content: '가입일'; }
-      &:nth-child(5)::before { content: '최근 로그인'; }
-      &:nth-child(6)::before { content: '상태'; }
-      &:nth-child(7)::before { content: '권한'; }
+      border-radius:
+        inherit;
 
-      &:nth-child(8) {
-        grid-column: 1 / -1;
-      }
+      background:
+        $admin-primary;
 
-      > span:not(.statusBadge):not(.roleBadge) {
-        display: block;
-        max-width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
+      transition:
+        width
+        0.3s ease;
     }
   }
+}
 
-  .memberTable {
-    .statusBadge,
-    .roleBadge {
-      width: auto;
-      padding: 5px 9px;
-      font-size: 12px;
-      line-height: 1;
-    }
+
+.activityBarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  span {
+    color:
+      $admin-text-secondary;
+
+    font-size: 11px;
   }
 
-  .viewButton {
-    width: 100%;
-    min-height: 40px;
+  strong {
+    color:
+      $admin-text-primary;
+
+    font-size: 11px;
+    font-weight: 700;
+  }
+}
+
+
+.analyticsCaption {
+  margin:
+    18px
+    0
+    0;
+
+  padding-top:
+    13px;
+
+  border-top:
+    1px solid
+    $admin-border;
+
+  color:
+    $admin-text-muted;
+
+  font-size: 10px;
+  line-height: 1.5;
+
+  text-align: right;
+}
+
+
+// ========================================
+// DETAIL PANEL
+// ========================================
+
+.detailPanel {
+  position: sticky;
+
+  top: 24px;
+
+  min-width: 0;
+
+  @include admin-panel;
+
+  padding: 20px;
+}
+
+
+// ========================================
+// DETAIL HEADER
+// ========================================
+
+.detailHeader {
+  min-height: 46px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding-bottom: 10px;
+
+  border-bottom:
+    1px solid
+    $admin-border;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+  }
+
+  h2 {
+    margin: 7px 0 0;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    line-height: 30px;
+
+    letter-spacing:
+      -0.02em;
+  }
+
+  > button {
+    width: 30px;
+    height: 30px;
+
+    // 회원 상세 제목 위치에 맞춤
+    margin-top: 7px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border: 0;
+    border-radius: 50%;
+
+    background:
+      #f4f5f4;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 19px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+      color 0.18s ease,
+      background 0.18s ease;
+
+    &:hover {
+      color:
+        $admin-text-primary;
+
+      background:
+        #eceeed;
+    }
+  }
+}
+
+
+// ========================================
+// PROFILE
+// ========================================
+
+.profileSummary {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 13px;
+
+  padding:
+    18px
+    0;
+
+  > div {
+    min-width: 0;
+
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+    gap: 4px;
+  }
+
+  strong {
+    color:
+      $admin-text-primary;
+
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  span {
+    overflow: hidden;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 13px;
+
+    text-overflow:
+      ellipsis;
+
+    white-space:
+      nowrap;
+  }
+
+  small {
+    margin-top: 3px;
+
+    color:
+      $admin-text-muted;
+
+    font-size: 11px;
+    line-height: 1.45;
+
+    word-break:
+      break-all;
+  }
+}
+
+
+// ========================================
+// AVATAR
+// ========================================
+
+.avatar {
+  width: 48px;
+  height: 48px;
+
+  flex:
+    0
+    0
+    48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    $admin-primary-light;
+
+  color:
+    $admin-primary-dark;
+
+  font-size: 17px;
+  font-weight: 700;
+}
+
+
+// ========================================
+// DETAIL BLOCK
+// ========================================
+
+.detailBlock {
+  padding:
+    17px
+    0;
+
+  border-top:
+    1px solid
+    $admin-border;
+
+  h3 {
+    margin:
+      0
+      0
+      12px;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  dl {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+
+    margin: 0;
+  }
+
+  dl > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 14px;
+  }
+
+  dt {
+    color:
+      $admin-text-muted;
+
     font-size: 13px;
   }
 
-  .pagination {
-    margin-top: 18px;
+  dd {
+    margin: 0;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    text-align: right;
+  }
+}
+
+
+// ========================================
+// ACCOUNT FIELDS
+// ========================================
+
+.accountFields {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 10px;
+
+  label {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+  }
+
+  label > span {
+    color:
+      $admin-text-muted;
+
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  select {
+    @include admin-control;
+
+    width: 100%;
+
+    padding:
+      0
+      28px
+      0
+      10px;
+
+    font-size: 13px;
+
+    cursor: pointer;
+  }
+}
+
+
+// ========================================
+// ACTIVITY CARDS
+// ========================================
+
+.activityCards {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 8px;
+
+  article {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 5px;
+
+    padding: 11px;
+
+    border:
+      1px solid
+      $admin-border;
+
+    border-radius:
+      $admin-radius-md;
+
+    background:
+      #fafbfa;
+  }
+
+  article > span {
+    color:
+      $admin-text-muted;
+
+    font-size: 13px;
+  }
+
+  strong {
+    overflow: hidden;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    line-height: 1.3;
+
+    text-overflow:
+      ellipsis;
+
+    white-space:
+      nowrap;
+  }
+
+  strong small {
+    margin-left: 2px;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 11px;
+    font-weight: 600;
+  }
+}
+
+
+// ========================================
+// SUSPENSION CONFIRM
+// ========================================
+
+.suspensionConfirm {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  margin-top:
+    14px;
+
+  padding: 12px;
+
+  border:
+    1px solid
+    rgba(
+      201,
+      111,
+      111,
+      0.22
+    );
+
+  border-radius:
+    $admin-radius-md;
+
+  background:
+    $admin-danger-light;
+
+  strong {
+    color:
+      $admin-danger;
+
+    font-size: 13px;
+    font-weight: 700;
+  }
+  margin-bottom: 18px;
+
+  span {
+    color:
+      $admin-text-secondary;
+
+    font-size: 11px;
+  }
+
+  button {
+    width: fit-content;
+
+    margin-top: 4px;
+    padding: 0;
+
+    border: 0;
+
+    background:
+      transparent;
+
+    color:
+      $admin-danger;
+
+    font: inherit;
+    font-size: 10px;
+    font-weight: 700;
+
+    cursor: pointer;
+    &:hover{
+      color: #ff1900;
+    }
+  }
+}
+
+
+// ========================================
+// DETAIL FOOTER
+// ========================================
+
+.detailFooter {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 0.8fr)
+    minmax(0, 1.4fr);
+
+  gap: 8px;
+
+  padding-top:
+    17px;
+
+  border-top:
+    1px solid
+    $admin-border;
+
+  button {
+    min-height: 38px;
+
+    border-radius:
+      $admin-radius-sm;
+
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+      opacity 0.18s ease,
+      background 0.18s ease,
+      border-color 0.18s ease;
+
+    &:disabled {
+      opacity: 0.5;
+
+      cursor: default;
+    }
+  }
+}
+
+
+.suspendButton {
+  border:
+    1px solid
+    rgba(
+      201,
+      111,
+      111,
+      0.35
+    );
+
+    text-align: center;
+
+  background:
+    $admin-surface;
+
+  color:
+    $admin-danger;
+
+  &:hover {
+    background:
+      $admin-danger-light;
+  }
+}
+
+
+.saveButton {
+  border:
+    1px solid
+    $admin-primary;
+
+    text-align: center;
+
+  background:
+    $admin-primary;
+
+  color:
+    $admin-surface;
+
+  &:hover:not(:disabled) {
+    background:
+      $admin-primary-dark;
+
+    border-color:
+      $admin-primary-dark;
+  }
+}
+
+
+// ========================================
+// TOAST
+// ========================================
+
+.toast {
+  position: fixed;
+
+  right: 28px;
+  bottom: 28px;
+
+  z-index: 1000;
+
+  min-width: 260px;
+  max-width: 420px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding:
+    13px
+    15px;
+
+  border:
+    1px solid
+    rgba(
+      86,
+      138,
+      128,
+      0.25
+    );
+
+  border-radius:
+    $admin-radius-md;
+
+  background:
+    $admin-surface;
+
+  box-shadow:
+    0
+    10px
+    30px
+    rgba(
+      0,
+      0,
+      0,
+      0.1
+    );
+
+  span {
+    color:
+      $admin-text-primary;
+
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  button {
+    flex-shrink: 0;
+
+    width: 25px;
+    height: 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 50%;
+
+    background:
+      #f3f4f3;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 16px;
+
+    cursor: pointer;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 1280
+// ========================================
+
+@media (max-width: 1280px) {
+  .memberTable {
+    min-width: 820px;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 1180
+// ========================================
+
+@media (max-width: 1180px) {
+  .managementGrid {
+    grid-template-columns:
+      1fr;
   }
 
   .analyticsColumn,
   .detailPanel {
+    position: static;
+  }
+
+  .analyticsColumn {
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+  .detailPanel {
+    max-width: none;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 850
+// ========================================
+
+@media (max-width: 850px) {
+  .summaryArea {
+    // 작은 화면에서는 문양과 카드가
+    // 과하게 겹치지 않도록 완화
+    margin-top: -8px;
+  }
+
+  .summaryGrid {
+    width: 100%;
+  }
+
+  .memberSection {
+    padding: 16px;
+  }
+
+  .analyticsColumn {
+    display: grid;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
     gap: 12px;
   }
 
-  .statusOverview {
-    gap: 16px;
+  .sectionHeading {
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap: 8px;
   }
 
-  .profileSummary {
-    align-items: flex-start;
+  .accountFields,
+  .activityCards {
+    grid-template-columns:
+      1fr;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 767
+// ========================================
+
+@media (max-width: 767px) {
+  .page {
+    padding-bottom:
+      30px;
+  }
+
+  .summaryArea {
+    margin-top: 0;
+  }
+
+  .sectionHeading {
+    min-height: auto;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-top: 24px;
+    margin-bottom: 16px;
 
     > div {
       min-width: 0;
+    }
 
-      span,
-      small {
-        overflow-wrap: anywhere;
-      }
+    h2 {
+      margin: 0;
+
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.3;
     }
   }
 
-  .accountFields label {
-    gap: 12px;
+  .memberCount {
+    flex-shrink: 0;
 
-    select {
-      width: min(150px, 55%);
+    font-size: 13px;
+
+    strong {
+      font-size: 16px;
     }
   }
 
-  .activityCards {
-    grid-template-columns: 1fr;
+
+   .summaryGrid {
+    width: 100%;
+    margin-inline: auto;
+  }
+  
+
+  .memberSection {
+    padding: 14px;
+  }
+
+  .memberTable {
+    min-width: 760px;
+  }
+
+  .detailPanel {
+    padding: 16px;
   }
 
   .toast {
     right: 16px;
     bottom: 16px;
     left: 16px;
-    justify-content: space-between;
+
+    min-width: 0;
+    max-width: none;
   }
-}
+  .analyticsCaption {
+    // 마지막 막대 ↔ 회색선
+    margin:
+      40px
+      0
+      0;
 
-@media (max-width: 390px) {
-  .summaryGrid {
-    grid-template-columns: 1fr;
-  }
+    // 회색선 ↔ 날짜/시간
+    padding-top: 20px;
 
-  .summaryCard {
-    min-height: 104px;
-    align-items: center;
-  }
-}
+    border-top:
+      1px solid
+      $admin-border;
 
-
-// ========================================
-// 모바일 필터 및 회원 카드 가독성
-// ========================================
-
-@media (max-width: 767px) {
-  .selectField select,
-  .resetButton {
-    border-color: #c8ddd8;
-    background: #f3f8f6;
-    color: #456f6b;
-    font-weight: 600;
-    text-align: center;
-    text-align-last: center;
+    font-size: 11px;
+    line-height: 1.3;
   }
 
-  .selectField select:focus,
-  .resetButton:hover {
-    border-color: #7eaaa5;
-    background: #eaf4f1;
-    color: #35625e;
-  }
+  .analyticsColumn {
+    display: grid;
 
-  .memberTable tbody {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
     gap: 12px;
-  }
-
-  .memberTable tbody tr {
-    padding: 16px;
-    gap: 16px 18px;
-    border-color: #d8e4df;
-    border-radius: 12px;
-    box-shadow: 0 3px 12px rgba(57, 85, 78, 0.05);
-  }
-
-  .memberTable tbody td {
-    min-height: 0;
-    gap: 7px;
-    color: #3f3b37;
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 1.55;
-
-    &::before {
-      color: #4d7e7b;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    &:nth-child(3) {
-      grid-column: 1 / -1;
-      padding: 11px 12px;
-      border-radius: 8px;
-      background: #f3f8f6;
-    }
-  }
-
-  .memberTable .statusBadge,
-  .memberTable .roleBadge {
-    min-height: 28px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .viewButton {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
   }
 }

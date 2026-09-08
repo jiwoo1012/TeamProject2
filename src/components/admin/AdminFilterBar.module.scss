@@ -1,0 +1,289 @@
+@use '../../styles/admin/adminVariables' as *;
+@use '../../styles/admin/adminMixins' as *;
+
+
+// ========================================
+// FILTER BAR
+// ========================================
+
+.filterBar {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  margin-bottom:
+    $admin-panel-gap;
+}
+
+
+// ========================================
+// CONTROLS
+// ========================================
+
+.controls {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+
+// ========================================
+// SEARCH
+// ========================================
+
+.searchBox {
+  position: relative;
+
+  min-width: 220px;
+  max-width: 420px;
+
+  display: flex;
+  flex: 1;
+  align-items: center;
+
+
+  input {
+    @include admin-control;
+
+    width: 100%;
+
+    padding:
+      0
+      14px
+      0
+      40px;
+
+    font-size: 13px;
+
+
+    &::placeholder {
+      color:
+        $admin-text-muted;
+    }
+
+
+    // 브라우저 기본 search X 버튼 제거
+    &::-webkit-search-cancel-button {
+      appearance: none;
+    }
+  }
+}
+
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+
+  z-index: 1;
+
+  width: 16px;
+  height: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color:
+    $admin-text-muted;
+
+  pointer-events: none;
+
+  transform:
+    translateY(-50%);
+
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+
+// ========================================
+// PAGE-SPECIFIC FILTERS
+// ========================================
+
+.filters {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+
+  select,
+  input {
+    @include admin-control;
+
+    min-width: 120px;
+
+    padding:
+      0
+      34px
+      0
+      12px;
+
+    font-size: 13px;
+  }
+
+
+  select {
+    cursor: pointer;
+  }
+
+
+  button {
+    @include admin-button;
+  }
+}
+
+
+// ========================================
+// RESET BUTTON
+// ========================================
+
+.resetButton {
+  @include admin-button;
+
+  flex-shrink: 0;
+
+  gap: 6px;
+
+  color:
+    $admin-text-secondary;
+
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+
+  &:hover {
+    color:
+      $admin-primary;
+  }
+}
+
+
+// ========================================
+// RESULT TEXT
+// ========================================
+
+.result {
+  color:
+    $admin-text-muted;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+
+// ========================================
+// RESPONSIVE
+// ========================================
+
+@media (
+  max-width: 1000px
+) {
+  .controls {
+    flex-wrap: wrap;
+  }
+
+
+  .searchBox {
+    max-width: none;
+
+    flex-basis: 100%;
+  }
+
+
+  .filters {
+    flex: 1;
+    flex-wrap: wrap;
+  }
+}
+
+
+@media (max-width: 767px) {
+  .controls {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto;
+
+    gap: 10px 8px;
+
+    align-items: stretch;
+  }
+
+  // 검색창은 첫 번째 줄 전체 사용
+  .searchBox {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+
+    grid-column:
+      1 / -1;
+  }
+
+
+  // 3개의 필터는 두 번째 줄 왼쪽 영역에서 한 줄
+  .filters {
+    min-width: 0;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+
+    gap: 8px;
+
+    align-items: stretch;
+
+    > * {
+      width: 100%;
+      min-width: 0;
+    }
+
+    select {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
+
+  // 초기화는 필터 3개와 같은 줄 오른쪽
+  .resetButton {
+    width: auto;
+    min-width: 88px;
+
+    align-self: stretch;
+
+    white-space: nowrap;
+  }
+}
+
+
+@media (
+  max-width: 480px
+) {
+  .filters {
+    grid-template-columns:
+      1fr;
+  }
+}

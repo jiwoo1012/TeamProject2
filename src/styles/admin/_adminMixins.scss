@@ -1,0 +1,85 @@
+@use './adminVariables' as *;
+
+
+// ========================================
+// PANEL
+// ========================================
+
+@mixin admin-panel {
+  background: $admin-surface;
+  border: 1px solid $admin-border;
+  border-radius: $admin-radius-lg;
+  padding: $admin-panel-padding;
+  box-shadow: $admin-shadow;
+}
+
+
+// ========================================
+// INPUT / SELECT
+// ========================================
+
+@mixin admin-control {
+  height: $admin-control-height;
+
+  border: 1px solid $admin-border-dark;
+  border-radius: $admin-radius-sm;
+
+  background: $admin-surface;
+  color: $admin-text-primary;
+
+  font: inherit;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: $admin-primary;
+
+    box-shadow:
+      0 0 0 3px rgba(86, 138, 128, 0.12);
+  }
+}
+
+
+// ========================================
+// BUTTON
+// ========================================
+
+@mixin admin-button {
+  min-height: $admin-control-height;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 16px;
+
+  border: 1px solid $admin-border-dark;
+  border-radius: $admin-radius-sm;
+
+  background: $admin-surface;
+  color: $admin-text-primary;
+
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    border-color: $admin-primary;
+    color: $admin-primary;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}

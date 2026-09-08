@@ -1,0 +1,218 @@
+@use '../../styles/admin/adminVariables' as *;
+@use '../../styles/admin/adminMixins' as *;
+
+
+// ========================================
+// PANEL
+// ========================================
+
+.panel {
+  @include admin-panel;
+
+  width: 100%;
+  min-width: 0;
+
+  overflow: hidden;
+}
+
+
+// ========================================
+// PADDING TYPE
+// ========================================
+
+.padding-default {
+  padding:
+    $admin-panel-padding;
+}
+
+
+.padding-compact {
+  padding: 18px;
+}
+
+
+.padding-large {
+  padding: 26px;
+}
+
+
+.padding-none {
+  padding: 0;
+
+  .header {
+    padding:
+      20px
+      $admin-panel-padding
+      0;
+  }
+}
+
+
+// ========================================
+// HEADER
+// ========================================
+
+.header {
+  min-height: 32px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 18px;
+}
+
+
+// ========================================
+// TITLE AREA
+// ========================================
+
+.titleArea {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+
+  h2 {
+    margin: 0;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.4;
+
+    letter-spacing:
+      -0.02em;
+  }
+}
+
+
+// ========================================
+// EYEBROW
+// ========================================
+
+.eyebrow {
+  flex-shrink: 0;
+
+  color:
+    $admin-text-muted;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing:
+    0.08em;
+
+  text-transform:
+    uppercase;
+}
+
+
+// ========================================
+// ACTION
+// ========================================
+
+.action {
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+
+  button,
+  a {
+    border: 0;
+
+    background: none;
+
+    color:
+      $admin-text-secondary;
+
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+      color 0.18s ease;
+
+
+    &:hover {
+      color:
+        $admin-primary;
+    }
+  }
+}
+
+
+// ========================================
+// BODY
+// ========================================
+
+.body {
+  width: 100%;
+  min-width: 0;
+}
+
+
+// ========================================
+// RESPONSIVE
+// ========================================
+
+@media (max-width: 767px) {
+  .panel {
+    border-radius:
+      $admin-radius-md;
+  }
+
+
+  .padding-default {
+    padding: 18px;
+  }
+
+
+  .padding-large {
+    padding: 20px;
+  }
+
+
+  .padding-none {
+    padding: 0;
+
+    .header {
+      padding:
+        18px
+        18px
+        0;
+    }
+  }
+
+
+  .header {
+    margin-bottom: 14px;
+  }
+
+
+  .titleArea {
+    gap: 7px;
+
+    h2 {
+      font-size: 20px;
+    }
+  }
+
+
+  .eyebrow {
+    font-size: 9px;
+  }
+}

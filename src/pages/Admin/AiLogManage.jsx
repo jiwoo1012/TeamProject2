@@ -1,10 +1,16 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 
-import adminTopOrnament from '../../assets/images/admin/adminTopOrnament.svg'
+import AdminEmptyState from '../../components/admin/AdminEmptyState'
+import AdminFilterBar from '../../components/admin/AdminFilterBar'
+import AdminPageHeader from '../../components/admin/AdminPageHeader'
+import AdminPanel from '../../components/admin/AdminPanel'
+import AdminStatusBadge from '../../components/admin/AdminStatusBadge'
+import AdminSummaryCard from '../../components/admin/AdminSummaryCard'
 
 import styles from './AiLogManage.module.scss'
 
@@ -617,6 +623,26 @@ const SummaryIcon = ({ type }) => {
 // AI 추천 관리
 // ========================================
 
+const parseLogDate = (date) => {
+  const parts = String(date || '')
+    .split('.')
+    .map((value) =>
+      Number(value.trim())
+    )
+    .filter(Boolean)
+
+  if (parts.length < 3) {
+    return null
+  }
+
+  return new Date(
+    parts[0],
+    parts[1] - 1,
+    parts[2]
+  )
+}
+
+
 const AiLogManage = () => {
   const [
     searchQuery,
@@ -653,6 +679,14 @@ const AiLogManage = () => {
     setTopPeriod,
   ] = useState('all')
 
+  const [
+    activeSummaryKey,
+    setActiveSummaryKey,
+  ] = useState('summaryTotal')
+
+  const detailPanelRef =
+    useRef(null)
+
 
   // ========================================
   // 필터
@@ -664,6 +698,16 @@ const AiLogManage = () => {
         searchQuery
           .trim()
           .toLowerCase()
+
+      const today =
+        new Date()
+
+      today.setHours(
+        0,
+        0,
+        0,
+        0
+      )
 
       return mockLogs.filter(
         (log) => {
@@ -691,10 +735,47 @@ const AiLogManage = () => {
             log.status ===
               statusFilter
 
+          let matchesSummary = true
+
+          if (
+            activeSummaryKey ===
+            'summaryWeek'
+          ) {
+            const logDate =
+              parseLogDate(
+                log.date
+              )
+
+            if (!logDate) {
+              matchesSummary = false
+            } else {
+              logDate.setHours(
+                0,
+                0,
+                0,
+                0
+              )
+
+              const difference =
+                today.getTime()
+                - logDate.getTime()
+
+              matchesSummary =
+                difference >= 0
+                && difference
+                  <= 6
+                  * 24
+                  * 60
+                  * 60
+                  * 1000
+            }
+          }
+
           return (
-            matchesSearch &&
-            matchesMember &&
-            matchesStatus
+            matchesSearch
+            && matchesMember
+            && matchesStatus
+            && matchesSummary
           )
         }
       )
@@ -702,6 +783,7 @@ const AiLogManage = () => {
       searchQuery,
       memberFilter,
       statusFilter,
+      activeSummaryKey,
     ])
 
 
@@ -733,15 +815,14 @@ const AiLogManage = () => {
         PAGE_SIZE
     )
 
-
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [
-    searchQuery,
-    memberFilter,
-    statusFilter,
-  ])
-
+  const pageStart =
+    Math.max(
+      1,
+      Math.min(
+        safeCurrentPage - 2,
+        totalPages - 4
+      )
+    )
 
   const pageNumbers =
     Array.from(
@@ -749,12 +830,22 @@ const AiLogManage = () => {
         length:
           Math.min(
             totalPages,
-            3
+            5
           ),
       },
       (_, index) =>
-        index + 1
+        pageStart + index
     )
+
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [
+    searchQuery,
+    memberFilter,
+    statusFilter,
+    activeSummaryKey,
+  ])
 
 
   // ========================================
@@ -770,11 +861,31 @@ const AiLogManage = () => {
 
   // ========================================
   // 상세 열기
-  // 무조건 1단계부터 시작
   // ========================================
 
   const openDetail = (log) => {
     setSelectedId(log.id)
+    setDetailStep(1)
+
+    if (
+      typeof window !== 'undefined'
+      && window.matchMedia(
+        '(max-width: 767px)'
+      ).matches
+    ) {
+      window.setTimeout(() => {
+        detailPanelRef.current
+          ?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          })
+      }, 100)
+    }
+  }
+
+
+  const closeDetail = () => {
+    setSelectedId(null)
     setDetailStep(1)
   }
 
@@ -787,7 +898,31 @@ const AiLogManage = () => {
     setSearchQuery('')
     setMemberFilter('all')
     setStatusFilter('all')
+    setActiveSummaryKey('summaryTotal')
     setCurrentPage(1)
+    setSelectedId(null)
+  }
+
+
+  // ========================================
+  // 요약 카드
+  // ========================================
+
+  const handleSummaryFilter = (key) => {
+    setSearchQuery('')
+    setMemberFilter('all')
+    setStatusFilter('all')
+    setActiveSummaryKey(key)
+    setCurrentPage(1)
+    setSelectedId(null)
+
+    if (key === 'summarySuccess') {
+      setStatusFilter('success')
+    }
+
+    if (key === 'summaryFail') {
+      setStatusFilter('failed')
+    }
   }
 
 
@@ -798,6 +933,8 @@ const AiLogManage = () => {
       label: '전체 추천 횟수',
       value: 128,
       unit: '건',
+      caption: '누적 AI 추천 이용',
+      tone: 'primary',
     },
     {
       key: 'summaryWeek',
@@ -805,13 +942,17 @@ const AiLogManage = () => {
       label: '최근 7일 추천',
       value: 30,
       unit: '건',
+      caption: '최근 이용 흐름',
+      tone: 'info',
     },
     {
       key: 'summarySuccess',
       icon: 'success',
-      label: '추천 성공률',
+      label: '추천 성공',
       value: 12,
       unit: '건',
+      caption: '정상 추천 완료',
+      tone: 'success',
     },
     {
       key: 'summaryFail',
@@ -819,6 +960,8 @@ const AiLogManage = () => {
       label: '추천 실패',
       value: 8,
       unit: '건',
+      caption: '확인이 필요한 요청',
+      tone: 'danger',
     },
   ]
 
@@ -833,24 +976,9 @@ const AiLogManage = () => {
           제목
       ======================================== */}
 
-      <header
-        className={styles.pageHeader}
-      >
-        <h1 id="ai-log-title">
-          AI 추천 기록 관리
-        </h1>
-      </header>
-
-
-      {/* ========================================
-          전통 문양
-      ======================================== */}
-
-      <img
-        className={styles.topOrnament}
-        src={adminTopOrnament}
-        alt=""
-        aria-hidden="true"
+      <AdminPageHeader
+        title="AI 추천 기록 관리"
+        titleId="ai-log-title"
       />
 
 
@@ -862,43 +990,39 @@ const AiLogManage = () => {
         className={styles.summaryArea}
         aria-label="AI 추천 현황"
       >
-        <div
-          className={styles.summaryGrid}
-        >
+        <div className={styles.summaryGrid}>
           {summaryCards.map(
             (card) => (
-              <article
+              <AdminSummaryCard
                 key={card.key}
-                className={
-                  styles.summaryCard
-                }
-              >
-                <span
-                  className={`${styles.summaryIcon} ${styles[card.key]}`}
-                >
-                  <SummaryIcon
-                    type={card.icon}
-                  />
-                </span>
-
-                <div
-                  className={
-                    styles.summaryContent
-                  }
-                >
-                  <span>
-                    {card.label}
+                icon={
+                  <span
+                    className={
+                      styles.summarySvg
+                    }
+                  >
+                    <SummaryIcon
+                      type={card.icon}
+                    />
                   </span>
-
-                  <strong>
-                    {card.value}
-
-                    <em>
-                      {card.unit}
-                    </em>
-                  </strong>
-                </div>
-              </article>
+                }
+                label={card.label}
+                value={card.value.toLocaleString(
+                  'ko-KR'
+                )}
+                unit={card.unit}
+                caption={card.caption}
+                tone={card.tone}
+                active={
+                  activeSummaryKey
+                  === card.key
+                }
+                onClick={() =>
+                  handleSummaryFilter(
+                    card.key
+                  )
+                }
+              />
             )
           )}
         </div>
@@ -909,11 +1033,7 @@ const AiLogManage = () => {
           본문
       ======================================== */}
 
-      <div
-        className={
-          styles.managementGrid
-        }
-      >
+      <div className={styles.managementGrid}>
 
         {/* ========================================
             왼쪽 목록
@@ -921,71 +1041,37 @@ const AiLogManage = () => {
 
         <section
           className={styles.mainSection}
+          aria-labelledby="ai-log-list-title"
         >
 
-          {/* 필터 */}
-
-          <div
-            className={styles.filterBar}
+          <AdminFilterBar
+            searchValue={searchQuery}
+            onSearchChange={(value) => {
+              setSearchQuery(value)
+              setActiveSummaryKey(null)
+              setCurrentPage(1)
+            }}
+            searchPlaceholder="사용자 ID, 추천 ID, 상품명으로 검색"
+            searchLabel="AI 추천 검색"
+            onReset={resetFilters}
           >
-            <label
-              className={
-                styles.searchField
-              }
-            >
-              <span
-                className={styles.srOnly}
-              >
-                AI 추천 검색
-              </span>
-
-              <svg
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <circle
-                  cx="11"
-                  cy="11"
-                  r="7"
-                />
-
-                <path d="m16 16 4 4" />
-              </svg>
-
-              <input
-                type="search"
-                value={searchQuery}
-                onChange={(event) =>
-                  setSearchQuery(
-                    event.target.value
-                  )
-                }
-                placeholder="사용자 ID, 추천 ID, 상품명으로 검색"
-              />
-            </label>
-
-
-            <label
-              className={
-                styles.selectField
-              }
-            >
-              <span
-                className={styles.srOnly}
-              >
+            <label className={styles.selectField}>
+              <span className={styles.srOnly}>
                 회원 유형
               </span>
 
               <select
                 value={memberFilter}
-                onChange={(event) =>
+                onChange={(event) => {
                   setMemberFilter(
                     event.target.value
                   )
-                }
+                  setActiveSummaryKey(null)
+                  setCurrentPage(1)
+                }}
               >
                 <option value="all">
-                  회원 유형
+                  전체 회원 유형
                 </option>
 
                 <option value="member">
@@ -998,28 +1084,23 @@ const AiLogManage = () => {
               </select>
             </label>
 
-
-            <label
-              className={
-                styles.selectField
-              }
-            >
-              <span
-                className={styles.srOnly}
-              >
+            <label className={styles.selectField}>
+              <span className={styles.srOnly}>
                 추천 상태
               </span>
 
               <select
                 value={statusFilter}
-                onChange={(event) =>
+                onChange={(event) => {
                   setStatusFilter(
                     event.target.value
                   )
-                }
+                  setActiveSummaryKey(null)
+                  setCurrentPage(1)
+                }}
               >
                 <option value="all">
-                  추천 상태
+                  전체 추천 상태
                 </option>
 
                 <option value="success">
@@ -1031,237 +1112,267 @@ const AiLogManage = () => {
                 </option>
               </select>
             </label>
-
-
-            <button
-              type="button"
-              className={
-                styles.resetButton
-              }
-              onClick={resetFilters}
-            >
-              초기화
-            </button>
-          </div>
+          </AdminFilterBar>
 
 
           {/* 목록 제목 */}
 
-          <div
-            className={
-              styles.listHeading
-            }
-          >
-            <h2>
-              AI 추천 기록
-            </h2>
+          <div className={styles.sectionHeading}>
 
-            <span>
-              총 {filteredLogs.length}건
+            <div className={styles.titleWrap}>
+              <h2 id="ai-log-list-title">
+                AI 추천 기록
+              </h2>
+            </div>
+
+            <span className={styles.logCount}>
+              총{' '}
+              <strong>
+                {filteredLogs.length.toLocaleString(
+                  'ko-KR'
+                )}
+              </strong>
+              건
             </span>
+
           </div>
 
 
           {/* 테이블 */}
 
-          <div
-            className={styles.tableWrap}
-          >
-            <table
-              className={styles.logTable}
-            >
-              <thead>
-                <tr>
-                  <th>추천 ID</th>
-                  <th>사용자</th>
-                  <th>회원 유형</th>
-                  <th>추천 일자</th>
-                  <th>사용자 취향 요약</th>
-                  <th>대표 추천 상품</th>
-                  <th>상태</th>
-                  <th>관리</th>
-                </tr>
-              </thead>
+          {filteredLogs.length === 0 ? (
 
-              <tbody>
-                {visibleLogs.length > 0 ? (
-                  visibleLogs.map(
-                    (log) => (
-                      <tr
-                        key={log.id}
+            <AdminEmptyState
+              title="검색 결과가 없습니다."
+              description="검색어나 필터 조건을 다시 확인해주세요."
+            />
+
+          ) : (
+
+            <>
+
+              <div className={styles.tableWrap}>
+                <table className={styles.logTable}>
+
+                  <thead>
+                    <tr>
+                      <th>추천 ID</th>
+                      <th>사용자</th>
+                      <th>회원 유형</th>
+                      <th>추천 일자</th>
+                      <th>사용자 취향 요약</th>
+                      <th>대표 추천 상품</th>
+                      <th>상태</th>
+                      <th>관리</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {visibleLogs.map(
+                      (log) => (
+                        <tr
+                          key={log.id}
+                          className={
+                            selectedId === log.id
+                              ? styles.selectedRow
+                              : ''
+                          }
+                          onClick={() =>
+                            openDetail(log)
+                          }
+                        >
+                          <td>
+                            <strong
+                              className={
+                                styles.logId
+                              }
+                            >
+                              {log.id}
+                            </strong>
+                          </td>
+
+                          <td>
+                            {log.user}
+                          </td>
+
+                          <td>
+                            <AdminStatusBadge
+                              tone={
+                                log.memberType ===
+                                'member'
+                                  ? 'success'
+                                  : 'neutral'
+                              }
+                              size="small"
+                            >
+                              {log.memberType ===
+                              'member'
+                                ? '회원'
+                                : '비회원'}
+                            </AdminStatusBadge>
+                          </td>
+
+                          <td>
+                            <span
+                              className={
+                                styles.dateCell
+                              }
+                            >
+                              <span>
+                                {log.date}
+                              </span>
+
+                              <small>
+                                {log.time}
+                              </small>
+                            </span>
+                          </td>
+
+                          <td
+                            className={
+                              styles.preferenceCell
+                            }
+                            title={
+                              log.preference
+                            }
+                          >
+                            {log.preference}
+                          </td>
+
+                          <td
+                            className={
+                              styles.productCell
+                            }
+                            title={
+                              log.representativeProduct
+                            }
+                          >
+                            {
+                              log.representativeProduct
+                            }
+                          </td>
+
+                          <td>
+                            <AdminStatusBadge
+                              tone={
+                                log.status ===
+                                'success'
+                                  ? 'success'
+                                  : 'danger'
+                              }
+                              size="small"
+                            >
+                              {log.status ===
+                              'success'
+                                ? '성공'
+                                : '실패'}
+                            </AdminStatusBadge>
+                          </td>
+
+                          <td>
+                            <button
+                              type="button"
+                              className={
+                                styles.detailButton
+                              }
+                              onClick={(event) => {
+                                event.stopPropagation()
+                                openDetail(log)
+                              }}
+                            >
+                              상세 보기
+                            </button>
+                          </td>
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+
+                </table>
+              </div>
+
+
+              {totalPages > 1 && (
+
+                <nav
+                  className={styles.pagination}
+                  aria-label="AI 추천 기록 페이지"
+                >
+
+                  <button
+                    type="button"
+                    disabled={
+                      safeCurrentPage === 1
+                    }
+                    onClick={() =>
+                      setCurrentPage(
+                        (page) =>
+                          Math.max(
+                            1,
+                            page - 1
+                          )
+                      )
+                    }
+                    aria-label="이전 페이지"
+                  >
+                    ‹
+                  </button>
+
+                  {pageNumbers.map(
+                    (page) => (
+                      <button
+                        type="button"
+                        key={page}
                         className={
-                          selectedId === log.id
-                            ? styles.selectedRow
+                          page ===
+                          safeCurrentPage
+                            ? styles.activePage
                             : ''
                         }
+                        onClick={() =>
+                          setCurrentPage(
+                            page
+                          )
+                        }
+                        aria-current={
+                          page ===
+                          safeCurrentPage
+                            ? 'page'
+                            : undefined
+                        }
                       >
-                        <td>
-                          {log.id}
-                        </td>
-
-                        <td>
-                          {log.user}
-                        </td>
-
-                        <td>
-                          <span
-                            className={`${styles.memberBadge} ${
-                              log.memberType ===
-                              'member'
-                                ? styles.member
-                                : styles.guest
-                            }`}
-                          >
-                            {log.memberType ===
-                            'member'
-                              ? '회원'
-                              : '비회원'}
-                          </span>
-                        </td>
-
-                        <td>
-                          {log.date}
-                        </td>
-
-                        <td
-                          className={
-                            styles.preferenceCell
-                          }
-                          title={
-                            log.preference
-                          }
-                        >
-                          {log.preference}
-                        </td>
-
-                        <td
-                          className={
-                            styles.productCell
-                          }
-                        >
-                          {
-                            log.representativeProduct
-                          }
-                        </td>
-
-                        <td>
-                          <span
-                            className={`${styles.statusBadge} ${
-                              log.status ===
-                              'success'
-                                ? styles.successStatus
-                                : styles.failStatus
-                            }`}
-                          >
-                            <i />
-
-                            {log.status ===
-                            'success'
-                              ? '성공'
-                              : '실패'}
-                          </span>
-                        </td>
-
-                        <td>
-                          <button
-                            type="button"
-                            className={
-                              styles.detailButton
-                            }
-                            onClick={() =>
-                              openDetail(log)
-                            }
-                          >
-                            상세 보기
-                          </button>
-                        </td>
-                      </tr>
+                        {page}
+                      </button>
                     )
-                  )
-                ) : (
-                  <tr>
-                    <td
-                      colSpan="8"
-                      className={
-                        styles.emptyState
-                      }
-                    >
-                      검색 조건에 맞는
-                      추천 기록이 없습니다.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                  )}
 
+                  <button
+                    type="button"
+                    disabled={
+                      safeCurrentPage ===
+                      totalPages
+                    }
+                    onClick={() =>
+                      setCurrentPage(
+                        (page) =>
+                          Math.min(
+                            totalPages,
+                            page + 1
+                          )
+                      )
+                    }
+                    aria-label="다음 페이지"
+                  >
+                    ›
+                  </button>
 
-          {/* 페이지네이션 */}
+                </nav>
 
-          <nav
-            className={
-              styles.pagination
-            }
-          >
-            <button
-              type="button"
-              disabled={
-                safeCurrentPage === 1
-              }
-              onClick={() =>
-                setCurrentPage(
-                  (page) =>
-                    Math.max(
-                      1,
-                      page - 1
-                    )
-                )
-              }
-            >
-              ‹
-            </button>
+              )}
 
-            {pageNumbers.map(
-              (page) => (
-                <button
-                  type="button"
-                  key={page}
-                  className={
-                    page ===
-                    safeCurrentPage
-                      ? styles.currentPage
-                      : ''
-                  }
-                  onClick={() =>
-                    setCurrentPage(
-                      page
-                    )
-                  }
-                >
-                  {page}
-                </button>
-              )
-            )}
+            </>
 
-            <button
-              type="button"
-              disabled={
-                safeCurrentPage ===
-                totalPages
-              }
-              onClick={() =>
-                setCurrentPage(
-                  (page) =>
-                    Math.min(
-                      totalPages,
-                      page + 1
-                    )
-                )
-              }
-            >
-              ›
-            </button>
-          </nav>
+          )}
 
         </section>
 
@@ -1271,101 +1382,74 @@ const AiLogManage = () => {
         ======================================== */}
 
         {!selectedLog ? (
+
           <aside
-            className={
-              styles.analyticsColumn
-            }
+            className={styles.analyticsColumn}
           >
 
-            {/* 회원 / 비회원 */}
-
-            <section
-              className={
-                styles.analyticsCard
-              }
+            <AdminPanel
+              title="회원/비회원 이용 비율"
+              padding="compact"
             >
-              <h2>
-                회원/비회원 이용 비율
-              </h2>
+              <div className={styles.memberRatioArea}>
 
-              <div
-                className={
-                  styles.memberRatioArea
-                }
-              >
-                <div
-                  className={
-                    styles.donutChart
-                  }
-                >
+                <div className={styles.donutChart}>
                   <div>
-                    <span>전체</span>
+                    <span>
+                      전체
+                    </span>
+
                     <strong>
-                      1,234건
+                      1,234
+                      <small>
+                        건
+                      </small>
                     </strong>
                   </div>
                 </div>
 
-                <ul
-                  className={
-                    styles.ratioLegend
-                  }
-                >
+                <ul className={styles.ratioLegend}>
                   <li>
-                    <i
-                      className={
-                        styles.memberDot
-                      }
-                    />
-                    회원
+                    <i className={styles.memberDot} />
+                    <span>
+                      회원
+                    </span>
                   </li>
 
                   <li>
-                    <i
-                      className={
-                        styles.guestDot
-                      }
-                    />
-                    비회원
+                    <i className={styles.guestDot} />
+                    <span>
+                      비회원
+                    </span>
                   </li>
                 </ul>
+
               </div>
 
-              <div
-                className={
-                  styles.ratioNotice
-                }
-              >
-                <span>ⓘ</span>
+              <div className={styles.ratioNotice}>
+                <span>
+                  ⓘ
+                </span>
+
                 비회원의 AI 추천 비중이
                 꾸준히 증가하고 있습니다.
               </div>
-            </section>
+            </AdminPanel>
 
 
-            {/* TOP 5 */}
-
-            <section
-              className={
-                styles.analyticsCard
-              }
-            >
-              <div
-                className={
-                  styles.topHeader
-                }
-              >
-                <h2>
-                  추천 상품 TOP 5
-                </h2>
-
+            <AdminPanel
+              title="추천 상품 TOP 5"
+              padding="compact"
+              action={
                 <select
+                  className={styles.periodSelect}
                   value={topPeriod}
                   onChange={(event) =>
                     setTopPeriod(
                       event.target.value
                     )
                   }
+                  aria-label="추천 상품 집계 기간"
                 >
                   <option value="all">
                     전체 기간
@@ -1379,13 +1463,9 @@ const AiLogManage = () => {
                     최근 30일
                   </option>
                 </select>
-              </div>
-
-              <div
-                className={
-                  styles.topProductList
-                }
-              >
+              }
+            >
+              <div className={styles.topProductList}>
                 {topProducts.map(
                   (product, index) => (
                     <div
@@ -1394,11 +1474,7 @@ const AiLogManage = () => {
                       }
                       key={product.name}
                     >
-                      <span
-                        className={
-                          styles.rank
-                        }
-                      >
+                      <span className={styles.rank}>
                         {index + 1}
                       </span>
 
@@ -1406,11 +1482,7 @@ const AiLogManage = () => {
                         {product.name}
                       </strong>
 
-                      <span
-                        className={
-                          styles.barTrack
-                        }
-                      >
+                      <span className={styles.barTrack}>
                         <i
                           style={{
                             width:
@@ -1432,151 +1504,159 @@ const AiLogManage = () => {
                   )
                 )}
               </div>
-            </section>
+            </AdminPanel>
 
           </aside>
+
         ) : (
+
           <aside
-            className={
-              styles.detailPanel
-            }
+            ref={detailPanelRef}
+            className={styles.detailPanel}
+            aria-labelledby="ai-log-detail-title"
           >
 
-            <h2>
-              AI 추천 상세
-            </h2>
+            <header className={styles.panelTopHeader}>
+
+              <div>
+                <h2 id="ai-log-detail-title">
+                  AI 추천 상세
+                </h2>
+
+                <span className={styles.stepLabel}>
+                  {detailStep} / 2
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={closeDetail}
+                aria-label="닫기"
+              >
+                ×
+              </button>
+
+            </header>
 
 
             {/* ========================================
                 상세 1단계
-                기본 정보 + 회원 취향 정보
             ======================================== */}
 
             {detailStep === 1 && (
-              <div
-                className={
-                  styles.detailPage
-                }
-              >
 
-                {/* 기본 정보 */}
+              <div className={styles.detailPage}>
 
-                <section
-                  className={
-                    styles.detailSection
-                  }
-                >
+                <section className={styles.detailSection}>
                   <h3>
                     기본 정보
                   </h3>
 
-                  <dl
-                    className={
-                      styles.detailInfoList
-                    }
-                  >
+                  <dl className={styles.detailInfoList}>
+
                     <div>
-                      <dt>추천 ID</dt>
+                      <dt>
+                        추천 ID
+                      </dt>
+
                       <dd>
                         {selectedLog.id}
                       </dd>
                     </div>
 
                     <div>
-                      <dt>사용자 ID</dt>
+                      <dt>
+                        사용자 ID
+                      </dt>
+
                       <dd>
-                        {
-                          selectedLog.userId
-                        }
+                        {selectedLog.userId}
                       </dd>
                     </div>
 
                     <div>
-                      <dt>사용자</dt>
+                      <dt>
+                        사용자
+                      </dt>
+
                       <dd>
                         {selectedLog.user}
                       </dd>
                     </div>
 
                     <div>
-                      <dt>회원 유형</dt>
+                      <dt>
+                        회원 유형
+                      </dt>
+
                       <dd>
-                        <span
-                          className={`${styles.memberBadge} ${
+                        <AdminStatusBadge
+                          tone={
                             selectedLog.memberType ===
                             'member'
-                              ? styles.member
-                              : styles.guest
-                          }`}
+                              ? 'success'
+                              : 'neutral'
+                          }
+                          size="small"
                         >
                           {selectedLog.memberType ===
                           'member'
                             ? '회원'
                             : '비회원'}
-                        </span>
+                        </AdminStatusBadge>
                       </dd>
                     </div>
 
                     <div>
-                      <dt>추천 일자</dt>
+                      <dt>
+                        추천 일시
+                      </dt>
+
                       <dd>
-                        {
-                          selectedLog.date
-                        }
+                        {selectedLog.date}
+                        {' '}
+                        {selectedLog.time}
                       </dd>
                     </div>
 
                     <div>
-                      <dt>추천 시간</dt>
-                      <dd>
-                        {
-                          selectedLog.time
-                        }
-                      </dd>
-                    </div>
+                      <dt>
+                        추천 상태
+                      </dt>
 
-                    <div>
-                      <dt>추천 상태</dt>
                       <dd>
-                        <span
-                          className={`${styles.statusBadge} ${
+                        <AdminStatusBadge
+                          tone={
                             selectedLog.status ===
                             'success'
-                              ? styles.successStatus
-                              : styles.failStatus
-                          }`}
+                              ? 'success'
+                              : 'danger'
+                          }
+                          size="small"
                         >
-                          <i />
-
                           {selectedLog.status ===
                           'success'
                             ? '성공'
                             : '실패'}
-                        </span>
+                        </AdminStatusBadge>
                       </dd>
                     </div>
+
                   </dl>
                 </section>
 
 
-                {/* 회원 취향 정보 */}
-
-                <section
-                  className={
-                    styles.detailSection
-                  }
-                >
+                <section className={styles.detailSection}>
                   <h3>
                     회원 취향 정보
                   </h3>
 
-                  <dl
-                    className={
-                      styles.detailInfoList
-                    }
-                  >
+                  <dl className={styles.detailInfoList}>
+
                     <div>
-                      <dt>단맛 선호</dt>
+                      <dt>
+                        단맛 선호
+                      </dt>
 
                       <dd>
                         {
@@ -1588,7 +1668,9 @@ const AiLogManage = () => {
                     </div>
 
                     <div>
-                      <dt>산미 선호</dt>
+                      <dt>
+                        산미 선호
+                      </dt>
 
                       <dd>
                         {
@@ -1600,7 +1682,9 @@ const AiLogManage = () => {
                     </div>
 
                     <div>
-                      <dt>바디감</dt>
+                      <dt>
+                        바디감
+                      </dt>
 
                       <dd>
                         {
@@ -1612,7 +1696,9 @@ const AiLogManage = () => {
                     </div>
 
                     <div>
-                      <dt>향의 강도</dt>
+                      <dt>
+                        향의 강도
+                      </dt>
 
                       <dd>
                         {
@@ -1624,7 +1710,9 @@ const AiLogManage = () => {
                     </div>
 
                     <div>
-                      <dt>선호 도수</dt>
+                      <dt>
+                        선호 도수
+                      </dt>
 
                       <dd>
                         {
@@ -1648,65 +1736,46 @@ const AiLogManage = () => {
                         }
                       </dd>
                     </div>
+
                   </dl>
                 </section>
 
 
-                {/* 다음 */}
-
-                <div
-                  className={
-                    styles.nextArea
-                  }
-                >
+                <div className={styles.nextArea}>
                   <button
                     type="button"
-                    className={
-                      styles.nextButton
-                    }
+                    className={styles.nextButton}
                     onClick={() =>
                       setDetailStep(2)
                     }
                   >
-                    다음 →
+                    추천 결과 보기 →
                   </button>
                 </div>
 
               </div>
+
             )}
 
 
             {/* ========================================
                 상세 2단계
-                추천 결과 + 이유 + 시스템 정보
             ======================================== */}
 
             {detailStep === 2 && (
-              <div
-                className={
-                  styles.detailPage
-                }
-              >
 
-                {/* AI 추천 결과 */}
+              <div className={styles.detailPage}>
 
-                <section
-                  className={
-                    styles.detailSection
-                  }
-                >
+                <section className={styles.detailSection}>
                   <h3>
                     AI 추천 결과
                   </h3>
 
-                  <dl
-                    className={
-                      styles.resultList
-                    }
-                  >
+                  <dl className={styles.resultList}>
+
                     <div>
                       <dt>
-                        추천 전통주(3)
+                        추천 전통주
                       </dt>
 
                       <dd>
@@ -1714,16 +1783,17 @@ const AiLogManage = () => {
                           .result
                           .liquors
                           .length > 0
-                          ? selectedLog.result.liquors.join(
-                              ', '
-                            )
+                          ? selectedLog
+                            .result
+                            .liquors
+                            .join(', ')
                           : '-'}
                       </dd>
                     </div>
 
                     <div>
                       <dt>
-                        추천 안주(3)
+                        추천 안주
                       </dt>
 
                       <dd>
@@ -1731,16 +1801,17 @@ const AiLogManage = () => {
                           .result
                           .foods
                           .length > 0
-                          ? selectedLog.result.foods.join(
-                              ', '
-                            )
+                          ? selectedLog
+                            .result
+                            .foods
+                            .join(', ')
                           : '-'}
                       </dd>
                     </div>
 
                     <div>
                       <dt>
-                        추천 술잔(2)
+                        추천 술잔
                       </dt>
 
                       <dd>
@@ -1748,53 +1819,36 @@ const AiLogManage = () => {
                           .result
                           .glasses
                           .length > 0
-                          ? selectedLog.result.glasses.join(
-                              ', '
-                            )
+                          ? selectedLog
+                            .result
+                            .glasses
+                            .join(', ')
                           : '-'}
                       </dd>
                     </div>
+
                   </dl>
                 </section>
 
 
-                {/* 추천 이유 */}
-
-                <section
-                  className={
-                    styles.detailSection
-                  }
-                >
+                <section className={styles.detailSection}>
                   <h3>
                     추천 이유
                   </h3>
 
-                  <div
-                    className={
-                      styles.reasonBox
-                    }
-                  >
+                  <div className={styles.reasonBox}>
                     {selectedLog.reason}
                   </div>
                 </section>
 
 
-                {/* 시스템 정보 */}
-
-                <section
-                  className={
-                    styles.detailSection
-                  }
-                >
+                <section className={styles.detailSection}>
                   <h3>
                     시스템 정보
                   </h3>
 
-                  <dl
-                    className={
-                      styles.detailInfoList
-                    }
-                  >
+                  <dl className={styles.detailInfoList}>
+
                     <div>
                       <dt>
                         후보 상품 수
@@ -1858,22 +1912,15 @@ const AiLogManage = () => {
                         }
                       </dd>
                     </div>
+
                   </dl>
                 </section>
 
 
-                {/* 이전 */}
-
-                <div
-                  className={
-                    styles.prevArea
-                  }
-                >
+                <div className={styles.prevArea}>
                   <button
                     type="button"
-                    className={
-                      styles.prevButton
-                    }
+                    className={styles.prevButton}
                     onClick={() =>
                       setDetailStep(1)
                     }
@@ -1883,9 +1930,11 @@ const AiLogManage = () => {
                 </div>
 
               </div>
+
             )}
 
           </aside>
+
         )}
 
       </div>

@@ -1,166 +1,666 @@
 @use 'sass:color';
 
+@use '../../styles/admin/adminVariables' as *;
+@use '../../styles/admin/adminMixins' as *;
+@use '../../styles/admin/adminCommon' as *;
+
+
 // ========================================
-// 주문 관리 전체
+// PAGE
+// 상품관리 / 회원관리 / 리뷰관리와 동일한 기준
 // ========================================
 
 .page {
-  width: 100%;
-  min-width: 0;
-  padding-bottom: 56px;
+  @extend %admin-page;
 
-  color: #312e2a;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+
+  margin: 0;
+
+  padding:
+    34px
+    0
+    50px;
+
+  box-sizing: border-box;
 }
 
 
 // ========================================
-// 상단 제목 / 새로 고침
-// 상품 관리 페이지와 동일한 구성
+// SUMMARY
 // ========================================
 
-.pageToolbar {
+.summaryArea {
+  @extend %admin-summary-area;
+
+  position: relative;
+  z-index: 1;
+
+  margin-top: -50px;
+}
+
+
+.summaryGrid {
+  @extend %admin-summary-grid;
+
+  width: 90%;
+
+  margin:
+    0
+    auto;
+}
+
+
+// ========================================
+// MANAGEMENT LAYOUT
+// ========================================
+
+.managementGrid {
+  @extend %admin-management-grid;
+
+  width: 100%;
+  min-width: 0;
+
+  margin: 0;
+}
+
+
+// ========================================
+// MAIN SECTION
+// ========================================
+
+.mainSection {
+  min-width: 0;
+
+  @include admin-panel;
+
+  padding: 20px;
+}
+
+
+// ========================================
+// FILTER
+// 실제 검색창 / 초기화 버튼은 AdminFilterBar가 담당
+// ========================================
+
+.selectField {
+  display: block;
+
+  select {
+    min-width: 128px;
+  }
+}
+
+
+.srOnly {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  padding: 0;
+  margin: -1px;
+
+  overflow: hidden;
+
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+
+  border: 0;
+}
+
+
+// ========================================
+// QUICK FILTER
+// 주문관리만의 추가 필터
+// ========================================
+
+.quickFilterArea {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-top: 12px;
+
+  padding:
+    0
+    2px
+    14px;
+
+  border-bottom:
+    1px solid
+    $admin-border;
+
+  > span {
+    flex-shrink: 0;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  > div {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+  }
+
+  button {
+    min-height: 30px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding:
+      0
+      11px;
+
+    border: 0;
+    border-radius: 999px;
+
+    background:
+      #f0f2f1;
+
+    color:
+      $admin-text-secondary;
+
+    font: inherit;
+    font-size: 10px;
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition:
+      color 0.18s ease,
+      background 0.18s ease;
+
+    &:hover {
+      color:
+        $admin-primary-dark;
+
+      background:
+        $admin-primary-light;
+    }
+  }
+}
+
+
+.activeQuick {
+  color:
+    $admin-surface !important;
+
+  background:
+    $admin-primary !important;
+}
+
+
+// ========================================
+// SECTION HEADING
+// 상품 목록과 동일한 제목 크기 / 간격
+// ========================================
+
+.sectionHeading {
   min-height: 58px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  h1 {
+  gap: 20px;
+
+  padding:
+    0
+    15px;
+
+  margin-bottom: 14px;
+}
+
+
+.titleWrap {
+  min-width: 0;
+
+  h2 {
     margin: 0;
 
-    color: #302d29;
-    font-size: 27px;
+    color:
+      $admin-text-primary;
+
+    font-size: 23px;
     font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.045em;
+    line-height: 1.4;
+
+    letter-spacing:
+      -0.02em;
+  }
+}
+
+
+.orderCount {
+  flex-shrink: 0;
+
+  color:
+    $admin-text-secondary;
+
+  font-size: 15px;
+
+  strong {
+    color:
+      $admin-primary-dark;
+
+    font-size: 15px;
+    font-weight: 700;
+  }
+}
+
+
+// ========================================
+// TABLE WRAP
+// 상품관리와 같은 외곽선 / 라운드
+// ========================================
+
+.tableWrap {
+  width: 100%;
+  min-width: 0;
+
+  overflow-x: auto;
+
+  border:
+    1px solid
+    $admin-border;
+
+  border-radius:
+    $admin-radius-md;
+
+  background:
+    $admin-surface;
+
+  -webkit-overflow-scrolling:
+    touch;
+}
+
+
+// ========================================
+// TABLE
+// ========================================
+
+.dataTable {
+  width: 100%;
+  min-width: 920px;
+
+  border-collapse:
+    collapse;
+
+  table-layout:
+    fixed;
+
+  th,
+  td {
+    padding:
+      15px
+      12px;
+
+    border-bottom:
+      1px solid
+      $admin-border;
+
+    text-align: left;
+    vertical-align: middle;
+
+    font-size: 12px;
+
+    white-space: nowrap;
   }
 
-  > button {
-    height: 38px;
-    padding: 0 14px;
+  th {
+    background:
+      #f8f9f8;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing:
+      -0.01em;
+  }
+
+  td {
+    color:
+      $admin-text-primary;
+  }
+
+  tbody tr {
+    cursor: pointer;
+
+    transition:
+      background 0.18s ease;
+  }
+
+  tbody tr:hover {
+    background:
+      #fafcfb;
+  }
+
+  tbody tr:last-child {
+    td {
+      border-bottom: 0;
+    }
+  }
+
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 13%;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 10%;
+  }
+
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 22%;
+  }
+
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 12%;
+  }
+
+  th:nth-child(5),
+  td:nth-child(5) {
+    width: 13%;
+  }
+
+  th:nth-child(6),
+  td:nth-child(6) {
+    width: 11%;
+  }
+
+  th:nth-child(7),
+  td:nth-child(7) {
+    width: 11%;
+  }
+
+  th:nth-child(8),
+  td:nth-child(8) {
+    width: 8%;
+
+    text-align: center;
+  }
+}
+
+
+.selectedRow {
+  background:
+    rgba(
+      86,
+      138,
+      128,
+      0.065
+    ) !important;
+}
+
+
+.orderId {
+  color:
+    $admin-text-muted;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+
+.productCell {
+  overflow: hidden;
+
+  color:
+    $admin-text-primary !important;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
+}
+
+
+// ========================================
+// DETAIL BUTTON
+// 상품관리 수정 버튼과 같은 크기
+// ========================================
+
+.detailButton {
+  min-height: 30px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    11px;
+
+  border:
+    1px solid
+    $admin-border-dark;
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    $admin-surface;
+
+  color:
+    $admin-text-secondary;
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+
+  &:hover {
+    color:
+      $admin-primary-dark;
+
+    border-color:
+      rgba(
+        86,
+        138,
+        128,
+        0.5
+      );
+
+    background:
+      $admin-primary-light;
+  }
+}
+
+
+// ========================================
+// PAGINATION
+// 회원 / 리뷰 / 상품과 동일
+// ========================================
+
+.pagination {
+  min-height: 64px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  padding:
+    16px
+    12px;
+
+  border-top:
+    1px solid
+    $admin-border;
+
+  button {
+    width: 32px;
+    height: 32px;
 
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
 
-    border: 1px solid #c9c2b9;
-    border-radius: 5px;
-    background: #fff;
+    border:
+      1px solid
+      transparent;
 
-    color: #746e67;
+    border-radius:
+      $admin-radius-sm;
+
+    background:
+      transparent;
+
+    color:
+      $admin-text-secondary;
+
+    font: inherit;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600;
 
     cursor: pointer;
 
     transition:
-      border-color 0.2s ease,
-      color 0.2s ease,
-      background 0.2s ease;
+      background 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
 
-    svg {
-      width: 14px;
-      height: 14px;
-    }
+    &:hover:not(:disabled) {
+      color:
+        $admin-primary-dark;
 
-    &:hover {
-      border-color: #538983;
-      color: #538983;
-      background: #fbfdfc;
+      background:
+        $admin-primary-light;
     }
 
     &:disabled {
+      opacity: 0.35;
+
       cursor: default;
-      opacity: 0.7;
     }
   }
 }
 
 
-.refreshing {
-  svg {
-    animation: refreshSpin 0.8s linear infinite;
-  }
-}
+.activePage {
+  color:
+    $admin-surface !important;
 
+  border-color:
+    $admin-primary !important;
 
-@keyframes refreshSpin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-
-// ========================================
-// 전통 문양 구분선
-// ========================================
-
-.ornamentLine {
-  width: 100%;
-  height: 41px;
-
-  display: flex;
-  align-items: flex-start;
-
-  overflow: hidden;
-
-  img {
-    display: block;
-    width: 100%;
-    height: 41px;
-    object-fit: fill;
-    object-position: center top;
-  }
+  background:
+    $admin-primary !important;
 }
 
 
 // ========================================
-// 요약 카드
+// ANALYTICS
+// 상품관리 우측 분석 패널 비율과 동일
 // ========================================
 
-.summaryArea {
-  margin-top: 1px;
-  margin-bottom: 20px;
-}
+.analyticsColumn {
+  position: sticky;
 
+  top: 24px;
 
-.summaryGrid {
-  display: grid;
-  grid-template-columns: repeat(
-    4,
-    minmax(0, 1fr)
-  );
-
-  gap: 15px;
-}
-
-
-.summaryCard {
   min-width: 0;
-  min-height: 122px;
-
-  padding: 20px 18px;
 
   display: flex;
-  align-items: center;
-  gap: 15px;
+  flex-direction: column;
 
-  border: 1px solid #e4dfd8;
-  border-radius: 9px;
-  background: #fff;
-
-  box-shadow:
-    0 1px 2px
-      rgba(54, 45, 38, 0.02);
+  gap: 16px;
 }
 
 
-.summaryIcon {
-  width: 37px;
-  height: 37px;
+.statusOverview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  flex: 0 0 37px;
+  gap: 20px;
+
+  ul {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 9px;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+  }
+
+  li {
+    min-height: 28px;
+
+    display: grid;
+
+    grid-template-columns:
+      8px
+      minmax(0, 1fr)
+      auto;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 12px;
+
+    strong {
+      color:
+        $admin-text-primary;
+
+      font-size: 12px;
+      font-weight: 700;
+    }
+  }
+}
+
+
+.statusDonut {
+  position: relative;
+
+  width: 148px;
+  height: 148px;
+
+  flex:
+    0
+    0
+    148px;
 
   display: flex;
   align-items: center;
@@ -168,473 +668,376 @@
 
   border-radius: 50%;
 
-  font-size: 13px;
-  font-weight: 700;
-}
-
-
-.total {
-  color: #6d9a82;
-  background: #eff7f1;
-}
-
-
-.today {
-  color: #6e9aa9;
-  background: #eef6f8;
-}
-
-
-.ready {
-  color: #da7770;
-  background: #fff1ef;
-}
-
-
-.request {
-  color: #bf8737;
-  background: #fff8ec;
-}
-
-
-.summaryContent {
-  min-width: 0;
-
-  h3 {
-    margin: 0 0 6px;
-
-    color: #4d4843;
-    font-size: 13px;
-    font-weight: 600;
-  }
-
-  p {
-    margin: 0;
-
-    display: flex;
-    align-items: baseline;
-    gap: 5px;
-
-    strong {
-      color: #171614;
-      font-size: 27px;
-      font-weight: 700;
-      letter-spacing: -0.04em;
-    }
-
-    span {
-      color: #58534d;
-      font-size: 11px;
-    }
-  }
-
-  small {
-    margin-top: 12px;
-
-    display: flex;
-    align-items: center;
-    gap: 5px;
-
-    color: #aaa49d;
-    font-size: 9px;
-
-    b {
-      color: #568b80;
-      font-weight: 700;
-    }
-  }
-}
-
-
-.summaryCard:nth-child(2) {
-  .summaryContent small b {
-    color: #6594aa;
-  }
-}
-
-
-.summaryCard:nth-child(3) {
-  .summaryContent small b {
-    color: #dc655e;
-  }
-}
-
-
-.summaryCard:nth-child(4) {
-  .summaryContent small b {
-    color: #be842c;
-  }
-}
-
-
-// ========================================
-// 메인 2단
-// ========================================
-
-.managementGrid {
-  display: grid;
-
-  grid-template-columns:
-    minmax(0, 1fr)
-    270px;
-
-  gap: 16px;
-
-  align-items: start;
-}
-
-
-.mainSection {
-  min-width: 0;
-
-  overflow: hidden;
-
-  border: 1px solid #8d877f;
-  border-radius: 14px;
-  background: #fff;
-}
-
-
-// ========================================
-// 검색 / 필터
-// ========================================
-
-.filterBar {
-  padding: 18px 19px 10px;
-
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-
-.searchField {
-  height: 38px;
-
-  flex: 1;
-  min-width: 200px;
-
-  padding: 0 10px;
-
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  border: 1px solid #aaa49d;
-  border-radius: 6px;
-  background: #fff;
-
-  &:focus-within {
-    border-color: #548983;
-  }
-
-  svg {
-    width: 18px;
-    height: 18px;
-
-    flex: 0 0 auto;
-  }
-
-  input {
-    width: 100%;
-    min-width: 0;
-
-    border: 0;
-    outline: 0;
-    background: transparent;
-
-    color: #49443f;
-    font-size: 10px;
-
-    &::placeholder {
-      color: #aaa49d;
-    }
-  }
-}
-
-
-.selectField {
-  height: 38px;
-
-  flex: 0 0 94px;
-
-  select {
-    width: 100%;
-    height: 100%;
-
-    padding: 0 8px;
-
-    border: 1px solid #aaa49d;
-    border-radius: 6px;
-    outline: 0;
-    background: #fff;
-
-    color: #55504a;
-    font-size: 10px;
-
-    cursor: pointer;
-
-    &:focus {
-      border-color: #548983;
-    }
-  }
-}
-
-
-.sortField {
-  flex-basis: 88px;
-}
-
-
-.resetButton {
-  height: 38px;
-
-  padding: 0 11px;
-
-  flex: 0 0 auto;
-
-  border: 1px solid #aaa49d;
-  border-radius: 6px;
-  background: #fff;
-
-  color: #625d57;
-  font-size: 10px;
-
-  cursor: pointer;
-
-  &:hover {
-    color: #4d837e;
-    border-color: #4d837e;
-  }
-}
-
-
-// ========================================
-// 빠른 필터
-// ========================================
-
-.quickFilterArea {
-  padding: 0 19px 14px;
-
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  > span {
-    flex: 0 0 auto;
-
-    color: #68625c;
-    font-size: 9px;
-    font-weight: 600;
+  background:
+    conic-gradient(
+      $admin-primary
+        0
+        var(--ready-end),
+      #6f9bac
+        var(--ready-end)
+        var(--shipping-end),
+      #aacdbf
+        var(--shipping-end)
+        var(--completed-end),
+      #d69a95
+        var(--completed-end)
+        100%
+    );
+
+  &::after {
+    position: absolute;
+
+    width: 104px;
+    height: 104px;
+
+    border-radius: 50%;
+
+    background:
+      $admin-surface;
+
+    content: '';
   }
 
   > div {
+    position: relative;
+    z-index: 1;
+
     display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
+    flex-direction: column;
+    align-items: center;
 
-    button {
-      min-height: 22px;
-      padding: 0 10px;
+    gap: 1px;
 
-      border: 0;
-      border-radius: 999px;
-      background: #efeeec;
+    text-align: center;
 
-      color: #69635d;
-      font-size: 8px;
+    span {
+      display: block;
 
-      cursor: pointer;
+      color:
+        $admin-text-muted;
 
-      transition:
-        background 0.2s ease,
-        color 0.2s ease;
+      font-size: 10px;
+      font-weight: 600;
     }
 
-    .activeQuick {
-      background: #548983;
-      color: #fff;
+    strong {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+
+      gap: 3px;
+
+      margin-top: 0;
+
+      color:
+        $admin-text-primary;
+
+      font-size: 25px;
+      font-weight: 700;
+      line-height: 1.15;
+
+      small {
+        color:
+          $admin-text-secondary;
+
+        font-size: 10px;
+        font-weight: 600;
+        line-height: 1;
+      }
     }
   }
 }
 
 
+.dotReady {
+  background:
+    $admin-primary;
+}
+
+
+.dotShipping {
+  background:
+    #6f9bac;
+}
+
+
+.dotCompleted {
+  background:
+    #aacdbf;
+}
+
+
+.dotRefund {
+  background:
+    #d69a95;
+}
+
+
 // ========================================
-// 주문 목록 제목
+// 7 DAY CHART
 // ========================================
 
-.sectionHeading {
-  min-height: 59px;
-
-  padding: 0 20px;
+.chartLegend {
+  margin-top: 2px;
 
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 
-  border-top: 1px solid #ebe6df;
-  border-bottom: 1px solid #ebe6df;
-}
-
-
-.titleWrap {
-  display: flex;
-  align-items: baseline;
   gap: 10px;
 
-  h2 {
+  span {
+    display: flex;
+    align-items: center;
+
+    gap: 4px;
+
+    color:
+      $admin-text-muted;
+
+    font-size: 9px;
+  }
+
+  i {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+  }
+}
+
+
+.orderLegend {
+  background:
+    $admin-primary;
+}
+
+
+.cancelLegend {
+  background:
+    #d69a95;
+}
+
+
+.barChart {
+  height: 150px;
+
+  margin-top: 12px;
+
+  padding-top: 14px;
+
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+
+  border-top:
+    1px solid
+    $admin-border;
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent
+      0,
+      transparent
+      31px,
+      #eef0ef
+      32px
+    );
+}
+
+
+.barItem {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 6px;
+
+  > span {
+    color:
+      $admin-text-muted;
+
+    font-size: 8px;
+  }
+}
+
+
+.barPair {
+  width: 100%;
+  height: 102px;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  gap: 3px;
+
+  i {
+    width: 7px;
+
+    min-height: 2px;
+
+    display: block;
+
+    border-radius:
+      3px
+      3px
+      0
+      0;
+  }
+}
+
+
+.orderBar {
+  height:
+    var(--bar-height);
+
+  background:
+    $admin-primary;
+}
+
+
+.cancelBar {
+  height:
+    var(--bar-height);
+
+  background:
+    #d69a95;
+}
+
+
+.weekCompare {
+  min-height: 64px;
+
+  margin-top: 16px;
+
+  padding:
+    10px
+    11px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  border:
+    1px solid
+    rgba(
+      86,
+      138,
+      128,
+      0.28
+    );
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    $admin-primary-light;
+
+  > div:nth-child(2) {
+    flex: 1;
+
+    span {
+      display: block;
+
+      color:
+        $admin-text-muted;
+
+      font-size: 9px;
+    }
+
+    strong {
+      display: block;
+
+      margin-top: 2px;
+
+      color:
+        $admin-primary-dark;
+
+      font-size: 15px;
+    }
+  }
+
+  dl {
     margin: 0;
 
-    color: #3a3631;
-    font-size: 18px;
-    font-weight: 700;
-  }
+    padding-left: 10px;
 
-  span {
-    color: #77716a;
-    font-size: 10px;
-  }
-}
+    border-left:
+      1px solid
+      $admin-border;
 
+    div {
+      display: flex;
 
-// ========================================
-// 테이블
-// ========================================
+      gap: 5px;
 
-.tableWrap {
-  width: 100%;
-
-  overflow-x: auto;
-}
-
-
-.dataTable {
-  width: 100%;
-  min-width: 790px;
-
-  border-collapse: collapse;
-  table-layout: fixed;
-
-  thead {
-    background: #f5f0e8;
-
-    tr {
-      height: 42px;
+      + div {
+        margin-top: 4px;
+      }
     }
 
-    th {
-      padding: 0 8px;
+    dt {
+      color:
+        $admin-text-muted;
 
-      color: #625c55;
+      font-size: 8px;
+    }
+
+    dd {
+      margin: 0;
+
+      color:
+        $admin-text-primary;
+
       font-size: 9px;
       font-weight: 600;
-
-      text-align: center;
-      white-space: nowrap;
     }
-  }
-
-  tbody {
-    tr {
-      height: 47px;
-
-      border-bottom:
-        1px solid #d8d2ca;
-
-      transition:
-        background 0.15s ease;
-
-      &:hover {
-        background: #faf8f5;
-      }
-
-      &:last-child {
-        border-bottom: 0;
-      }
-    }
-
-    td {
-      padding: 0 8px;
-
-      overflow: hidden;
-
-      color: #5e5852;
-      font-size: 8.5px;
-
-      text-align: center;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-
-      strong {
-        color: #544e48;
-        font-size: 8.5px;
-        font-weight: 600;
-      }
-    }
-  }
-
-  th:nth-child(1) {
-    width: 14%;
-  }
-
-  th:nth-child(2) {
-    width: 9%;
-  }
-
-  th:nth-child(3) {
-    width: 18%;
-  }
-
-  th:nth-child(4) {
-    width: 11%;
-  }
-
-  th:nth-child(5) {
-    width: 12%;
-  }
-
-  th:nth-child(6) {
-    width: 12%;
-  }
-
-  th:nth-child(7) {
-    width: 12%;
-  }
-
-  th:nth-child(8) {
-    width: 12%;
   }
 }
 
 
-.selectedRow {
-  background: #f5faf8 !important;
-}
+.compareIcon {
+  width: 32px;
+  height: 32px;
 
+  flex:
+    0
+    0
+    32px;
 
-.productCell {
-  color: #423e39 !important;
-  font-weight: 500;
-}
-
-
-.statusBadge {
-  min-width: 48px;
-
-  padding: 4px 7px;
-
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
 
-  border: 1px solid;
-  border-radius: 999px;
+  border-radius: 50%;
 
-  font-size: 7.5px;
-  font-weight: 500;
-  line-height: 1;
+  background:
+    rgba(
+      86,
+      138,
+      128,
+      0.12
+    );
+
+  color:
+    $admin-primary-dark;
+
+  font-size: 14px;
 }
 
+
+// ========================================
+// DETAIL STATUS TONES
+// 주문 상세 패널 내부에서 사용
+// ========================================
 
 .paid {
   color: #4e8a84;
@@ -678,415 +1081,30 @@
 }
 
 
-.detailButton {
-  height: 24px;
-
-  padding: 0 8px;
-
-  border: 1px solid #c4bdb5;
-  border-radius: 4px;
-  background: #fff;
-
-  color: #5a554f;
-  font-size: 7.5px;
-
-  cursor: pointer;
-
-  &:hover {
-    border-color: #548983;
-    color: #548983;
-  }
-}
-
-
-.emptyState {
-  height: 150px !important;
-
-  color: #9e9890 !important;
-  font-size: 10px !important;
-}
-
-
 // ========================================
-// 우측 통계
-// ========================================
-
-.analyticsColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-
-.analyticsCard {
-  padding: 20px 18px;
-
-  border: 1px solid #8d877f;
-  border-radius: 14px;
-  background: #fff;
-}
-
-
-.analyticsHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  h2 {
-    margin: 0;
-
-    color: #3c3833;
-    font-size: 16px;
-    font-weight: 700;
-  }
-
-  span {
-    color: #969089;
-    font-size: 7px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-  }
-}
-
-
-// ========================================
-// 도넛
-// ========================================
-
-.statusOverview {
-  margin-top: 22px;
-
-  display: flex;
-  align-items: center;
-  gap: 17px;
-
-  ul {
-    flex: 1;
-
-    margin: 0;
-    padding: 0;
-
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-
-    list-style: none;
-
-    li {
-      display: grid;
-
-      grid-template-columns:
-        7px 1fr auto;
-
-      align-items: center;
-      gap: 6px;
-
-      color: #68625c;
-      font-size: 8px;
-
-      > span:first-child {
-        width: 6px;
-        height: 6px;
-
-        border-radius: 50%;
-      }
-
-      strong {
-        color: #77716b;
-        font-size: 7.5px;
-        font-weight: 600;
-      }
-    }
-  }
-}
-
-
-.statusDonut {
-  position: relative;
-
-  width: 102px;
-  height: 102px;
-
-  flex: 0 0 102px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-
-  background:
-    conic-gradient(
-      #568983 0 18%,
-      #e17c72 18% 44%,
-      #d7d8d6 44% 89%,
-      #799f99 89% 96%,
-      #e5b16d 96% 100%
-    );
-
-  &::after {
-    content: '';
-
-    position: absolute;
-    inset: 17px;
-
-    border-radius: 50%;
-    background: #fff;
-  }
-
-  > div {
-    position: relative;
-    z-index: 1;
-
-    text-align: center;
-
-    span {
-      display: block;
-
-      color: #88827b;
-      font-size: 7px;
-    }
-
-    strong {
-      display: block;
-
-      margin-top: 2px;
-
-      color: #46413c;
-      font-size: 11px;
-    }
-  }
-}
-
-
-.dotReady {
-  background: #568983;
-}
-
-
-.dotShipping {
-  background: #e17c72;
-}
-
-
-.dotCompleted {
-  background: #d7d8d6;
-}
-
-
-.dotRefund {
-  background: #799f99;
-}
-
-
-// ========================================
-// 7일 그래프
-// ========================================
-
-.chartLegend {
-  margin-top: 14px;
-
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-
-  span {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-
-    color: #817b74;
-    font-size: 7px;
-  }
-
-  i {
-    width: 5px;
-    height: 5px;
-
-    border-radius: 50%;
-  }
-}
-
-
-.orderLegend {
-  background: #568983;
-}
-
-
-.cancelLegend {
-  background: #df8b82;
-}
-
-
-.barChart {
-  height: 135px;
-
-  margin-top: 11px;
-  padding-top: 12px;
-
-  display: flex;
-  align-items: stretch;
-  justify-content: space-between;
-
-  border-top: 1px solid #ebe6df;
-
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0,
-      transparent 29px,
-      #eeeae4 30px
-    );
-}
-
-
-.barItem {
-  flex: 1;
-  min-width: 0;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-
-  gap: 6px;
-
-  > span {
-    color: #a39d96;
-    font-size: 6px;
-  }
-}
-
-
-.barPair {
-  width: 100%;
-  height: 91px;
-
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 3px;
-
-  i {
-    width: 6px;
-
-    min-height: 2px;
-
-    display: block;
-
-    border-radius: 2px 2px 0 0;
-  }
-}
-
-
-.orderBar {
-  background: #568983;
-}
-
-
-.cancelBar {
-  background: #df8b82;
-}
-
-
-.weekCompare {
-  min-height: 57px;
-
-  margin-top: 15px;
-  padding: 9px 10px;
-
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  border: 1px solid #a8c8be;
-  border-radius: 7px;
-  background: #fbfdfc;
-
-  > div:nth-child(2) {
-    flex: 1;
-
-    span {
-      display: block;
-
-      color: #8a847d;
-      font-size: 7px;
-    }
-
-    strong {
-      display: block;
-
-      margin-top: 2px;
-
-      color: #538983;
-      font-size: 13px;
-    }
-  }
-
-  dl {
-    margin: 0;
-
-    padding-left: 10px;
-
-    border-left: 1px solid #e0ded9;
-
-    div {
-      display: flex;
-      gap: 5px;
-
-      + div {
-        margin-top: 4px;
-      }
-    }
-
-    dt {
-      color: #969088;
-      font-size: 6px;
-    }
-
-    dd {
-      margin: 0;
-
-      color: #57514b;
-      font-size: 7px;
-      font-weight: 600;
-    }
-  }
-}
-
-
-.compareIcon {
-  width: 30px;
-  height: 30px;
-
-  flex: 0 0 30px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-  background: #e8eeeb;
-
-  color: #538983;
-  font-size: 14px;
-}
-
-
-// ========================================
-// 상세 오버레이
+// ORDER DETAIL
+// 기존 주문 처리 기능 UI는 유지
 // ========================================
 
 .detailBackdrop {
   position: fixed;
+
   inset: 0;
 
   z-index: 200;
 
   border: 0;
-  background: rgba(43, 40, 36, 0.17);
 
-  backdrop-filter: blur(1px);
+  background:
+    rgba(
+      29,
+      34,
+      32,
+      0.22
+    );
+
+  backdrop-filter:
+    blur(2px);
 }
 
 
@@ -1099,89 +1117,156 @@
 
   z-index: 210;
 
-  width: min(
-    800px,
-    calc(100vw - 275px)
-  );
+  width:
+    min(
+      920px,
+      calc(100vw - 275px)
+    );
 
-  min-width: 610px;
+  min-width: 720px;
 
   display: flex;
   flex-direction: column;
 
   overflow: hidden;
 
-  border-radius: 26px 0 0 0;
+  border-left:
+    1px solid
+    $admin-border;
 
-  background: #eff7ed;
+  border-radius:
+    24px
+    0
+    0
+    0;
+
+  background:
+    #f8f7f3;
 
   box-shadow:
-    -13px 0 34px
-      rgba(46, 52, 47, 0.17);
+    -16px
+    0
+    40px
+    rgba(
+      24,
+      31,
+      28,
+      0.15
+    );
 
   animation:
-    detailOpen 0.27s ease both;
+    detailOpen
+    0.27s
+    ease
+    both;
 }
 
 
 @keyframes detailOpen {
   from {
     opacity: 0;
-    transform: translateX(35px);
+
+    transform:
+      translateX(36px);
   }
 
   to {
     opacity: 1;
-    transform: translateX(0);
+
+    transform:
+      translateX(0);
   }
 }
 
 
 // ========================================
-// 상세 헤더
+// DETAIL HEADER
 // ========================================
 
 .detailHeader {
-  min-height: 71px;
+  min-height: 70px;
 
-  padding: 0 25px;
-
-  flex: 0 0 auto;
+  flex:
+    0
+    0
+    auto;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
+  gap: 16px;
+
+  padding:
+    0
+    26px;
+
+  border-bottom:
+    1px solid
+    $admin-border;
+
+  background:
+    rgba(
+      248,
+      247,
+      243,
+      0.96
+    );
+
   h2 {
     margin: 0;
 
-    color: #2e2c28;
-    font-size: 17px;
+    color:
+      $admin-text-primary;
+
+    font-size: 20px;
     font-weight: 700;
+    line-height: 1.3;
+
+    letter-spacing:
+      -0.025em;
   }
 
   button {
-    width: 31px;
-    height: 31px;
+    width: 30px;
+    height: 30px;
+
+    flex:
+      0
+      0
+      30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
 
     border: 0;
     border-radius: 50%;
-    background: transparent;
 
-    color: #5d5852;
-    font-size: 23px;
-    font-weight: 300;
+    background:
+      #eff1f0;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1;
 
     cursor: pointer;
 
+    transition:
+      color 0.18s ease,
+      background 0.18s ease;
+
     &:hover {
+      color:
+        $admin-text-primary;
+
       background:
-        rgba(
-          72,
-          126,
-          103,
-          0.08
-        );
+        #e8ebe9;
     }
   }
 }
@@ -1189,54 +1274,92 @@
 
 .detailScroll {
   min-height: 0;
+
   flex: 1;
 
-  padding: 0 24px 24px;
+  padding:
+    20px
+    24px
+    28px;
 
   overflow-y: auto;
 
   scrollbar-width: thin;
+
   scrollbar-color:
-    #bfcec3 transparent;
+    #c7cfca
+    transparent;
 }
 
 
 // ========================================
-// 상세 공통 카드
+// DETAIL COMMON CARD
 // ========================================
 
 .orderSummary,
 .detailSection,
 .shippingManage {
-  border: 1px solid #d7e3d6;
-  border-radius: 8px;
-  background: #fff;
+  border:
+    1px solid
+    $admin-border;
+
+  border-radius:
+    $admin-radius-md;
+
+  background:
+    $admin-surface;
+
+  box-shadow:
+    0
+    2px
+    8px
+    rgba(
+      34,
+      37,
+      36,
+      0.03
+    );
 }
 
 
-.orderSummary {
-  min-height: 64px;
+// ========================================
+// ORDER SUMMARY
+// ========================================
 
-  padding: 12px 13px;
+.orderSummary {
+  min-height: 84px;
 
   display: grid;
 
   grid-template-columns:
-    1.25fr
+    1.35fr
     1fr
-    1fr
-    1fr
+    0.9fr
+    0.9fr
     1fr;
 
-  margin-bottom: 10px;
+  align-items: stretch;
+
+  padding:
+    14px
+    16px;
+
+  margin-bottom: 12px;
 
   > div {
     min-width: 0;
 
-    padding: 0 11px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    padding:
+      0
+      14px;
 
     border-right:
-      1px solid #ecefe9;
+      1px solid
+      $admin-border;
 
     &:first-child {
       padding-left: 0;
@@ -1244,6 +1367,7 @@
 
     &:last-child {
       padding-right: 0;
+
       border-right: 0;
     }
 
@@ -1252,21 +1376,35 @@
 
       margin-bottom: 7px;
 
-      color: #979891;
-      font-size: 7px;
+      color:
+        $admin-text-muted;
+
+      font-size: 13px;
+      font-weight: 600;
     }
 
     > strong {
-      color: #45413d;
-      font-size: 9px;
-      font-weight: 600;
+      min-width: 0;
+
+      overflow: hidden;
+
+      color:
+        $admin-text-primary;
+
+      font-size: 13px;
+      font-weight: 700;
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
 
       small {
-        margin-left: 4px;
+        margin-left: 5px;
 
-        color: #9b9892;
-        font-size: 7px;
-        font-weight: 400;
+        color:
+          $admin-text-muted;
+
+        font-size: 13px;
+        font-weight: 500;
       }
     }
   }
@@ -1274,76 +1412,116 @@
 
 
 .detailStatus {
-  min-width: 47px;
-
-  padding: 4px 7px;
+  min-width: 58px;
+  min-height: 26px;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  border: 1px solid;
-  border-radius: 999px;
+  padding:
+    0
+    9px;
 
-  font-size: 7px;
+  box-sizing: border-box;
+
+  border:
+    1px solid;
+
+  border-radius:
+    999px;
+
+  font-size: 11px;
   font-style: normal;
-  font-weight: 500;
+  font-weight: 600;
+
+  white-space: nowrap;
 }
 
 
 .totalPrice {
-  color: #292723 !important;
-  font-size: 12px !important;
+  color:
+    $admin-text-primary !important;
+
+  font-size:
+    15px !important;
+
+  font-weight:
+    700 !important;
 }
 
 
+// ========================================
+// DETAIL SECTION
+// ========================================
+
 .detailSection {
-  margin-bottom: 10px;
-  padding: 14px 15px;
+  margin-bottom: 12px;
+
+  padding:
+    17px
+    18px;
 
   > h3,
   .sectionTitleRow h3 {
-    margin: 0 0 12px;
+    margin:
+      0
+      0
+      14px;
 
-    color: #3c3934;
-    font-size: 11px;
+    color:
+      $admin-text-primary;
+
+    font-size: 18px;
     font-weight: 700;
+    line-height: 1.35;
+
+    letter-spacing:
+      -0.015em;
 
     > span {
-      margin-left: 4px;
+      margin-left: 5px;
 
-      color: #668f82;
-      font-size: 8px;
+      color:
+        $admin-primary-dark;
+
+      font-size: 14px;
+      font-weight: 700;
     }
   }
 }
 
 
 // ========================================
-// 진행 상태
+// PROGRESS
 // ========================================
 
 .progress {
   position: relative;
 
-  padding-top: 2px;
-
   display: grid;
+
   grid-template-columns:
-    repeat(5, 1fr);
+    repeat(
+      5,
+      1fr
+    );
+
+  padding-top: 3px;
 
   &::before {
-    content: '';
-
     position: absolute;
 
-    top: 14px;
-    left: 10%;
+    top: 17px;
     right: 10%;
+    left: 10%;
 
     height: 1px;
 
-    background: #d5ded6;
+    background:
+      #dce3df;
+
+    content: '';
   }
 }
 
@@ -1357,105 +1535,171 @@
   align-items: center;
 
   strong {
-    margin-top: 5px;
+    margin-top: 7px;
 
-    color: #55514b;
-    font-size: 7.5px;
-    font-weight: 600;
+    color:
+      $admin-text-secondary;
+
+    font-size: 13px;
+    font-weight: 700;
   }
 
   small {
-    margin-top: 2px;
+    margin-top: 3px;
 
-    color: #aaa69f;
-    font-size: 6px;
+    color:
+      $admin-text-muted;
+
+    font-size: 12px;
   }
 }
 
 
 .stepCircle {
-  width: 25px;
-  height: 25px;
+  width: 30px;
+  height: 30px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border: 1px solid #ccd6cd;
-  border-radius: 50%;
-  background: #fff;
+  border:
+    1px solid
+    #d0d9d4;
 
-  color: #969b96;
-  font-size: 7px;
+  border-radius: 50%;
+
+  background:
+    $admin-surface;
+
+  color:
+    $admin-text-muted;
+
+  font-size: 13px;
   font-weight: 700;
+}
+
+.stepDateTime {
+  min-height: 30px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  gap: 2px;
+
+  margin-top: 5px;
+
+  color:
+    $admin-text-muted;
+
+  font-size: 8px;
+  line-height: 1.3;
+
+  white-space: nowrap;
+
+  span {
+    display: block;
+  }
 }
 
 
 .stepDone {
-  border-color: #4d8677;
-  background: #4d8677;
-  color: #fff;
+  border-color:
+    $admin-primary;
+
+  background:
+    $admin-primary;
+
+  color:
+    $admin-surface;
 }
 
 
 .stepCurrent {
-  border: 2px solid #438473;
-  background: #eef7f1;
-  color: #438473;
+  border:
+    2px solid
+    $admin-primary;
+
+  background:
+    $admin-primary-light;
+
+  color:
+    $admin-primary-dark;
 }
 
 
 // ========================================
-// 상세 2단
+// DETAIL TWO COLUMN
 // ========================================
 
 .detailTwoColumn {
   display: grid;
-  grid-template-columns: 1fr 1fr;
 
-  gap: 10px;
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 12px;
 
   > .detailSection {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
 }
 
 
 // ========================================
-// 주문 상품
+// PRODUCT
 // ========================================
 
 .productList {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+
+  gap: 8px;
 }
 
 
 .orderProduct {
-  min-height: 49px;
-
-  padding: 6px 8px;
+  min-height: 58px;
 
   display: flex;
   align-items: center;
-  gap: 8px;
 
-  border: 1px solid #ebeee9;
-  border-radius: 6px;
-  background: #fcfdfb;
+  gap: 10px;
+
+  padding:
+    8px
+    10px;
+
+  border:
+    1px solid
+    #e7ebe8;
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    #fbfcfb;
 
   > div {
-    flex: 1;
     min-width: 0;
+
+    flex: 1;
 
     strong {
       display: block;
 
       overflow: hidden;
 
-      color: #4c4944;
-      font-size: 7.5px;
+      color:
+        $admin-text-primary;
+
+      font-size: 13px;
+      font-weight: 700;
 
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -1464,14 +1708,18 @@
     small {
       display: block;
 
-      margin-top: 3px;
+      margin-top: 4px;
 
-      color: #9f9b95;
-      font-size: 6.5px;
+      color:
+        $admin-text-muted;
+
+      font-size: 10px;
     }
   }
 
   > p {
+    flex-shrink: 0;
+
     margin: 0;
 
     text-align: right;
@@ -1479,164 +1727,227 @@
     strong {
       display: block;
 
-      color: #514c47;
-      font-size: 7.5px;
+      color:
+        $admin-text-primary;
+
+      font-size: 13px;
+      font-weight: 700;
     }
 
     small {
       display: block;
 
-      margin-top: 3px;
+      margin-top: 4px;
 
-      color: #a6a19b;
-      font-size: 6.5px;
+      color:
+        $admin-text-muted;
+
+      font-size: 10px;
     }
   }
 }
 
 
 .productThumb {
-  width: 35px;
-  height: 35px;
+  width: 42px;
+  height: 42px;
 
-  flex: 0 0 35px;
+  flex:
+    0
+    0
+    42px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border-radius: 5px;
-  background: #f2efe9;
+  overflow: hidden;
 
-  font-size: 17px;
+  border-radius:
+    6px;
+
+  background:
+    #f1f0eb;
+
+  font-size: 18px;
 
   img {
     width: 100%;
     height: 100%;
+
     display: block;
-    border-radius: inherit;
+
     object-fit: cover;
   }
 }
 
 
 // ========================================
-// 정보 리스트
+// INFO LIST
 // ========================================
 
 .infoList {
-  margin: 0;
-
   display: flex;
   flex-direction: column;
-  gap: 7px;
+
+  gap: 9px;
+
+  margin: 0;
 
   > div {
     display: grid;
 
     grid-template-columns:
-      68px minmax(0, 1fr);
+      74px
+      minmax(0, 1fr);
 
-    gap: 8px;
+    gap: 10px;
   }
 
   dt {
-    color: #93918b;
-    font-size: 7.5px;
-    line-height: 1.45;
+    color:
+      $admin-text-muted;
+
+    font-size: 13px;
+    line-height: 1.5;
   }
 
   dd {
+    min-width: 0;
+
     margin: 0;
 
-    color: #4c4944;
-    font-size: 7.5px;
-    font-weight: 500;
-    line-height: 1.45;
+    overflow-wrap: anywhere;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
   }
 }
 
 
 .totalRow {
-  margin-top: 4px;
+  margin-top: 5px;
 
-  padding-top: 8px;
+  padding-top: 9px;
 
-  border-top: 1px solid #ece9e4;
+  border-top:
+    1px solid
+    $admin-border;
 
   dt,
   dd {
-    color: #2e2b27;
-    font-size: 9px;
+    color:
+      $admin-text-primary;
+
+    font-size: 13px;
     font-weight: 700;
   }
 }
 
 
 .sectionTitleRow {
-  margin-bottom: 12px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
 
+  gap: 10px;
+
+  margin-bottom: 14px;
+
   h3 {
-    margin-bottom: 0 !important;
+    margin-bottom:
+      0 !important;
   }
 
   button {
-    height: 24px;
+    min-height: 28px;
 
-    padding: 0 8px;
+    padding:
+      0
+      10px;
 
-    border: 1px solid #d2d9d0;
-    border-radius: 4px;
-    background: #fff;
+    border:
+      1px solid
+      $admin-border-dark;
 
-    color: #6c706a;
-    font-size: 7px;
+    border-radius:
+      $admin-radius-sm;
+
+    background:
+      $admin-surface;
+
+    color:
+      $admin-text-secondary;
+
+    font: inherit;
+    font-size: 10px;
+    font-weight: 600;
 
     cursor: pointer;
+
+    &:hover {
+      color:
+        $admin-primary-dark;
+
+      border-color:
+        rgba(
+          86,
+          138,
+          128,
+          0.5
+        );
+
+      background:
+        $admin-primary-light;
+    }
   }
 }
 
 
 // ========================================
-// 처리 이력
+// HISTORY
 // ========================================
 
 .historyList {
   display: flex;
   flex-direction: column;
 
+  gap: 2px;
+
   > div {
     position: relative;
 
-    min-height: 28px;
+    min-height: 34px;
 
     display: grid;
 
     grid-template-columns:
-      7px
-      88px
-      62px
-      1fr;
-
-    gap: 7px;
+      8px
+      104px
+      72px
+      minmax(0, 1fr);
 
     align-items: start;
 
-    &::before {
-      content: '';
+    gap: 9px;
 
+    &::before {
       position: absolute;
 
-      top: 7px;
-      bottom: -4px;
+      top: 8px;
+      bottom: -7px;
       left: 3px;
 
       width: 1px;
-      background: #d6dfd7;
+
+      background:
+        #d9e1dc;
+
+      content: '';
     }
 
     &:last-child::before {
@@ -1647,88 +1958,119 @@
       position: relative;
       z-index: 1;
 
-      width: 6px;
-      height: 6px;
+      width: 7px;
+      height: 7px;
 
       margin-top: 2px;
 
       border-radius: 50%;
-      background: #568979;
+
+      background:
+        $admin-primary;
     }
 
     > span {
-      color: #93908a;
-      font-size: 6.5px;
+      color:
+        $admin-text-muted;
+
+      font-size: 12px;
 
       small {
         margin-left: 4px;
 
-        color: #aaa69f;
-        font-size: 6px;
+        color:
+          #a8aeaa;
+
+        font-size: 12px;
       }
     }
 
     > strong {
-      color: #53504b;
-      font-size: 6.7px;
+      color:
+        $admin-text-secondary;
+
+      font-size: 13px;
+      font-weight: 700;
     }
 
     > p {
       margin: 0;
 
-      color: #99958f;
-      font-size: 6.5px;
+      color:
+        $admin-text-muted;
+
+      font-size: 10px;
+      line-height: 1.4;
     }
   }
 }
 
 
 // ========================================
-// 배송 준비 관리
+// SHIPPING MANAGE
 // ========================================
 
 .shippingManage {
-  padding: 14px 15px;
+  padding:
+    18px;
+
+  margin-bottom: 0;
 }
 
 
 .shippingHeader {
-  margin-bottom: 13px;
-
   display: flex;
   align-items: center;
-  gap: 8px;
+
+  gap: 10px;
+
+  margin-bottom: 15px;
 
   > span {
-    width: 18px;
-    height: 18px;
+    width: 24px;
+    height: 24px;
 
-    flex: 0 0 18px;
+    flex:
+      0
+      0
+      24px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
     border-radius: 50%;
-    background: #4c8977;
 
-    color: #fff;
-    font-size: 7px;
+    background:
+      $admin-primary;
+
+    color:
+      $admin-surface;
+
+    font-size: 13px;
     font-weight: 700;
   }
 
   h3 {
     margin: 0;
 
-    color: #3b3934;
-    font-size: 10px;
+    color:
+      $admin-text-primary;
+
+    font-size: 16px;
+    font-weight: 700;
   }
 
   p {
-    margin: 2px 0 0;
+    margin:
+      3px
+      0
+      0;
 
-    color: #929b91;
-    font-size: 6.5px;
+    color:
+      $admin-text-muted;
+
+    font-size: 10px;
   }
 }
 
@@ -1737,36 +2079,51 @@
   display: grid;
 
   grid-template-columns:
-    0.8fr 1.45fr;
+    minmax(0, 0.85fr)
+    minmax(0, 1.4fr);
 
-  gap: 10px;
+  gap: 12px;
 }
 
 
 // ========================================
-// 체크리스트
+// CHECKLIST
 // ========================================
 
 .checkList {
-  padding: 11px;
+  padding:
+    13px;
 
-  border: 1px solid #e0e7de;
-  border-radius: 6px;
-  background: #fbfdfb;
+  border:
+    1px solid
+    $admin-border;
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    #fafbf9;
 
   h4 {
-    margin: 0 0 9px;
+    margin:
+      0
+      0
+      11px;
 
-    color: #56524d;
-    font-size: 8px;
+    color:
+      $admin-text-secondary;
+
+    font-size: 13px;
+    font-weight: 700;
   }
 
   label {
     display: flex;
     align-items: flex-start;
-    gap: 6px;
 
-    margin-bottom: 6px;
+    gap: 7px;
+
+    margin-bottom: 8px;
 
     cursor: pointer;
 
@@ -1775,26 +2132,37 @@
     }
 
     input {
-      width: 11px;
-      height: 11px;
+      width: 13px;
+      height: 13px;
 
-      margin: 0;
+      flex-shrink: 0;
 
-      accent-color: #528a7b;
+      margin:
+        1px
+        0
+        0;
+
+      accent-color:
+        $admin-primary;
     }
 
     > span {
-      color: #99958f;
-      font-size: 6px;
-      line-height: 1.35;
+      color:
+        $admin-text-muted;
+
+      font-size: 10px;
+      line-height: 1.4;
 
       strong {
         display: block;
 
-        margin-bottom: 1px;
+        margin-bottom: 2px;
 
-        color: #55514c;
-        font-size: 6.7px;
+        color:
+          $admin-text-secondary;
+
+        font-size: 12px;
+        font-weight: 700;
       }
     }
   }
@@ -1802,7 +2170,7 @@
 
 
 // ========================================
-// 배송 폼
+// SHIPPING FORM
 // ========================================
 
 .shippingForm {
@@ -1810,15 +2178,21 @@
 
   display: flex;
   flex-direction: column;
-  gap: 8px;
+
+  gap: 10px;
 }
 
 
 .formRow {
   display: grid;
-  grid-template-columns: 1fr 1fr;
 
-  gap: 8px;
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 10px;
 }
 
 
@@ -1828,11 +2202,13 @@
   > span {
     display: block;
 
-    margin-bottom: 4px;
+    margin-bottom: 5px;
 
-    color: #615d57;
-    font-size: 6.7px;
-    font-weight: 600;
+    color:
+      $admin-text-secondary;
+
+    font-size: 13px;
+    font-weight: 700;
   }
 
   select,
@@ -1840,28 +2216,56 @@
   textarea {
     width: 100%;
 
-    border: 1px solid #d4ddd3;
-    border-radius: 5px;
+    box-sizing: border-box;
+
+    border:
+      1px solid
+      $admin-border;
+
+    border-radius:
+      $admin-radius-sm;
+
     outline: 0;
 
-    background: #fff;
+    background:
+      $admin-surface;
 
-    color: #57524d;
-    font-size: 7px;
+    color:
+      $admin-text-primary;
+
+    font: inherit;
+    font-size: 10px;
 
     &:focus {
-      border-color: #558b7d;
+      border-color:
+        $admin-primary;
+
+      box-shadow:
+        0
+        0
+        0
+        2px
+        rgba(
+          86,
+          138,
+          128,
+          0.08
+        );
     }
 
     &::placeholder {
-      color: #ada9a3;
+      color:
+        #aab0ac;
     }
   }
 
   select,
   input {
-    height: 29px;
-    padding: 0 8px;
+    height: 34px;
+
+    padding:
+      0
+      9px;
   }
 }
 
@@ -1870,2070 +2274,763 @@
   position: relative;
 
   textarea {
-    min-height: 55px;
+    min-height: 64px;
 
-    padding: 8px 8px 17px;
+    padding:
+      9px
+      9px
+      20px;
 
     resize: none;
 
-    line-height: 1.4;
+    line-height: 1.45;
   }
 
   small {
     position: absolute;
 
-    right: 7px;
-    bottom: 6px;
+    right: 8px;
+    bottom: 7px;
 
-    color: #aba7a0;
-    font-size: 6px;
+    color:
+      $admin-text-muted;
+
+    font-size: 7px;
   }
 }
 
 
 // ========================================
-// 상세 하단 버튼
+// DETAIL FOOTER
+// 관리자 공통 버튼 체계
 // ========================================
 
 .detailFooter {
-  min-height: 64px;
+  min-height: 70px;
 
-  padding: 10px 24px;
-
-  flex: 0 0 auto;
+  flex:
+    0
+    0
+    auto;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  border-top: 1px solid #d4e0d3;
-  background: #f5faf3;
+  gap: 12px;
+
+  padding:
+    11px
+    24px;
+
+  border-top:
+    1px solid
+    $admin-border;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.96
+    );
 
   > div {
     display: flex;
+    align-items: center;
+
     gap: 8px;
   }
 
   button {
-    height: 36px;
+    min-height: 38px;
 
-    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-    font-size: 8px;
-    font-weight: 600;
+    padding:
+      0
+      15px;
+
+    border-radius:
+      $admin-radius-sm;
+
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
 
     cursor: pointer;
+
+    transition:
+      color 0.18s ease,
+      border-color 0.18s ease,
+      background 0.18s ease,
+      opacity 0.18s ease;
+
+    &:disabled {
+      opacity: 0.45;
+
+      cursor: default;
+    }
   }
 }
 
 
 .cancelOrder {
-  width: 135px;
+  min-width: 118px;
 
-  border: 1px solid #ec7169;
-  background: #fff;
+  border:
+    1px solid
+    $admin-danger;
 
-  color: #dc5851;
+  background:
+    $admin-surface;
+
+  color:
+    $admin-danger;
+
+  &:hover:not(:disabled) {
+    background:
+      $admin-danger-light;
+  }
 }
 
 
 .tempSave {
-  width: 135px;
+  min-width: 126px;
 
-  border: 1px solid #aab9ad;
-  background: #fff;
+  border:
+    1px solid
+    $admin-border-dark;
 
-  color: #59645b;
+  background:
+    $admin-surface;
+
+  color:
+    $admin-text-secondary;
+
+  &:hover:not(:disabled) {
+    color:
+      $admin-primary-dark;
+
+    border-color:
+      rgba(
+        86,
+        138,
+        128,
+        0.5
+      );
+
+    background:
+      $admin-primary-light;
+  }
 }
 
 
 .startShipping {
-  width: 155px;
+  min-width: 138px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+  gap: 7px;
 
-  border: 1px solid #347763;
-  background: #347763;
+  border:
+    1px solid
+    $admin-primary;
 
-  color: #fff;
+  background:
+    $admin-primary;
+
+  color:
+    $admin-surface;
 
   svg {
-    width: 13px;
-    height: 13px;
+    width: 14px;
+    height: 14px;
   }
 
-  &:hover {
-    background: #2d6b58;
+  &:hover:not(:disabled) {
+    background:
+      $admin-primary-dark;
   }
 }
 
 
 // ========================================
-// 접근성
+// RESPONSIVE
 // ========================================
 
-.srOnly {
-  position: absolute;
-
-  width: 1px;
-  height: 1px;
-
-  padding: 0;
-  margin: -1px;
-
-  overflow: hidden;
-
-  clip: rect(
-    0,
-    0,
-    0,
-    0
-  );
-
-  white-space: nowrap;
-
-  border: 0;
-}
-
-
-// ========================================
-// 반응형
-// ========================================
-
-@media (
-  max-width: 1300px
-) {
-  .summaryGrid {
-    grid-template-columns:
-      repeat(2, 1fr);
-  }
-
+@media (max-width: 1180px) {
   .managementGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
+  }
+
+  .analyticsColumn {
+    position: static;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 12px;
+
+    align-items: start;
+  }
+}
+
+
+@media (max-width: 850px) {
+  .summaryArea {
+    margin-top:
+      -8px;
+  }
+
+  .summaryGrid {
+    width: 100%;
+  }
+
+  .mainSection {
+    padding: 16px;
   }
 
   .analyticsColumn {
     display: grid;
 
     grid-template-columns:
-      repeat(2, 1fr);
-  }
-}
-
-
-@media (
-  max-width: 1000px
-) {
-  .detailPanel {
-    top: 0;
-
-    width: 92vw;
-    min-width: 0;
-  }
-
-  .detailTwoColumn {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-}
-
-
-@media (
-  max-width: 760px
-) {
-  .pageToolbar {
-    h1 {
-      font-size: 23px;
-    }
-  }
-
-  .summaryGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .filterBar {
-    flex-wrap: wrap;
-  }
-
-  .searchField {
-    flex-basis: 100%;
-  }
-
-  .analyticsColumn {
-    grid-template-columns: 1fr;
-  }
-
-  .detailPanel {
-    width: 100vw;
-  }
-
-  .orderSummary {
-    grid-template-columns:
-      repeat(2, 1fr);
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
 
     gap: 12px;
 
-    > div {
-      padding: 0;
-      border-right: 0;
-    }
-  }
-
-  .shippingContent {
-    grid-template-columns: 1fr;
+    align-items: start;
   }
 }
 
-
-// ========================================
-// UserManage 디자인 시스템 정렬
-// ========================================
-
-$order-bg-canvas: #f8f6f2;
-$order-bg-surface: #ffffff;
-$order-primary: #3b5f54;
-$order-primary-subtle: #edf3f0;
-$order-text-title: #222524;
-$order-text-body: #4a504d;
-$order-text-caption: #7a827e;
-$order-border: #e8e6df;
-$order-danger: #b24840;
-$order-danger-subtle: #fbeeed;
-$order-shadow-sm: 0 2px 8px rgba(34, 37, 36, 0.04);
-$order-shadow-md: 0 6px 18px rgba(34, 37, 36, 0.06);
-
-.page {
-  min-height: 100vh;
-  padding: 32px 40px 56px;
-  box-sizing: border-box;
-  color: $order-text-body;
-  background: $order-bg-canvas;
-}
-
-.pageToolbar {
-  min-height: 0;
-  margin-bottom: 12px;
-
-  h1 {
-    color: $order-text-title;
-    font-size: 30px;
-    letter-spacing: -0.02em;
-  }
-
-  > button {
-    height: 38px;
-    padding: 0 16px;
-    gap: 8px;
-    color: $order-text-body;
-    font-size: 13px;
-    border: 1px solid $order-border;
-    border-radius: 8px;
-    box-shadow: $order-shadow-sm;
-
-    svg {
-      width: 15px;
-      height: 15px;
-      transition: transform 0.3s ease;
-    }
-
-    &:hover:not(:disabled) {
-      color: $order-primary;
-      border-color: color.adjust($order-primary, $lightness: 20%);
-      background: #fdfcf9;
-      box-shadow: 0 2px 10px rgba(59, 95, 84, 0.08);
-
-      svg {
-        transform: rotate(180deg);
-      }
-    }
-  }
-}
-
-.ornamentLine {
-  width: 100%;
-  height: auto;
-  display: block;
-  margin: 1rem 0 1.8rem;
-
-  img {
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-  }
-}
-
-.summaryArea {
-  margin: 0 0 24px;
-}
-
-.summaryGrid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.summaryCard {
-  min-width: 0;
-  min-height: 94px;
-  padding: 18px 20px;
-  gap: 16px;
-  color: inherit;
-  text-align: left;
-  border: 1px solid $order-border;
-  border-radius: 14px;
-  background: $order-bg-surface;
-  box-shadow: $order-shadow-sm;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    border-color: color.adjust($order-primary, $lightness: 20%);
-    box-shadow: $order-shadow-md;
-  }
-
-  &.summaryCardActive {
-    border-color: $order-primary;
-    background: #fdfefd;
-    box-shadow: 0 0 0 1.5px $order-primary, $order-shadow-sm;
-  }
-}
-
-.summaryIcon {
-  width: 44px;
-  height: 44px;
-  flex: 0 0 44px;
-  color: $order-primary;
-  border-radius: 12px;
-  background: $order-primary-subtle;
-
-  svg {
-    width: 20px;
-    height: 20px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-}
-
-.summaryCardrequest .summaryIcon {
-  color: $order-danger;
-  background: $order-danger-subtle;
-}
-
-.summaryContent {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
-
-  h3 {
-    margin: 0;
-    color: $order-text-caption;
-    font-size: 13px;
-    font-weight: 500;
-  }
-
-  p {
-    gap: 3px;
-    line-height: 1.2;
-
-    strong {
-      color: $order-text-title;
-      font-size: 24px;
-      letter-spacing: 0;
-    }
-
-    span {
-      color: $order-text-caption;
-      font-size: 14px;
-    }
-  }
-
-  small {
-    margin-top: 2px;
-    gap: 4px;
-    color: $order-text-caption;
-    font-size: 12px;
-
-    b {
-      color: $order-primary;
-      font-weight: 600;
-    }
-  }
-}
-
-.managementGrid {
-  grid-template-columns: minmax(0, 1fr) 340px;
-  gap: 20px;
-}
-
-.mainSection,
-.analyticsCard {
-  border: 1px solid $order-border;
-  border-radius: 14px;
-  background: $order-bg-surface;
-  box-shadow: $order-shadow-sm;
-}
-
-.filterBar {
-  padding: 24px 24px 10px;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.searchField {
-  min-width: 240px;
-  border-color: $order-border;
-  border-radius: 8px;
-
-  input {
-    color: $order-text-body;
-    font-size: 13px;
-  }
-}
-
-.selectField {
-  flex-basis: 104px;
-
-  select {
-    padding: 0 10px;
-    color: $order-text-body;
-    font-size: 12px;
-    border-color: $order-border;
-    border-radius: 8px;
-  }
-}
-
-.sortField {
-  flex-basis: 104px;
-}
-
-.resetButton {
-  padding: 0 14px;
-  color: $order-text-body;
-  font-size: 12px;
-  border-color: $order-border;
-  border-radius: 8px;
-}
-
-.quickFilterArea {
-  padding: 2px 24px 18px;
-  gap: 12px;
-
-  > span {
-    color: $order-text-caption;
-    font-size: 12px;
-  }
-
-  > div {
-    gap: 7px;
-
-    button {
-      min-height: 28px;
-      padding: 0 12px;
-      color: $order-text-body;
-      font-size: 11px;
-      background: #f0eee8;
-    }
-
-    .activeQuick {
-      color: #fff;
-      background: $order-primary;
-    }
-  }
-}
-
-.sectionHeading {
-  min-height: 62px;
-  padding: 0 24px;
-  border-color: $order-border;
-}
-
-.titleWrap {
-  h2 {
-    color: $order-text-title;
-    font-size: 17px;
-  }
-
-  span {
-    color: $order-primary;
-    font-size: 12px;
-    font-weight: 600;
-  }
-}
-
-.dataTable {
-  thead {
-    background: #f8f6f2;
-
-    th {
-      color: $order-text-caption;
-      font-size: 11px;
-    }
-  }
-
-  tbody {
-    tr {
-      height: 58px;
-      border-color: $order-border;
-    }
-
-    td {
-      color: $order-text-body;
-      font-size: 11px;
-
-      strong {
-        color: $order-text-title;
-        font-size: 11px;
-      }
-    }
-  }
-}
-
-.statusBadge {
-  min-width: 58px;
-  padding: 5px 8px;
-  font-size: 10px;
-}
-
-.detailButton {
-  height: 30px;
-  padding: 0 10px;
-  color: $order-text-body;
-  font-size: 10px;
-  border-color: $order-border;
-  border-radius: 6px;
-}
-
-.analyticsColumn {
-  gap: 16px;
-}
-
-.analyticsCard {
-  padding: 20px;
-}
-
-.analyticsHeader {
-  margin-bottom: 18px;
-
-  h2 {
-    color: $order-text-title;
-    font-size: 15px;
-  }
-
-  span {
-    color: #a0a6a2;
-    font-size: 11px;
-  }
-}
-
-.statusOverview {
-  margin-top: 0;
-  gap: 20px;
-
-  ul {
-    gap: 8px;
-
-    li {
-      grid-template-columns: 8px 1fr auto;
-      color: $order-text-body;
-      font-size: 11px;
-
-      > span:first-child {
-        width: 8px;
-        height: 8px;
-      }
-
-      strong {
-        color: $order-text-title;
-        font-size: 11px;
-      }
-    }
-  }
-}
-
-.statusDonut {
-  width: 90px;
-  height: 90px;
-  flex-basis: 90px;
-  background: conic-gradient(
-    $order-primary 0 var(--ready-end, 0%),
-    #6d9996 var(--ready-end, 0%) var(--shipping-end, 0%),
-    #b9c9c4 var(--shipping-end, 0%) var(--completed-end, 0%),
-    $order-danger var(--completed-end, 0%) 100%
-  );
-  animation: orderDonutReveal 420ms ease-out both;
-
-  &::after {
-    inset: 12px;
-    background: $order-bg-surface;
-  }
-
-  > div {
-    span {
-      color: $order-text-caption;
-      font-size: 11px;
-    }
-
-    strong {
-      color: $order-text-title;
-      font-size: 15px;
-    }
-  }
-}
-
-.dotReady { background: $order-primary; }
-.dotShipping { background: #6d9996; }
-.dotCompleted { background: #b9c9c4; }
-.dotRefund { background: $order-danger; }
-
-.chartLegend {
-  margin-top: 0;
-
-  span {
-    color: $order-text-caption;
-    font-size: 10px;
-  }
-
-  i {
-    width: 7px;
-    height: 7px;
-  }
-}
-
-.barChart {
-  height: 150px;
-  margin-top: 14px;
-}
-
-.barItem > span {
-  color: $order-text-caption;
-  font-size: 9px;
-}
-
-.barPair {
-  height: 104px;
-  gap: 4px;
-
-  i {
-    width: 8px;
-    height: var(--bar-height, 0%);
-    animation: orderBarReveal 460ms ease-out both;
-    transform-origin: bottom;
-  }
-}
-
-.weekCompare {
-  border-color: #c6d8d2;
-  background: #fdfefd;
-}
-
-@keyframes orderDonutReveal {
-  from {
-    opacity: 0;
-    transform: rotate(-45deg) scale(0.88);
-  }
-  to {
-    opacity: 1;
-    transform: rotate(0) scale(1);
-  }
-}
-
-@keyframes orderBarReveal {
-  from {
-    transform: scaleY(0);
-  }
-  to {
-    transform: scaleY(1);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .statusDonut,
-  .barPair i {
-    animation: none;
-  }
-}
-
-@media (max-width: 1180px) {
-  .page {
-    padding: 24px;
-  }
-
-  .summaryGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .managementGrid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .analyticsColumn {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
 
 @media (max-width: 767px) {
   .page {
-    padding: 0 0 32px;
-  }
-
-  .pageToolbar {
-    gap: 12px;
-
-    h1 {
-      font-size: 24px;
-    }
-
-    > button {
-      height: 36px;
-      padding: 0 12px;
-      font-size: 12px;
-    }
-  }
-
-  .ornamentLine {
-    display: none;
+    padding-bottom:
+      30px;
   }
 
   .summaryArea {
-    margin-bottom: 18px;
+    margin-top: 0;
   }
 
   .summaryGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    width: 100%;
+
+    margin-inline:
+      auto;
   }
 
-  .summaryCard {
-    min-height: 124px;
-    padding: 14px 12px;
-    align-items: flex-start;
-    gap: 10px;
+  .mainSection {
+    padding: 14px;
   }
 
-  .summaryIcon {
-    width: 38px;
-    height: 38px;
-    flex-basis: 38px;
+  .selectField {
+    width: 100%;
+    min-width: 0;
 
-    svg {
-      width: 18px;
-      height: 18px;
+    select {
+      width: 100%;
+      min-width: 0;
     }
-  }
-
-  .summaryContent {
-    h3 { font-size: 12px; line-height: 1.35; }
-    p strong { font-size: 22px; }
-    p span { font-size: 12px; }
-    small { font-size: 11px; line-height: 1.35; }
-  }
-
-  .filterBar {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    padding: 16px 16px 10px;
-    gap: 8px;
-  }
-
-  .searchField {
-    grid-column: 1 / -1;
-    min-width: 0;
-  }
-
-  .selectField,
-  .sortField {
-    min-width: 0;
-    width: 100%;
-    flex-basis: auto;
-  }
-
-  .resetButton {
-    width: 100%;
   }
 
   .quickFilterArea {
-    padding: 4px 16px 16px;
-    align-items: flex-start;
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 12px;
+
+    padding:
+      0
+      2px
+      14px;
+
+    > span {
+      font-size: 11px;
+    }
+
+    > div {
+      min-width: 0;
+
+      flex: 1;
+
+      flex-wrap: nowrap;
+
+      gap: 5px;
+
+      overflow-x: auto;
+
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    button {
+      min-height: 28px;
+
+      padding:
+        0
+        9px;
+
+      font-size: 9px;
+    }
   }
 
   .sectionHeading {
-    padding: 0 16px;
+    min-height: auto;
+
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-top: 20px;
+    margin-bottom: 16px;
+
+    padding:
+      0
+      2px;
+  }
+
+  .titleWrap {
+    h2 {
+      margin: 0;
+
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+  }
+
+  .orderCount {
+    font-size: 13px;
+
+    strong {
+      font-size: 16px;
+    }
   }
 
   .tableWrap {
-    padding: 0 16px 16px;
-    box-sizing: border-box;
-    overflow: visible;
+    width: 100%;
+
+    overflow-x: auto;
+
+    overscroll-behavior-inline:
+      contain;
+
+    -webkit-overflow-scrolling:
+      touch;
   }
 
   .dataTable {
-    min-width: 0;
-    display: block;
-
-    thead {
-      display: none;
-    }
-
-    tbody {
-      display: grid;
-      gap: 10px;
-    }
-
-    tr {
-      height: auto !important;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px 18px;
-      padding: 18px 16px 16px;
-      border: 1px solid $order-border !important;
-      border-radius: 10px;
-      background: $order-bg-surface;
-    }
-
-    td {
-      min-width: 0;
-      min-height: 42px;
-      padding: 0 !important;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 6px;
-      color: $order-text-title !important;
-      font-size: 13px !important;
-      font-weight: 500;
-      line-height: 1.45;
-      white-space: normal !important;
-      overflow-wrap: anywhere;
-      border: 0;
-
-      &::before {
-        color: $order-text-caption;
-        font-size: 11px;
-        font-weight: 600;
-        line-height: 1.2;
-      }
-
-      &:nth-child(1)::before { content: '주문 번호'; }
-      &:nth-child(2)::before { content: '주문자'; }
-      &:nth-child(3)::before { content: '주문 상품'; }
-      &:nth-child(4)::before { content: '주문일'; }
-      &:nth-child(5)::before { content: '결제 금액'; }
-      &:nth-child(6)::before { content: '결제 상태'; }
-      &:nth-child(7)::before { content: '배송 상태'; }
-
-      &:nth-child(8) {
-        grid-column: 1 / -1;
-      }
-    }
-  }
-
-  .statusBadge {
-    width: auto;
-    padding: 5px 9px;
-    font-size: 12px;
-  }
-
-  .detailButton {
-    width: 100%;
-    min-height: 40px;
-    font-size: 13px;
+    min-width: 880px;
   }
 
   .analyticsColumn {
-    grid-template-columns: 1fr;
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
     gap: 12px;
+
+    align-items: start;
   }
 
-  .analyticsCard {
-    padding: 16px;
-  }
-}
+  .statusDonut {
+    width: 118px;
+    height: 118px;
 
+    flex-basis: 118px;
 
-// 상세 본문 값은 제목보다 한 단계 낮춰 밀도를 맞춘다.
-.detailPanel {
-  font-size: 15px;
-}
-
-.infoList dd {
-  font-size: 15px;
-}
-
-
-// 주문 상세는 데스크톱 관리자 화면에서 읽기 쉬운 밀도로 별도 보정한다.
-.detailPanel {
-  font-size: 16px;
-}
-
-.detailScroll {
-  padding: 0 28px 28px;
-}
-
-.orderSummary {
-  min-height: 82px;
-  padding: 14px 16px;
-  margin-bottom: 14px;
-
-  > div {
-    padding: 0 14px;
-
-    > span {
-      margin-bottom: 8px;
-      font-size: 12px;
+    &::after {
+      width: 82px;
+      height: 82px;
     }
 
-    > strong {
-      min-height: 30px;
-      font-size: 15px;
+    > div {
+      strong {
+        font-size: 22px;
 
-      small {
-        font-size: 12px;
+        small {
+          font-size: 9px;
+        }
       }
     }
   }
-}
 
-.detailStatus {
-  min-height: 30px;
-  padding: 0 11px;
-  font-size: 12px;
-}
-
-.totalPrice {
-  font-size: 19px !important;
-}
-
-.detailSection,
-.shippingManage {
-  margin-bottom: 14px;
-  padding: 22px;
-}
-
-.detailSection {
-  > h3,
-  .sectionTitleRow h3 {
-    margin-bottom: 16px;
-    font-size: 20px;
-
-    > span {
-      font-size: 13px;
-    }
-  }
-}
-
-.sectionTitleRow {
-  margin-bottom: 16px;
-
-  button {
-    min-height: 34px;
-    padding: 0 11px;
-    font-size: 13px;
-  }
-}
-
-.progress {
-  padding-top: 4px;
-
-  &::before {
-    top: 17px;
-  }
-}
-
-.stepCircle {
-  width: 32px;
-  height: 32px;
-  font-size: 12px;
-}
-
-.progressItem {
-  strong {
-    margin-top: 7px;
-    font-size: 13px;
-  }
-
-  small {
-    font-size: 11px;
-  }
-}
-
-.detailTwoColumn {
-  gap: 14px;
-
-  > .detailSection {
-    margin-bottom: 14px;
-  }
-}
-
-.productList {
-  gap: 8px;
-}
-
-.orderProduct {
-  min-height: 62px;
-  padding: 8px 10px;
-  gap: 10px;
-
-  > div {
-    strong {
-      font-size: 14px;
-    }
-
-    small {
-      margin-top: 4px;
-      font-size: 12px;
-    }
-  }
-
-  > p {
-    strong {
-      font-size: 14px;
-    }
-
-    small {
-      margin-top: 4px;
-      font-size: 12px;
-    }
-  }
-}
-
-.productThumb {
-  width: 42px;
-  height: 42px;
-  flex-basis: 42px;
-}
-
-.infoList {
-  gap: 13px;
-
-  > div {
-    grid-template-columns: 108px minmax(0, 1fr);
+  .statusOverview {
     gap: 14px;
-  }
 
-  dt {
-    font-size: 15px;
-    line-height: 1.55;
-  }
+    li {
+      font-size: 10px;
 
-  dd {
-    font-size: 16px;
-    line-height: 1.55;
-  }
-}
-
-.totalRow {
-  margin-top: 8px;
-  padding-top: 10px;
-
-  dt,
-  dd {
-    font-size: 17px;
-  }
-}
-
-.historyList > div {
-  min-height: 44px;
-  grid-template-columns: 9px 126px 88px 1fr;
-  gap: 12px;
-
-  > i {
-    width: 7px;
-    height: 7px;
-  }
-
-  > span,
-  > strong,
-  > p {
-    font-size: 14px;
-    line-height: 1.5;
-  }
-
-  > span small {
-    font-size: 12px;
-  }
-}
-
-.shippingHeader {
-  margin-bottom: 16px;
-
-  > span {
-    width: 24px;
-    height: 24px;
-    flex-basis: 24px;
-    font-size: 12px;
-  }
-
-  h3 {
-    font-size: 18px;
-  }
-
-  p {
-    margin-top: 4px;
-    font-size: 12px;
-  }
-}
-
-.shippingContent {
-  gap: 14px;
-}
-
-.checkList {
-  padding: 14px;
-
-  h4 {
-    margin-bottom: 12px;
-    font-size: 14px;
-  }
-
-  label {
-    gap: 8px;
-    margin-bottom: 9px;
-
-    input {
-      width: 14px;
-      height: 14px;
+      strong {
+        font-size: 10px;
+      }
     }
+  }
 
+  .chartLegend {
+    gap: 6px;
+
+    span {
+      font-size: 8px;
+    }
+  }
+
+  .barChart {
+    height: 132px;
+
+    margin-top: 10px;
+
+    padding-top: 10px;
+  }
+
+  .barPair {
+    height: 88px;
+
+    i {
+      width: 5px;
+    }
+  }
+
+  .barItem {
     > span {
-      font-size: 12px;
+      font-size: 7px;
+    }
+  }
+
+  .weekCompare {
+    min-height: 58px;
+
+    padding: 8px;
+
+    gap: 7px;
+
+    > div:nth-child(2) {
+      span {
+        font-size: 8px;
+      }
 
       strong {
         font-size: 13px;
       }
     }
-  }
-}
 
-.shippingForm {
-  gap: 10px;
-}
+    dl {
+      padding-left: 7px;
 
-.formRow {
-  gap: 10px;
-}
+      dt {
+        font-size: 7px;
+      }
 
-.shippingForm label {
-  > span {
-    margin-bottom: 6px;
-    font-size: 13px;
+      dd {
+        font-size: 8px;
+      }
+    }
   }
 
-  select,
-  input {
-    height: 36px;
-    padding: 0 10px;
-    font-size: 14px;
-  }
-}
+  .compareIcon {
+    width: 28px;
+    height: 28px;
 
-.detailFooter {
-  min-height: 76px;
-  padding: 12px 28px;
+    flex:
+      0
+      0
+      28px;
 
-  button {
-    height: 42px;
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 1000px) {
-  .detailScroll {
-    padding: 0 20px 24px;
+    font-size: 12px;
   }
 
-  .detailFooter {
-    padding: 12px 20px;
-  }
-}
-
-@media (max-width: 767px) {
   .detailPanel {
-    font-size: 14px;
+    top: 70px;
+    right: 0;
+    bottom: 0;
+
+    width: 100vw;
+    min-width: 0;
+    max-width: none;
+
+    border-radius:
+      20px
+      20px
+      0
+      0;
+  }
+}
+
+
+@media (max-width: 520px) {
+  .analyticsColumn {
+    gap: 10px;
+  }
+
+  .statusDonut {
+    width: 104px;
+    height: 104px;
+
+    flex-basis: 104px;
+
+    &::after {
+      width: 72px;
+      height: 72px;
+    }
+  }
+
+  .weekCompare {
+    dl {
+      display: none;
+    }
+  }
+}
+
+
+// ========================================
+// WIDE DETAIL RESPONSIVE
+// ========================================
+
+@media (max-width: 1180px) {
+  .detailPanel {
+    width:
+      min(
+        820px,
+        calc(100vw - 190px)
+      );
+
+    min-width: 640px;
+  }
+}
+
+
+@media (max-width: 900px) {
+  .detailPanel {
+    width:
+      calc(100vw - 120px);
+
+    min-width: 0;
   }
 
   .orderSummary {
-    min-height: 0;
-  }
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
 
-  .detailSection,
-  .shippingManage {
-    padding: 16px;
-  }
+    gap: 0;
 
-  .detailSection > h3,
-  .detailSection .sectionTitleRow h3 {
-    font-size: 16px;
-  }
+    > div {
+      padding:
+        11px
+        12px;
 
-  .infoList > div {
-    grid-template-columns: 78px minmax(0, 1fr);
-  }
+      border-right:
+        1px solid
+        $admin-border;
 
-  .infoList dt,
-  .infoList dd {
-    font-size: 13px;
-  }
-}
+      border-bottom:
+        1px solid
+        $admin-border;
 
+      &:first-child {
+        padding-left: 12px;
+      }
 
-// ========================================
-// 주문 목록 / 상세 최종 가독성 보정
-// ========================================
+      &:last-child {
+        padding-right: 12px;
 
-.dataTable {
-  th:nth-child(1) { width: 9%; }
-  th:nth-child(2) { width: 10%; }
-  th:nth-child(3) { width: 22%; }
-  th:nth-child(4) { width: 12%; }
-  th:nth-child(5) { width: 12%; }
-  th:nth-child(6) { width: 12%; }
-  th:nth-child(7) { width: 12%; }
-  th:nth-child(8) { width: 11%; }
+        border-right:
+          1px solid
+          $admin-border;
+      }
 
-  thead {
-    tr {
-      height: 48px;
-    }
+      &:nth-child(even) {
+        border-right: 0;
+      }
 
-    th {
-      font-size: 14px;
-      line-height: 1.35;
-      vertical-align: middle;
-    }
-  }
-
-  tbody {
-    tr {
-      height: 64px;
-    }
-
-    td,
-    td strong {
-      font-size: 14px;
-      line-height: 1.4;
-      vertical-align: middle;
-    }
-  }
-}
-
-.orderId {
-  display: inline-block;
-  max-width: 100%;
-  color: $order-text-title;
-  cursor: help;
-  white-space: nowrap;
-}
-
-.statusBadge {
-  min-height: 28px;
-  padding: 0 10px;
-  font-size: 12px;
-  line-height: 1;
-  box-sizing: border-box;
-}
-
-.detailButton {
-  min-width: 64px;
-  height: 34px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  line-height: 1;
-}
-
-.detailPanel {
-  color: $order-text-body;
-  font-size: 14px;
-}
-
-.detailHeader {
-  h2 {
-    font-size: 24px;
-    line-height: 1.3;
-  }
-
-  button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-  }
-}
-
-.orderSummary > div {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
-  > span {
-    font-size: 11px;
-    line-height: 1.3;
-  }
-
-  > strong {
-    display: flex;
-    align-items: center;
-    min-height: 28px;
-    font-size: 14px;
-    line-height: 1.35;
-    overflow-wrap: anywhere;
-
-    small {
-      font-size: 11px;
-    }
-  }
-}
-
-.detailStatus {
-  min-height: 28px;
-  padding: 0 10px;
-  font-size: 11px;
-  line-height: 1;
-  box-sizing: border-box;
-}
-
-.totalPrice {
-  font-size: 17px !important;
-}
-
-.detailSection {
-  > h3,
-  .sectionTitleRow h3 {
-    font-size: 16px;
-    line-height: 1.35;
-
-    > span {
-      font-size: 12px;
-    }
-  }
-}
-
-.progressItem {
-  justify-content: flex-start;
-  text-align: center;
-
-  strong {
-    font-size: 12px;
-    line-height: 1.35;
-  }
-
-  small {
-    font-size: 10px;
-    line-height: 1.3;
-  }
-}
-
-.stepCircle {
-  font-size: 11px;
-  line-height: 1;
-}
-
-.orderProduct {
-  > div {
-    strong {
-      font-size: 13px;
-      line-height: 1.4;
-    }
-
-    small {
-      font-size: 11px;
-      line-height: 1.35;
-    }
-  }
-
-  > p {
-    strong {
-      font-size: 13px;
-      line-height: 1.4;
-    }
-
-    small {
-      font-size: 11px;
-      line-height: 1.35;
-    }
-  }
-}
-
-.infoList > div {
-  align-items: center;
-}
-
-.infoList {
-  dt,
-  dd {
-    font-size: 13px;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-  }
-}
-
-.totalRow {
-  dt,
-  dd {
-    font-size: 14px;
-  }
-}
-
-.sectionTitleRow button {
-  min-height: 30px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  line-height: 1;
-}
-
-.historyList > div {
-  align-items: center;
-
-  > span,
-  > strong,
-  > p {
-    font-size: 11px;
-    line-height: 1.4;
-  }
-
-  > span small {
-    font-size: 10px;
-  }
-}
-
-.shippingHeader {
-  h3 {
-    font-size: 16px;
-    line-height: 1.35;
-  }
-
-  p {
-    font-size: 11px;
-    line-height: 1.4;
-  }
-}
-
-.checkList {
-  h4 {
-    font-size: 13px;
-  }
-
-  label {
-    align-items: center;
-
-    > span {
-      font-size: 11px;
-
-      strong {
-        font-size: 12px;
+      &:nth-last-child(-n + 2) {
+        border-bottom: 0;
       }
     }
   }
 }
 
-.shippingForm label {
-  > span {
-    font-size: 12px;
-  }
-
-  select,
-  input {
-    font-size: 13px;
-  }
-}
-
-.detailFooter button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  line-height: 1;
-}
 
 @media (max-width: 767px) {
-  .dataTable {
-    th:nth-child(n),
-    td:nth-child(n) {
-      width: auto;
+  .detailPanel {
+    top: 70px;
+
+    width: 100vw;
+
+    min-width: 0;
+
+    border-left: 0;
+
+    border-radius:
+      20px
+      20px
+      0
+      0;
+  }
+
+  .detailHeader {
+    min-height: 62px;
+
+    padding:
+      0
+      18px;
+
+    h2 {
+      font-size: 19px;
     }
   }
 
-  .orderSummary > div > strong,
-  .infoList dt,
-  .infoList dd {
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 390px) {
-  .summaryGrid {
-    grid-template-columns: 1fr;
+  .detailScroll {
+    padding:
+      16px
+      16px
+      22px;
   }
 
-  .summaryCard {
-    min-height: 104px;
-    align-items: center;
-  }
-}
+  .orderSummary {
+    grid-template-columns:
+      1fr;
 
+    padding: 0;
 
-// ========================================
-// 내부 타이포 가독성 보정
-// 레이아웃과 카드 크기는 유지한다.
-// ========================================
+    > div {
+      padding:
+        12px
+        14px !important;
 
-.summaryContent {
-  h3 {
-    font-size: 14px;
-  }
+      border-right: 0 !important;
 
-  p strong {
-    font-size: 28px;
-  }
+      border-bottom:
+        1px solid
+        $admin-border !important;
 
-  p span,
-  small {
-    font-size: 13px;
-  }
-}
+      &:last-child {
+        border-bottom:
+          0 !important;
+      }
 
-.searchField input {
-  font-size: 14px;
-}
-
-.selectField select,
-.resetButton {
-  font-size: 13px;
-}
-
-.quickFilterArea {
-  > span {
-    font-size: 13px;
-  }
-
-  > div button {
-    font-size: 12px;
-    font-weight: 500;
-  }
-}
-
-.titleWrap {
-  h2 {
-    font-size: 19px;
-  }
-
-  span {
-    font-size: 13px;
-  }
-}
-
-.dataTable {
-  thead th {
-    font-size: 13px;
-  }
-
-  tbody td,
-  tbody td strong {
-    font-size: 13px;
-  }
-}
-
-.statusBadge,
-.detailButton {
-  font-size: 11px;
-}
-
-.analyticsHeader {
-  h2 {
-    font-size: 17px;
-  }
-
-  span {
-    font-size: 12px;
-  }
-}
-
-.statusOverview ul li,
-.statusOverview ul li strong {
-  font-size: 12px;
-}
-
-.statusDonut > div {
-  span {
-    font-size: 12px;
-  }
-
-  strong {
-    font-size: 17px;
-  }
-}
-
-.chartLegend span,
-.barItem > span {
-  font-size: 11px;
-}
-
-.weekCompare {
-  > div:nth-child(2) {
-    span {
-      font-size: 10px;
-    }
-
-    strong {
-      font-size: 15px;
+      > span {
+        margin-bottom: 4px;
+      }
     }
   }
 
-  dl {
-    dt {
-      font-size: 9px;
-    }
+  .detailTwoColumn {
+    grid-template-columns:
+      1fr;
 
-    dd {
-      font-size: 10px;
-    }
-  }
-}
-
-.detailHeader h2 {
-  font-size: 22px;
-}
-
-.orderSummary > div {
-  > span {
-    font-size: 10px;
+    gap: 0;
   }
 
-  > strong {
-    font-size: 12px;
-
-    small {
-      font-size: 10px;
-    }
-  }
-}
-
-.detailStatus {
-  font-size: 10px;
-}
-
-.totalPrice {
-  font-size: 15px !important;
-}
-
-.detailSection {
-  > h3,
-  .sectionTitleRow h3 {
-    font-size: 14px;
-
-    > span {
-      font-size: 11px;
-    }
-  }
-}
-
-.progressItem {
-  strong {
-    font-size: 10px;
-  }
-
-  small {
-    font-size: 9px;
-  }
-}
-
-.stepCircle {
-  font-size: 10px;
-}
-
-.orderProduct {
-  > div {
-    strong {
-      font-size: 12px;
-    }
-
-    small {
-      font-size: 10px;
-    }
-  }
-
-  > p {
-    strong {
-      font-size: 12px;
-    }
-
-    small {
-      font-size: 10px;
-    }
-  }
-}
-
-.infoList {
-  dt,
-  dd {
-    font-size: 11px;
-  }
-}
-
-.totalRow {
-  dt,
-  dd {
-    font-size: 13px;
-  }
-}
-
-.sectionTitleRow button {
-  font-size: 11px;
-}
-
-.historyList > div {
-  > span {
-    font-size: 9px;
-
-    small {
-      font-size: 8px;
-    }
-  }
-
-  > strong,
-  > p {
-    font-size: 10px;
-  }
-}
-
-.shippingHeader {
-  > span {
-    font-size: 10px;
-  }
-
-  h3 {
-    font-size: 14px;
-  }
-
-  p {
-    font-size: 10px;
-  }
-}
-
-.checkList {
-  h4 {
-    font-size: 12px;
-  }
-
-  label > span {
-    font-size: 10px;
-
-    strong {
-      font-size: 11px;
-    }
-  }
-}
-
-.shippingForm label {
-  > span {
-    font-size: 11px;
-  }
-
-  select,
-  input,
-  textarea {
-    font-size: 12px;
-  }
-}
-
-.memoField small {
-  font-size: 9px;
-}
-
-.detailFooter button {
-  font-size: 12px;
-}
-
-@media (max-width: 767px) {
-  .summaryContent {
-    h3 {
-      font-size: 13px;
-    }
-
-    p strong {
-      font-size: 24px;
-    }
-
-    p span,
-    small {
-      font-size: 12px;
-    }
-  }
-
-  .dataTable tbody td,
-  .dataTable tbody td strong {
-    font-size: 14px !important;
-  }
-}
-
-
-// 상세 패널의 기존 축소 규칙을 마지막에 덮어쓴다.
-.detailPanel {
-  font-size: 16px;
-}
-
-.detailHeader h2 {
-  font-size: 24px;
-}
-
-.orderSummary > div {
-  > span {
-    font-size: 12px;
-  }
-
-  > strong {
-    font-size: 15px;
-
-    small {
-      font-size: 12px;
-    }
-  }
-}
-
-.detailStatus {
-  font-size: 12px;
-}
-
-.totalPrice {
-  font-size: 19px !important;
-}
-
-.detailSection {
-  > h3,
-  .sectionTitleRow h3 {
-    font-size: 20px;
-
-    > span {
-      font-size: 13px;
-    }
-  }
-}
-
-.progressItem {
-  strong {
-    font-size: 13px;
-  }
-
-  small {
-    font-size: 11px;
-  }
-}
-
-.stepCircle {
-  font-size: 12px;
-}
-
-.orderProduct {
-  > div {
-    strong {
-      font-size: 14px;
-    }
-
-    small {
-      font-size: 12px;
-    }
-  }
-
-  > p {
-    strong {
-      font-size: 14px;
-    }
-
-    small {
-      font-size: 12px;
-    }
-  }
-}
-
-.infoList {
-  dt {
-    font-size: 15px;
-  }
-
-  dd {
-    font-size: 16px;
-  }
-}
-
-.totalRow {
-  dt,
-  dd {
-    font-size: 17px;
-  }
-}
-
-.sectionTitleRow button {
-  font-size: 13px;
-}
-
-.historyList > div {
-  > span,
-  > strong,
-  > p {
-    font-size: 14px;
-  }
-
-  > span small {
-    font-size: 12px;
-  }
-}
-
-.shippingHeader {
-  h3 {
-    font-size: 18px;
-  }
-
-  p {
-    font-size: 12px;
-  }
-}
-
-.checkList {
-  h4 {
-    font-size: 14px;
-  }
-
-  label > span {
-    font-size: 12px;
-
-    strong {
-      font-size: 13px;
-    }
-  }
-}
-
-.shippingForm label {
-  > span {
-    font-size: 13px;
-  }
-
-  select,
-  input,
-  textarea {
-    font-size: 14px;
-  }
-}
-
-.detailFooter button {
-  font-size: 14px;
-}
-
-@media (max-width: 767px) {
   .detailSection {
+    padding:
+      15px;
+
     > h3,
     .sectionTitleRow h3 {
-      font-size: 17px;
-    }
-  }
-
-  .infoList {
-    dt {
       font-size: 13px;
     }
+  }
 
-    dd {
-      font-size: 14px;
+  .progress {
+    overflow-x: auto;
+
+    grid-template-columns:
+      repeat(
+        5,
+        minmax(82px, 1fr)
+      );
+
+    padding-bottom: 5px;
+  }
+
+  .shippingContent {
+    grid-template-columns:
+      1fr;
+  }
+
+  .formRow {
+    grid-template-columns:
+      1fr;
+  }
+
+  .historyList {
+    > div {
+      grid-template-columns:
+        8px
+        82px
+        58px
+        minmax(0, 1fr);
+
+      gap: 7px;
+    }
+  }
+
+  .detailFooter {
+    min-height: auto;
+
+    align-items: stretch;
+
+    flex-direction: column;
+
+    padding:
+      10px
+      16px
+      14px;
+
+    > div {
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(0, 1fr)
+        );
+    }
+
+    button {
+      width: 100%;
+      min-width: 0;
     }
   }
 }
 
 
-.detailPanel {
-  font-size: 15px;
-}
+@media (max-width: 480px) {
+  .historyList {
+    > div {
+      grid-template-columns:
+        8px
+        1fr;
 
-.infoList dd {
-  font-size: 15px;
-}
-
-
-// ========================================
-// 모바일 필터 및 주문 카드 가독성
-// ========================================
-
-@media (max-width: 767px) {
-  .ornamentLine {
-    display: none;
-  }
-
-  .selectField select,
-  .resetButton {
-    border-color: #c8ddd8;
-    background: #f3f8f6;
-    color: #456f6b;
-    font-weight: 600;
-    text-align: center;
-    text-align-last: center;
-  }
-
-  .selectField select:focus,
-  .resetButton:hover {
-    border-color: #7eaaa5;
-    background: #eaf4f1;
-    color: #35625e;
-  }
-
-  .dataTable tbody {
-    gap: 12px;
-  }
-
-  .dataTable tbody tr {
-    padding: 16px;
-    gap: 16px 18px;
-    border-color: #d8e4df !important;
-    border-radius: 12px;
-    box-shadow: 0 3px 12px rgba(57, 85, 78, 0.05);
-  }
-
-  .dataTable tbody td {
-    min-height: 0;
-    gap: 7px;
-    color: #3f3b37 !important;
-    font-size: 14px !important;
-    font-weight: 500;
-    line-height: 1.55;
-
-    &::before {
-      color: #4d7e7b;
-      font-size: 12px;
-      font-weight: 700;
+      > span,
+      > strong,
+      > p {
+        grid-column: 2;
+      }
     }
-  }
-
-  .dataTable tbody td strong {
-    color: #37332f;
-    font-size: 14px !important;
-  }
-
-  .dataTable tbody td:nth-child(3) {
-    grid-column: 1 / -1;
-    padding: 11px 12px !important;
-    border-radius: 8px;
-    background: #f3f8f6;
-  }
-
-  .statusBadge {
-    min-height: 28px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .detailButton {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
   }
 }

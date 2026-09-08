@@ -2,6 +2,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 
@@ -16,10 +17,14 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 
-import adminTopOrnament from '../../assets/images/admin/adminTopOrnament.svg'
+import AdminEmptyState from '../../components/admin/AdminEmptyState'
+import AdminFilterBar from '../../components/admin/AdminFilterBar'
+import AdminPageHeader from '../../components/admin/AdminPageHeader'
+import AdminPanel from '../../components/admin/AdminPanel'
+import AdminStatusBadge from '../../components/admin/AdminStatusBadge'
+import AdminSummaryCard from '../../components/admin/AdminSummaryCard'
 
 import { products as productData } from '../../data/products'
-
 import { subscribeToAuthState } from '../../firebase/auth'
 import { db } from '../../firebase/firebase'
 
@@ -78,9 +83,9 @@ const getProductInfo = (productId) => {
 
   return {
     name:
-      product?.productName ||
-      productId ||
-      '상품 정보 없음',
+      product?.productName
+      || productId
+      || '상품 정보 없음',
 
     image:
       resolveProductImage(
@@ -98,8 +103,8 @@ const getDate = (value) => {
   if (!value) return null
 
   if (
-    typeof value?.toDate ===
-    'function'
+    typeof value?.toDate
+    === 'function'
   ) {
     return value.toDate()
   }
@@ -117,14 +122,15 @@ const getDate = (value) => {
 
 const getTimeValue = (value) => {
   if (
-    typeof value?.toMillis ===
-    'function'
+    typeof value?.toMillis
+    === 'function'
   ) {
     return value.toMillis()
   }
 
   return (
-    getDate(value)?.getTime() || 0
+    getDate(value)?.getTime()
+    || 0
   )
 }
 
@@ -140,10 +146,39 @@ const formatDate = (value) => {
 }
 
 
-const formatReviewId = (reviewId = '') => {
-  if (reviewId.length <= 3) return reviewId
+const formatDateTimeLabel = (date) => {
+  if (!date) return ''
 
-  return `${reviewId.slice(0, 3)}…`
+  const year = date.getFullYear()
+
+  const month = String(
+    date.getMonth() + 1
+  ).padStart(2, '0')
+
+  const day = String(
+    date.getDate()
+  ).padStart(2, '0')
+
+  const hour = String(
+    date.getHours()
+  ).padStart(2, '0')
+
+  const minute = String(
+    date.getMinutes()
+  ).padStart(2, '0')
+
+  return `${year}.${month}.${day} ${hour}:${minute}`
+}
+
+
+const formatReviewId = (
+  reviewId = ''
+) => {
+  if (reviewId.length <= 8) {
+    return reviewId
+  }
+
+  return `${reviewId.slice(0, 8)}…`
 }
 
 
@@ -187,7 +222,8 @@ const getReviewImages = (
     candidates.find(
       (value) =>
         Array.isArray(value)
-    ) || []
+    )
+    || []
 
   return result
     .map((item) => {
@@ -198,9 +234,9 @@ const getReviewImages = (
       }
 
       return (
-        item?.url ||
-        item?.src ||
-        ''
+        item?.url
+        || item?.src
+        || ''
       )
     })
     .filter(Boolean)
@@ -246,6 +282,11 @@ const ReviewSummaryIcon = ({
   return (
     <svg
       viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       aria-hidden="true"
     >
       {icons[type]}
@@ -266,7 +307,9 @@ const StarRating = ({
       0,
       Math.min(
         5,
-        Number(rating) || 0
+        Math.round(
+          Number(rating) || 0
+        )
       )
     )
 
@@ -288,7 +331,7 @@ const StarRating = ({
 
 
 // ========================================
-// 리뷰 관리
+// Component
 // ========================================
 
 const ReviewManage = () => {
@@ -311,6 +354,11 @@ const ReviewManage = () => {
     isSaving,
     setIsSaving,
   ] = useState(false)
+
+  const [
+    lastUpdatedAt,
+    setLastUpdatedAt,
+  ] = useState(null)
 
   const [
     searchQuery,
@@ -357,80 +405,104 @@ const ReviewManage = () => {
     setToastMessage,
   ] = useState('')
 
+  const [
+    activeSummaryKey,
+    setActiveSummaryKey,
+  ] = useState('reviews')
+
+  const detailPanelRef =
+    useRef(null)
+
 
   // ========================================
   // 리뷰 불러오기
   // ========================================
 
   const loadReviews =
-    useCallback(async () => {
-      setIsLoading(true)
-      setLoadError('')
+    useCallback(
+      async (
+        showRefreshToast = false
+      ) => {
+        setIsLoading(true)
+        setLoadError('')
 
-      try {
-        const snapshot =
-          await getDocs(
-            collection(
-              db,
-              'reviews'
+        try {
+          const snapshot =
+            await getDocs(
+              collection(
+                db,
+                'reviews'
+              )
             )
+
+          const firestoreReviews =
+            snapshot.docs.map(
+              (item) => ({
+                id: item.id,
+                ...item.data(),
+
+                rating:
+                  Number(
+                    item.data()
+                      .rating
+                    || 0
+                  ),
+
+                status:
+                  item.data()
+                    .status
+                  === 'hidden'
+                    ? 'hidden'
+                    : 'visible',
+
+                reportCount:
+                  Number(
+                    item.data()
+                      .reportCount
+                    || 0
+                  ),
+              })
+            )
+
+          const nextReviews =
+            firestoreReviews
+
+          setReviews(nextReviews)
+          setLastUpdatedAt(
+            new Date()
           )
 
-        const firestoreReviews =
-          snapshot.docs.map(
-            (item) => ({
-              id: item.id,
-              ...item.data(),
+          if (showRefreshToast) {
+            setToastMessage(
+              '리뷰 목록을 새로고침했습니다.'
+            )
+          }
 
-              rating:
-                Number(
-                  item.data()
-                    .rating || 0
-                ),
-
-              status:
-                item.data()
-                  .status ===
-                'hidden'
-                  ? 'hidden'
-                  : 'visible',
-
-              reportCount:
-                Number(
-                  item.data()
-                    .reportCount ||
-                    0
-                ),
-            })
+          setSelectedId(
+            (current) =>
+              nextReviews.some(
+                (review) =>
+                  review.id
+                  === current
+              )
+                ? current
+                : null
+          )
+        } catch (error) {
+          console.error(
+            '리뷰 목록 조회 실패:',
+            error
           )
 
-        const nextReviews = firestoreReviews
-
-        setReviews(nextReviews)
-
-        setSelectedId(
-          (current) =>
-            nextReviews.some(
-              (review) =>
-                review.id ===
-                current
-            )
-              ? current
-              : null
-        )
-      } catch (error) {
-        console.error(
-          '리뷰 목록 조회 실패:',
-          error
-        )
-
-        setLoadError(
-          '리뷰 목록을 불러오지 못했습니다.'
-        )
-      } finally {
-        setIsLoading(false)
-      }
-    }, [])
+          setLoadError(
+            '리뷰 목록을 불러오지 못했습니다.'
+          )
+        } finally {
+          setIsLoading(false)
+        }
+      },
+      []
+    )
 
 
   useEffect(() => {
@@ -447,8 +519,38 @@ const ReviewManage = () => {
         }
       )
 
-    return unsubscribe
+    return () => {
+      if (
+        typeof unsubscribe
+        === 'function'
+      ) {
+        unsubscribe()
+      }
+    }
   }, [loadReviews])
+
+
+  // ========================================
+  // Toast 자동 닫기
+  // ========================================
+
+  useEffect(() => {
+    if (!toastMessage) {
+      return undefined
+    }
+
+    const timer =
+      window.setTimeout(
+        () => {
+          setToastMessage('')
+        },
+        2500
+      )
+
+    return () => {
+      window.clearTimeout(timer)
+    }
+  }, [toastMessage])
 
 
   // ========================================
@@ -495,8 +597,8 @@ const ReviewManage = () => {
             )
 
           const matchesQuery =
-            !normalizedQuery ||
-            [
+            !normalizedQuery
+            || [
               review.id,
               review.productId,
               product.name,
@@ -511,41 +613,48 @@ const ReviewManage = () => {
             )
 
           const matchesProduct =
-            productFilter ===
-              'all' ||
-            review.productId ===
-              productFilter
+            productFilter === 'all'
+            || review.productId
+              === productFilter
 
           const matchesRating =
-            ratingFilter ===
-              'all' ||
-            review.rating ===
-              Number(
+            ratingFilter === 'all'
+            || review.rating
+              === Number(
                 ratingFilter
               )
 
           const matchesStatus =
-            statusFilter ===
-              'all' ||
-            review.status ===
-              statusFilter
+            statusFilter === 'all'
+            || review.status
+              === statusFilter
+
+          const matchesSummary =
+            activeSummaryKey
+            !== 'report'
+            || Number(
+              review.reportCount
+            ) > 0
 
           return (
-            matchesQuery &&
-            matchesProduct &&
-            matchesRating &&
-            matchesStatus
+            matchesQuery
+            && matchesProduct
+            && matchesRating
+            && matchesStatus
+            && matchesSummary
           )
         })
+
         .sort((a, b) => {
           if (
-            sortOrder ===
-            'oldest'
+            sortOrder
+            === 'oldest'
           ) {
             return (
               getTimeValue(
                 a.createdAt
-              ) -
+              )
+              -
               getTimeValue(
                 b.createdAt
               )
@@ -553,39 +662,40 @@ const ReviewManage = () => {
           }
 
           if (
-            sortOrder ===
-            'ratingHigh'
+            sortOrder
+            === 'ratingHigh'
           ) {
             return (
-              b.rating -
-              a.rating
-            )
-          }
-
-          if (
-            sortOrder ===
-            'ratingLow'
-          ) {
-            return (
-              a.rating -
               b.rating
+              - a.rating
             )
           }
 
           if (
-            sortOrder ===
-            'reported'
+            sortOrder
+            === 'ratingLow'
           ) {
             return (
-              b.reportCount -
-              a.reportCount
+              a.rating
+              - b.rating
+            )
+          }
+
+          if (
+            sortOrder
+            === 'reported'
+          ) {
+            return (
+              b.reportCount
+              - a.reportCount
             )
           }
 
           return (
             getTimeValue(
               b.createdAt
-            ) -
+            )
+            -
             getTimeValue(
               a.createdAt
             )
@@ -598,6 +708,7 @@ const ReviewManage = () => {
       ratingFilter,
       statusFilter,
       sortOrder,
+      activeSummaryKey,
     ])
 
 
@@ -609,8 +720,8 @@ const ReviewManage = () => {
     Math.max(
       1,
       Math.ceil(
-        filteredReviews.length /
-          PAGE_SIZE
+        filteredReviews.length
+        / PAGE_SIZE
       )
     )
 
@@ -622,10 +733,12 @@ const ReviewManage = () => {
 
   const visibleReviews =
     filteredReviews.slice(
-      (safeCurrentPage - 1) *
-        PAGE_SIZE,
-      safeCurrentPage *
-        PAGE_SIZE
+      (
+        safeCurrentPage - 1
+      ) * PAGE_SIZE,
+
+      safeCurrentPage
+      * PAGE_SIZE
     )
 
 
@@ -637,6 +750,7 @@ const ReviewManage = () => {
     ratingFilter,
     statusFilter,
     sortOrder,
+    activeSummaryKey,
   ])
 
 
@@ -658,18 +772,16 @@ const ReviewManage = () => {
   const selectedReview =
     reviews.find(
       (review) =>
-        review.id ===
-        selectedId
+        review.id === selectedId
     ) || null
 
 
   useEffect(() => {
     if (
-      selectedId &&
-      !filteredReviews.some(
+      selectedId
+      && !filteredReviews.some(
         (review) =>
-          review.id ===
-          selectedId
+          review.id === selectedId
       )
     ) {
       setSelectedId(null)
@@ -687,9 +799,13 @@ const ReviewManage = () => {
   const hiddenCount =
     reviews.filter(
       (review) =>
-        review.status ===
-        'hidden'
+        review.status
+        === 'hidden'
     ).length
+
+  const visibleCount =
+    reviews.length
+    - hiddenCount
 
   const reportedCount =
     reviews.filter(
@@ -702,14 +818,65 @@ const ReviewManage = () => {
   const averageRating =
     reviews.length > 0
       ? reviews.reduce(
-          (sum, review) =>
-            sum +
-            Number(
-              review.rating || 0
-            ),
-          0
-        ) / reviews.length
+        (sum, review) =>
+          sum
+          + Number(
+            review.rating || 0
+          ),
+        0
+      ) / reviews.length
       : 0
+
+
+  const summaryCards = [
+    {
+      key: 'reviews',
+      label: '전체 리뷰 수',
+      value: reviews.length,
+      unit: '건',
+      caption:
+        `게시 중 ${visibleCount}건`,
+      tone: 'primary',
+    },
+    {
+      key: 'rating',
+      label: '전체 평점',
+      value:
+        averageRating.toFixed(1),
+      unit: '점',
+      caption: '전체 리뷰 평균',
+      tone: 'info',
+    },
+    {
+      key: 'report',
+      label: '신고된 리뷰',
+      value: reportedCount,
+      unit: '건',
+      caption:
+        reportedCount > 0
+          ? '확인 필요'
+          : '신고 리뷰 없음',
+      tone: 'danger',
+    },
+    {
+      key: 'hidden',
+      label: '숨김된 리뷰',
+      value: hiddenCount,
+      unit: '건',
+      caption:
+        `전체 리뷰의 ${
+          reviews.length
+            ? Math.round(
+              (
+                hiddenCount
+                / reviews.length
+              ) * 100
+            )
+            : 0
+        }%`,
+      tone: 'warning',
+    },
+  ]
 
 
   // ========================================
@@ -730,8 +897,10 @@ const ReviewManage = () => {
 
           countMap.set(
             id,
-            (countMap.get(id) ||
-              0) + 1
+            (
+              countMap.get(id)
+              || 0
+            ) + 1
           )
         }
       )
@@ -740,7 +909,12 @@ const ReviewManage = () => {
         ...countMap.entries(),
       ]
         .map(
-          ([productId, count]) => ({
+          (
+            [
+              productId,
+              count,
+            ]
+          ) => ({
             productId,
             count,
             name:
@@ -751,8 +925,8 @@ const ReviewManage = () => {
         )
         .sort(
           (a, b) =>
-            b.count -
-            a.count
+            b.count
+            - a.count
         )
         .slice(0, 5)
     }, [reviews])
@@ -786,10 +960,11 @@ const ReviewManage = () => {
         const percentage =
           reviews.length
             ? Math.round(
-                (count /
-                  reviews.length) *
-                  100
-              )
+              (
+                count
+                / reviews.length
+              ) * 100
+            )
             : 0
 
         return {
@@ -811,7 +986,61 @@ const ReviewManage = () => {
     setRatingFilter('all')
     setStatusFilter('all')
     setSortOrder('newest')
+    setActiveSummaryKey('reviews')
+    setSelectedId(null)
     setCurrentPage(1)
+  }
+
+
+  // ========================================
+  // 요약 카드 필터
+  // ========================================
+
+  const handleSummaryFilter = (key) => {
+    setSearchQuery('')
+    setProductFilter('all')
+    setRatingFilter('all')
+    setStatusFilter('all')
+    setSortOrder('newest')
+    setSelectedId(null)
+    setCurrentPage(1)
+    setActiveSummaryKey(key)
+
+    if (key === 'rating') {
+      setSortOrder('ratingHigh')
+    }
+
+    if (key === 'report') {
+      setSortOrder('reported')
+    }
+
+    if (key === 'hidden') {
+      setStatusFilter('hidden')
+    }
+  }
+
+
+  // ========================================
+  // 리뷰 상세 열기
+  // ========================================
+
+  const openReviewDetail = (reviewId) => {
+    setSelectedId(reviewId)
+
+    if (
+      typeof window !== 'undefined'
+      && window.matchMedia(
+        '(max-width: 767px)'
+      ).matches
+    ) {
+      window.setTimeout(() => {
+        detailPanelRef.current
+          ?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          })
+      }, 100)
+    }
   }
 
 
@@ -822,8 +1051,8 @@ const ReviewManage = () => {
   const toggleVisibility =
     async (review) => {
       const nextStatus =
-        review.status ===
-        'visible'
+        review.status
+        === 'visible'
           ? 'hidden'
           : 'visible'
 
@@ -849,20 +1078,20 @@ const ReviewManage = () => {
           (current) =>
             current.map(
               (item) =>
-                item.id ===
-                review.id
+                item.id
+                === review.id
                   ? {
-                      ...item,
-                      status:
-                        nextStatus,
-                    }
+                    ...item,
+                    status:
+                      nextStatus,
+                  }
                   : item
             )
         )
 
         setToastMessage(
-          nextStatus ===
-            'visible'
+          nextStatus
+          === 'visible'
             ? '리뷰를 다시 게시했습니다.'
             : '리뷰를 숨김 처리했습니다.'
         )
@@ -905,15 +1134,15 @@ const ReviewManage = () => {
         const nextReviews =
           reviews.filter(
             (review) =>
-              review.id !==
-              confirmReview.id
+              review.id
+              !== confirmReview.id
           )
 
         setReviews(nextReviews)
 
         if (
-          selectedId ===
-          confirmReview.id
+          selectedId
+          === confirmReview.id
         ) {
           setSelectedId(null)
         }
@@ -972,8 +1201,8 @@ const ReviewManage = () => {
   const selectedProduct =
     selectedReview
       ? getProductInfo(
-          selectedReview.productId
-        )
+        selectedReview.productId
+      )
       : null
 
   const selectedImages =
@@ -982,333 +1211,117 @@ const ReviewManage = () => {
     )
 
 
+  // ========================================
+  // Render
+  // ========================================
+
   return (
     <section
       className={styles.page}
       aria-labelledby="review-manage-title"
     >
-
       {/* ========================================
-          상단 제목
+          제목
       ======================================== */}
 
-      <header
-        className={
-          styles.pageToolbar
+      <AdminPageHeader
+        title="리뷰 관리"
+        titleId="review-manage-title"
+        onRefresh={() =>
+          loadReviews(true)
         }
-      >
-        <h1
-          id="review-manage-title"
-        >
-          리뷰 관리
-        </h1>
-
-        <button
-          type="button"
-          className={
-            styles.refreshButton
-          }
-          onClick={loadReviews}
-          disabled={isLoading}
-        >
-          <svg
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path d="M20 11a8 8 0 1 0 2 5.3" />
-            <path d="M20 4v7h-7" />
-          </svg>
-
-          새로 고침
-        </button>
-      </header>
-
-
-      {/* ========================================
-          전통 문양
-      ======================================== */}
-
-      <img
-        className={
-          styles.topOrnament
-        }
-        src={adminTopOrnament}
-        alt=""
-        aria-hidden="true"
+        isRefreshing={isLoading}
       />
 
 
       {/* ========================================
-          요약 카드
+          리뷰 현황
       ======================================== */}
 
       <section
-        className={
-          styles.summaryArea
-        }
+        className={styles.summaryArea}
         aria-label="리뷰 현황 요약"
       >
-        <div
-          className={
-            styles.summaryGrid
-          }
-        >
-
-          <article
-            className={
-              styles.summaryCard
-            }
-          >
-            <span
-              className={`${styles.summaryIcon} ${styles.summaryIconTotal}`}
-            >
-              <ReviewSummaryIcon
-                type="reviews"
-              />
-            </span>
-
-            <div
-              className={
-                styles.summaryContent
-              }
-            >
-              <small>
-                전체 리뷰 수
-              </small>
-
-              <strong>
-                {reviews.length.toLocaleString(
-                  'ko-KR'
-                )}
-
-                <em>건</em>
-              </strong>
-            </div>
-          </article>
-
-
-          <article
-            className={
-              styles.summaryCard
-            }
-          >
-            <span
-              className={`${styles.summaryIcon} ${styles.summaryIconRating}`}
-            >
-              <ReviewSummaryIcon
-                type="rating"
-              />
-            </span>
-
-            <div
-              className={
-                styles.summaryContent
-              }
-            >
-              <small>
-                전체 평점
-              </small>
-
-              <strong>
-                {averageRating.toFixed(
-                  1
-                )}
-
-                <em>점</em>
-              </strong>
-
-              <i>
-                전체 리뷰 평균
-              </i>
-            </div>
-          </article>
-
-
-          <article
-            className={
-              styles.summaryCard
-            }
-          >
-            <span
-              className={`${styles.summaryIcon} ${styles.summaryIconReport}`}
-            >
-              <ReviewSummaryIcon
-                type="report"
-              />
-            </span>
-
-            <div
-              className={
-                styles.summaryContent
-              }
-            >
-              <small>
-                신고된 리뷰
-              </small>
-
-              <strong>
-                {reportedCount}
-
-                <em>건</em>
-              </strong>
-
-              <i
-                className={
-                  styles.reportCaption
+        <div className={styles.summaryGrid}>
+          {summaryCards.map(
+            (card) => (
+              <AdminSummaryCard
+                key={card.key}
+                icon={
+                  <ReviewSummaryIcon
+                    type={card.key}
+                  />
                 }
-              >
-                ▲ 확인 필요
-              </i>
-            </div>
-          </article>
-
-
-          <article
-            className={
-              styles.summaryCard
-            }
-          >
-            <span
-              className={`${styles.summaryIcon} ${styles.summaryIconHidden}`}
-            >
-              <ReviewSummaryIcon
-                type="hidden"
+                label={card.label}
+                value={String(card.value)}
+                unit={card.unit}
+                caption={card.caption}
+                tone={card.tone}
+                active={
+                  activeSummaryKey
+                  === card.key
+                }
+                onClick={() =>
+                  handleSummaryFilter(
+                    card.key
+                  )
+                }
               />
-            </span>
-
-            <div
-              className={
-                styles.summaryContent
-              }
-            >
-              <small>
-                숨김된 리뷰
-              </small>
-
-              <strong>
-                {hiddenCount}
-
-                <em>건</em>
-              </strong>
-            </div>
-          </article>
-
+            )
+          )}
         </div>
       </section>
 
 
       {/* ========================================
-          메인 2단
+          리뷰 관리 본문
       ======================================== */}
 
-      <div
-        className={
-          styles.managementGrid
-        }
-      >
-
-        {/* ========================================
-            왼쪽 리뷰 목록
-        ======================================== */}
+      <div className={styles.managementGrid}>
+        {/* 리뷰 목록 */}
 
         <section
-          className={
-            styles.mainSection
-          }
+          className={styles.mainSection}
+          aria-labelledby="review-list-title"
         >
-
           {/* 검색 / 필터 */}
 
-          <div
-            className={
-              styles.filterBar
-            }
+          <AdminFilterBar
+            searchValue={searchQuery}
+            onSearchChange={(value) => {
+              setSearchQuery(value)
+              setActiveSummaryKey(null)
+              setCurrentPage(1)
+            }}
+            searchPlaceholder="상품명, 리뷰 내용, 작성자 검색"
+            searchLabel="리뷰 검색"
+            onReset={resetFilters}
           >
-            <label
-              className={
-                styles.searchField
-              }
-            >
-              <span
-                className={
-                  styles.srOnly
-                }
-              >
-                리뷰 검색
-              </span>
-
-              <svg
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <circle
-                  cx="11"
-                  cy="11"
-                  r="7"
-                />
-
-                <path d="m16 16 4 4" />
-              </svg>
-
-              <input
-                type="search"
-                value={searchQuery}
-                onChange={(
-                  event
-                ) =>
-                  setSearchQuery(
-                    event.target
-                      .value
-                  )
-                }
-                placeholder="상품명, 리뷰 내용, 작성자 검색"
-              />
-            </label>
-
-
-            <label
-              className={
-                styles.selectField
-              }
-            >
-              <span
-                className={
-                  styles.srOnly
-                }
-              >
+            <label className={styles.selectField}>
+              <span className={styles.srOnly}>
                 상품
               </span>
 
               <select
-                value={
-                  productFilter
-                }
-                onChange={(
-                  event
-                ) =>
+                value={productFilter}
+                onChange={(event) => {
                   setProductFilter(
-                    event.target
-                      .value
+                    event.target.value
                   )
-                }
+                  setActiveSummaryKey(null)
+                }}
               >
                 <option value="all">
-                  상품
+                  전체 상품
                 </option>
 
                 {productOptions.map(
                   (product) => (
                     <option
-                      key={
-                        product.id
-                      }
-                      value={
-                        product.id
-                      }
+                      key={product.id}
+                      value={product.id}
                     >
-                      {
-                        product.name
-                      }
+                      {product.name}
                     </option>
                   )
                 )}
@@ -1316,31 +1329,19 @@ const ReviewManage = () => {
             </label>
 
 
-            <label
-              className={
-                styles.selectField
-              }
-            >
-              <span
-                className={
-                  styles.srOnly
-                }
-              >
+            <label className={styles.selectField}>
+              <span className={styles.srOnly}>
                 상태
               </span>
 
               <select
-                value={
-                  statusFilter
-                }
-                onChange={(
-                  event
-                ) =>
+                value={statusFilter}
+                onChange={(event) => {
                   setStatusFilter(
-                    event.target
-                      .value
+                    event.target.value
                   )
-                }
+                  setActiveSummaryKey(null)
+                }}
               >
                 <option value="all">
                   전체 상태
@@ -1357,36 +1358,26 @@ const ReviewManage = () => {
             </label>
 
 
-            <label
-              className={`${styles.selectField} ${styles.sortField}`}
-            >
-              <span
-                className={
-                  styles.srOnly
-                }
-              >
+            <label className={styles.selectField}>
+              <span className={styles.srOnly}>
                 정렬
               </span>
 
               <select
-                value={
-                  sortOrder
-                }
-                onChange={(
-                  event
-                ) =>
+                value={sortOrder}
+                onChange={(event) => {
                   setSortOrder(
-                    event.target
-                      .value
+                    event.target.value
                   )
-                }
+                  setActiveSummaryKey(null)
+                }}
               >
                 <option value="newest">
-                  정렬
+                  최근 작성순
                 </option>
 
                 <option value="oldest">
-                  오래된순
+                  오래된 작성순
                 </option>
 
                 <option value="ratingHigh">
@@ -1402,64 +1393,54 @@ const ReviewManage = () => {
                 </option>
               </select>
             </label>
-
-
-            <button
-              type="button"
-              className={
-                styles.resetButton
-              }
-              onClick={
-                resetFilters
-              }
-            >
-              초기화
-            </button>
-          </div>
+          </AdminFilterBar>
 
 
           {/* 평점 필터 */}
 
-          <div
-            className={
-              styles.ratingFilterRow
-            }
-          >
+          <div className={styles.ratingFilterRow}>
             <span>
-              평점 필터
+              평점
             </span>
 
             <div>
+              <button
+                type="button"
+                className={
+                  ratingFilter
+                  === 'all'
+                    ? styles.activeRating
+                    : ''
+                }
+                onClick={() => {
+                  setRatingFilter('all')
+                  setActiveSummaryKey(null)
+                }}
+              >
+                전체
+              </button>
+
               {[5, 4, 3, 2, 1].map(
                 (rating) => (
                   <button
-                    key={
-                      rating
-                    }
+                    key={rating}
                     type="button"
                     className={
-                      ratingFilter ===
-                      String(
-                        rating
-                      )
+                      ratingFilter
+                      === String(rating)
                         ? styles.activeRating
                         : ''
                     }
-                    onClick={() =>
+                    onClick={() => {
                       setRatingFilter(
-                        (
+                        (current) =>
                           current
-                        ) =>
-                          current ===
-                          String(
-                            rating
-                          )
+                          === String(rating)
                             ? 'all'
-                            : String(
-                                rating
-                              )
+                            : String(rating)
                       )
-                    }
+                      setActiveSummaryKey(null)
+                    }}
                   >
                     {rating}점
                   </button>
@@ -1471,378 +1452,319 @@ const ReviewManage = () => {
 
           {/* 리뷰 목록 제목 */}
 
-          <div
-            className={
-              styles.sectionHeading
-            }
-          >
+          <div className={styles.sectionHeading}>
             <div>
-              <h2>
+              <h2 id="review-list-title">
                 리뷰 목록
               </h2>
+            </div>
 
-              <span>
+            <span className={styles.reviewCount}>
+              총{' '}
+              <strong>
                 {filteredReviews.length.toLocaleString(
                   'ko-KR'
                 )}
-                건
-              </span>
-            </div>
+              </strong>
+              건
+            </span>
           </div>
 
 
-          {/* 테이블 */}
+          {/* 리뷰 목록 */}
 
           {isLoading ? (
-            <div
-              className={
-                styles.emptyState
-              }
-            >
-              리뷰 목록을
-              불러오는 중입니다.
-            </div>
+            <AdminEmptyState
+              title="리뷰 목록을 불러오는 중입니다."
+              description="잠시만 기다려주세요."
+            />
           ) : loadError ? (
-            <div
-              className={
-                styles.emptyState
-              }
-            >
-              <strong>
-                {loadError}
-              </strong>
-
-              <button
-                type="button"
-                onClick={
-                  loadReviews
-                }
-              >
-                다시 시도
-              </button>
-            </div>
-          ) : filteredReviews.length >
-            0 ? (
-            <>
-              <div
-                className={
-                  styles.tableWrap
-                }
-              >
-                <table
-                  className={
-                    styles.reviewTable
+            <AdminEmptyState
+              title="리뷰 목록을 불러오지 못했습니다."
+              description={loadError}
+              action={
+                <button
+                  type="button"
+                  onClick={() =>
+                    loadReviews()
                   }
                 >
-                  <thead>
-                    <tr>
-                      <th>
-                        리뷰 ID
-                      </th>
+                  다시 불러오기
+                </button>
+              }
+            />
+          ) : filteredReviews.length === 0 ? (
+            <AdminEmptyState
+              title="검색 결과가 없습니다."
+              description="검색어나 필터 조건을 다시 확인해주세요."
+            />
+          ) : (
+            <div className={styles.tableWrap}>
+              <table className={styles.reviewTable}>
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      리뷰 ID
+                    </th>
 
-                      <th>
-                        상품
-                      </th>
+                    <th scope="col">
+                      상품
+                    </th>
 
-                      <th>
-                        작성자
-                      </th>
+                    <th scope="col">
+                      작성자
+                    </th>
 
-                      <th>
-                        평점
-                      </th>
+                    <th scope="col">
+                      평점
+                    </th>
 
-                      <th>
-                        리뷰 내용(요약)
-                      </th>
+                    <th scope="col">
+                      리뷰 내용
+                    </th>
 
-                      <th>
-                        작성일
-                      </th>
+                    <th scope="col">
+                      작성일
+                    </th>
 
-                      <th>
-                        상태
-                      </th>
+                    <th scope="col">
+                      상태
+                    </th>
 
-                      <th>
-                        관리
-                      </th>
-                    </tr>
-                  </thead>
+                    <th scope="col">
+                      관리
+                    </th>
+                  </tr>
+                </thead>
 
-                  <tbody>
-                    {visibleReviews.map(
-                      (review) => {
-                        const product =
-                          getProductInfo(
-                            review.productId
-                          )
+                <tbody>
+                  {visibleReviews.map(
+                    (review) => {
+                      const product =
+                        getProductInfo(
+                          review.productId
+                        )
 
-                        return (
-                          <tr
-                            key={
+                      return (
+                        <tr
+                          key={review.id}
+                          className={
+                            selectedId
+                            === review.id
+                              ? styles.selectedRow
+                              : ''
+                          }
+                          onClick={() =>
+                            openReviewDetail(
                               review.id
-                            }
-                            className={
-                              selectedId ===
-                              review.id
-                                ? styles.selectedRow
-                                : ''
-                            }
-                            onClick={() =>
-                              setSelectedId(
-                                review.id
-                              )
-                            }
-                          >
-                            <td
-                              className={
-                                styles.reviewId
-                              }
-                              data-label="리뷰 ID"
-                              title={
-                                review.id
-                              }
+                            )
+                          }
+                        >
+                          <td>
+                            <span
+                              className={styles.reviewId}
+                              title={review.id}
                             >
-                              {
-                                formatReviewId(
-                                  review.id
-                                )
-                              }
-                            </td>
+                              {formatReviewId(
+                                review.id
+                              )}
+                            </span>
+                          </td>
 
+                          <td>
+                            <div className={styles.productTableCell}>
+                              <span className={styles.tableThumb}>
+                                {product.image && (
+                                  <img
+                                    src={product.image}
+                                    alt=""
+                                  />
+                                )}
+                              </span>
 
-                            <td data-label="상품">
-                              <div
-                                className={
-                                  styles.productTableCell
-                                }
+                              <span
+                                title={product.name}
                               >
-                                <span
-                                  className={
-                                    styles.tableThumb
-                                  }
-                                >
-                                  {product.image && (
-                                    <img
-                                      src={
-                                        product.image
-                                      }
-                                      alt=""
-                                    />
-                                  )}
-                                </span>
+                                {product.name}
+                              </span>
+                            </div>
+                          </td>
 
-                                <span
-                                  title={
-                                    product.name
-                                  }
-                                >
-                                  {
-                                    product.name
-                                  }
-                                </span>
-                              </div>
-                            </td>
-
-
-                            <td data-label="작성자">
+                          <td>
+                            <span className={styles.authorName}>
                               {maskNickname(
                                 review.nickname
                               )}
-                            </td>
+                            </span>
+                          </td>
 
-
-                            <td data-label="평점">
-                              <StarRating
-                                rating={
-                                  review.rating
-                                }
-                              />
-                            </td>
-
-
-                            <td
-                              className={
-                                styles.reviewSummary
+                          <td>
+                            <StarRating
+                              rating={
+                                review.rating
                               }
-                              data-label="리뷰 내용"
+                            />
+                          </td>
+
+                          <td>
+                            <span
+                              className={styles.reviewSummary}
                               title={
                                 review.content
                               }
                             >
-                              {
-                                review.content
+                              {review.content}
+                            </span>
+                          </td>
+
+                          <td>
+                            {formatDate(
+                              review.createdAt
+                            )}
+                          </td>
+
+                          <td>
+                            <AdminStatusBadge
+                              tone={
+                                review.status
+                                === 'visible'
+                                  ? 'success'
+                                  : 'neutral'
                               }
-                            </td>
+                            >
+                              {
+                                statusLabels[
+                                  review.status
+                                ]
+                              }
+                            </AdminStatusBadge>
+                          </td>
+
+                          <td>
+                            <button
+                              type="button"
+                              className={styles.viewButton}
+                              onClick={(event) => {
+                                event.stopPropagation()
+
+                                openReviewDetail(
+                                  review.id
+                                )
+                              }}
+                            >
+                              상세 보기
+                            </button>
+                          </td>
+                        </tr>
+                      )
+                    }
+                  )}
+                </tbody>
+              </table>
 
 
-                            <td data-label="작성일">
-                              {formatDate(
-                                review.createdAt
-                              )}
-                            </td>
-
-
-                            <td data-label="상태">
-                              <span
-                                className={`${styles.statusBadge} ${styles[review.status]}`}
-                              >
-                                {
-                                  statusLabels[
-                                    review
-                                      .status
-                                  ]
-                                }
-                              </span>
-                            </td>
-
-
-                            <td data-label="관리">
-                              <button
-                                type="button"
-                                className={
-                                  styles.detailButton
-                                }
-                                onClick={(
-                                  event
-                                ) => {
-                                  event.stopPropagation()
-
-                                  setSelectedId(
-                                    review.id
-                                  )
-                                }}
-                              >
-                                상세 보기
-                              </button>
-                            </td>
-                          </tr>
-                        )
-                      }
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-
-              {/* 페이지네이션 */}
-
-              <nav
-                className={
-                  styles.pagination
-                }
-                aria-label="리뷰 페이지 이동"
-              >
-                <button
-                  type="button"
-                  onClick={() =>
-                    setCurrentPage(
-                      (page) =>
+              {totalPages > 1 && (
+                <nav
+                  className={styles.pagination}
+                  aria-label="리뷰 목록 페이지"
+                >
+                  <button
+                    type="button"
+                    aria-label="이전 페이지"
+                    disabled={
+                      safeCurrentPage
+                      === 1
+                    }
+                    onClick={() =>
+                      setCurrentPage(
                         Math.max(
                           1,
-                          page - 1
+                          safeCurrentPage - 1
                         )
-                    )
-                  }
-                  disabled={
-                    safeCurrentPage ===
-                    1
-                  }
-                  aria-label="이전 페이지"
-                >
-                  ‹
-                </button>
+                      )
+                    }
+                  >
+                    ‹
+                  </button>
 
-                {pageNumbers.map(
-                  (page) => (
-                    <button
-                      key={
-                        page
-                      }
-                      type="button"
-                      className={
-                        safeCurrentPage ===
-                        page
-                          ? styles.currentPage
-                          : ''
-                      }
-                      onClick={() =>
-                        setCurrentPage(
+
+                  {pageNumbers.map(
+                    (page) => (
+                      <button
+                        key={page}
+                        type="button"
+                        className={
                           page
-                        )
-                      }
-                    >
-                      {page}
-                    </button>
-                  )
-                )}
+                          === safeCurrentPage
+                            ? styles.activePage
+                            : ''
+                        }
+                        aria-current={
+                          page
+                          === safeCurrentPage
+                            ? 'page'
+                            : undefined
+                        }
+                        onClick={() =>
+                          setCurrentPage(
+                            page
+                          )
+                        }
+                      >
+                        {page}
+                      </button>
+                    )
+                  )}
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    setCurrentPage(
-                      (page) =>
+
+                  <button
+                    type="button"
+                    aria-label="다음 페이지"
+                    disabled={
+                      safeCurrentPage
+                      === totalPages
+                    }
+                    onClick={() =>
+                      setCurrentPage(
                         Math.min(
                           totalPages,
-                          page + 1
+                          safeCurrentPage + 1
                         )
-                    )
-                  }
-                  disabled={
-                    safeCurrentPage ===
-                    totalPages
-                  }
-                  aria-label="다음 페이지"
-                >
-                  ›
-                </button>
-              </nav>
-            </>
-          ) : (
-            <div
-              className={
-                styles.emptyState
-              }
-            >
-              검색 조건에 맞는
-              리뷰가 없습니다.
+                      )
+                    }
+                  >
+                    ›
+                  </button>
+                </nav>
+              )}
             </div>
           )}
-
         </section>
 
 
         {/* ========================================
-            오른쪽
-            기본: 통계
-            선택: 리뷰 상세
+            우측 영역
         ======================================== */}
 
         {selectedReview ? (
+          // 리뷰 상세
+
           <aside
-            className={
-              styles.detailPanel
-            }
+            ref={detailPanelRef}
+            className={styles.detailPanel}
+            aria-labelledby="review-detail-title"
           >
-
-            {/* 상세 제목 */}
-
-            <header
-              className={
-                styles.detailHeading
-              }
-            >
-              <h2>
-                리뷰 상세 보기
-              </h2>
+            <header className={styles.detailHeader}>
+              <div>
+                <h2 id="review-detail-title">
+                  리뷰 상세
+                </h2>
+              </div>
 
               <button
                 type="button"
                 onClick={() =>
-                  setSelectedId(
-                    null
-                  )
+                  setSelectedId(null)
                 }
                 aria-label="리뷰 상세 닫기"
               >
@@ -1851,18 +1773,8 @@ const ReviewManage = () => {
             </header>
 
 
-            {/* 상품 정보 */}
-
-            <div
-              className={
-                styles.detailProduct
-              }
-            >
-              <span
-                className={
-                  styles.detailThumb
-                }
-              >
+            <div className={styles.detailProduct}>
+              <span className={styles.detailThumb}>
                 {selectedProduct?.image && (
                   <img
                     src={
@@ -1875,9 +1787,7 @@ const ReviewManage = () => {
 
               <div>
                 <strong>
-                  {
-                    selectedProduct?.name
-                  }
+                  {selectedProduct?.name}
                 </strong>
 
                 <Link
@@ -1889,138 +1799,121 @@ const ReviewManage = () => {
             </div>
 
 
-            <div
-              className={
-                styles.detailDivider
-              }
-            />
+            <section className={styles.detailBlock}>
+              <h3>
+                기본 정보
+              </h3>
 
+              <dl>
+                <div>
+                  <dt>
+                    리뷰 ID
+                  </dt>
 
-            {/* 리뷰 기본 정보 */}
-
-            <dl
-              className={
-                styles.detailInfo
-              }
-            >
-              <div>
-                <dt>
-                  리뷰 ID
-                </dt>
-
-                <dd>
-                  {
-                    selectedReview.id
-                  }
-                </dd>
-              </div>
-
-              <div>
-                <dt>작성자</dt>
-
-                <dd>
-                  {maskNickname(
-                    selectedReview.nickname
-                  )}
-                </dd>
-              </div>
-
-              <div>
-                <dt>작성일</dt>
-
-                <dd>
-                  {formatDate(
-                    selectedReview.createdAt
-                  )}
-                </dd>
-              </div>
-
-              <div>
-                <dt>평점</dt>
-
-                <dd
-                  className={
-                    styles.detailRating
-                  }
-                >
-                  <StarRating
-                    rating={
-                      selectedReview.rating
+                  <dd
+                    title={
+                      selectedReview.id
                     }
-                  />
-
-                  <span>
-                    {
-                      selectedReview.rating
-                    }
-                    .0
-                  </span>
-                </dd>
-              </div>
-
-              <div>
-                <dt>상태</dt>
-
-                <dd>
-                  <span
-                    className={`${styles.statusBadge} ${styles[selectedReview.status]}`}
                   >
-                    {
-                      statusLabels[
-                        selectedReview
-                          .status
-                      ]
-                    }
-                  </span>
-                </dd>
-              </div>
-            </dl>
+                    {selectedReview.id}
+                  </dd>
+                </div>
+
+                <div>
+                  <dt>
+                    작성자
+                  </dt>
+
+                  <dd>
+                    {maskNickname(
+                      selectedReview.nickname
+                    )}
+                  </dd>
+                </div>
+
+                <div>
+                  <dt>
+                    작성일
+                  </dt>
+
+                  <dd>
+                    {formatDate(
+                      selectedReview.createdAt
+                    )}
+                  </dd>
+                </div>
+
+                <div>
+                  <dt>
+                    평점
+                  </dt>
+
+                  <dd className={styles.detailRating}>
+                    <StarRating
+                      rating={
+                        selectedReview.rating
+                      }
+                    />
+
+                    <span>
+                      {
+                        Number(
+                          selectedReview.rating
+                        ).toFixed(1)
+                      }
+                    </span>
+                  </dd>
+                </div>
+
+                <div>
+                  <dt>
+                    상태
+                  </dt>
+
+                  <dd>
+                    <AdminStatusBadge
+                      tone={
+                        selectedReview.status
+                        === 'visible'
+                          ? 'success'
+                          : 'neutral'
+                      }
+                      size="small"
+                    >
+                      {
+                        statusLabels[
+                          selectedReview.status
+                        ]
+                      }
+                    </AdminStatusBadge>
+                  </dd>
+                </div>
+              </dl>
+            </section>
 
 
-            {/* 리뷰 내용 */}
-
-            <div
-              className={
-                styles.reviewContentArea
-              }
-            >
+            <section className={styles.detailBlock}>
               <h3>
                 리뷰 내용
               </h3>
 
-              <div>
-                {
-                  selectedReview.content
-                }
+              <div className={styles.reviewContentBox}>
+                {selectedReview.content}
               </div>
-            </div>
+            </section>
 
 
-            {/* 첨부 이미지 */}
-
-            <div
-              className={
-                styles.attachmentArea
-              }
-            >
+            <section className={styles.detailBlock}>
               <h3>
                 첨부 이미지
-                <span>
-                  (
-                  {
-                    selectedImages.length
-                  }
-                  )
+                <span className={styles.attachmentCount}>
+                  {' '}
+                  ({selectedImages.length})
                 </span>
               </h3>
 
-              {selectedImages.length >
-              0 ? (
-                <div
-                  className={
-                    styles.attachmentList
-                  }
-                >
+              {selectedImages.length > 0 ? (
+                <div className={styles.attachmentList}>
                   {selectedImages.map(
                     (
                       image,
@@ -2040,8 +1933,7 @@ const ReviewManage = () => {
                         <img
                           src={image}
                           alt={`리뷰 첨부 이미지 ${
-                            index +
-                            1
+                            index + 1
                           }`}
                         />
                       </button>
@@ -2049,29 +1941,17 @@ const ReviewManage = () => {
                   )}
                 </div>
               ) : (
-                <p
-                  className={
-                    styles.noAttachment
-                  }
-                >
+                <p className={styles.noAttachment}>
                   첨부 이미지 없음
                 </p>
               )}
-            </div>
+            </section>
 
 
-            {/* 상세 액션 */}
-
-            <div
-              className={
-                styles.detailActions
-              }
-            >
+            <footer className={styles.detailFooter}>
               <button
                 type="button"
-                className={
-                  styles.hideButton
-                }
+                className={styles.hideButton}
                 disabled={isSaving}
                 onClick={() =>
                   toggleVisibility(
@@ -2079,17 +1959,15 @@ const ReviewManage = () => {
                   )
                 }
               >
-                {selectedReview.status ===
-                'visible'
+                {selectedReview.status
+                === 'visible'
                   ? '숨김 처리'
                   : '다시 게시'}
               </button>
 
               <button
                 type="button"
-                className={
-                  styles.deleteButton
-                }
+                className={styles.deleteButton}
                 disabled={isSaving}
                 onClick={() =>
                   setConfirmReview(
@@ -2099,52 +1977,31 @@ const ReviewManage = () => {
               >
                 삭제하기
               </button>
-            </div>
-
+            </footer>
           </aside>
         ) : (
+          // 리뷰 분석
+
           <aside
-            className={
-              styles.analyticsColumn
-            }
+            className={styles.analyticsColumn}
+            aria-label="리뷰 분석"
           >
-
-            {/* 상품별 리뷰 TOP 5 */}
-
-            <section
-              className={
-                styles.analyticsCard
-              }
+            <AdminPanel
+              title="상품별 리뷰 TOP 5"
+              padding="compact"
             >
-              <h2>
-                상품별 리뷰 TOP 5
-              </h2>
-
-              <div
-                className={
-                  styles.topProductList
-                }
-              >
-                {topProducts.length >
-                0 ? (
+              <div className={styles.topProductList}>
+                {topProducts.length > 0 ? (
                   topProducts.map(
                     (item) => (
                       <div
-                        key={
-                          item.productId
-                        }
-                        className={
-                          styles.topProductRow
-                        }
+                        key={item.productId}
+                        className={styles.topProductRow}
                       >
                         <span
-                          title={
-                            item.name
-                          }
+                          title={item.name}
                         >
-                          {
-                            item.name
-                          }
+                          {item.name}
                         </span>
 
                         <i>
@@ -2152,84 +2009,47 @@ const ReviewManage = () => {
                             style={{
                               width:
                                 `${
-                                  (item.count /
-                                    maxProductCount) *
-                                  100
+                                  (
+                                    item.count
+                                    / maxProductCount
+                                  )
+                                  * 100
                                 }%`,
                             }}
                           />
                         </i>
 
                         <strong>
-                          {
-                            item.count
-                          }
-                          건
+                          {item.count}건
                         </strong>
                       </div>
                     )
                   )
                 ) : (
-                  <p
-                    className={
-                      styles.analyticsEmpty
-                    }
-                  >
+                  <p className={styles.analyticsEmpty}>
                     리뷰 데이터가 없습니다.
                   </p>
                 )}
               </div>
-            </section>
+            </AdminPanel>
 
 
-            {/* 별점 분포 */}
-
-            <section
-              className={
-                styles.analyticsCard
-              }
+            <AdminPanel
+              title="전체 리뷰 별점 분포"
+              padding="compact"
             >
-              <h2>
-                전체 리뷰 별점 분포
-              </h2>
-
-              <div
-                className={
-                  styles.ratingDistribution
-                }
-              >
+              <div className={styles.ratingDistribution}>
                 {ratingDistribution.map(
                   (item) => (
                     <div
-                      key={
-                        item.rating
-                      }
-                      className={
-                        styles.ratingBarRow
-                      }
+                      key={item.rating}
+                      className={styles.ratingBarRow}
                     >
-                      <span
-                        className={
-                          styles.ratingLabel
-                        }
-                      >
-                        {'★'.repeat(
-                          item.rating
-                        )}
-
-                        <i>
-                          {'★'.repeat(
-                            5 -
-                              item.rating
-                          )}
-                        </i>
+                      <span className={styles.ratingLabel}>
+                        {item.rating}점
                       </span>
 
-                      <span
-                        className={
-                          styles.ratingTrack
-                        }
-                      >
+                      <span className={styles.ratingTrack}>
                         <b
                           style={{
                             width:
@@ -2239,42 +2059,35 @@ const ReviewManage = () => {
                       </span>
 
                       <strong>
-                        {
-                          item.count
-                        }
-                        건
+                        {item.count}건
                       </strong>
 
                       <small>
-                        {
-                          item.percentage
-                        }
-                        %
+                        {item.percentage}%
                       </small>
                     </div>
                   )
                 )}
               </div>
 
-              <div
-                className={
-                  styles.averageRating
-                }
-              >
-                평균 별점
-
+              <p className={styles.analyticsCaption}>
+                평균 별점{' '}
                 <strong>
-                  {averageRating.toFixed(
-                    2
-                  )}
-                  점
+                  {averageRating.toFixed(2)}점
                 </strong>
-              </div>
-            </section>
 
+                {lastUpdatedAt && (
+                  <>
+                    {' · '}
+                    {formatDateTimeLabel(
+                      lastUpdatedAt
+                    )}
+                  </>
+                )}
+              </p>
+            </AdminPanel>
           </aside>
         )}
-
       </div>
 
 
@@ -2284,49 +2097,36 @@ const ReviewManage = () => {
 
       {confirmReview && (
         <div
-          className={
-            styles.modalBackdrop
-          }
+          className={styles.modalBackdrop}
           onMouseDown={() =>
             setConfirmReview(null)
           }
         >
           <section
-            className={
-              styles.confirmModal
-            }
+            className={styles.confirmModal}
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="review-delete-title"
-            onMouseDown={(
-              event
-            ) =>
+            onMouseDown={(event) =>
               event.stopPropagation()
             }
           >
-            <span
-              className={
-                styles.warningIcon
-              }
-            >
+            <span className={styles.warningIcon}>
               !
             </span>
 
-            <h3
-              id="review-delete-title"
-            >
+            <h3 id="review-delete-title">
               리뷰를 삭제할까요?
             </h3>
 
             <p>
-              삭제한 리뷰는
-              되돌릴 수 없습니다.
+              삭제한 리뷰는 되돌릴 수 없습니다.
             </p>
 
             <strong>
               {
-                selectedProduct?.name ||
-                confirmReview.productId
+                selectedProduct?.name
+                || confirmReview.productId
               }
             </strong>
 
@@ -2334,9 +2134,7 @@ const ReviewManage = () => {
               <button
                 type="button"
                 onClick={() =>
-                  setConfirmReview(
-                    null
-                  )
+                  setConfirmReview(null)
                 }
                 disabled={isSaving}
               >
@@ -2345,9 +2143,7 @@ const ReviewManage = () => {
 
               <button
                 type="button"
-                onClick={
-                  deleteReview
-                }
+                onClick={deleteReview}
                 disabled={isSaving}
               >
                 {isSaving
@@ -2361,7 +2157,7 @@ const ReviewManage = () => {
 
 
       {/* ========================================
-          토스트
+          Toast
       ======================================== */}
 
       {toastMessage && (
@@ -2384,7 +2180,6 @@ const ReviewManage = () => {
           </button>
         </div>
       )}
-
     </section>
   )
 }
