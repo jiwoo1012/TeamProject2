@@ -1,7 +1,7 @@
 # JAJAK AGENTS.md
 
-> Version: 1.7  
-> Last updated: 2026-08-31  
+> Version: 1.8
+> Last updated: 2026-09-08
 > Purpose: JAJAK 팀 프로젝트의 프론트엔드 아키텍처, 데이터 계약, 개발 컨벤션과 협업 규칙을 Codex 및 모든 팀원이 동일하게 따르기 위한 공통 지침이다.  
 > 이 문서는 코드 작성 전 우선 확인한다. 확정된 팀 규칙과 충돌하는 임의 구현은 하지 않는다.
 
@@ -36,7 +36,7 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 - React 19
 - Vite 8
 - JavaScript + JSX
-- React Router
+- React Router 7
 - Sass / SCSS Modules
 - GSAP
 - Chart.js
@@ -49,6 +49,11 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 - Cloud Firestore
 - Firebase Cloud Functions
 - OpenAI API
+
+## Runtime / Deploy
+
+- Frontend: Vercel
+- Firebase Functions: Node.js 24
 
 ## Package Manager
 
@@ -73,229 +78,157 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 11. 작업 후 수정한 파일과 변경 내용을 명확히 보고한다.
 12. 팀에서 확정한 필드명 / enum / route / schema를 임의로 변경하지 않는다.
 13. 기존 JSON의 필드 타입을 데이터 담당자 협의 없이 임의 변환하지 않는다.
-14. Runtime 상품 정보는 Firestore를 기준으로 하며 seed/reference JSON을 Runtime 데이터처럼 사용하지 않는다.
+14. Runtime 상품 정보는 Firestore를 기준으로 하며, 이 문서에 명시한 표시용 fallback 외에는 seed/reference JSON을 Runtime 데이터처럼 사용하지 않는다.
 
 ---
 
 # 4. Team Ownership
 
-## 김지우 — 공통 구조 / Routing / AI / PreferenceSurvey
+판단 순서:
 
-담당:
+1. 아래 `소유 경로`로 기본 담당자를 확인한다.
+2. 공통 파일이나 공동 작업은 `연동 경계`를 따른다.
+3. 담당 밖의 기능·데이터·디자인을 변경해야 하면 해당 담당자에게 먼저 공유한다.
 
-### 공통 구조 / Routing
+경로의 `{A,B}`는 문서용 묶음 표기이며, 명령 실행 전 실제 파일 경로를 확인한다.
 
-- Header 전체
-- DesktopHeader / MobileHeader / MobileBottomNav
-- MobileSearchModal
-- SearchModal
-- SiteLayout
-- Footer
-- Footer 고객센터 링크 연결
-  - 공지사항
-  - 자주 묻는 질문
-  - 1:1 문의하기
-- AdminHeader / AdminFooter
-- ScrollToTop
-- GNB / 검색 진입 및 이동 흐름
-- 전체 URL / Routing
-- MyPage nested routing
-- Admin access control / routing
+## 김지우 — 공통 UI / Routing / Preference / AI
 
-### PreferenceSurvey / 성인인증
+### 소유 경로
 
-- `PreferenceSurvey.jsx`
-- 회원가입 후 기본 취향 설문 전체 흐름
-- `PreferenceSafetyIntro.jsx`
-- `PreferenceSafety.jsx`
-- `PreferenceQuestions.jsx`
-- `PreferenceComplete.jsx`
-- `constants/preferenceSurvey.js`
-- `users/{uid}.userPreference` 저장 구조 관리
-- `useAdultCheck.js`
-- AdultModal
-- 비회원 성인인증 흐름
+- 공통 UI: `src/components/common/{Header,DesktopHeader,MobileHeader,MobileBottomNav,SearchModal,MobileSearchModal,SiteLayout,Footer,ScrollToTop,AdultModal}*`
+- 관리자 공통 Header / Footer: `src/components/admin/{AdminHeader,AdminFooter}*`
+- Preference: `src/pages/Auth/Preference*`, `src/constants/{preferenceSurvey,tasteAxis}.js`
+- AI: `src/pages/AiCurator/*`, `src/components/ai/*`, `src/hooks/{useAiSurvey,useAdultCheck}.js`, `src/constants/aiSurvey.js`
+- AI 기록·관리: `src/pages/MyPage/{AiHistory,AiPreference}*`, `src/pages/Admin/AiLogManage*`
+- Functions: `functions/src/*`
+- Routing: `src/App.jsx`, `src/routes/*`
 
-### AI
+### 책임
 
-- AI 큐레이션 페이지
-- AI 추천 결과
-- AI 추천 기록 저장
-- 비회원 AI 서비스 흐름
-- MyPage AI 추천 내역
-- Admin AI 추천 로그
-- Firebase Cloud Functions / OpenAI 연동 구조
+- Header·Footer·검색·GNB와 전체 Route / nested routing
+- Preference 단계와 `users/{uid}.userPreference` 계약
+- 회원·비회원 AI 설문, 추천, 기록, OpenAI / Functions 연동
+- 관리자 공통 UI·반응형 통합과 Dashboard Firestore 집계 연동
+- 최종 페이지·사용자 흐름·공통 용어·`dev` 통합본 점검
 
-### 통합 / 공통 관리
+### 연동 경계
 
-- 최종 페이지 통합
-- 전체 경로 점검
-- 최종 기능 시나리오 정리
-- 공통 용어 통합
+- Auth 성공 후 `/preference` 진입까지는 이영기, 이후 Preference 흐름은 김지우가 담당한다.
+- AdminLayout 기본 구조와 개별 관리 기능은 기존 담당자가 유지하며 김지우는 공통 UI·Routing·디자인 통합을 담당한다.
+- Dashboard 초기 UI는 백현정, Firestore 집계와 상세 경로 연결은 김지우가 담당한다.
+- `useAdultCheck.js`와 익명 인증 연결은 목표 구조이며 현재 placeholder / 미연결 상태다.
 
-※ `AdminHeader` / `AdminFooter`, `MobileSearchModal`, `ScrollToTop`은 김지우의 공통 영역으로 관리한다.
-※ `PreferenceSafetyIntro` → `PreferenceSafety` → `PreferenceQuestions` → `PreferenceComplete`는 `/preference` 내부 step 전환 구조이며 별도 Route를 만들지 않는다.
-※ `useAdultCheck.js`와 비회원 AI 흐름은 `src/firebase/auth.js`의 익명 인증 함수를 호출해 실제 서비스 흐름에 연결한다.
+## 김태은 — 상품 / 상품 데이터 / 이벤트
 
-## 김태은 — 상품 / 상품 데이터 / 검색 / 이벤트
+### 소유 경로
 
-담당:
+- 상품 데이터: `src/data/products/*`, `src/data/pairings.json`, `src/services/productCatalog.js`
+- 상품 UI: `src/components/ui/ProductCard/*`, `src/pages/Shop/*`
+- 상품 관리: `src/pages/Admin/ProductManage*`
+- 이벤트: `src/pages/Event/*`, `src/data/{events,quizs}.json`, `src/constants/eventStatus.js`
+- 이벤트 데이터: `src/services/eventParticipation.js`
+- 이벤트 기록·관리: `src/pages/MyPage/{EventHistory,EventWinningHistory}*`, `src/pages/Admin/EventManage*`
 
-### 상품 / 데이터
+### 책임
 
-- 상품 seed/reference JSON 관리 및 데이터 검증
-- 상품 ID / 카테고리 / 상태 / 필드 구조 관리
-- Firestore 상품 데이터 등록 및 상품 데이터 연동
-- ProductCard
-- 상품 목록
-- 상품 상세 협업
-- 카테고리 / 필터 / 정렬 / 검색
-- 상품 상태 및 재고 표시
-- Admin 상품관리
+- 상품 ID·Schema·카테고리·상태·재고와 seed/reference·Firestore 연동
+- 상품 목록·상세·검색·필터·정렬·페이지네이션·카테고리 안내·반응형 UI
+- 상품 갤러리·구매 패널·리뷰·페어링과 `pairedProductIds`
+- Admin 상품 CRUD, 이미지·맛 키워드·재고·노출·리뷰 집계
+- EventList / Ready / Roulette / CardGame / OX Quiz 전체 흐름
+- 이벤트 참여 제한·추첨·결과·경품·포인트·당첨 내역
+- Admin 이벤트 CRUD·배너·참여 현황·당첨자 UI
+- `products`·`pairings`·`events`·`eventParticipations`와 관련 Rules 점검
 
-### 이벤트
+### 연동 경계
 
-- 이벤트 목록 / 상세
-- RouletteEvent
-- CardGame
-- OxQuizEvent
-- 이벤트 참여 / 추첨 로직
-- 이벤트 결과 및 경품 정보 처리
-- MyPage 이벤트 참여 내역
-- Admin 이벤트관리
+- 상품 seed/reference JSON의 최종 관리자는 김태은이다.
+- Runtime 상품 정보는 Firestore를 기준으로 하며 표시용 fallback은 12장의 규칙을 따른다.
+- 참여형 이벤트는 `eventParticipations/{eventId}_{uid}` 구조를 공통으로 사용한다.
+- 참여 제한은 각 이벤트의 `participationLimit`을 기준으로 하며 관리자는 제한 없이 참여할 수 있다.
+- Wishlist의 사용자 흐름은 이영기, 상품 데이터 조합은 상품 계약을 따른다.
 
-※ 상품 seed/reference JSON의 최종 관리자는 김태은이다.
-※ Runtime 상품 정보는 Firestore를 기준으로 하며, 상품 화면 / 이벤트 연계 기능에서 현재 상품 데이터를 사용한다.
-※ 모든 참여형 이벤트는 `eventParticipations/{eventId}_{uid}` 구조를 공통으로 사용한다.
+## 백현정 — Main / Brand / Dashboard / Design
 
-## 백현정 — Main / Brand / Admin Dashboard / Design
+### 소유 경로
 
-담당:
+- Main: `src/pages/Main/*`
+- Brand: `src/pages/Brand/*`
+- Dashboard UI: `src/pages/Admin/Dashboard*`
+- 예외 화면: `src/pages/NotFound/*`
+- 담당 화면의 브랜드·캐릭터·배너 에셋
 
-### Main
+### 책임
 
-- MainPage
-- SplashIntro
-- Hero 영역
-- 대표 상품 노출
-- AI 추천 진입 영역
-- 이벤트 진입 영역
-- 메인 페이지 주요 섹션 구성
+- Splash, Journey, Hero, Best Seller와 메인 전체 섹션·상태
+- Main / Brand의 GSAP Reveal·Wheel·Snap·Sticky 인터랙션
+- 브랜드 스토리와 막동이 소개
+- Dashboard 초기 Layout·차트·반응형 UI
+- NotFound 안내와 복귀 동선
+- Figma 기준 색상·타이포·여백·이미지·반응형 기준 협의
+- Shop·Event·Support·Cart와 DesktopHeader의 디자인 보완
 
-### Brand
+### 연동 경계
 
-- BrandIntro
-- MakdongIntro
-- 브랜드 소개 콘텐츠
-- 자작 브랜드 및 막동이 캐릭터 소개 영역
+- Main / Brand 전용 Section과 Hook은 각 페이지 폴더 안에서 관리할 수 있다.
+- Dashboard 초기 UI는 백현정, Firestore 집계 연동과 관리자 상세 이동은 김지우의 통합 작업으로 구분한다.
+- Dashboard는 AdminLayout을 사용하며 Layout 기본 구조는 이유진, 공통 UI 통합은 김지우 영역이다.
+- 공통 디자인 Token 파일 변경은 팀 협의 후 진행한다.
+- 다른 담당 페이지를 디자인 보완할 때 기능·데이터 구조와 원 담당자의 결정권을 유지한다.
 
-### Admin
+## 이영기 — Auth / 고객센터 / Wishlist
 
-- Admin Dashboard
-- 관리자 메인 요약 화면
-- 주요 관리 데이터의 Dashboard UI 구성
+### 소유 경로
 
-### Design
+- Auth: `src/pages/Auth/{Login,Signup}*`, `src/firebase/auth.js`
+- 고객센터: `src/pages/Support/*`
+- Wishlist: `src/pages/MyPage/WishList*`
+- 상품 상세의 인증·찜 연동 영역
 
-- 공통 디자인 규칙 협의
-- Figma 기준 디자인 톤 정리
-- 공통 색상 / 타이포 / 여백 / 반응형 기준 협의
-- 페이지별 디자인 구현 시 기존 JAJAK 디자인 톤 유지 여부 확인
+### 책임
 
-※ Main / Brand는 사용자가 서비스의 브랜드와 주요 기능을 처음 접하는 Entry 영역으로 구성한다.
-※ Main 전용 Section / Hook은 Main 영역 안에서 함께 관리할 수 있다.
-※ Admin Dashboard는 AdminLayout 내부에서 사용하며 관리자 공통 Layout 자체는 수정하지 않는다.
+- 이메일 회원가입·로그인·로그아웃, 유효성, 로그인 유지와 정지 회원 차단
+- 회원 문서 초기값 생성, 익명 인증 함수, `/preference` 진입 연결
+- Notice 목록·상세, FAQ 검색·분류
+- 1:1 문의 작성·등록·조회와 문의 유형
+- `notices`·`inquiries` Firestore 연동
+- Wishlist 조회·삭제와 장바구니 이동
+- ProductDetail의 찜·회원 연동 협업
 
-## 이영기 — Auth / 고객센터 / Wishlist / 상품 상세 협업
+### 연동 경계
 
-담당:
+- 로그인·회원가입·로그아웃 기능 자체는 이영기가 담당한다.
+- `/preference` 진입 이후 설문 UI와 저장은 김지우가 담당한다.
+- 익명 인증 함수는 존재하지만 AdultModal / AI 흐름에는 아직 연결되지 않았다.
+- Wishlist가 표시하는 현재 상품 정보는 김태은의 상품 데이터 계약을 따른다.
 
-### Auth
+## 이유진 — Cart / Order / MyPage / Admin / Docs
 
-- Login
-- Signup
-- Logout
-- Firebase Authentication 기본 인증 흐름
-- `src/firebase/auth.js`의 로그인 / 회원가입 / 로그아웃 관련 구현
-- `signInAnonymously()` 등 Firebase 익명 인증 함수 구현
-- 회원가입 성공 후 `/preference` 이동 연결
+### 소유 경로
 
-### 고객센터
+- Cart / Order: `src/pages/CartOrder/*`, `src/utils/cartStorage.js`
+- MyPage 공통·회원·주문: `src/pages/MyPage/{MyPageLayout,MyHome,ProfileEdit,AddressBook,PointHistory,FrequentPurchase,ClaimHistory,InquiryHistory,OrderHistory,OrderDetail}*`
+- Admin 공통·운영: `src/pages/Admin/{AdminLayout,UserManage,OrdersManage,NoticeManage,ReviewManage}*`
+- 문서: `AGENTS.md`, `README.md`
 
-- 공지사항 목록 / 상세
-- FAQ
-- 1:1 문의하기
-- 문의 유형 구성
-  - 주문 / 결제
-  - 배송
-  - 교환 / 환불
-  - 회원 / 기타
-- 문의 제목 / 내용 입력
-- 문의 등록
-- 문의 내역 및 답변 확인
+### 책임
 
-### Wishlist / 상품
+- Cart 선택·수량·삭제와 `jajak_cart` 계약
+- Checkout 상품 검증·배송지·포인트·Mock 결제·주문 저장
+- 주문 완료·목록·검색·필터·상세·취소·Cart 초기화
+- MyPage Layout·회원 요약·프로필·배송지·포인트·자주 구매·클레임·문의
+- Admin Layout과 회원·주문·공지·리뷰 관리
+- `users/{uid}`·주문 데이터·`role`·`status` 연동
+- MyPage / Admin 공통 디자인·반응형 구조
+- 프로젝트 문서와 담당 데이터 계약 관리
 
-- Wishlist / 찜
-- 상품 상세 협업
-- 찜 상품 장바구니 이동
+### 연동 경계
 
-※ 로그인 / 회원가입 / 로그아웃 기능 자체는 이영기가 담당한다.
-※ FAQ는 `/support/faq` 별도 Route를 사용한다.
-※ 회원가입 성공 후 `/preference` 이동 연결까지 이영기가 담당하며, `/preference` 진입 이후 설문 UI / 진행 / 저장은 김지우가 담당한다.
-
-## 이유진 — Cart / Order / MyPage / Admin / 회원관리 / 공통 구조
-
-담당:
-
-### Cart / Order
-
-- Cart
-- 장바구니 상품 / 수량 처리
-- `src/utils/cartStorage.js`
-- `jajak_cart` localStorage 연동
-- Checkout
-- 주문정보 확인 및 주문 저장
-- OrderComplete
-- 주문 완료 후 Cart 초기화
-- OrderHistory / OrderDetail
-- MyPage 주문내역 연동
-
-### MyPage
-
-- MyPage 공통 Layout
-- MyHome
-- MyPage Sidebar / 회원 요약 / Content / Outlet 구조
-- ProfileEdit
-- 회원 기본정보 표시 / 수정
-- MyPage 하위 페이지 공통 디자인 및 반응형 구조 유지
-
-### Admin
-
-- Admin 공통 Layout
-- Admin Sidebar / Content / Outlet 구조
-- UserManage
-- NoticeManage
-- ReviewManage
-- 회원 목록 / 검색 / 상태 관리
-- 관리자 페이지 공통 디자인 및 반응형 구조 유지
-
-### 회원 / 공통 연동
-
-- Firebase 로그인 사용자 정보를 MyPage / Cart / Order에 연결
-- `users/{uid}` 회원 데이터 연동
-- `role` 데이터를 Admin 화면에서 사용
-- 회원 `status`를 `active / suspended` 기준으로 처리
-
-### 문서
-
-- AGENTS.md 정리
-- README 정리
-- 담당 기능의 공통 데이터 계약 및 구현 규칙 반영
-
-※ `AdminHeader` / `AdminFooter`는 김지우 공통 영역이며, AdminLayout에서는 해당 공통 컴포넌트를 사용한다.
-※ 이유진은 로그인 / 회원가입 / 로그아웃 인증 기능 자체를 구현하지 않는다.
-※ 비밀번호 변경 및 회원탈퇴 기능은 이번 구현 범위에 포함하지 않는다.
+- AdminHeader / AdminFooter는 김지우 공통 영역이며 AdminLayout에서 재사용한다.
+- 로그인·회원가입·로그아웃 인증 기능 자체는 이영기 영역이다.
+- 비밀번호 변경과 회원탈퇴는 이번 구현 범위에 포함하지 않는다.
+- AiHistory / AiPreference / EventHistory / EventWinningHistory는 각각 김지우·김태은 기능 영역이며 MyPageLayout을 공유한다.
 
 ---
 
@@ -343,6 +276,8 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 - `functions/package.json`
 - `functions/package-lock.json`
 - `functions/src/index.js`
+- `functions/src/recommendation.js`
+- `functions/src/utils/*`
 
 ## 공통 스타일
 
@@ -354,9 +289,14 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 - `src/data/products/index.js`
 - `src/data/events.json`
 - `src/data/pairings.json`
+- `src/data/quizs.json`
+- `src/services/eventParticipation.js`
+- `src/services/productCatalog.js`
+- `src/services/recommendationApi.js`
 - `src/constants/*`
 - `src/utils/cartStorage.js`
 - `vite.config.js`
+- `vercel.json`
 - `.oxlintrc.json`
 - `.gitignore`
 - `.env.example`
@@ -418,11 +358,16 @@ jajak/
 ├── package.json
 ├── package-lock.json
 ├── README.md
+├── vercel.json
 ├── vite.config.js
 │
 ├── functions/
 │   ├── src/
-│   │   └── index.js
+│   │   ├── utils/
+│   │   │   ├── buildCandidateTables.js
+│   │   │   └── filterProducts.js
+│   │   ├── index.js
+│   │   └── recommendation.js
 │   ├── .gitignore
 │   ├── package.json
 │   └── package-lock.json
@@ -433,15 +378,20 @@ jajak/
 └── src/
     ├── assets/
     │   ├── characters/
+    │   ├── fonts/
     │   ├── icons/
     │   │   └── preferenceQuestions/
     │   ├── images/
+    │   │   ├── admin/
+    │   │   ├── ai/
     │   │   ├── banner/
+    │   │   ├── brand/
     │   │   ├── common/
     │   │   ├── eventPage/
     │   │   ├── main/
     │   │   ├── mypage/
-    │   │   └── products/
+    │   │   ├── products/
+    │   │   └── splash/
     │   ├── logos/
     │   └── videos/
     │
@@ -451,6 +401,10 @@ jajak/
     │   │   ├── AdminHeader.module.scss
     │   │   ├── AdminFooter.jsx
     │   │   └── AdminFooter.module.scss
+    │   │
+    │   ├── ai/
+    │   │   ├── AiLoginModal.jsx
+    │   │   └── AiLoginModal.module.scss
     │   │
     │   ├── common/
     │   │   ├── AdultModal.jsx
@@ -480,6 +434,7 @@ jajak/
     │       ├── EmptyState/
     │       ├── ErrorState/
     │       ├── Loading/
+    │       ├── MobileTopButton/
     │       ├── Modal/
     │       ├── Pagination/
     │       ├── ProductCard/
@@ -502,7 +457,8 @@ jajak/
     │   │   ├── index.js
     │   │   └── liquors.json
     │   ├── events.json
-    │   └── pairings.json
+    │   ├── pairings.json
+    │   └── quizs.json
     │
     ├── firebase/
     │   ├── auth.js
@@ -528,6 +484,8 @@ jajak/
     │   │   ├── EventManage.module.scss
     │   │   ├── NoticeManage.jsx
     │   │   ├── NoticeManage.module.scss
+    │   │   ├── OrdersManage.jsx
+    │   │   ├── OrdersManage.module.scss
     │   │   ├── ProductManage.jsx
     │   │   ├── ProductManage.module.scss
     │   │   ├── ReviewManage.jsx
@@ -538,10 +496,14 @@ jajak/
     │   ├── AiCurator/
     │   │   ├── AiIntro.jsx
     │   │   ├── AiIntro.module.scss
+    │   │   ├── AiRecommendationLoading.jsx
+    │   │   ├── AiRecommendationLoading.module.scss
     │   │   ├── AiResult.jsx
     │   │   ├── AiResult.module.scss
     │   │   ├── AiSurvey.jsx
-    │   │   └── AiSurvey.module.scss
+    │   │   ├── AiSurvey.module.scss
+    │   │   ├── GuestChoiceModal.jsx
+    │   │   └── GuestChoiceModal.module.scss
     │   │
     │   ├── Auth/
     │   │   ├── Login.jsx
@@ -563,7 +525,10 @@ jajak/
     │   │   ├── BrandIntro.jsx
     │   │   ├── BrandIntro.module.scss
     │   │   ├── MakdongIntro.jsx
-    │   │   └── MakdongIntro.module.scss
+    │   │   ├── MakdongIntro.module.scss
+    │   │   ├── useMakdongSectionWheel.js
+    │   │   ├── useSectionWheelSnap.js
+    │   │   └── useStickyBrandHeader.js
     │   │
     │   ├── CartOrder/
     │   │   ├── Cart.jsx
@@ -574,10 +539,13 @@ jajak/
     │   │   └── OrderComplete.module.scss
     │   │
     │   ├── Event/
+    │   │   ├── _eventShared.scss
     │   │   ├── CardGame.jsx
     │   │   ├── CardGame.module.scss
     │   │   ├── EventList.jsx
     │   │   ├── EventList.module.scss
+    │   │   ├── EventReady.jsx
+    │   │   ├── EventReady.module.scss
     │   │   ├── OxQuizEvent.jsx
     │   │   ├── OxQuizEvent.module.scss
     │   │   ├── RouletteEvent.jsx
@@ -598,10 +566,22 @@ jajak/
     │   │   └── README.md
     │   │
     │   ├── MyPage/
+    │   │   ├── AddressBook.jsx
+    │   │   ├── AddressBook.module.scss
     │   │   ├── AiHistory.jsx
     │   │   ├── AiHistory.module.scss
+    │   │   ├── AiPreference.jsx
+    │   │   ├── AiPreference.module.scss
+    │   │   ├── ClaimHistory.jsx
+    │   │   ├── ClaimHistory.module.scss
     │   │   ├── EventHistory.jsx
     │   │   ├── EventHistory.module.scss
+    │   │   ├── EventWinningHistory.jsx
+    │   │   ├── EventWinningHistory.module.scss
+    │   │   ├── FrequentPurchase.jsx
+    │   │   ├── FrequentPurchase.module.scss
+    │   │   ├── InquiryHistory.jsx
+    │   │   ├── InquiryHistory.module.scss
     │   │   ├── MyPageErrorContent.jsx
     │   │   ├── MyPageErrorContent.module.scss
     │   │   ├── MyHome.jsx
@@ -612,6 +592,9 @@ jajak/
     │   │   ├── OrderDetail.module.scss
     │   │   ├── OrderHistory.jsx
     │   │   ├── OrderHistory.module.scss
+    │   │   ├── PointHistory.jsx
+    │   │   ├── PointHistory.module.scss
+    │   │   ├── profileAvatars.js
     │   │   ├── ProfileEdit.jsx
     │   │   ├── ProfileEdit.module.scss
     │   │   ├── WishList.jsx
@@ -643,6 +626,8 @@ jajak/
     │   └── ProtectedRoute.jsx
     │
     ├── services/
+    │   ├── eventParticipation.js
+    │   ├── productCatalog.js
     │   └── recommendationApi.js
     │
     ├── styles/
@@ -668,7 +653,8 @@ jajak/
 - 여러 페이지에서 재사용되는 Component / Hook만 공통 영역으로 이동한다.
 - 폴더 또는 파일 위치 변경이 필요하면 팀장과 먼저 협의한다.
 - `src/utils/cartStorage.js`는 승인된 공통 Cart localStorage Utility이다.
-- 현재 `functions/src/`에는 `index.js`만 두며 Functions 세부 파일 분리는 팀장 협의 없이 임의 진행하지 않는다.
+- 현재 `functions/src/`는 `index.js`, `recommendation.js`, `utils/buildCandidateTables.js`, `utils/filterProducts.js`로 구성한다.
+- Functions 파일을 추가하거나 책임을 다시 분리해야 하는 경우 팀장과 협의한다.
 - 신규 페이지 / 컴포넌트 스타일은 SCSS Modules를 사용한다.
 
 ---
@@ -867,12 +853,14 @@ AI 설문 상태는 `useAiSurvey`와 React 기본 상태를 이용한다.
 
 ## Adult Verification State
 
-`useAdultCheck`는 김지우가 성인인증 확인 / 처리 및 비회원 AI 흐름에 사용한다.
+현재 전역 성인 확인은 `App.jsx`에서 `sessionStorage`의 `jajak_adult_verified` 값을 사용한다.
 
-실제 지속 데이터 기준:
+현재 상태:
 
-- 로그인 회원 → Firestore `users/{uid}.isAdultVerified`
-- 비회원 → `guestSessions/{anonymousUid}`
+- `useAdultCheck.js`는 placeholder이며 실제 흐름에 연결되지 않았다.
+- `AdultModal`의 확인 버튼은 현재 세션의 성인 확인 상태를 저장한다.
+- Checkout은 회원의 `users/{uid}.isAdultVerified`를 확인하고 필요한 경우 현재 세션 확인값을 회원 문서에 반영한다.
+- `guestSessions/{anonymousUid}` 저장은 목표 구조이며 현재 구현되지 않았다.
 
 ## Cart State
 
@@ -905,7 +893,7 @@ Logout
 - anonymous auth (`signInAnonymously` 등)
 - auth state 확인
 
-익명 인증 함수는 김지우의 `AdultModal` / `useAdultCheck` / 비회원 AI 흐름에서 호출해 사용한다.
+익명 인증 함수는 구현되어 있으나 현재 화면에서 호출하지 않는다. 향후 `AdultModal` / `useAdultCheck` / 비회원 AI 흐름을 연결할 때 재사용한다.
 
 ## Login
 
@@ -1026,7 +1014,7 @@ active
 
 ### 이영기
 
-`src/firebase/auth.js`에서 `signInAnonymously()` 등 익명 인증 함수 레벨을 담당한다.
+`src/firebase/auth.js`의 `signInAnonymously()` 함수 레벨을 담당한다. 함수는 존재하지만 현재 화면 흐름에서는 호출하지 않는다.
 
 ### 김지우
 
@@ -1038,13 +1026,15 @@ active
 - AI 비회원 흐름
 - `auth.js`의 익명 인증 함수를 호출해 성인인증 / 비회원 AI 흐름에 연결
 
+현재 `useAdultCheck.js`와 익명 인증 연결은 미완료 상태다.
+
 실제 본인인증 외부 API를 연결하지 않고 학습용 Mock 방식으로 처리한다.
 
 기본 UI:
 
 ```text
 만 19세 이상입니다
-만 19세 미만입니다
+나가기
 ```
 
 ## Adult User
@@ -1055,39 +1045,24 @@ active
 isAdultVerified = true
 ```
 
-`만 19세 미만입니다` 선택:
+`나가기` 선택:
 
-- 성인 전용 AI 추천 / Checkout 접근 불가
+- 이전 페이지로 이동
 
 생년월일 입력 및 실제 나이 계산 로직은 구현 범위에 포함하지 않는다.
 
 ## Logged-in User
 
 - 로그인 회원의 성인인증 상태는 `users/{uid}.isAdultVerified`에서 확인한다.
+- 전역 AdultModal 자체는 현재 로그인 여부와 관계없이 `sessionStorage`를 기준으로 표시한다.
 - React 화면에서는 필요한 범위에서만 상태를 사용한다.
 
 ## Guest User
 
-- 비회원 AI 추천을 위해 Firebase Anonymous Auth를 사용한다.
-- 익명 UID는 성인인증 / rate limit을 위한 임시 식별자로만 사용한다.
-- 성인인증 상태는 `guestSessions/{anonymousUid}`에서 확인한다.
-- `guestSessions`에는 최소 임시 정보만 저장한다.
-
-예:
-
-```js
-{
-  adultVerified: true,
-  expiresAt
-}
-```
-
-규칙:
-
-- `guestSessions` 직접 client write 금지
-- Cloud Functions(Admin SDK)을 통해 기록
-- `expiresAt` 기반 Firestore TTL 적용
-- 비회원 성인인증 상태를 로그인/회원가입 후 정회원 계정으로 자동 이전하지 않는다.
+- 현재 비회원 성인 확인은 `sessionStorage`의 `jajak_adult_verified`를 사용한다.
+- 새 브라우저 세션에서는 다시 확인한다.
+- Firebase Anonymous Auth 함수는 준비되어 있으나 AdultModal / AI 흐름에 연결되지 않았다.
+- `guestSessions/{anonymousUid}`, TTL, rate limit은 향후 연결 시 함께 구현할 목표 계약이다.
 
 ---
 
@@ -1142,7 +1117,14 @@ src/data/pairings.json
 - Admin 상품관리
 - AI 후보 상품 구성
 
-AI Cloud Functions도 Firestore의 현재 상품 / 페어링 데이터를 조회한다.
+현재 호환 상태:
+
+- `src/services/productCatalog.js`는 Firestore 조회 실패 시 seed/reference 상품을 표시하는 fallback을 포함한다.
+- Main 일부 섹션과 Event 화면은 Firestore 데이터가 없거나 조회에 실패할 때 로컬 표시 데이터를 사용한다.
+- fallback은 화면 표시를 위한 임시 보완이며 주문 가격, 재고, 판매상태의 최종 기준으로 사용하지 않는다.
+- Checkout과 주문 생성은 Firestore 현재 상품을 기준으로 검증한다.
+- AI Client는 Firestore에서 조회한 후보를 Functions에 전달하며, Functions는 전달된 후보의 형식과 참조를 검증한다.
+- fallback을 추가하거나 범위를 넓힐 때는 데이터 담당자와 협의하고 이 문서에 사용 위치를 기록한다.
 
 ## Common Product Fields
 
@@ -1308,6 +1290,10 @@ Route:
 
 ```text
 /preference
+/preference/safety-intro
+/preference/safety
+/preference/questions
+/preference/complete
 ```
 
 화면 흐름:
@@ -1324,8 +1310,8 @@ PreferenceComplete
 
 규칙:
 
-- 위 4개 화면은 각각 별도 Route를 만들지 않는다.
-- `/preference` 하나 안에서 step을 전환한다.
+- 각 단계는 위 Route를 사용하며 `src/App.jsx`에서 연결한다.
+- `/preference`는 취향 등록 시작 화면이다.
 - 회원가입 성공 후 이영기가 `/preference`까지 연결한다.
 - `/preference` 진입 이후 설문 UI / 진행 / 저장은 김지우가 담당한다.
 - 설문 건너뛰기 가능
@@ -1361,7 +1347,7 @@ users/{uid}.userPreference 조회
 ↓
 오늘 AiSurvey 답변과 결합
 ↓
-Firestore 현재 상품 / 페어링 조회 및 후보 필터
+Client가 전달한 상품 / 페어링 후보 검증 및 필터
 ↓
 Prompt 구성
 ↓
@@ -1370,7 +1356,10 @@ OpenAI 호출
 추천 결과 생성
 ```
 
-- `userPreference`는 Client Request에 다시 실어 보내지 않고 서버에서 UID 기준 조회한다.
+- OpenAI 모드의 `userPreference`는 서버에서 `request.auth.uid` 기준으로 다시 조회한다.
+- Mock 모드에서는 Client가 전달한 `userPreference`를 사용한다.
+- 현재 상품 / 페어링 배열은 Client Request에 포함되며 Functions에서 배열 형식과 참조를 검증한다.
+- 서버가 Firestore에서 상품 / 페어링을 직접 읽는 구조로 변경하기 전까지 이를 현재 구현으로 설명하지 않는다.
 - 평소 취향 + 현재 상황을 함께 추천에 반영한다.
 
 ### 비회원
@@ -1396,17 +1385,15 @@ OpenAI 호출
 ```text
 AiSurvey
    ↓
-src/services/recommendationApi.js
-   ↓
 Firebase Cloud Functions
    ↓
 functions/src/index.js
    ↓
 회원 userPreference 조회 (회원인 경우)
    ↓
-Firestore 현재 상품 / 페어링 조회
+Client가 전달한 현재 상품 / 페어링 후보 검증
    ↓
-Request 검증
+functions/src/recommendation.js
    ↓
 후보 상품 필터링
    ↓
@@ -1425,11 +1412,17 @@ Response 반환 / 추천 기록 저장
 
 ```text
 functions/src/index.js
+functions/src/recommendation.js
+functions/src/utils/buildCandidateTables.js
+functions/src/utils/filterProducts.js
 ```
 
-- Cloud Function 진입점 및 현재 서버 구현 기준 파일
-- AI 추천 검증 / 필터 / Prompt / OpenAI 호출 로직을 구현한다.
-- 코드가 복잡해져 파일 분리가 필요해지면 팀장 협의 후 구조를 추가한다.
+- `index.js`: Callable Function 진입점, 요청 검증, 회원 취향 조회, 추천 기록 저장
+- `recommendation.js`: 후보 구성, Mock/OpenAI 추천, 응답 검증
+- `utils/buildCandidateTables.js`: 추천 후보 테이블 구성
+- `utils/filterProducts.js`: 설문과 안전 조건을 반영한 후보 필터
+- `src/services/recommendationApi.js`는 현재 placeholder이며, `AiResult.jsx`가 `httpsCallable`로 `recommendJajak`을 직접 호출한다.
+- 서비스 계층으로 호출 책임을 이동하기 전까지 `recommendationApi.js`가 실제 연결 파일이라고 문서화하지 않는다.
 - 현재 구조에 없는 Functions 하위 폴더를 팀원이 임의 생성하지 않는다.
 
 ## Logical Responsibilities
@@ -1437,8 +1430,9 @@ functions/src/index.js
 Functions 구현에서는 다음 책임을 구분한다.
 
 ### Request Validation
-- `surveyAnswers`
-- `surveyVersion`
+- `surveyType`
+- `todaySurvey`
+- `liquors` / `foods` / `glasses` / `pairings`
 - 자료형 / enum / 배열 형식
 
 ### Product Filtering
@@ -1451,59 +1445,64 @@ Functions 구현에서는 다음 책임을 구분한다.
 ### Prompt Building
 - 회원 `userPreference`와 당일 `AiSurvey`를 필요한 형태로 결합
 - 후보 상품 정보를 이용해 Prompt 구성
-- Prompt 구조 변경 시 `promptVersion` 증가
+- Prompt 구조 변경 시 `recommendation.js`의 Schema와 검증 로직을 함께 점검
 
 ### AI Response Validation
 - 필수 필드
 - 추천 개수
-- 실제 Firestore 상품 ID 존재 여부
+- 전달된 후보 테이블의 `tableId` 존재 여부
 - reason 형식
 - 추천 조합 중복 여부
 
 ### Rate Limit
-- UID 기준 AI 요청 제한
-- Firestore `aiRequestGuards/{uid}` 사용
+- `aiRequestGuards/{uid}` 기반 제한은 목표 계약이며 현재 미연결
 
 ---
 
 # 15. AI Request Rules
 
-AI 추천 실행 1회마다 UUID 기반 `requestId`를 생성한다.
+현재 `AiResult.jsx`가 Callable Function에 아래 데이터를 전달한다.
 
 Client Request:
 
 ```js
 {
-  requestId,
-  surveyVersion,
-  surveyAnswers
+  surveyType,
+  todaySurvey,
+  userPreference,
+  liquors,
+  foods,
+  glasses,
+  pairings
 }
 ```
 
 규칙:
 
-- Request → Response → 추천 기록 저장까지 동일한 `requestId` 사용
-- `surveyAnswers`의 key / enum은 `constants/aiSurvey.js` 기준
-- `surveyVersion`, `promptVersion`, `filterVersion`은 정수형 사용
+- `surveyType`은 `member` 또는 `guest`만 허용한다.
+- `todaySurvey`의 key / enum은 `constants/aiSurvey.js` 기준이다.
 - 로그인 회원 식별은 Client `userId`가 아니라 `request.auth.uid` 기준
 - 로그인 회원의 `userPreference`는 Firestore에서 `request.auth.uid` 기준 조회
 - 비회원은 Firebase Anonymous Auth UID 사용
 - 익명 UID는 성인인증 / rate limit용 임시 식별자
 - 익명 UID를 회원 추천 기록의 userId로 저장하지 않는다.
-- 상품 / 페어링 전체 데이터를 Client Request에 포함하지 않는다.
+- Mock 회원 추천에서는 Client가 전달한 `userPreference`를 사용한다.
+- 상품 / 페어링 배열은 현재 Client Request에 포함된다.
+- `requestId`, `surveyVersion`, `promptVersion`, `filterVersion`은 현재 구현 계약에 포함되지 않는다.
 
 ## Validation Order
 
 Cloud Functions는 아래 순서로 처리한다.
 
-1. `requestId` 중복 / 충돌 확인
-2. rate limit 확인
-3. `surveyVersion` 지원 여부 확인
-4. `surveyAnswers` 유효성 검증
-5. 성인인증 확인
-6. Firestore 실제 상품 / 페어링 조회
-7. `filterProducts` 실행
-8. OpenAI 호출
+1. `surveyType` 검증
+2. `todaySurvey` 객체 검증
+3. 상품 / 페어링 배열 검증
+4. 회원 인증 및 `userPreference` 준비
+5. OpenAI Secret 확인
+6. `filterProducts` 실행
+7. Mock 추천 또는 OpenAI 호출
+8. 응답 검증
+9. 로그인 회원 추천 기록 저장
 
 앞 단계가 실패하면 뒤 단계를 실행하지 않는다.
 
@@ -1513,23 +1512,9 @@ Cloud Functions는 아래 순서로 처리한다.
 
 ## requestId
 
-동일 requestId 기존 기록과 현재 요청의 아래 값이 모두 동일하면 기존 결과를 반환한다.
+현재 추천 기록 ID는 Firestore subcollection의 자동 생성 문서 ID를 사용하며 별도 `requestId` 멱등성 처리는 구현하지 않았다.
 
-- userId
-- surveyVersion
-- 정규화된 surveyAnswers
-
-`surveyAnswers` 비교:
-
-- 객체 key 정렬
-- deep equality
-- 단순 `JSON.stringify()` 문자열 비교에만 의존하지 않는다.
-
-동일 requestId에 다른 내용:
-
-```text
-REQUEST_ID_CONFLICT
-```
+향후 `requestId`를 도입하는 경우 중복 OpenAI 호출과 중복 저장을 막는 목적, 충돌 판정 기준, 기존 기록 호환 방식을 먼저 팀에서 확정한다.
 
 ## Rate Limit
 
@@ -1550,33 +1535,33 @@ aiRequestGuards/{uid}
 
 규칙:
 
-- 로그인 UID / 익명 UID 모두 동일 기준
-- 10초 이내 반복 요청 차단
-- OpenAI 호출하지 않음
-- `RATE_LIMITED` 반환
-- client 직접 write 금지
-- Admin SDK 기록
-- `expiresAt` 기반 TTL 적용
+- `aiRequestGuards` 기반 rate limit은 목표 계약이며 현재 `recommendJajak`에는 연결되지 않았다.
+- 도입 시 로그인 UID / 익명 UID를 같은 기준으로 처리한다.
+- Client 직접 write는 허용하지 않고 Admin SDK로 기록한다.
+- 제한 시간과 TTL을 코드 및 Firestore 설정과 함께 확정한다.
 
 ---
 
 # 17. AI Product Filtering / Fallback
 
-상품 후보는 Firestore의 실제 상품 / 페어링 데이터를 사용한다.
+상품 화면의 Source of Truth는 Firestore이다. 현재 AI Client는 Firestore에서 읽은 상품과 페어링 후보를 Callable Request에 포함하고, Functions는 전달받은 배열에서 후보 테이블을 구성하고 필터링한다.
 
-`filterProducts` 후보 필터링 로직 적용 후 **liquorId 후보 개수** 기준:
+- Client 입력을 서버의 절대적 Source of Truth로 간주하지 않는다.
+- 서버가 Firestore에서 직접 후보를 조회하도록 변경하는 경우 Client Request와 Functions 검증을 함께 갱신한다.
+
+`filterProducts` 적용 후 생성된 주안상 후보 테이블 개수 기준:
 
 ```text
-3개 이상 → OpenAI 추천 진행
-1~2개   → OpenAI 미호출 / 안전 후보 기반 fallback
-0개     → NO_AVAILABLE_PRODUCTS
+3개 이상 → 3개 추천
+1~2개   → 존재하는 후보 개수만큼 추천
+0개     → NO_SAFE_CANDIDATES
 ```
 
 규칙:
 
-- foodId / glassId 개수와 liquor 후보 판단을 혼동하지 않는다.
-- fallback에서도 알레르기 및 강제 제외 조건을 해제하지 않는다.
-- Filter 구조 변경 시 `filterVersion`을 증가시킨다.
+- Mock 모드와 OpenAI 모드 모두 동일한 후보 테이블과 필터 결과를 사용한다.
+- 알레르기 및 강제 제외 조건을 해제하지 않는다.
+- Filter 구조 변경 시 입력 계약과 응답 검증을 함께 갱신한다.
 
 ---
 
@@ -1588,11 +1573,16 @@ OpenAI는 서버가 제공한 후보 안에서만 상품을 선택한다.
 
 ```js
 {
-  rank,
+  tableId,
   liquorId,
   foodId,
   glassId,
-  reason
+  reason,
+  liquorReason,
+  foodReason,
+  glassReason,
+  recommendedTimeText,
+  recommendedTimeRange
 }
 ```
 
@@ -1600,71 +1590,50 @@ OpenAI는 서버가 제공한 후보 안에서만 상품을 선택한다.
 
 ```js
 {
-  requestId,
   recommendations,
-  aiMeta,
-  saveStatus
+  meta,
+  recommendationId
 }
 ```
 
-## aiMeta
+## meta
 
 ```js
 {
+  userType,
   model,
-  promptVersion,
-  filterVersion,
-  fallbackUsed,
+  isMock,
   candidateCount,
-  filteredOutCount,
-  latencyMs
+  recommendationCount,
+  excluded,
+  invalidReferences
 }
-```
-
-## saveStatus
-
-```text
-success
-failed
-not_applicable
 ```
 
 규칙:
 
-- OpenAI Response 검증 실패 시 최대 1회 재요청
-- 재요청 후에도 실패하면 안전 후보 fallback
-- fallback 사용 시 `aiMeta.fallbackUsed = true`
-- timeout / quota 발생 시 안전 후보가 있으면 fallback
-- timeout / quota fallback 성공 시 `aiMeta.model = null`
+- OpenAI 응답은 Structured Output Schema로 요청한다.
+- 응답의 `tableId`가 실제 후보 테이블에 존재하는지 검증한다.
+- 중복 `tableId`는 결과에서 제외한다.
+- Mock 모드는 후보 테이블 안에서 결과를 만들고 `meta.isMock = true`를 반환한다.
 - 추천 조합은 항목 간 중복되지 않아야 한다.
 
 ---
 
 # 19. AI Error Codes
 
-공통 오류 코드:
+현재 내부 오류 식별자:
 
 ```text
-INVALID_SURVEY
-UNSUPPORTED_SURVEY_VERSION
-ADULT_VERIFICATION_REQUIRED
-NO_AVAILABLE_PRODUCTS
-RATE_LIMITED
-REQUEST_ID_CONFLICT
-AI_TIMEOUT
-AI_QUOTA_EXCEEDED
-INVALID_AI_RESPONSE
-AI_RECOMMENDATION_FAILED
+INVALID_USER_TYPE
+NO_SAFE_CANDIDATES
+OPENAI_API_KEY_MISSING
+EMPTY_OPENAI_RESPONSE
+INVALID_RECOMMENDATION_COUNT
+INVALID_OPENAI_RESPONSE
 ```
 
-`recommendationApi.js`는 오류를 다음 형태로 정규화한다.
-
-```js
-{
-  code,
-  message
-}
-```
+Callable Function은 사용자에게 노출할 메시지를 `HttpsError`로 변환한다. `recommendationApi.js`의 공통 오류 정규화는 아직 구현되지 않았다.
 
 ---
 
@@ -1682,67 +1651,49 @@ AI_RECOMMENDATION_FAILED
 문서 경로:
 
 ```text
-recommendations/{requestId}
+users/{uid}/recommendations/{recommendationId}
 ```
 
 AI 추천 실행 1회 = Firestore 문서 1개
 
 여러 추천 세트는 하나의 `recommendations` 배열로 저장한다.
+`recommendationId`는 Firestore가 자동 생성하며 성공 Response에 포함한다.
 
 ## Recommendation Document
 
 ```js
 {
-  requestId,
-  userId,
+  uid,
+  userType,
   createdAt,
-  surveyVersion,
-  surveyAnswers,
-  userPreferenceSnapshot,
+  isSaved,
+  todaySurvey,
   recommendations,
-  aiMeta
+  meta: {
+    model,
+    isMock,
+    candidateCount,
+    recommendationCount
+  }
 }
 ```
 
 규칙:
 
-- `userId`: `request.auth.uid`
+- `uid`: `request.auth.uid`
 - `createdAt`: 서버 기준 timestamp
-- 추천 당시 `surveyAnswers` Snapshot 보존
-- 추천 당시 `userPreferenceSnapshot` 보존
-- 기본 취향이 없는 회원은 `userPreferenceSnapshot: null`
-- `AiHistory`는 null인 경우 별도 UI 처리
-- 상품 전체 객체를 중복 저장하지 않는다.
-- 추천 상품은 `liquorId`, `foodId`, `glassId` 기준 저장
-- 상품명 등 최소 Snapshot은 필요 시 표시용으로만 추가
+- 추천 당시 `todaySurvey` Snapshot 보존
+- `isSaved` 초기값은 `false`
+- 추천 결과의 상품 참조는 `liquorId`, `foodId`, `glassId`를 포함한다.
 - AI Response 정상 검증 직후 1회 저장
 - AiResult 렌더링 / 새로고침 시 재저장하지 않는다.
 - 외부 OpenAI 호출은 Firestore Transaction 밖에서 처리
-- 저장 확인 / 생성 단계만 Transaction 또는 원자적 create 방식 사용
 
 ## Save Failure
 
-AI 성공 + Firestore 저장 실패:
+현재 로그인 회원의 추천 기록 저장 실패는 Callable Function 실패로 처리한다. `saveStatus` 필드는 사용하지 않는다.
 
-```text
-saveStatus: failed
-```
-
-- 추천 결과는 사용자에게 반환
-- 자동 재시도하지 않음
-- Functions 로그에 requestId / userId / 오류 기록
-
-정상 저장 또는 동일 정상 기록 존재:
-
-```text
-saveStatus: success
-```
-
-비회원:
-
-```text
-saveStatus: not_applicable
-```
+비회원은 추천 기록을 저장하지 않으며 Response의 `recommendationId`는 `null`이다.
 
 ## Guest Result
 
@@ -1759,7 +1710,7 @@ saveStatus: not_applicable
 
 - 과거 추천 기록은 기본적으로 수정하지 않는다.
 - 설문 Schema 변경 시 과거 추천 기록을 강제 마이그레이션하지 않는다.
-- `AiHistory`는 `surveyVersion`과 실제 필드 존재 여부를 확인해 이전 기록도 안전하게 렌더링한다.
+- `AiHistory`는 실제 필드 존재 여부를 확인해 이전 기록도 안전하게 렌더링한다.
 
 ---
 
@@ -1786,26 +1737,25 @@ Cloud Functions에서 관리자 여부 확인이 필요한 경우:
 ## Client
 
 - React에 읽어온 `role` 값은 UI 표시용
-- `AdminRoute`는 관리자 화면 접근 판단용
+- `AdminRoute`는 관리자 화면 접근 판단용 목표 컴포넌트이며 현재 placeholder / 미연결 상태
 - 실제 데이터 보안의 최종 기준은 Firestore Rules / 서버 검증
 
 ## Recommendation Access
 
 일반 회원:
 
-- 자신의 `userId`와 일치하는 추천 기록만 조회 가능
+- 자신의 `users/{uid}/recommendations` 하위 기록만 조회 가능
 - 추천 기록 직접 create/update 금지
 
 관리자:
 
-- role 검증 후 전체 AI 추천 로그 조회 가능
+- Firestore Rules의 role 검증을 통과한 범위에서 회원별 추천 기록 조회 가능
 
 ## AiLogManage
 
-- 전체 로그를 한 번에 조회하지 않는다.
-- `createdAt` 기준 페이지네이션
-- 기간 / 회원 / fallback 여부 등의 필터는 가능한 범위에서 Firestore Query 사용
-- 필요한 Composite Index는 `firestore.indexes.json`에 정의
+- 현재 `AiLogManage.jsx`는 시연용 `mockLogs`를 사용한다.
+- Firestore 연결이 완료되기 전까지 실제 전체 추천 로그를 조회한다고 문서화하지 않는다.
+- 실제 연결 시 collection group query, 관리자 권한, 페이지네이션, 필요한 index를 함께 검토한다.
 
 ## Role Protection
 
@@ -1833,7 +1783,7 @@ Firebase App 초기화
 - logout
 - auth state 확인
 
-`AdultModal` / `useAdultCheck` / 비회원 AI 흐름에서는 이 파일의 익명 인증 함수를 재사용한다.
+`AdultModal` / `useAdultCheck` / 비회원 AI 흐름을 연결할 때 이 파일의 익명 인증 함수를 재사용한다.
 
 ## `firebase/firestore.js`
 
@@ -2133,19 +2083,21 @@ constants/eventStatus.js
 
 # 26. Routes
 
-URL 문자열은 `src/routes/paths.js`에서 공통 관리한다.
-페이지 내부에서 route 문자열을 임의 하드코딩하지 않는다.
+공통 진입 URL은 `src/routes/paths.js`를 우선 사용하며 전체 Route 등록은 `src/App.jsx`를 기준으로 한다.
+`paths.js`에 없는 경로가 현재 존재하므로, 경로를 추가하거나 변경할 때 두 파일과 Header / Footer 링크를 함께 점검한다.
 
 ## Main / Shop
 
 | Page | URL | Access |
 |---|---|---|
 | MainPage | `/` | 전체 |
+| SplashIntro | `/intro` | 전체 |
 | BrandIntro | `/brand` | 전체 |
+| MakdongIntro | `/brand/makdong` | 전체 |
 | ProductList | `/shop` | 전체 |
 | ProductDetail | `/shop/:productId` | 전체 |
 
-Brand 영역은 현재 `/brand`를 사용한다. `MakdongIntro`는 Brand 영역 구성에 사용하며 별도 URL을 임의 생성하지 않는다.
+`/brand/story`는 `/brand`로 redirect한다.
 
 ## Auth
 
@@ -2154,12 +2106,15 @@ Brand 영역은 현재 `/brand`를 사용한다. `MakdongIntro`는 Brand 영역 
 | Login | `/login` | 비로그인 사용자 |
 | Signup | `/signup` | 비로그인 사용자 |
 | PreferenceSurvey | `/preference` | 기본 취향 설문 대상 로그인 회원 |
+| PreferenceSafetyIntro | `/preference/safety-intro` | 기본 취향 설문 대상 로그인 회원 |
+| PreferenceSafety | `/preference/safety` | 기본 취향 설문 대상 로그인 회원 |
+| PreferenceQuestions | `/preference/questions` | 기본 취향 설문 대상 로그인 회원 |
+| PreferenceComplete | `/preference/complete` | 기본 취향 설문 대상 로그인 회원 |
 
 규칙:
 
 - Signup 성공 후 이영기가 `/preference` 연결까지 담당
-- Preference 세부 화면 4개는 `/preference` 내부 step으로 전환
-- `PreferenceSafetyIntro`, `PreferenceSafety`, `PreferenceQuestions`, `PreferenceComplete`에 별도 Route를 만들지 않는다.
+- Preference 세부 화면은 단계별 Route를 사용한다.
 - `/preference` 진입 이후 김지우가 PreferenceSurvey 흐름을 담당
 - PreferenceSurvey 건너뛰기 가능
 
@@ -2203,36 +2158,43 @@ Brand 영역은 현재 `/brand`를 사용한다. `MakdongIntro`는 Brand 영역 
 | OrderHistory | `/mypage/orders` | 로그인 회원 |
 | OrderDetail | `/mypage/orders/:orderId` | 로그인 회원 |
 | WishList | `/mypage/wishlist` | 로그인 회원 |
+| AddressBook | `/mypage/addresses` | 로그인 회원 |
+| PointHistory | `/mypage/points` | 로그인 회원 |
+| FrequentPurchase | `/mypage/frequent` | 로그인 회원 |
+| ClaimHistory | `/mypage/claims` | 로그인 회원 |
+| InquiryHistory | `/mypage/inquiries` | 로그인 회원 |
 | AiHistory | `/mypage/ai-history` | 로그인 회원 |
+| AiPreference | `/mypage/preference` | 로그인 회원 |
 | EventHistory | `/mypage/events` | 로그인 회원 |
+| EventWinningHistory | `/mypage/event-winnings` | 로그인 회원 |
 
 ## Event
 
 | Page | URL | Access |
 |---|---|---|
-| EventList | `/event` | 전체 |
-| RouletteEvent | `/event/roulette` | 로그인 회원 |
-| CardGame | `/event/card-game` | 로그인 회원 |
-| OxQuizEvent | `/event/ox-quiz` | 로그인 회원 |
+| EventList | `/events` | 전체 |
+| EventReady | `/events/ready/:eventType` | 전체 |
+| RouletteEvent | `/events/roulette` | 로그인 회원 |
+| CardGame | `/events/card-game` | 로그인 회원 |
+| OxQuizEvent | `/events/ox-quiz` | 로그인 회원 |
 
 규칙:
 
-- 이벤트 Public Route는 `/event` 단수형으로 통일한다.
-- 기존 `/events` Route를 사용하지 않는다.
+- 이벤트 Public Route는 `/events` 복수형으로 통일한다.
 - 세 참여형 이벤트 모두 `eventParticipations/{eventId}_{uid}`를 사용한다.
 
 ## Support
 
 | Page | URL | Access |
 |---|---|---|
-| NoticeList | `/support/notices` | 전체 |
-| NoticeDetail | `/support/notices/:noticeId` | 전체 |
-| FAQ | `/support/faq` | 전체 |
-| InquiryQnA | `/support/inquiry` | 페이지 접근 전체 / 문의 등록·내역 로그인 회원 |
+| NoticeList | `/notices` | 전체 |
+| NoticeDetail | `/notices/:noticeId` | 전체 |
+| FAQ | `/faq` | 전체 |
+| InquiryQnA | `/inquiry` | 페이지 접근 전체 / 문의 등록·내역 로그인 회원 |
 
 규칙:
 
-- FAQ는 별도 `/support/faq` Route를 사용한다.
+- FAQ는 `/faq` Route를 사용한다.
 - Footer 고객센터 링크는 공지사항 / 자주 묻는 질문 / 1:1 문의하기를 제공한다.
 - 배송 / 교환 / 환불 내용은 고객센터 콘텐츠 범위에서 관리한다.
 
@@ -2243,6 +2205,7 @@ Brand 영역은 현재 `/brand`를 사용한다. `MakdongIntro`는 Brand 영역 
 | Dashboard | `/admin` | 관리자 |
 | UserManage | `/admin/users` | 관리자 |
 | ProductManage | `/admin/products` | 관리자 |
+| OrdersManage | `/admin/orders` | 관리자 |
 | AiLogManage | `/admin/ai-logs` | 관리자 |
 | EventManage | `/admin/events` | 관리자 |
 | NoticeManage | `/admin/notices` | 관리자 |
@@ -2279,11 +2242,12 @@ src/pages/MyPage/MyPageErrorContent.jsx
 
 ## Route Notes
 
-- `SplashIntro.jsx` 별도 URL 없음
+- `SplashIntro.jsx`는 초기 진입 연출과 `/intro` Route에서 사용한다.
 - `ScrollToTop.jsx`는 공통 Routing 영역에서 라우트 이동 시 스크롤 위치를 초기화한다.
 - 동적 route의 `:productId`, `:orderId`, `:noticeId`에는 실제 데이터 ID 사용
-- 로그인 회원 전용 페이지는 `ProtectedRoute`
-- 관리자 페이지는 `AdminRoute`
+- `ProtectedRoute.jsx`와 `AdminRoute.jsx`는 현재 placeholder이며 `App.jsx` Route에 연결되지 않았다.
+- 로그인 회원 전용 페이지와 관리자 페이지의 Route guard 연결은 남은 필수 작업이다.
+- guard 연결 전에도 각 화면의 Firebase 사용자 확인과 Firestore Rules를 유지한다.
 - 관리자 URL 접근 제한만으로 보안을 보장하지 않는다.
 - 실제 데이터 접근은 Firestore Rules 및 서버 검증 적용
 
@@ -2348,8 +2312,7 @@ AI 오류는 공통 Error Code를 기준으로 사용자용 메시지로 변환�
 - AI 추천 기록 생성은 Cloud Functions
 - Admin 권한은 `users/{uid}.role === "admin"`
 - 관리자 전용 데이터는 동일 role 기준으로 보호
-- `guestSessions` client direct write 금지
-- `aiRequestGuards` client direct write 금지
+- `guestSessions`와 `aiRequestGuards`를 도입하는 경우 client direct write를 허용하지 않는다.
 
 복합 Query에 필요한 Index는 `firestore.indexes.json`에 명시한다.
 
@@ -2366,7 +2329,7 @@ AI 오류는 공통 Error Code를 기준으로 사용자용 메시지로 변환�
 | 회원 포인트 | `users/{uid}.points` |
 | 회원 상태 | `active` / `suspended` |
 | 성인인증(회원) | `users/{uid}.isAdultVerified` |
-| 성인인증(비회원) | `guestSessions/{anonymousUid}` |
+| 성인인증(비회원) | 현재 `sessionStorage:jajak_adult_verified` / 목표 `guestSessions/{anonymousUid}` |
 | AI 설문 상태 | `useAiSurvey` + React 기본 상태 |
 | Cart localStorage key | `jajak_cart` |
 | Cart 저장 형태 | `[{ productId, quantity }]` |
@@ -2377,15 +2340,16 @@ AI 오류는 공통 Error Code를 기준으로 사용자용 메시지로 변환�
 | 상품 seed/reference | `src/data/products/*.json` |
 | 페어링 seed/reference | `src/data/pairings.json` |
 | Runtime 상품 / 페어링 | Firestore |
-| AI 상품 / 페어링 기준 | Firestore |
-| URL | `src/routes/paths.js` |
+| AI 상품 / 페어링 기준 | Client가 Firestore에서 조회한 후보 + Functions 검증 |
+| URL | `src/App.jsx` + `src/routes/paths.js` |
 | AI 설문 key / enum | `constants/aiSurvey.js` |
 | Preference 질문 | `constants/preferenceSurvey.js` |
 | 공통 취향 축 | `constants/tasteAxis.js` |
 | 주문 상태 | `constants/orderStatus.js` |
 | 이벤트 상태 | `constants/eventStatus.js` |
 | 관리자 실제 권한 | `users/{uid}.role` + Firestore Rules / server validation |
-| AI 추천 기록 | Firestore `recommendations/{requestId}` |
+| AI 추천 기록 | Firestore `users/{uid}/recommendations/{recommendationId}` |
+| 리뷰 | Firestore `reviews/{reviewId}` |
 | 디자인 Token | `src/styles/_variables.scss` |
 | Git 통합 기준 | `dev` |
 | 안정 버전 기준 | `main` |
@@ -2578,11 +2542,16 @@ Codex는 다음 순서와 규칙을 따른다.
 - MobileSearchModal → 김지우 Header / Search 공통 영역
 - ScrollToTop → 김지우 Routing 공통 영역
 - NoticeManage / ReviewManage → 이유진 구현, 김지우 Routing 연결 확인
-- Preference 세부 화면 → `/preference` 내부 step 전환
-- FAQ → `/support/faq` 별도 Route
-- Public Event Route → `/event` 단수형
-- 참여형 이벤트 → `/event/roulette`, `/event/card-game`, `/event/ox-quiz`
+- Preference 세부 화면 → `/preference/*` 단계별 Route
+- FAQ → `/faq`
+- 공지 / 문의 → `/notices`, `/inquiry`
+- Public Event Route → `/events` 복수형
+- 참여형 이벤트 → `/events/roulette`, `/events/card-game`, `/events/ox-quiz`
+- 이벤트 준비 화면 → `/events/ready/:eventType`
 - 이벤트 참여 저장 → `eventParticipations/{eventId}_{uid}` 공통 사용
+- AI 추천 저장 → `users/{uid}/recommendations/{recommendationId}`
+- 관리자 AI 로그 → 현재 시연용 `mockLogs`
+- `ProtectedRoute` / `AdminRoute` → placeholder 상태이며 Route guard 연결 필요
 
 기존 핵심 데이터 계약:
 
@@ -2600,6 +2569,22 @@ Codex는 다음 순서와 규칙을 따른다.
 ---
 
 # 36. Version History
+
+## v1.8 — 2026-09-08
+
+- Team Ownership의 전체 담당 범위를 유지하면서 `소유 경로 / 책임 / 연동 경계` 형식으로 압축
+- 김지우·김태은·백현정의 팀원별 Codex 보완자료를 실제 파일 및 Git 이력과 대조해 세부 기여와 공동 작업 경계를 추가
+- README 팀 구성 표를 Team Ownership과 동일한 담당 범위 및 공동 작업 경계로 갱신
+- 실제 `src/App.jsx` 기준으로 Preference, Brand, Event, Support, MyPage, Admin Route 갱신
+- `/event/*`를 `/events/*`로, `/support/*`를 `/notices`·`/faq`·`/inquiry`로 수정
+- Preference 세부 화면의 단계별 Route와 `/brand/makdong` 반영
+- 신규 MyPage 화면, `OrdersManage`, `EventReady`, AI 보조 화면과 서비스 파일을 폴더 구조에 반영
+- Functions 구조를 `index.js`, `recommendation.js`, `utils/*` 기준으로 갱신
+- 현재 Callable Request / Response와 `users/{uid}/recommendations/{recommendationId}` 저장 계약 반영
+- `recommendationApi.js`, `ProtectedRoute.jsx`, `AdminRoute.jsx`의 placeholder / 미연결 상태 명시
+- 전역 성인 확인의 `sessionStorage:jajak_adult_verified` 구현과 익명 인증 / `guestSessions` 목표 상태 구분
+- Firestore Runtime 원칙과 상품·이벤트 seed/reference fallback의 현재 상태 구분
+- 관리자 AI 로그가 시연 데이터임을 명시
 
 ## v1.7 — 2026-08-31
 
