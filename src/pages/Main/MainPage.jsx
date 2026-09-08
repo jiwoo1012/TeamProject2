@@ -209,7 +209,7 @@ const MainPage = () => {
     const previousScrollBehavior = root.style.scrollBehavior
 
     root.style.scrollBehavior = 'auto'
-    window.scrollTo(0, 0)
+    window.scrollTo({ top: isHeroDismissed ? aiIntroRef.current?.offsetTop ?? 0 : 0, behavior: 'instant' })
     ScrollTrigger.refresh()
     root.style.scrollBehavior = previousScrollBehavior
 
@@ -219,7 +219,7 @@ const MainPage = () => {
       replace: true,
       state: null,
     })
-  }, [shouldSkipJourney, navigate, location.pathname])
+  }, [shouldSkipJourney, navigate, location.pathname, isHeroDismissed])
 
 
   useEffect(() => {
@@ -302,7 +302,7 @@ const MainPage = () => {
 
   return (
     <div className={styles.page} data-main-page>
-      <MobileTopButton contentRef={aiIntroRef} />
+      <MobileTopButton contentRef={aiIntroRef} targetRef={aiIntroRef} ariaLabel="조합 추천받기 섹션으로 이동" />
       <MainSectionNav contentRef={aiIntroRef} />
       {/* 여정 인트로 섹션 */}
       {!isIntroSkipped && <JourneySection onSkip={handleSkipIntro} />}
@@ -439,14 +439,17 @@ const MainPage = () => {
             <span>자작은 술잔에</span>
             <span>다정함을 담습니다</span>
           </h2>
-          <p>
-            우리 술과 안주가 건네는
-            <br />
-            소박하고 따뜻한 순간을 이야기합니다.
+          <p className={styles.featurePhilosophy}>
+            우리 술 한 잔에, 다정한 한 상을.
           </p>
           <Link className={styles.featureButton} to="/brand">
             자작 이야기 보기
           </Link>
+          <ul className={styles.featureValues} aria-label="자작이 제안하는 경험">
+            <li>알기 쉬운 전통주</li>
+            <li>술과 안주의 조화</li>
+            <li>취향에 맞는 선택</li>
+          </ul>
         </div>
 
         <div className={styles.featureImage} role="img" aria-label="AI 큐레이션 대표 이미지 영역">

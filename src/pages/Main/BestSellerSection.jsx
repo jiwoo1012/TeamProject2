@@ -38,6 +38,7 @@ const BestSellerSection = ({
 }) => {
   const [isRevealComplete, setIsRevealComplete] = useState(false)
   const cardRefs = useRef([])
+  const hasDirectNavigationRef = useRef(false)
   const displayProducts = products.length > 0
     ? products
     : fallbackProducts
@@ -56,6 +57,7 @@ const BestSellerSection = ({
     let lastStepTime = 0
     let finalStepReachedAt = 0
     let removeWheelHandler = () => {}
+    let removeNavigationHandler = () => {}
 
     const context = gsap.context(() => {
       const cards = cardRefs.current.slice(0, cardCount)
@@ -72,6 +74,20 @@ const BestSellerSection = ({
           })
         })
       }
+
+      const handleDirectNavigation = () => {
+        hasDirectNavigationRef.current = true
+        scrollTween?.kill()
+        gsap.killTweensOf(cards)
+        currentStep = cardCount
+        finalStepReachedAt = performance.now()
+        setCardsForStep(cardCount)
+        setIsRevealComplete(true)
+      }
+
+      section.addEventListener('main:section-select', handleDirectNavigation)
+      removeNavigationHandler = () => section.removeEventListener('main:section-select', handleDirectNavigation)
+      if (hasDirectNavigationRef.current) handleDirectNavigation()
 
       if (!isDesktopStepMode) {
         setIsRevealComplete(true)
@@ -224,6 +240,7 @@ const BestSellerSection = ({
     }, section)
 
     return () => {
+      removeNavigationHandler()
       removeWheelHandler()
       scrollTween?.kill()
       exitTimeline?.kill()

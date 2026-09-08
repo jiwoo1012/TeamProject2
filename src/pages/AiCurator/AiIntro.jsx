@@ -196,7 +196,8 @@ const AiIntro = () => {
     )
 
     navigate(
-      '/ai/survey'
+      '/ai/survey',
+      { state: { isGuestMode: true } }
     )
   }
 

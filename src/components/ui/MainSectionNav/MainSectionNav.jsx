@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { createPortal } from 'react-dom'
 import styles from './MainSectionNav.module.scss'
 
@@ -12,8 +12,6 @@ const SECTIONS = [
 
 const MainSectionNav = ({ contentRef }) => {
   const menuId = useId()
-  const containerRef = useRef(null)
-  const buttonRef = useRef(null)
 
   const [isVisible, setIsVisible] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
@@ -32,10 +30,6 @@ const MainSectionNav = ({ contentRef }) => {
       window.removeEventListener('resize', update)
     }
   }, [contentRef])
-
-  useEffect(() => {
-    if (!isVisible) setIsOpen(false)
-  }, [isVisible])
 
   useEffect(() => {
     if (!isVisible) return undefined
@@ -63,34 +57,10 @@ const MainSectionNav = ({ contentRef }) => {
     return () => observer.disconnect()
   }, [isVisible])
 
-  useEffect(() => {
-    if (!isOpen) return undefined
-
-    const handlePointerDown = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
-        setIsOpen(false)
-      }
-    }
-
-    const handleKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false)
-        buttonRef.current?.focus()
-      }
-    }
-
-    document.addEventListener('mousedown', handlePointerDown)
-    document.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.removeEventListener('mousedown', handlePointerDown)
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [isOpen])
-
   const handleSelect = (sectionId) => {
-    setIsOpen(false)
     setActiveSectionId(sectionId)
     const target = document.getElementById(sectionId)
+    target?.dispatchEvent(new Event('main:section-select'))
     target?.scrollIntoView({
       behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
       block: 'start',
@@ -100,7 +70,7 @@ const MainSectionNav = ({ contentRef }) => {
   if (!isVisible) return null
 
   return createPortal(
-    <div className={styles.container} ref={containerRef}>
+    <div className={styles.container}>
       <nav
         id={menuId}
         className={`${styles.panel} ${isOpen ? styles.panelOpen : ''}`}
@@ -128,7 +98,6 @@ const MainSectionNav = ({ contentRef }) => {
       </nav>
 
       <button
-        ref={buttonRef}
         className={styles.button}
         type="button"
         aria-haspopup="menu"

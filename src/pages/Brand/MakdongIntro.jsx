@@ -141,6 +141,9 @@ const MakdongIntro = () => {
           .from(blankSectionRef.current.querySelector('p'), {
             autoAlpha: 0, y: '+=28', duration: 1.6, ease: 'power2.out',
           }, '+=0.2')
+          .from(blankSectionRef.current.querySelector(`.${styles.transitionSubcopy}`), {
+            autoAlpha: 0, y: 16, duration: 0.9, ease: 'power2.out',
+          }, '+=0.6')
           .from(blankSectionRef.current.querySelector(`.${styles.transitionMakdong}`), {
             x: -160, duration: 1.2, ease: 'power2.out',
           })

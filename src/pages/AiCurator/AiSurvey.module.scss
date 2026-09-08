@@ -1,846 +1,206 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as mixins;
 
-.surveyPage,
-.guestPage,
-.loadingPage {
+// 이 설문에만 적용하는 요청된 아이보리 팔레트.
+$survey-bg: #F9F7F4;
+$survey-ivory: #F2EDE4;
+
+.surveyPage, .guestPage, .loadingPage {
   width: 100%;
   min-height: calc(100vh - 70px);
-
-  background: $color-bg;
+  background: $survey-bg;
   font-family: $font-family-base;
   color: $color-text-primary;
 }
-
-
-/* ========================================
-   Survey
-======================================== */
-
-.surveyPage {
-  padding: $space-12 $space-6 $space-20;
-}
-
-.surveyContainer {
-  width: min(100%, 880px);
-
-  margin: 0 auto;
-}
-
-
-/* ========================================
-   Progress
-======================================== */
-
-.progressArea {
-  width: min(100%, 660px);
-
-  margin: 0 auto $space-6;
-}
-
-.progressTop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  margin-bottom: $space-3;
-}
-
-.surveyType {
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-
-  color: $color-text-muted;
-}
-
+.surveyPage { padding: $space-12 $side-margin-tablet $space-20; }
+.surveyContainer { width: min(100%, 1140px); margin: 0 auto; }
+.progressArea { margin-bottom: $space-8; }
+.progressTop { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: $space-3; }
+.surveyType { font-size: $font-size-sm; font-weight: $font-weight-medium; color: $color-text-secondary; letter-spacing: .04em; }
 .progressText {
-  display: flex;
-  align-items: baseline;
-
-  gap: $space-1;
-
-  color: $color-text-muted;
-
-  strong {
-    font-size: $font-size-xl;
-    font-weight: $font-weight-bold;
-
-    color: $color-primary;
-  }
-
-  span {
-    font-size: $font-size-xs;
-  }
+  display: flex; align-items: baseline; gap: $space-2; color: $color-text-muted;
+  strong { font-size: $font-size-xl; font-weight: $font-weight-semibold; color: $color-text-primary; }
+  span { font-size: $font-size-sm; }
 }
-
-.progressBar {
-  width: 100%;
-  height: $space-1;
-
-  overflow: hidden;
-
-  border-radius: $radius-pill;
-
-  background: $color-border;
-}
-
-.progressFill {
-  height: 100%;
-
-  border-radius: inherit;
-
-  background:
-    linear-gradient(
-      90deg,
-      $color-primary,
-      $color-primary-light
-    );
-
-  transition: width $transition-base ease;
-}
-
-
-/* ========================================
-   Card
-======================================== */
-
-.questionCard {
-  width: 100%;
-
-  padding: $space-12 $space-16 $space-12;
-
-  border: 1px solid
-    rgba($color-text-primary, 0.06);
-
-  border-radius: $radius-xl;
-
-  background: $color-bg;
-
-  box-shadow:
-    0 $space-3 $space-12
-      rgba($color-text-primary, 0.06);
-}
-
-.safetyCard {
-  background:
-    linear-gradient(
-      180deg,
-      $color-bg 0%,
-      $color-bg 100%
-    );
-}
-
-
-/* ========================================
-   Question
-======================================== */
-
-.questionNumber {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: fit-content;
-
-  min-width: $space-12;
-
-  margin: 0 auto $space-5;
-
-  padding: $space-2 $space-4;
-
-  border: 1px solid
-    rgba($color-primary, 0.42);
-
-  border-radius: $radius-pill;
-
-  background:
-    rgba($color-primary, 0.06);
-
-  font-size: $font-size-xs;
-  font-weight: $font-weight-bold;
-
-  letter-spacing: 0.02em;
-
-  color: $color-primary;
-}
-
-.questionHeader {
-  margin-bottom: $space-8;
-
-  text-align: center;
-}
-
-.questionTitle {
-  margin: 0;
-
-  font-size: $font-size-2xl;
-  font-weight: $font-weight-bold;
-  line-height: $line-height-base;
-
-  color: $color-text-primary;
-
-  word-break: keep-all;
-}
-
-.questionDescription {
-  margin: $space-3 0 0;
-
-  font-size: $font-size-sm;
-  line-height: $line-height-relaxed;
-
-  color: $color-text-secondary;
-
-  word-break: keep-all;
-}
-
-.questionHint {
-  display: inline-block;
-
-  margin-top: $space-3;
-
-  padding: $space-1 $space-2;
-
-  border-radius: $radius-pill;
-
-  background:
-    rgba($color-primary, 0.07);
-
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-
-  color: $color-primary;
-}
-
-
-/* ========================================
-   Normal options
-======================================== */
-
-.optionList {
-  display: flex;
-  flex-direction: column;
-
-  gap: $space-2;
-
-  width: min(100%, 660px);
-
-  margin: 0 auto;
-}
-
-.optionButton {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  width: 100%;
-  min-height: $space-16;
-
-  padding: $space-3 $space-5;
-
-  border: 1px solid $color-border;
-  border-radius: $radius-lg;
-
-  background: $color-white;
-
-  color: $color-text-primary;
-
-  text-align: left;
-
-  cursor: pointer;
-
-  transition:
-    border-color $transition-fast ease,
-    background $transition-fast ease,
-    transform $transition-fast ease,
-    box-shadow $transition-fast ease;
-
-  &:hover {
-    border-color:
-      rgba($color-primary, 0.55);
-
-    background:
-      rgba($color-primary, 0.035);
-
-    transform: translateY(-1px);
-
-    box-shadow:
-      0 $space-1 $space-4
-        rgba($color-text-primary, 0.045);
-  }
-}
-
-.optionButton.selected {
-  border-color: $color-primary;
-
-  background:
-    rgba($color-primary, 0.075);
-
-  box-shadow:
-    inset 0 0 0 1px
-      rgba($color-primary, 0.08);
-}
-
-.optionContent {
-  display: flex;
-  align-items: center;
-
-  gap: $space-4;
-}
-
-.optionEmoji {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  flex-shrink: 0;
-
-  width: $space-8;
-
-  font-size: $font-size-xl;
-}
-
-.optionText {
-  display: flex;
-  flex-direction: column;
-
-  gap: $space-1;
-}
-
-.optionLabel {
-  font-size: $font-size-sm;
-  font-weight: $font-weight-medium;
-  line-height: $line-height-base;
-
-  word-break: keep-all;
-}
-
-.optionSubLabel {
-  font-size: $font-size-xs;
-  font-weight: $font-weight-regular;
-  line-height: $line-height-base;
-
-  color: $color-text-muted;
-
-  word-break: keep-all;
-}
-
-
-/* ========================================
-   Select indicator
-======================================== */
-
-.selectIndicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  flex-shrink: 0;
-
-  width: $space-5;
-  height: $space-5;
-
-  border: 1.5px solid $color-text-muted;
-  border-radius: 50%;
-
-  font-size: $font-size-xs;
-  font-weight: $font-weight-bold;
-
-  color: $color-white;
-
-  transition:
-    border-color $transition-fast ease,
-    background $transition-fast ease;
-}
-
-.selectIndicatorActive {
-  border-color: $color-primary;
-
-  background: $color-primary;
-}
-
-.radioDot {
-  width: $space-2;
-  height: $space-2;
-
-  border-radius: 50%;
-
-  background: $color-primary;
-}
-
-
-/* ========================================
-   Safety Options
-======================================== */
-
-.safetyOptionGrid {
+.progressBar { height: 3px; overflow: hidden; background: $color-border; border-radius: $radius-pill; }
+.progressFill { height: 100%; background: $color-text-secondary; border-radius: inherit; transition: width $transition-base ease; }
+.questionCard { width: 100%; }
+.safetyCard .questionTitle { max-width: 640px; }
+.questionHero {
   display: grid;
-
-  grid-template-columns:
-    repeat(2, 1fr);
-
-  gap: $space-2;
-
-  width: min(100%, 660px);
-
-  margin: 0 auto;
-}
-
-.safetyWide {
-  grid-column: 1 / -1;
-}
-
-.safetyOption {
-  display: flex;
+  grid-template-columns: 240px minmax(0, 1fr);
   align-items: center;
-
-  gap: $space-2;
-
-  width: 100%;
-  min-height: $space-12;
-
-  padding: $space-2 $space-3;
-
-  border: 1px solid $color-border;
-  border-radius: $radius-md;
-
-  background: $color-white;
-
-  font-size: $font-size-xs;
-  font-weight: $font-weight-medium;
-
-  color: $color-text-primary;
-
-  text-align: left;
-
-  cursor: pointer;
-
-  transition:
-    border-color $transition-fast ease,
-    background $transition-fast ease,
-    transform $transition-fast ease;
-
-  &:hover {
-    border-color:
-      rgba($color-primary, 0.55);
-
-    background:
-      rgba($color-primary, 0.035);
-  }
+  gap: $space-6;
+  margin: 0 0 $space-10;
 }
-
-.safetySelected {
-  border-color: $color-primary;
-
-  background:
-    rgba($color-primary, 0.075);
+.guideCharacter {
+  display: block;
+  width: 240px;
+  height: 280px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 12px rgba($color-text-primary, .06));
 }
-
-.checkbox {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  flex-shrink: 0;
-
-  width: $space-4;
-  height: $space-4;
-
-  border: 1px solid $color-text-muted;
-  border-radius: $radius-sm;
-
-  background: $color-white;
-
-  font-size: $font-size-xs;
-  font-weight: $font-weight-bold;
-
-  color: $color-primary;
-}
-
-.safetySelected .checkbox {
-  border-color: $color-primary;
-
-  background:
-    rgba($color-primary, 0.08);
-}
-
-
-/* ========================================
-   Other Input
-======================================== */
-
-.otherInputArea {
-  grid-column: 1 / -1;
-
+.questionHeader {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
-
-  gap: $space-2;
-
-  margin-top: $space-1;
-
-  padding: $space-4;
-
-  border-radius: $radius-md;
-
-  background:
-    rgba($color-primary, 0.045);
-
-  label {
-    font-size: $font-size-xs;
-    font-weight: $font-weight-semibold;
-
-    color: $color-text-secondary;
-  }
-
-  input {
-    width: 100%;
-    height: $space-10;
-
-    padding: 0 $space-3;
-
-    border: 1px solid $color-border;
-    border-radius: $radius-md;
-
-    background: $color-white;
-
-    font-size: $font-size-xs;
-
-    color: $color-text-primary;
-
-    outline: none;
-
-    transition:
-      border-color $transition-fast ease,
-      box-shadow $transition-fast ease;
-
-    &::placeholder {
-      color: $color-text-muted;
-    }
-
-    &:focus {
-      border-color: $color-primary;
-
-      box-shadow:
-        0 0 0 3px
-          rgba($color-primary, 0.09);
-    }
-  }
-}
-
-
-/* ========================================
-   Buttons
-======================================== */
-
-.buttonArea {
-  display: flex;
-  align-items: center;
-
-  gap: $space-3;
-
-  width: min(100%, 660px);
-
-  margin: $space-8 auto 0;
-}
-
-.prevButton,
-.nextButton {
-  text-align: center;
-  height: $space-12;
-
-  border-radius: $radius-md;
-
-  font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
-
-  cursor: pointer;
-
-  transition:
-    background $transition-fast ease,
-    border-color $transition-fast ease,
-    color $transition-fast ease,
-    transform $transition-fast ease,
-    box-shadow $transition-fast ease;
-}
-
-.prevButton {
-  width: $space-30;
-
-  border: 1px solid $color-border;
-
-  background: $color-white;
-
-  color: $color-text-secondary;
-
-  &:hover {
-    border-color: $color-text-muted;
-
-    color: $color-text-primary;
-  }
-}
-
-.nextButton {
-  display: flex;
-  align-items: center;
   justify-content: center;
-
-  gap: $space-2;
-
-  flex: 1;
-
-  border: 1px solid $color-primary;
-
-  background:
-    linear-gradient(
-      135deg,
-      $color-primary,
-      $color-primary-light
-    );
-
-  color: $color-white;
-
-  &:not(:disabled):hover {
-    transform: translateY(-1px);
-
-    box-shadow:
-      0 $space-2 $space-5
-        rgba($color-primary, 0.22);
-  }
-
-  &:disabled {
-    border-color: $color-border;
-
-    background: $color-surface;
-
-    color: $color-text-muted;
-
-    cursor: not-allowed;
-
-    box-shadow: none;
+  align-items: flex-start;
+  min-height: 320px;
+  padding: $space-12 $space-12;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 50% (-$space-3) auto (-$space-16);
+    height: 320px;
+    transform: translateY(-50%);
+    z-index: -1;
+    background: url('../../assets/images/common/header-hanji2.webp') center / 100% 100% no-repeat;
+    opacity: .8;
+    pointer-events: none;
   }
 }
-
-
-/* ========================================
-   Helper
-======================================== */
-
-.helperText {
-  margin: $space-4 0 0;
-
-  text-align: center;
-
-  font-size: $font-size-xs;
-  line-height: $line-height-base;
-
-  color: $color-text-muted;
+.questionNumber { display: block; margin-bottom: $space-2; color: $color-text-secondary; font-size: $font-size-sm; font-weight: $font-weight-medium; letter-spacing: .06em; }
+.questionTitle {
+  max-width: 560px;
+  margin: 0;
+  font-family: 'Batang', 'Noto Serif KR', serif;
+  font-size: clamp(30px, 2.5vw, 36px);
+  font-weight: $font-weight-bold;
+  line-height: 1.45;
+  letter-spacing: -.04em;
+  word-break: keep-all;
+  text-wrap: balance;
 }
-
-
-/* ========================================
-   Guest modal background
-======================================== */
-
-.guestPage {
+.questionDescription { margin: $space-2 0 0; color: $color-text-secondary; font-size: $font-size-sm; line-height: $line-height-relaxed; word-break: keep-all; }
+.questionHint { display: inline-block; margin-top: $space-2; padding: $space-1 $space-3; background: $survey-ivory; border-radius: $radius-sm; color: $color-text-secondary; font-size: $font-size-xs; line-height: $line-height-base; }
+.optionList { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: $space-4; }
+.optionButton {
   position: relative;
-}
-
-
-/* ========================================
-   Loading
-======================================== */
-
-.loadingPage {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  width: 100%;
+  min-height: 188px;
+  padding: $space-6;
+  border: 1px solid rgba($color-text-primary, .12);
+  border-radius: $radius-lg;
+  background: rgba($color-white, .8);
+  color: $color-text-primary;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba($color-text-primary, .025);
+  transition: border-color $transition-fast ease, background $transition-fast ease, transform $transition-fast ease, box-shadow $transition-fast ease;
 }
-
-.loadingSpinner {
-  width: $space-8;
-  height: $space-8;
-
-  border: 3px solid
-    rgba($color-primary, 0.13);
-
-  border-top-color: $color-primary;
-
-  border-radius: 50%;
-
-  animation:
-    loadingSpin calc(#{$transition-base} * 3)
-      linear infinite;
-}
-
-@keyframes loadingSpin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-
-/* ========================================
-   Tablet
-======================================== */
-
-@include mixins.tablet {
-  .surveyPage {
-    padding: $space-10 $side-margin-tablet $space-16;
-  }
-
-  .questionCard {
-    padding: $space-10 $space-10 $space-10;
-  }
-}
-
-
-/* ========================================
-   Mobile
-======================================== */
-
-@include mixins.mobile {
-  .surveyPage {
-    padding: $space-6 $space-3 $space-12;
-  }
-
-  .progressArea {
-    margin-bottom: $space-4;
-  }
-
-  .questionCard {
-    padding: $space-8 $space-4 $space-6;
-
-    border-radius: $radius-xl;
-  }
-
-  .questionNumber {
-    margin-bottom: $space-4;
-
-    padding: $space-1 $space-3;
-
-    font-size: $font-size-xs;
-  }
-
-  .questionHeader {
-    margin-bottom: $space-6;
-  }
-
-  .questionTitle {
-    font-size: $font-size-xl;
-  }
-
-  .questionDescription {
-    font-size: $font-size-xs;
-  }
-
-  .questionHint {
-    margin-top: $space-2;
-
-    font-size: $font-size-xs;
-  }
-
-
-  /* options */
-
-  .optionButton {
-    min-height: $space-16;
-
-    padding: $space-3 $space-3;
-
-    border-radius: $radius-md;
-  }
-
-  .optionContent {
-    gap: $space-2;
-  }
-
-  .optionEmoji {
-    width: $space-6;
-
-    font-size: $font-size-lg;
-  }
-
-  .optionLabel {
-    font-size: $font-size-xs;
-  }
-
-  .optionSubLabel {
-    font-size: $font-size-xs;
-  }
-
-  .selectIndicator {
-    width: $space-5;
-    height: $space-5;
-  }
-
-
-  /* safety */
-
-  .safetyOptionGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .safetyWide {
-    grid-column: auto;
-  }
-
-  .safetyOption {
-    min-height: $space-12;
-
-    font-size: $font-size-xs;
-  }
-
-  .otherInputArea {
-    grid-column: auto;
-  }
-
-
-  /* buttons */
-
-  .buttonArea {
-    margin-top: $space-6;
-  }
-
-  .prevButton {
-    width: $space-24;
-  }
-
-  .prevButton,
-  .nextButton {
-    height: $space-12;
-
-    font-size: $font-size-xs;
-  }
-
-  .helperText {
-    margin-top: $space-3;
-
-    font-size: $font-size-xs;
-  }
-}
-.guideCharacter { display: block; width: $space-24; height: $space-24; margin: 0 auto $space-4; object-fit: contain; }
+.optionContent { display: flex; flex-direction: column; align-items: flex-start; gap: $space-3; min-width: 0; }
+.optionIcon { display: block; width: $space-12; height: $space-12; object-fit: contain; }
+.optionText { display: flex; flex-direction: column; gap: $space-2; min-width: 0; }
+.optionLabel { max-width: 240px; font-size: $font-size-lg; font-weight: $font-weight-semibold; line-height: $line-height-base; word-break: keep-all; overflow-wrap: anywhere; text-wrap: balance; }
+.optionSubLabel { color: $color-text-secondary; font-size: $font-size-xs; line-height: $line-height-relaxed; word-break: keep-all; }
+.unknownOption { background: rgba($survey-ivory, .5); border-style: dashed; }
+.unknownOption .optionIcon { opacity: .65; }
 .optionButton.selected, .safetyOption.safetySelected {
+  border: 1px solid $color-text-secondary;
+  background: $survey-ivory;
+  box-shadow: inset 0 0 0 1px rgba($color-text-secondary, .12), 0 4px 16px rgba($color-text-primary, .04);
+}
+.selectIndicator {
+  position: absolute;
+  top: $space-4;
+  right: $space-4;
+  display: grid;
+  place-items: center;
+  width: $space-6;
+  height: $space-6;
+  border-radius: $radius-pill;
   color: $color-white;
-  background: $color-primary;
-  border-color: $color-primary;
-  box-shadow: inset 0 0 0 1px $color-primary;
+  font-size: $font-size-sm;
+  opacity: 0;
 }
-.selected .optionSubLabel { color: rgba($color-white, .9); }
-.selectIndicator, .checkbox { width: $space-6; height: $space-6; font-size: $font-size-md; }
-.selected .selectIndicator, .safetySelected .checkbox { color: $color-primary; border-color: $color-white; background: $color-white; }
-.radioDot { width: $space-3; height: $space-3; background: $color-primary; }
-.optionContent, .optionText { min-width: 0; }
-.optionButton { gap: $space-3; }
-.optionButton:focus-visible, .safetyOption:focus-visible, .prevButton:focus-visible, .nextButton:focus-visible {
-  outline: 2px solid $color-primary;
-  outline-offset: $space-1;
+.selectIndicatorActive { opacity: 1; background: $color-text-secondary; }
+.safetyOptionGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: $space-3; }
+.safetyWide { grid-column: 1 / -1; }
+.safetyOption {
+  display: flex; align-items: center; gap: $space-3;
+  width: 100%; min-height: $space-16; height: 100%; padding: $space-4;
+  border: 1px solid rgba($color-text-primary, .12); border-radius: $radius-lg;
+  background: rgba($color-white, .8); color: $color-text-primary;
+  font-size: $font-size-sm; text-align: left; line-height: $line-height-base; cursor: pointer;
+  transition: background $transition-fast ease, border-color $transition-fast ease;
 }
-.safetyCard { background: linear-gradient($color-bg, rgba($color-primary, .04)); }
+.checkbox { display: grid; place-items: center; flex-shrink: 0; width: $space-5; height: $space-5; border: 1px solid $color-taupe; border-radius: $radius-sm; color: $color-white; }
+.safetySelected .checkbox { background: $color-text-secondary; border-color: $color-text-secondary; }
+.otherInputArea {
+  grid-column: 1 / -1; display: flex; flex-direction: column; gap: $space-3;
+  padding: $space-5; background: $survey-ivory; border-radius: $radius-md;
+  label { font-size: $font-size-sm; color: $color-text-secondary; }
+  input {
+    width: 100%; min-height: $space-12; padding: $space-3;
+    border: 1px solid $color-taupe; border-radius: $radius-md;
+    background: $color-white; color: $color-text-primary; font-family: inherit; font-size: $font-size-md;
+    &::placeholder { color: $color-text-muted; }
+  }
+}
+.buttonArea { display: flex; align-items: center; justify-content: space-between; gap: $space-4; margin-top: $space-8; padding-top: $space-6; border-top: 1px solid rgba($color-text-primary, .1); }
+.prevButton, .nextButton {
+  display: flex; align-items: center; justify-content: center; gap: $space-3;
+  min-height: 52px; padding: $space-3 $space-6; border-radius: $radius-md;
+  font-family: inherit; font-size: $font-size-sm; font-weight: $font-weight-semibold; line-height: $line-height-base; cursor: pointer;
+  transition: background $transition-fast ease, transform $transition-fast ease;
+}
+.prevButton { min-width: 140px; border: 1px solid rgba($color-text-primary, .25); background: transparent; color: $color-text-secondary; }
+.nextButton {
+  min-width: 264px; border: 1px solid $color-text-primary; background: $color-text-primary; color: $color-white;
+  &:disabled { border-color: $color-border; background: $survey-ivory; color: $color-text-muted; cursor: not-allowed; }
+}
+.helperText { margin: $space-5 0 0; text-align: center; font-size: $font-size-xs; line-height: $line-height-relaxed; color: $color-text-secondary; word-break: keep-all; }
+.optionButton, .safetyOption, .prevButton, .nextButton, .otherInputArea input {
+  &:focus-visible { outline: 2px solid $color-text-secondary; outline-offset: $space-1; }
+}
+@media (hover: hover) {
+  .optionButton:hover { border-color: $color-text-secondary; transform: translateY(-2px); box-shadow: 0 6px 20px rgba($color-text-primary, .06); }
+  .safetyOption:hover { border-color: $color-text-secondary; }
+  .prevButton:hover { background: $survey-ivory; }
+  .nextButton:not(:disabled):hover { background: $color-text-secondary; transform: translateY(-2px); }
+}
+.guestPage { position: relative; }
+.loadingPage { display: flex; align-items: center; justify-content: center; }
+.loadingSpinner { width: $space-8; height: $space-8; border: 3px solid $color-border; border-top-color: $color-text-secondary; border-radius: 50%; animation: loadingSpin 1s linear infinite; }
+@keyframes loadingSpin { to { transform: rotate(360deg); } }
+@include mixins.tablet {
+  .questionHero { grid-template-columns: 200px minmax(0, 1fr); gap: $space-4; }
+  .guideCharacter { width: 200px; height: 240px; }
+  .questionHeader { padding: $space-10 $space-8; }
+  .optionButton { padding: $space-5; }
+}
 @include mixins.mobile {
-  .surveyPage { padding-inline: $side-margin-mobile; }
-  .guideCharacter { width: $space-16; height: $space-16; margin-bottom: $space-3; }
+  .surveyPage { padding: $space-6 $side-margin-mobile $space-16; }
+  .progressArea { margin-bottom: $space-6; }
+  .questionHero { grid-template-columns: minmax(0, 1fr); gap: 0; margin-bottom: $space-6; }
+  .guideCharacter { width: 160px; height: 180px; margin: 0 auto; }
+  .questionHeader { padding: $space-8 $space-5; text-align: center; align-items: center; }
+  .questionHeader::before { inset-inline: -$space-3; }
+  .questionTitle { margin-inline: auto; font-size: $font-size-2xl; }
+  .questionNumber { margin-bottom: $space-2; font-size: $font-size-xs; }
+  .questionDescription { margin-top: $space-2; }
+  .optionList { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-3; }
+  .optionButton { min-height: 176px; padding: $space-4; }
+  .optionLabel { font-size: $font-size-md; }
+  .optionIcon { width: $space-10; height: $space-10; }
+  .selectIndicator { top: $space-3; right: $space-3; width: $space-5; height: $space-5; }
+  .safetyOptionGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .safetyOption { padding: $space-3; gap: $space-2; }
+  .buttonArea { gap: $space-2; margin-top: $space-6; }
+  .prevButton { min-width: 0; padding-inline: $space-3; }
+  .nextButton { flex: 1; min-width: 0; padding-inline: $space-3; gap: $space-2; }
+}
+@media (max-width: 379px) {
+  .optionList, .safetyOptionGrid { grid-template-columns: minmax(0, 1fr); }
+  .optionButton { min-height: 144px; }
+  .prevButton, .nextButton { font-size: $font-size-xs; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .progressFill, .optionButton, .safetyOption, .selectIndicator, .prevButton, .nextButton, .otherInputArea input { transition: none; }
+  .progressFill, .optionButton, .safetyOption, .prevButton, .nextButton { transition: none; }
   .optionButton:hover, .nextButton:not(:disabled):hover { transform: none; }
+  .loadingSpinner { animation: none; }
 }
