@@ -116,7 +116,6 @@ const EventList = () => {
       <div className={styles.container}>
         <section className={styles.hero} aria-labelledby="event-hero-title">
           <div className={styles.heroText}>
-            <p className={styles.eyebrow}>막동이의 놀이 한 상</p>
             <h1 id="event-hero-title">잘 왔어요!<br />막동이랑 한 판 놀다 가요.</h1>
             <p className={styles.heroDescription}>룰렛도, 카드도 준비했어요.<br />오늘은 뭐부터 해볼까요?</p>
             <button className={styles.heroLink} type="button" onClick={handleShowActive}>
@@ -175,7 +174,7 @@ const EventList = () => {
                   </div>
                   <div className={styles.cardContent}>
                     <div className={styles.cardMeta}>
-                      <span className={styles.status}>{event.isActive ? '진행중' : '종료'}</span>
+                      <span className={styles.status}>{event.isActive ? '진행 중' : '종료'}</span>
                       {benefit && <span className={styles.benefit}>{benefit}</span>}
                     </div>
                     <h3>{isFeatured ? presentation.title : event.title}</h3>
