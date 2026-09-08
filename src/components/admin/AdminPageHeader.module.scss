@@ -1,0 +1,100 @@
+@use '../../styles/admin/adminVariables' as *;
+@use '../../styles/admin/adminMixins' as *;
+@use '../../styles/admin/adminCommon' as *;
+
+
+// ========================================
+// TOOLBAR
+// ========================================
+
+.toolbar {
+  @extend %admin-page-toolbar;
+}
+
+
+// ========================================
+// ACTIONS
+// ========================================
+
+.actions {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  flex-shrink: 0;
+}
+
+
+// ========================================
+// REFRESH BUTTON
+// ========================================
+
+.refreshButton {
+  @include admin-button;
+
+  gap: 7px;
+
+  svg {
+    width: 16px;
+    height: 16px;
+
+    display: block;
+  }
+}
+
+
+// ========================================
+// REFRESH ANIMATION
+// ========================================
+
+.refreshing {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  animation:
+    adminRefreshSpin
+    0.8s
+    linear
+    infinite;
+}
+
+
+@keyframes adminRefreshSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+// ========================================
+// ORNAMENT
+// ========================================
+
+.ornament {
+  @extend %admin-ornament-line;
+}
+
+
+// ========================================
+// RESPONSIVE
+// ========================================
+
+@media (max-width: 767px) {
+  .toolbar {
+    align-items: flex-start;
+  }
+
+  .actions {
+    gap: 6px;
+  }
+
+  .refreshButton {
+    padding: 0 12px;
+  }
+}

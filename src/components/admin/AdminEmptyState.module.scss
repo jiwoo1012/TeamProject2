@@ -1,0 +1,193 @@
+@use '../../styles/admin/adminVariables' as *;
+@use '../../styles/admin/adminMixins' as *;
+
+
+// ========================================
+// EMPTY STATE
+// ========================================
+
+.emptyState {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  padding: 32px 24px;
+
+  color:
+    $admin-text-secondary;
+
+  text-align: center;
+}
+
+
+// ========================================
+// SIZE
+// ========================================
+
+.size-default {
+  min-height: 190px;
+}
+
+
+.size-small {
+  min-height: 120px;
+
+  padding:
+    24px 18px;
+
+  gap: 9px;
+
+
+  .icon {
+    width: 36px;
+    height: 36px;
+
+
+    svg,
+    img {
+      width: 17px;
+      height: 17px;
+    }
+  }
+
+
+  .title {
+    font-size: 16px;
+  }
+
+
+  .description {
+    font-size: 11px;
+  }
+}
+
+
+.size-large {
+  min-height: 280px;
+
+  padding:
+    46px 28px;
+}
+
+
+// ========================================
+// ICON
+// ========================================
+
+.icon {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    $admin-primary-light;
+
+  color:
+    $admin-primary;
+
+
+  svg,
+  img {
+    width: 20px;
+    height: 20px;
+
+    display: block;
+
+    object-fit: contain;
+  }
+}
+
+
+// ========================================
+// CONTENT
+// ========================================
+
+.content {
+  max-width: 420px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 5px;
+}
+
+
+.title {
+  color:
+    $admin-text-primary;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  line-height: 1.5;
+}
+
+
+.description {
+  margin: 0;
+
+  color:
+    $admin-text-muted;
+
+  font-size: 12px;
+  font-weight: 400;
+
+  line-height: 1.6;
+}
+
+
+// ========================================
+// ACTION
+// ========================================
+
+.action {
+  margin-top: 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+
+  button,
+  a {
+    @include admin-button;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE
+// ========================================
+
+@media (
+  max-width: 767px
+) {
+  .size-default {
+    min-height: 160px;
+  }
+
+
+  .size-large {
+    min-height: 220px;
+  }
+
+
+  .emptyState {
+    padding:
+      26px 18px;
+  }
+}

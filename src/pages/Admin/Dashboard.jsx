@@ -2,6 +2,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 
@@ -13,6 +14,8 @@ import {
   collection,
   onSnapshot,
 } from 'firebase/firestore'
+
+import Chart from 'chart.js/auto'
 
 import {
   getCollection,
@@ -28,8 +31,11 @@ import {
 
 import eventsData from '../../data/events.json'
 
-import adminTopOrnament
-  from '../../assets/images/admin/adminTopOrnament.svg'
+import AdminPageHeader
+  from '../../components/admin/AdminPageHeader'
+
+import AdminSummaryCard
+  from '../../components/admin/AdminSummaryCard'
 
 import styles from './Dashboard.module.scss'
 
@@ -212,6 +218,48 @@ const normalizeMember = (document) => {
       document.role === 'admin'
         ? 'admin'
         : 'user',
+  }
+}
+
+
+// ========================================
+// AI 추천 로그 데이터
+// ========================================
+
+const normalizeAiLog = (
+  document
+) => {
+  const createdAtDate =
+    getTimestampDate(
+      document.createdAt
+    )
+
+  return {
+    id:
+      document.id,
+
+    uid:
+      document.uid
+      || null,
+
+    userType:
+      document.userType ===
+      'guest'
+        ? 'guest'
+        : 'member',
+
+    status:
+      document.status
+      || 'success',
+
+    createdAtDate,
+
+    createdAtKey:
+      createdAtDate
+        ? formatDateKey(
+            createdAtDate
+          )
+        : '-',
   }
 }
 
@@ -501,50 +549,6 @@ const TrendIcon = ({ type }) => {
 
 
 // ========================================
-// AI 임시 데이터
-// 실제 연결은 다음 작업
-// ========================================
-
-const aiTrend = [
-  {
-    date: '09/01',
-    member: 67,
-    guest: 35,
-  },
-  {
-    date: '09/02',
-    member: 70,
-    guest: 36,
-  },
-  {
-    date: '09/03',
-    member: 68,
-    guest: 35,
-  },
-  {
-    date: '09/04',
-    member: 70,
-    guest: 37,
-  },
-  {
-    date: '09/05',
-    member: 69,
-    guest: 36,
-  },
-  {
-    date: '09/06',
-    member: 67,
-    guest: 35,
-  },
-  {
-    date: '09/07',
-    member: 70,
-    guest: 37,
-  },
-]
-
-
-// ========================================
 // DASHBOARD
 // ========================================
 
@@ -573,6 +577,11 @@ const Dashboard = () => {
   ] = useState([])
 
   const [
+    aiLogs,
+    setAiLogs,
+  ] = useState([])
+
+  const [
     events,
     setEvents,
   ] = useState(
@@ -591,7 +600,7 @@ const Dashboard = () => {
 
 
   // ========================================
-  // 주문 + 회원 + 공지 조회
+  // 주문 + 회원 + 공지 + AI 추천 로그 조회
   // ========================================
 
   const loadDashboardData =
@@ -604,6 +613,7 @@ const Dashboard = () => {
           orderDocuments,
           memberDocuments,
           noticeDocuments,
+          aiLogDocuments,
         ] = await Promise.all([
           getCollection(
             'orders'
@@ -615,6 +625,10 @@ const Dashboard = () => {
 
           getCollection(
             'notices'
+          ),
+
+          getCollection(
+            'aiRecommendationLogs'
           ),
         ])
 
@@ -648,6 +662,28 @@ const Dashboard = () => {
               (a, b) =>
                 b.createdAtMs
                 - a.createdAtMs
+            )
+        )
+
+
+        setAiLogs(
+          aiLogDocuments
+            .map(
+              normalizeAiLog
+            )
+            .sort(
+              (a, b) =>
+                (
+                  b.createdAtDate
+                    ?.getTime()
+                  || 0
+                )
+                -
+                (
+                  a.createdAtDate
+                    ?.getTime()
+                  || 0
+                )
             )
         )
       } catch (error) {
@@ -929,141 +965,296 @@ const Dashboard = () => {
 
 
   // ========================================
-  // 매출 그래프
+  // 최근 7일 매출 그래프 - Chart.js
   // ========================================
 
-  const salesChartData =
-    useMemo(
-      () => {
-        const max =
-          Math.max(
-            1,
-            ...weeklySales.map(
-              (item) =>
-                item.sales
-            )
-          )
+  const salesChartCanvasRef =
+    useRef(null)
 
-        const startX = 25
-        const endX = 655
-
-        const bottomY = 165
-        const topY = 28
-
-        const step =
-          (
-            endX
-            - startX
-          )
-          / 6
+  const salesChartInstanceRef =
+    useRef(null)
 
 
-        const points =
-          weeklySales.map(
-            (
-              item,
-              index
-            ) => {
-              const x =
-                startX
-                + (
-                  step
-                  * index
-                )
+  useEffect(() => {
+    const canvas =
+      salesChartCanvasRef.current
 
-              const ratio =
-                item.sales
-                / max
-
-              const y =
-                bottomY
-                - (
-                  ratio
-                  * (
-                    bottomY
-                    - topY
-                  )
-                )
-
-              return {
-                x,
-                y,
-              }
-            }
-          )
+    if (!canvas) {
+      return undefined
+    }
 
 
-        const pointString =
-          points
-            .map(
-              ({ x, y }) =>
-                `${x},${y}`
-            )
-            .join(' ')
+    salesChartInstanceRef
+      .current
+      ?.destroy()
 
 
-        const fillPath =
-          points.length
-            ? `
-              M ${points[0].x} ${points[0].y}
-              ${points
-                .slice(1)
-                .map(
-                  ({ x, y }) =>
-                    `L ${x} ${y}`
-                )
-                .join(' ')}
-              L ${endX} ${bottomY}
-              L ${startX} ${bottomY}
-              Z
-            `
-            : ''
+    const context =
+      canvas.getContext('2d')
 
+    const gradient =
+      context.createLinearGradient(
+        0,
+        0,
+        0,
+        230
+      )
 
-        return {
-          points,
+    gradient.addColorStop(
+      0,
+      'rgba(84, 139, 132, 0.24)'
+    )
 
-          pointString,
-
-          fillPath,
-
-          axisValues: [
-            max,
-            max * 0.75,
-            max * 0.5,
-            max * 0.25,
-            0,
-          ],
-        }
-      },
-      [
-        weeklySales,
-      ]
+    gradient.addColorStop(
+      1,
+      'rgba(84, 139, 132, 0.02)'
     )
 
 
-  const formatAxisValue =
-    (value) => {
-      if (!value) {
-        return '0'
-      }
+    const chart =
+      new Chart(
+        context,
+        {
+          type: 'line',
+
+          data: {
+            labels:
+              weeklySales.map(
+                (item) =>
+                  item.label
+              ),
+
+            datasets: [
+              {
+                label: '매출',
+
+                data:
+                  weeklySales.map(
+                    (item) =>
+                      item.sales
+                  ),
+
+                borderColor:
+                  '#548b84',
+
+                backgroundColor:
+                  gradient,
+
+                borderWidth: 2,
+
+                fill: true,
+
+                tension: 0,
+
+                pointRadius: 4,
+
+                pointHoverRadius: 6,
+
+                pointHitRadius: 14,
+
+                pointBackgroundColor:
+                  '#548b84',
+
+                pointBorderColor:
+                  '#548b84',
+
+                pointBorderWidth: 1,
+
+                pointHoverBackgroundColor:
+                  '#ffffff',
+
+                pointHoverBorderColor:
+                  '#548b84',
+
+                pointHoverBorderWidth: 2,
+              },
+            ],
+          },
+
+          options: {
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            animation: {
+              duration: 350,
+            },
+
+            interaction: {
+              mode: 'nearest',
+              intersect: true,
+            },
+
+            plugins: {
+              legend: {
+                display: false,
+              },
+
+              tooltip: {
+                enabled: true,
+
+                backgroundColor:
+                  '#252136',
+
+                titleColor:
+                  '#ffffff',
+
+                bodyColor:
+                  '#ffffff',
+
+                borderWidth: 0,
+
+                cornerRadius: 10,
+
+                padding: 12,
+
+                caretPadding: 8,
+
+                displayColors: true,
+
+                boxWidth: 11,
+
+                boxHeight: 11,
+
+                titleFont: {
+                  size: 12,
+                  weight: '700',
+                },
+
+                bodyFont: {
+                  size: 12,
+                  weight: '500',
+                },
+
+                callbacks: {
+                  title: (items) => {
+                    const label =
+                      items[0]
+                        ?.label
+                      || ''
+
+                    return label
+                      .split('/')
+                      .map(
+                        (value) =>
+                          Number(value)
+                      )
+                      .join('/')
+                  },
+
+                  label: (context) =>
+                    `매출: ${Number(
+                      context.raw || 0
+                    ).toLocaleString(
+                      'ko-KR'
+                    )}원`,
+                },
+              },
+            },
+
+            scales: {
+              x: {
+                grid: {
+                  display: false,
+                },
+
+                border: {
+                  display: false,
+                },
+
+                ticks: {
+                  color:
+                    '#a5aaa7',
+
+                  padding: 8,
+
+                  font: {
+                    size: 9,
+                  },
+
+                  maxRotation: 0,
+
+                  minRotation: 0,
+                },
+              },
+
+              y: {
+                beginAtZero: true,
+
+                border: {
+                  display: false,
+                },
+
+                grid: {
+                  color:
+                    '#e7e9e7',
+
+                  drawTicks: false,
+                },
+
+                ticks: {
+                  color:
+                    '#a5aaa7',
+
+                  padding: 9,
+
+                  font: {
+                    size: 9,
+                  },
+
+                  callback: (value) => {
+                    const numericValue =
+                      Number(value)
+
+                    if (
+                      numericValue
+                      >= 10000
+                    ) {
+                      const man =
+                        numericValue
+                        / 10000
+
+                      return Number.isInteger(
+                        man
+                      )
+                        ? `${man}만`
+                        : `${man.toFixed(1)}만`
+                    }
+
+                    return numericValue
+                      .toLocaleString(
+                        'ko-KR'
+                      )
+                  },
+                },
+              },
+            },
+          },
+        }
+      )
+
+
+    salesChartInstanceRef
+      .current =
+      chart
+
+
+    return () => {
+      chart.destroy()
 
       if (
-        value >= 10000
+        salesChartInstanceRef
+          .current
+        === chart
       ) {
-        return `${
-          Math.ceil(
-            value / 10000
-          )
-        }만`
+        salesChartInstanceRef
+          .current =
+          null
       }
-
-      return Math.ceil(
-        value
-      ).toLocaleString(
-        'ko-KR'
-      )
     }
+  }, [
+    weeklySales,
+  ])
 
 
   // ========================================
@@ -1174,6 +1365,170 @@ const Dashboard = () => {
         * 100,
     })
   )
+
+
+  // ========================================
+  // 주문 상태 도넛 그래프 - Chart.js
+  // ========================================
+
+  const orderStatusCanvasRef =
+    useRef(null)
+
+  const orderStatusChartRef =
+    useRef(null)
+
+
+  const orderStatusTotal =
+    orderStatuses.reduce(
+      (
+        total,
+        status
+      ) =>
+        total
+        + status.count,
+      0
+    )
+
+
+  useEffect(() => {
+    const canvas =
+      orderStatusCanvasRef.current
+
+    if (!canvas) {
+      return undefined
+    }
+
+
+    orderStatusChartRef
+      .current
+      ?.destroy()
+
+
+    const context =
+      canvas.getContext('2d')
+
+
+    const chart =
+      new Chart(
+        context,
+        {
+          type: 'doughnut',
+
+          data: {
+            labels:
+              orderStatuses.map(
+                (status) =>
+                  status.label
+              ),
+
+            datasets: [
+              {
+                data:
+                  orderStatuses.map(
+                    (status) =>
+                      status.count
+                  ),
+
+                backgroundColor: [
+                  '#548b84',
+                  '#dba457',
+                  '#719aad',
+                  '#9bbfaf',
+                  '#d99690',
+                ],
+
+                borderColor:
+                  '#ffffff',
+
+                borderWidth: 2,
+
+                hoverBorderWidth: 2,
+
+                hoverOffset: 4,
+
+                spacing: 1,
+              },
+            ],
+          },
+
+          options: {
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            cutout: '64%',
+
+            animation: {
+              duration: 350,
+            },
+
+            plugins: {
+              legend: {
+                display: false,
+              },
+
+              tooltip: {
+                enabled: true,
+
+                backgroundColor:
+                  '#252136',
+
+                titleColor:
+                  '#ffffff',
+
+                bodyColor:
+                  '#ffffff',
+
+                cornerRadius: 10,
+
+                padding: 11,
+
+                displayColors: true,
+
+                boxWidth: 10,
+
+                boxHeight: 10,
+
+                callbacks: {
+                  label: (context) =>
+                    `${context.label}: ${Number(
+                      context.raw || 0
+                    ).toLocaleString(
+                      'ko-KR'
+                    )}건`,
+                },
+              },
+            },
+          },
+        }
+      )
+
+
+    orderStatusChartRef
+      .current =
+      chart
+
+
+    return () => {
+      chart.destroy()
+
+      if (
+        orderStatusChartRef
+          .current
+        === chart
+      ) {
+        orderStatusChartRef
+          .current =
+          null
+      }
+    }
+  }, [
+    statusCounts.paid,
+    statusCounts.preparing,
+    statusCounts.shipped,
+    statusCounts.delivered,
+    statusCounts.cancelled,
+  ])
 
 
   // ========================================
@@ -1433,14 +1788,628 @@ const Dashboard = () => {
     }${signupChangeRate.toFixed(1)}%`
 
 
-  const maxMemberTrend =
-    Math.max(
-      1,
-      ...memberTrend.map(
-        (item) =>
-          item.count
+  // ========================================
+  // 신규 회원 추이 - Chart.js Bar
+  // ========================================
+
+  const memberTrendCanvasRef =
+    useRef(null)
+
+  const memberTrendChartRef =
+    useRef(null)
+
+
+  useEffect(() => {
+    const canvas =
+      memberTrendCanvasRef.current
+
+    if (!canvas) {
+      return undefined
+    }
+
+
+    memberTrendChartRef
+      .current
+      ?.destroy()
+
+
+    const context =
+      canvas.getContext('2d')
+
+
+    const chart =
+      new Chart(
+        context,
+        {
+          type: 'bar',
+
+          data: {
+            labels:
+              memberTrend.map(
+                (item) =>
+                  item.label
+              ),
+
+            datasets: [
+              {
+                label: '신규 회원',
+
+                data:
+                  memberTrend.map(
+                    (item) =>
+                      item.count
+                  ),
+
+                backgroundColor:
+                  '#548b84',
+
+                hoverBackgroundColor:
+                  '#477a74',
+
+                borderRadius: 6,
+
+                borderSkipped: false,
+
+                barThickness: 20,
+
+                maxBarThickness: 24,
+
+                categoryPercentage: 0.72,
+
+                barPercentage: 0.88,
+              },
+            ],
+          },
+
+          options: {
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            animation: {
+              duration: 350,
+            },
+
+            interaction: {
+              mode: 'nearest',
+              intersect: true,
+            },
+
+            plugins: {
+              legend: {
+                display: false,
+              },
+
+              tooltip: {
+                enabled: true,
+
+                backgroundColor:
+                  '#252136',
+
+                titleColor:
+                  '#ffffff',
+
+                bodyColor:
+                  '#ffffff',
+
+                cornerRadius: 10,
+
+                padding: 12,
+
+                caretPadding: 8,
+
+                displayColors: true,
+
+                boxWidth: 11,
+
+                boxHeight: 11,
+
+                titleFont: {
+                  size: 12,
+                  weight: '700',
+                },
+
+                bodyFont: {
+                  size: 12,
+                  weight: '500',
+                },
+
+                callbacks: {
+                  title: (items) => {
+                    const label =
+                      items[0]
+                        ?.label
+                      || ''
+
+                    return label
+                      .split('/')
+                      .map(
+                        (value) =>
+                          Number(value)
+                      )
+                      .join('/')
+                  },
+
+                  label: (context) =>
+                    `신규 회원: ${Number(
+                      context.raw || 0
+                    ).toLocaleString(
+                      'ko-KR'
+                    )}명`,
+                },
+              },
+            },
+
+            scales: {
+              x: {
+                grid: {
+                  display: false,
+                },
+
+                border: {
+                  display: false,
+                },
+
+                ticks: {
+                  color:
+                    '#a5aaa7',
+
+                  padding: 7,
+
+                  font: {
+                    size: 8,
+                  },
+
+                  maxRotation: 0,
+
+                  minRotation: 0,
+                },
+              },
+
+              y: {
+                beginAtZero: true,
+
+                suggestedMax:
+                  Math.max(
+                    3,
+                    ...memberTrend.map(
+                      (item) =>
+                        item.count
+                    )
+                  ),
+
+                border: {
+                  display: false,
+                },
+
+                grid: {
+                  color:
+                    '#e7e9e7',
+
+                  drawTicks: false,
+                },
+
+                ticks: {
+                  display: false,
+
+                  precision: 0,
+                },
+              },
+            },
+          },
+        }
       )
+
+
+    memberTrendChartRef
+      .current =
+      chart
+
+
+    return () => {
+      chart.destroy()
+
+      if (
+        memberTrendChartRef
+          .current
+        === chart
+      ) {
+        memberTrendChartRef
+          .current =
+          null
+      }
+    }
+  }, [
+    memberTrend,
+  ])
+
+
+  // ========================================
+  // 최근 7일 AI 추천 이용 현황
+  // ========================================
+
+  const aiTrend =
+    useMemo(
+      () => (
+        recentDates.map(
+          (date) => {
+            const dayLogs =
+              aiLogs.filter(
+                (log) =>
+                  log.createdAtKey
+                    === date.key
+                  &&
+                  log.status
+                    !== 'pending'
+              )
+
+            return {
+              date:
+                date.label,
+
+              member:
+                dayLogs.filter(
+                  (log) =>
+                    log.userType
+                      === 'member'
+                ).length,
+
+              guest:
+                dayLogs.filter(
+                  (log) =>
+                    log.userType
+                      === 'guest'
+                ).length,
+            }
+          }
+        )
+      ),
+      [
+        aiLogs,
+        recentDates,
+      ]
     )
+
+
+  const recentAiUsageCount =
+    aiTrend.reduce(
+      (
+        total,
+        item
+      ) =>
+        total
+        + item.member
+        + item.guest,
+      0
+    )
+
+
+  const recentMemberAiCount =
+    aiTrend.reduce(
+      (
+        total,
+        item
+      ) =>
+        total
+        + item.member,
+      0
+    )
+
+
+  const recentGuestAiCount =
+    aiTrend.reduce(
+      (
+        total,
+        item
+      ) =>
+        total
+        + item.guest,
+      0
+    )
+
+
+  const todayAiUsageCount =
+    useMemo(
+      () => (
+        aiLogs.filter(
+          (log) =>
+            log.createdAtKey
+              === todayKey
+            &&
+            log.status
+              !== 'pending'
+        ).length
+      ),
+      [
+        aiLogs,
+        todayKey,
+      ]
+    )
+
+
+  // ========================================
+  // AI 추천 이용 현황 - Chart.js Multi Line
+  // ========================================
+
+  const aiTrendCanvasRef =
+    useRef(null)
+
+  const aiTrendChartRef =
+    useRef(null)
+
+
+  useEffect(() => {
+    const canvas =
+      aiTrendCanvasRef.current
+
+    if (!canvas) {
+      return undefined
+    }
+
+
+    aiTrendChartRef
+      .current
+      ?.destroy()
+
+
+    const context =
+      canvas.getContext('2d')
+
+
+    const chart =
+      new Chart(
+        context,
+        {
+          type: 'line',
+
+          data: {
+            labels:
+              aiTrend.map(
+                (item) =>
+                  item.date
+              ),
+
+            datasets: [
+              {
+                label: '회원',
+
+                data:
+                  aiTrend.map(
+                    (item) =>
+                      item.member
+                  ),
+
+                borderColor:
+                  '#548b84',
+
+                backgroundColor:
+                  '#548b84',
+
+                borderWidth: 2.5,
+
+                tension: 0.28,
+
+                fill: false,
+
+                pointRadius: 3.5,
+
+                pointHoverRadius: 6,
+
+                pointHitRadius: 14,
+
+                pointBackgroundColor:
+                  '#548b84',
+
+                pointBorderColor:
+                  '#ffffff',
+
+                pointBorderWidth: 1.5,
+
+                pointHoverBackgroundColor:
+                  '#ffffff',
+
+                pointHoverBorderColor:
+                  '#548b84',
+
+                pointHoverBorderWidth: 2,
+              },
+
+              {
+                label: '비회원',
+
+                data:
+                  aiTrend.map(
+                    (item) =>
+                      item.guest
+                  ),
+
+                borderColor:
+                  '#d99a94',
+
+                backgroundColor:
+                  '#d99a94',
+
+                borderWidth: 2.5,
+
+                tension: 0.28,
+
+                fill: false,
+
+                pointRadius: 3.5,
+
+                pointHoverRadius: 6,
+
+                pointHitRadius: 14,
+
+                pointBackgroundColor:
+                  '#d99a94',
+
+                pointBorderColor:
+                  '#ffffff',
+
+                pointBorderWidth: 1.5,
+
+                pointHoverBackgroundColor:
+                  '#ffffff',
+
+                pointHoverBorderColor:
+                  '#d99a94',
+
+                pointHoverBorderWidth: 2,
+              },
+            ],
+          },
+
+          options: {
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            animation: {
+              duration: 350,
+            },
+
+            interaction: {
+              mode: 'index',
+              intersect: false,
+            },
+
+            plugins: {
+              legend: {
+                display: false,
+              },
+
+              tooltip: {
+                enabled: true,
+
+                backgroundColor:
+                  '#252136',
+
+                titleColor:
+                  '#ffffff',
+
+                bodyColor:
+                  '#ffffff',
+
+                cornerRadius: 10,
+
+                padding: 12,
+
+                caretPadding: 8,
+
+                displayColors: true,
+
+                boxWidth: 11,
+
+                boxHeight: 11,
+
+                titleFont: {
+                  size: 12,
+                  weight: '700',
+                },
+
+                bodyFont: {
+                  size: 12,
+                  weight: '500',
+                },
+
+                callbacks: {
+                  title: (items) => {
+                    const label =
+                      items[0]
+                        ?.label
+                      || ''
+
+                    return label
+                      .split('/')
+                      .map(
+                        (value) =>
+                          Number(value)
+                      )
+                      .join('/')
+                  },
+
+                  label: (context) =>
+                    `${context.dataset.label}: ${Number(
+                      context.raw || 0
+                    ).toLocaleString(
+                      'ko-KR'
+                    )}건`,
+                },
+              },
+            },
+
+            scales: {
+              x: {
+                grid: {
+                  display: false,
+                },
+
+                border: {
+                  display: false,
+                },
+
+                ticks: {
+                  color:
+                    '#a5aaa7',
+
+                  padding: 7,
+
+                  font: {
+                    size: 8,
+                  },
+
+                  maxRotation: 0,
+
+                  minRotation: 0,
+                },
+              },
+
+              y: {
+                beginAtZero: true,
+
+                border: {
+                  display: false,
+                },
+
+                grid: {
+                  color:
+                    '#e7e9e7',
+
+                  drawTicks: false,
+                },
+
+                ticks: {
+                  display: false,
+                },
+              },
+            },
+          },
+        }
+      )
+
+
+    aiTrendChartRef
+      .current =
+      chart
+
+
+    return () => {
+      chart.destroy()
+
+      if (
+        aiTrendChartRef
+          .current
+        === chart
+      ) {
+        aiTrendChartRef
+          .current =
+          null
+      }
+    }
+  }, [
+    aiTrend,
+  ])
 
 
   // ========================================
@@ -1579,13 +2548,18 @@ const Dashboard = () => {
         'AI 추천 이용',
 
       value:
-        '—',
+        isLoading
+          ? '—'
+          : todayAiUsageCount
+            .toLocaleString(
+              'ko-KR'
+            ),
 
       unit:
         '회',
 
       caption:
-        '추천 데이터 연결 예정',
+        '오늘 AI 추천 이용',
 
       to:
         '/admin/ai-logs',
@@ -1630,134 +2604,53 @@ const Dashboard = () => {
           제목
       ======================================== */}
 
-      <header
-        className={
-          styles.pageToolbar
-        }
-      >
-        <h1 id="dashboard-title">
-          대시보드
-        </h1>
-      </header>
+      <AdminPageHeader
+        title="대시보드"
+        titleId="dashboard-title"
+      />
 
 
       {/* ========================================
-          전통 문양
-      ======================================== */}
-
-      <div
-        className={
-          styles.ornamentLine
-        }
-        aria-hidden="true"
-      >
-        <img
-          src={
-            adminTopOrnament
-          }
-          alt=""
-        />
-      </div>
-
-
-      {/* ========================================
-          상단 카드
+          상단 KPI
       ======================================== */}
 
       <section
-        className={
-          styles.summaryArea
-        }
+        className={styles.summaryArea}
         aria-label="오늘의 핵심 지표"
       >
-        <div
-          className={
-            styles.summaryGrid
-          }
-        >
+        <div className={styles.summaryGrid}>
           {summaryCards.map(
             (card) => (
-              <button
-                key={
-                  card.key
+              <AdminSummaryCard
+                key={card.key}
+                icon={
+                  <span
+                    className={
+                      styles.summarySvg
+                    }
+                  >
+                    <SummaryIcon
+                      type={card.key}
+                    />
+                  </span>
                 }
-                type="button"
-                className={`
-                  ${styles.summaryCard}
-                  ${styles[card.key]}
-                `}
+                label={card.label}
+                value={card.value}
+                unit={card.unit}
+                caption={card.caption}
+                tone={
+                  card.key === 'orders'
+                    ? 'primary'
+                    : card.key === 'sales'
+                      ? 'info'
+                      : card.key === 'members'
+                        ? 'danger'
+                        : 'warning'
+                }
                 onClick={() =>
-                  navigate(
-                    card.to
-                  )
+                  navigate(card.to)
                 }
-              >
-                <span
-                  className={
-                    styles.summaryIcon
-                  }
-                  aria-hidden="true"
-                >
-                  <SummaryIcon
-                    type={
-                      card.key
-                    }
-                  />
-                </span>
-
-
-                <span
-                  className={
-                    styles.summaryContent
-                  }
-                >
-                  <span
-                    className={
-                      styles.summaryTitle
-                    }
-                  >
-                    {
-                      card.label
-                    }
-                  </span>
-
-
-                  <span
-                    className={
-                      styles.summaryMetric
-                    }
-                  >
-                    <strong>
-                      {
-                        card.value
-                      }
-                    </strong>
-
-                    <em>
-                      {
-                        card.unit
-                      }
-                    </em>
-                  </span>
-
-
-                  <small>
-                    {
-                      card.caption
-                    }
-                  </small>
-                </span>
-
-
-                <span
-                  className={
-                    styles.cardArrow
-                  }
-                  aria-hidden="true"
-                >
-                  →
-                </span>
-              </button>
+              />
             )
           )}
         </div>
@@ -1851,153 +2744,13 @@ const Dashboard = () => {
                 styles.salesChart
               }
             >
-              <div
-                className={
-                  styles.yAxis
+              <canvas
+                ref={
+                  salesChartCanvasRef
                 }
-              >
-                {
-                  salesChartData
-                    .axisValues
-                    .map(
-                      (
-                        value,
-                        index
-                      ) => (
-                        <span
-                          key={
-                            index
-                          }
-                        >
-                          {
-                            formatAxisValue(
-                              value
-                            )
-                          }
-                        </span>
-                      )
-                    )
-                }
-              </div>
-
-
-              <div
-                className={
-                  styles.salesChartBody
-                }
-              >
-                <div
-                  className={
-                    styles.chartGridLines
-                  }
-                  aria-hidden="true"
-                >
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                </div>
-
-
-                <svg
-                  viewBox="0 0 700 180"
-                  preserveAspectRatio="none"
-                  aria-hidden="true"
-                >
-                  <defs>
-                    <linearGradient
-                      id="dashboardSalesGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop
-                        offset="0%"
-                        stopColor="#5a9189"
-                        stopOpacity="0.25"
-                      />
-
-                      <stop
-                        offset="100%"
-                        stopColor="#5a9189"
-                        stopOpacity="0"
-                      />
-                    </linearGradient>
-                  </defs>
-
-
-                  <path
-                    d={
-                      salesChartData
-                        .fillPath
-                    }
-                    fill="url(#dashboardSalesGradient)"
-                  />
-
-
-                  <polyline
-                    points={
-                      salesChartData
-                        .pointString
-                    }
-                    fill="none"
-                    stroke="#548b84"
-                    strokeWidth="2"
-                    vectorEffect="non-scaling-stroke"
-                  />
-
-
-                  {
-                    salesChartData
-                      .points
-                      .map(
-                        (
-                          point,
-                          index
-                        ) => (
-                          <circle
-                            key={
-                              index
-                            }
-                            cx={
-                              point.x
-                            }
-                            cy={
-                              point.y
-                            }
-                            r="4"
-                            fill="#548b84"
-                          />
-                        )
-                      )
-                  }
-                </svg>
-
-
-                <div
-                  className={
-                    styles.salesDates
-                  }
-                >
-                  {
-                    weeklySales.map(
-                      (item) => (
-                        <span
-                          key={
-                            item.key
-                          }
-                        >
-                          {
-                            item.label
-                          }
-                        </span>
-                      )
-                    )
-                  }
-                </div>
-              </div>
+                aria-label="최근 7일 매출 꺾은선 그래프"
+                role="img"
+              />
             </div>
           </section>
 
@@ -2054,59 +2807,94 @@ const Dashboard = () => {
               </header>
 
 
-              <ul
+              <div
                 className={
-                  styles.statusList
+                  styles.orderStatusContent
                 }
               >
-                {
-                  orderStatuses.map(
-                    (status) => (
-                      <li
-                        key={
-                          status.label
-                        }
-                      >
-                        <span
-                          className={
-                            styles.statusName
-                          }
-                        >
-                          {
+                <div
+                  className={
+                    styles.orderStatusDonut
+                  }
+                >
+                  <canvas
+                    ref={
+                      orderStatusCanvasRef
+                    }
+                    aria-label="주문 상태 분포 도넛 그래프"
+                    role="img"
+                  />
+
+                  <div
+                    className={
+                      styles.orderStatusCenter
+                    }
+                    aria-hidden="true"
+                  >
+                    <span>
+                      전체
+                    </span>
+
+                    <strong>
+                      {
+                        orderStatusTotal
+                      }
+                      <small>
+                        건
+                      </small>
+                    </strong>
+                  </div>
+                </div>
+
+
+                <ul
+                  className={
+                    styles.statusLegend
+                  }
+                >
+                  {
+                    orderStatuses.map(
+                      (
+                        status,
+                        index
+                      ) => (
+                        <li
+                          key={
                             status.label
                           }
-                        </span>
-
-
-                        <span
-                          className={
-                            styles.statusTrack
-                          }
                         >
-                          <i
-                            className={
-                              status.danger
-                                ? styles.dangerStatus
-                                : ''
-                            }
-                            style={{
-                              width:
-                                `${status.percent}%`,
-                            }}
+                          <span
+                            className={`
+                              ${styles.statusDot}
+                              ${styles[
+                                `statusDot${index + 1}`
+                              ]}
+                            `}
+                            aria-hidden="true"
                           />
-                        </span>
 
+                          <span
+                            className={
+                              styles.statusName
+                            }
+                          >
+                            {
+                              status.label
+                            }
+                          </span>
 
-                        <strong>
-                          {
-                            status.count
-                          }
-                        </strong>
-                      </li>
+                          <strong>
+                            {
+                              status.count
+                            }
+                            건
+                          </strong>
+                        </li>
+                      )
                     )
-                  )
-                }
-              </ul>
+                  }
+                </ul>
+              </div>
             </section>
 
 
@@ -2470,76 +3258,16 @@ const Dashboard = () => {
 
               <div
                 className={
-                  styles.barChart
+                  styles.trendChart
                 }
               >
-                <div
-                  className={
-                    styles.barGridLines
+                <canvas
+                  ref={
+                    memberTrendCanvasRef
                   }
-                  aria-hidden="true"
-                >
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                </div>
-
-
-                <div
-                  className={
-                    styles.memberBars
-                  }
-                >
-                  {
-                    memberTrend.map(
-                      (item) => {
-                        const height =
-                          item.count > 0
-                            ? Math.max(
-                                (
-                                  item.count
-                                  / maxMemberTrend
-                                )
-                                * 100,
-                                8
-                              )
-                            : 0
-
-                        return (
-                          <div
-                            className={
-                              styles.memberBarItem
-                            }
-                            key={
-                              item.key
-                            }
-                          >
-                            <span
-                              className={
-                                styles.singleBarWrap
-                              }
-                            >
-                              <i
-                                style={{
-                                  height:
-                                    `${height}%`,
-                                }}
-                              />
-                            </span>
-
-
-                            <small>
-                              {
-                                item.label
-                              }
-                            </small>
-                          </div>
-                        )
-                      }
-                    )
-                  }
-                </div>
+                  aria-label="최근 7일 신규 회원 추이 막대 그래프"
+                  role="img"
+                />
               </div>
 
 
@@ -2698,75 +3426,16 @@ const Dashboard = () => {
 
               <div
                 className={
-                  styles.barChart
+                  styles.trendChart
                 }
               >
-                <div
-                  className={
-                    styles.barGridLines
+                <canvas
+                  ref={
+                    aiTrendCanvasRef
                   }
-                  aria-hidden="true"
-                >
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                </div>
-
-
-                <div
-                  className={
-                    styles.aiBars
-                  }
-                >
-                  {
-                    aiTrend.map(
-                      (item) => (
-                        <div
-                          className={
-                            styles.aiBarItem
-                          }
-                          key={
-                            item.date
-                          }
-                        >
-                          <span
-                            className={
-                              styles.doubleBarWrap
-                            }
-                          >
-                            <i
-                              className={
-                                styles.memberAiBar
-                              }
-                              style={{
-                                height:
-                                  `${item.member}%`,
-                              }}
-                            />
-
-                            <i
-                              className={
-                                styles.guestAiBar
-                              }
-                              style={{
-                                height:
-                                  `${item.guest}%`,
-                              }}
-                            />
-                          </span>
-
-
-                          <small>
-                            {
-                              item.date
-                            }
-                          </small>
-                        </div>
-                      )
-                    )
-                  }
-                </div>
+                  aria-label="최근 7일 회원 및 비회원 AI 추천 이용 추이 꺾은선 그래프"
+                  role="img"
+                />
               </div>
 
 
@@ -2798,7 +3467,10 @@ const Dashboard = () => {
                   </small>
 
                   <strong>
-                    —
+                    {recentAiUsageCount.toLocaleString(
+                      'ko-KR'
+                    )}
+                    회
                   </strong>
                 </div>
 
@@ -2821,7 +3493,10 @@ const Dashboard = () => {
                     </span>
 
                     <strong>
-                      —
+                      {recentMemberAiCount.toLocaleString(
+                        'ko-KR'
+                      )}
+                      회
                     </strong>
                   </p>
 
@@ -2832,7 +3507,10 @@ const Dashboard = () => {
                     </span>
 
                     <strong>
-                      —
+                      {recentGuestAiCount.toLocaleString(
+                        'ko-KR'
+                      )}
+                      회
                     </strong>
                   </p>
                 </div>

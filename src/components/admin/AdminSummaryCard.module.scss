@@ -1,0 +1,316 @@
+@use '../../styles/admin/adminVariables' as *;
+@use '../../styles/admin/adminMixins' as *;
+
+
+// ========================================
+// CARD
+// ========================================
+
+.card {
+  @include admin-panel;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 112px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+
+  padding: 18px 20px;
+
+  color: $admin-text-primary;
+
+  text-align: left;
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+
+// ========================================
+// CLICKABLE
+// ========================================
+
+button.card {
+  appearance: none;
+
+  font: inherit;
+
+  cursor: pointer;
+}
+
+
+.clickable {
+  &:hover {
+    transform: translateY(-2px);
+
+    border-color:
+      rgba(
+        86,
+        138,
+        128,
+        0.4
+      );
+
+    box-shadow:
+      0 5px 16px
+      rgba(
+        0,
+        0,
+        0,
+        0.06
+      );
+  }
+
+  &:focus-visible {
+    outline: 2px solid
+      rgba(
+        86,
+        138,
+        128,
+        0.45
+      );
+
+    outline-offset: 2px;
+  }
+}
+
+
+// ========================================
+// ACTIVE
+// ========================================
+
+.active {
+  border-color:
+    $admin-primary;
+
+  background:
+    $admin-primary-light;
+}
+
+
+// ========================================
+// ICON
+// ========================================
+
+.icon {
+  width: 42px;
+  height: 42px;
+
+  flex: 0 0 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    $admin-primary-light;
+
+  color:
+    $admin-primary;
+
+
+  svg,
+  img {
+    width: 20px;
+    height: 20px;
+
+    display: block;
+
+    object-fit: contain;
+  }
+}
+
+
+// ========================================
+// CONTENT
+// ========================================
+
+.content {
+  min-width: 0;
+
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+
+.label {
+  color:
+    $admin-text-secondary;
+
+  font-size: 18px;
+  font-weight: 600;
+
+  line-height: 1.4;
+}
+
+
+.metric {
+  display: flex;
+  align-items: baseline;
+
+  gap: 4px;
+
+  line-height: 1.15;
+
+
+  strong {
+    color:
+      $admin-text-primary;
+
+    font-size: 24px;
+    font-weight: 700;
+
+    letter-spacing: -0.03em;
+  }
+}
+
+
+.unit {
+  color:
+    $admin-text-secondary;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+.caption {
+  margin-top: 2px;
+
+  overflow: hidden;
+
+  color:
+    $admin-text-muted;
+
+  font-size: 11px;
+  font-weight: 500;
+
+  line-height: 1.4;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+// ========================================
+// TONES
+// ========================================
+
+// 기본 초록
+.primary {
+  .icon {
+    color:
+      $admin-primary;
+
+    background:
+      $admin-primary-light;
+  }
+}
+
+
+// 파랑
+.info {
+  .icon {
+    color:
+      $admin-info;
+
+    background:
+      $admin-info-light;
+  }
+}
+
+
+// 노랑 / 주황
+.warning {
+  .icon {
+    color:
+      $admin-warning;
+
+    background:
+      $admin-warning-light;
+  }
+}
+
+
+// 빨강
+.danger {
+  .icon {
+    color:
+      $admin-danger;
+
+    background:
+      $admin-danger-light;
+  }
+}
+
+
+// 특별한 의미 없는 카드
+.neutral {
+  .icon {
+    color:
+      $admin-text-secondary;
+
+    background:
+      #f2f3f2;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE
+// ========================================
+
+@media (
+  max-width: 767px
+) {
+  .card {
+    min-height: 92px;
+
+    padding:
+      13px
+      14px;
+
+    gap: 10px;
+  }
+
+  .icon {
+    width: 36px;
+    height: 36px;
+
+    flex-basis: 36px;
+
+    svg,
+    img {
+      width: 17px;
+      height: 17px;
+    }
+  }
+    .label {
+        font-size: 12px;
+    }
+
+    .metric {
+        strong {
+        font-size: 21px;
+        }
+    }
+
+    .unit {
+        font-size: 11px;
+    }
+
+    .caption {
+        font-size: 10px;
+    }
+}

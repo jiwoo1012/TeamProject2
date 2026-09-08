@@ -7,7 +7,13 @@ import {
   getCollection,
   updateDocument,
 } from '../../firebase/firestore'
-import adminTopOrnament from '../../assets/images/admin/adminTopOrnament.svg'
+import AdminEmptyState from '../../components/admin/AdminEmptyState'
+import AdminFilterBar from '../../components/admin/AdminFilterBar'
+import AdminPageHeader from '../../components/admin/AdminPageHeader'
+import AdminPanel from '../../components/admin/AdminPanel'
+import AdminStatusBadge from '../../components/admin/AdminStatusBadge'
+import AdminSummaryCard from '../../components/admin/AdminSummaryCard'
+
 import styles from './NoticeManage.module.scss'
 
 const statusLabels = {
@@ -58,12 +64,55 @@ const normalizeNotice = (notice) => ({
   views: Number(notice.views || 0),
 })
 
-const RefreshIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M20 6v5h-5M4 18v-5h5" />
-    <path d="M6.1 9a7 7 0 0 1 11.8-2.2L20 11M4 13l2.1 4.2A7 7 0 0 0 17.9 15" />
-  </svg>
-)
+const SummaryIcon = ({ type }) => {
+  const icons = {
+    total: (
+      <>
+        <rect
+          x="5"
+          y="3.5"
+          width="14"
+          height="17"
+          rx="2"
+        />
+        <path d="M8 8h8M8 12h8M8 16h5" />
+      </>
+    ),
+
+    published: (
+      <>
+        <path d="M4 12.5 9 17l11-11" />
+      </>
+    ),
+
+    draft: (
+      <>
+        <path d="M4 7h16M4 12h10M4 17h7" />
+      </>
+    ),
+
+    important: (
+      <>
+        <path d="M12 3 14.6 8.3 20.5 9.2 16.2 13.4 17.2 19.3 12 16.5 6.8 19.3 7.8 13.4 3.5 9.2 9.4 8.3 12 3Z" />
+      </>
+    ),
+  }
+
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {icons[type]}
+    </svg>
+  )
+}
+
 
 const NoticeManage = () => {
   const [notices, setNotices] = useState([])
@@ -217,6 +266,22 @@ const NoticeManage = () => {
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]))
   }
 
+  const scrollPanelIntoViewOnMobile = () => {
+    if (
+      typeof window !== 'undefined'
+      && window.matchMedia('(max-width: 767px)').matches
+    ) {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          panelRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          })
+        })
+      })
+    }
+  }
+
   const openEditPanel = (notice) => {
     setIsCreating(false)
     setSelectedNoticeId(notice.id)
@@ -225,6 +290,7 @@ const NoticeManage = () => {
     setDraftStatus(notice.status)
     setDraftIsPinned(notice.isPinned)
     setDraftContent(notice.content)
+    scrollPanelIntoViewOnMobile()
   }
 
   const openCreatePanel = () => {
@@ -235,6 +301,7 @@ const NoticeManage = () => {
     setDraftStatus('draft')
     setDraftIsPinned(false)
     setDraftContent('')
+    scrollPanelIntoViewOnMobile()
   }
 
   const handleSaveEdit = async () => {
@@ -329,410 +396,899 @@ const NoticeManage = () => {
   }
 
   return (
-    <section className={styles.page} aria-labelledby="notice-manage-title">
-      {/* 툴바 */}
-      <header className={styles.pageToolbar}>
-        <h1 id="notice-manage-title">공지사항 관리</h1>
-        <button
-          type="button"
-          onClick={handleRefresh}
-          disabled={isRefreshing}
-          className={isRefreshing ? styles.refreshing : ''}
-        >
-          <RefreshIcon />
-          {isRefreshing ? '불러오는 중' : '새로 고침'}
-        </button>
-      </header>
+    <section
+      className={styles.page}
+      aria-labelledby="notice-manage-title"
+    >
 
-      {/* 전통 문양 구분선 */}
-      <div className={styles.ornamentLine} aria-hidden="true">
-        <img src={adminTopOrnament} alt="" />
-      </div>
+      {/* ========================================
+          제목
+      ======================================== */}
 
-      {/* 상단 4대 지표 카드 */}
-      <section className={styles.summaryArea} aria-label="공지 현황 요약">
+      <AdminPageHeader
+        title="공지사항 관리"
+        titleId="notice-manage-title"
+        onRefresh={handleRefresh}
+        isRefreshing={isRefreshing}
+      />
+
+
+      {/* ========================================
+          상단 요약 카드
+      ======================================== */}
+
+      <section
+        className={styles.summaryArea}
+        aria-label="공지 현황 요약"
+      >
         <div className={styles.summaryGrid}>
           {summaryCards.map((card) => (
-            <button
+            <AdminSummaryCard
               key={card.key}
-              type="button"
-              className={`${styles.summaryCard} ${activeCardKey === card.key ? styles.activeCard : ''}`}
-              onClick={() => handleCardClick(card.key)}
-            >
-              <span className={`${styles.summaryIcon} ${styles[card.key]}`} aria-hidden="true">
-                <i>{card.value}</i>
-              </span>
-              <div className={styles.summaryContent}>
-                <h3>{card.label}</h3>
-                <p>
-                  <strong>{card.value}</strong>
-                  <span>{card.unit}</span>
-                </p>
-                <small>{card.caption}</small>
-              </div>
-            </button>
+              icon={
+                <span className={styles.summarySvg}>
+                  <SummaryIcon
+                    type={card.key}
+                  />
+                </span>
+              }
+              label={card.label}
+              value={card.value.toLocaleString('ko-KR')}
+              unit={card.unit}
+              caption={card.caption}
+              tone={
+                card.key === 'published'
+                  ? 'success'
+                  : card.key === 'draft'
+                    ? 'info'
+                    : card.key === 'important'
+                      ? 'warning'
+                      : 'primary'
+              }
+              active={
+                activeCardKey === card.key
+              }
+              onClick={() =>
+                handleCardClick(card.key)
+              }
+            />
           ))}
         </div>
       </section>
 
-      {/* 메인 2단 그리드 */}
-      <div className={styles.managementGrid}>
-        {/* 좌측: 테이블 영역 */}
-        <section className={styles.mainSection}>
-          {/* 필터 바 */}
-          <div className={styles.filterBar}>
-            <label className={styles.searchField}>
-              <span className={styles.srOnly}>공지 검색</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="7" />
-                <path d="m16 16 4 4" />
-              </svg>
-              <input
-                type="search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="제목, 내용, 공지 ID 검색"
-              />
-            </label>
 
+      {/* ========================================
+          메인 2단
+      ======================================== */}
+
+      <div className={styles.managementGrid}>
+
+        {/* 좌측: 공지 목록 */}
+
+        <section
+          className={styles.mainSection}
+          aria-labelledby="notice-list-title"
+        >
+
+          <AdminFilterBar
+            searchValue={searchQuery}
+            onSearchChange={(value) => {
+              setSearchQuery(value)
+              setActiveCardKey(null)
+            }}
+            searchPlaceholder="제목, 내용, 공지 ID 검색"
+            searchLabel="공지 검색"
+            onReset={resetFilters}
+          >
             <label className={styles.selectField}>
+              <span className={styles.srOnly}>
+                게시 상태
+              </span>
+
               <select
                 value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value)
+                onChange={(event) => {
+                  setStatusFilter(
+                    event.target.value
+                  )
                   setActiveCardKey(null)
                 }}
               >
-                <option value="all">전체 상태</option>
-                <option value="published">게시 중</option>
-                <option value="draft">숨김</option>
-                <option value="important">중요 공지만</option>
+                <option value="all">
+                  전체 상태
+                </option>
+
+                <option value="published">
+                  게시 중
+                </option>
+
+                <option value="draft">
+                  숨김
+                </option>
+
+                <option value="important">
+                  중요 공지만
+                </option>
               </select>
             </label>
 
             <label className={styles.selectField}>
-              <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
-                {categories.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
+              <span className={styles.srOnly}>
+                공지 분류
+              </span>
+
+              <select
+                value={categoryFilter}
+                onChange={(event) => {
+                  setCategoryFilter(
+                    event.target.value
+                  )
+                  setActiveCardKey(null)
+                }}
+              >
+                {categories.map((category) => (
+                  <option
+                    key={category}
+                    value={category}
+                  >
+                    {category}
                   </option>
                 ))}
               </select>
             </label>
+          </AdminFilterBar>
 
-            <button type="button" className={styles.resetButton} onClick={resetFilters}>
-              초기화
-            </button>
-          </div>
 
-          {/* 테이블 액션 헤더 */}
+          {/* 목록 제목 / 액션 */}
+
           <div className={styles.sectionHeading}>
+
             <div className={styles.titleWrap}>
-              <h2>공지 목록</h2>
-              <span>총 {filteredNotices.length}건</span>
+              <h2 id="notice-list-title">
+                공지 목록
+              </h2>
             </div>
-            <div className={styles.actions}>
-              {selectedIds.length > 0 && (
-                <button type="button" className={styles.bulkButton} onClick={handleBulkHide} disabled={isSaving}>
-                  선택 {selectedIds.length}개 숨김 처리
+
+            <div className={styles.headingRight}>
+
+              <span className={styles.noticeCount}>
+                총{' '}
+                <strong>
+                  {filteredNotices.length.toLocaleString(
+                    'ko-KR'
+                  )}
+                </strong>
+                건
+              </span>
+
+              <div className={styles.actions}>
+
+                {selectedIds.length > 0 && (
+                  <button
+                    type="button"
+                    className={styles.bulkButton}
+                    onClick={handleBulkHide}
+                    disabled={isSaving}
+                  >
+                    선택 {selectedIds.length}개 숨김
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  className={styles.registerButton}
+                  onClick={openCreatePanel}
+                >
+                  + 새 공지 등록
                 </button>
-              )}
-              <button type="button" className={styles.registerButton} onClick={openCreatePanel}>
-                + 새 공지 등록
-              </button>
+
+              </div>
+
             </div>
+
           </div>
 
-          {/* 테이블 영역 */}
-          <div className={styles.tableWrap} ref={tableRef}>
-            <table className={styles.dataTable}>
-              <colgroup>
-                <col className={styles.selectColumn} />
-                <col className={styles.idColumn} />
-                <col className={styles.titleColumn} />
-                <col className={styles.categoryColumn} />
-                <col className={styles.dateColumn} />
-                <col className={styles.statusColumn} />
-                <col className={styles.pinColumn} />
-                <col className={styles.targetColumn} />
-                <col className={styles.viewsColumn} />
-                <col className={styles.manageColumn} />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th style={{ width: 40 }}>
-                    <input
-                      type="checkbox"
-                      onChange={handleSelectAll}
-                      checked={filteredNotices.length > 0 && selectedIds.length === filteredNotices.length}
-                    />
-                  </th>
-                  <th>공지 ID</th>
-                  <th>제목</th>
-                  <th>분류</th>
-                  <th>작성일</th>
-                  <th>게시 상태</th>
-                  <th>중요 여부</th>
-                  <th>노출 대상</th>
-                  <th>조회수</th>
-                  <th>관리</th>
-                </tr>
-              </thead>
-              <tbody>
-                {isLoading && (
-                  <tr><td colSpan="10">공지사항을 불러오는 중입니다.</td></tr>
-                )}
-                {!isLoading && loadError && (
-                  <tr><td colSpan="10">{loadError}</td></tr>
-                )}
-                {!isLoading && !loadError && filteredNotices.length === 0 && (
-                  <tr><td colSpan="10">등록된 공지사항이 없습니다.</td></tr>
-                )}
-                {filteredNotices.map((n) => (
-                  <tr
-                    key={n.id}
-                    className={`${styles.clickableRow} ${selectedNoticeId === n.id ? styles.selectedRow : ''}`}
-                    onClick={() => openEditPanel(n)}
-                  >
-                    <td>
+
+          {/* 목록 */}
+
+          {isLoading ? (
+
+            <div className={styles.stateBox}>
+              공지사항을 불러오는 중입니다.
+            </div>
+
+          ) : loadError ? (
+
+            <AdminEmptyState
+              title="공지사항을 불러오지 못했습니다."
+              description={loadError}
+            />
+
+          ) : filteredNotices.length === 0 ? (
+
+            <AdminEmptyState
+              title="검색 결과가 없습니다."
+              description="검색어나 필터 조건을 다시 확인해주세요."
+            />
+
+          ) : (
+
+            <div
+              className={styles.tableWrap}
+              ref={tableRef}
+            >
+              <table className={styles.dataTable}>
+
+                <colgroup>
+                  <col className={styles.selectColumn} />
+                  <col className={styles.idColumn} />
+                  <col className={styles.titleColumn} />
+                  <col className={styles.categoryColumn} />
+                  <col className={styles.dateColumn} />
+                  <col className={styles.statusColumn} />
+                  <col className={styles.pinColumn} />
+                  <col className={styles.targetColumn} />
+                  <col className={styles.viewsColumn} />
+                  <col className={styles.manageColumn} />
+                </colgroup>
+
+                <thead>
+                  <tr>
+                    <th>
                       <input
                         type="checkbox"
-                        checked={selectedIds.includes(n.id)}
-                        onChange={(e) => handleSelectRow(n.id, e)}
-                        onClick={(e) => e.stopPropagation()}
+                        onChange={handleSelectAll}
+                        checked={
+                          filteredNotices.length > 0
+                          && selectedIds.length
+                            === filteredNotices.length
+                        }
+                        aria-label="현재 목록 전체 선택"
                       />
-                    </td>
-                    <td className={styles.noticeIdCell}>
-                      <strong title={n.id}>{formatNoticeId(n.id)}</strong>
-                    </td>
-                    <td>
-                      <span className={styles.noticeTitleText}>{n.title}</span>
-                    </td>
-                    <td>{n.category}</td>
-                    <td className={styles.noticeDateCell}>{formatDate(n.createdAt)}</td>
-                    <td>
-                      <span className={`${styles.statusBadge} ${styles[n.status]}`}>
-                        {statusLabels[n.status]}
-                      </span>
-                    </td>
-                    <td>
-                      <span className={n.isPinned ? styles.importantBadge : styles.normalBadge}>
-                        {n.isPinned ? '중요' : '일반'}
-                      </span>
-                    </td>
-                    <td>{n.target}</td>
-                    <td>{n.views.toLocaleString()}</td>
-                    <td>
-                      <button
-                        type="button"
-                        className={styles.editBtn}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          openEditPanel(n)
-                        }}
-                      >
-                        수정하기
-                      </button>
-                    </td>
+                    </th>
+
+                    <th>공지 ID</th>
+                    <th>제목</th>
+                    <th>분류</th>
+                    <th>작성일</th>
+                    <th>게시 상태</th>
+                    <th>중요 여부</th>
+                    <th>노출 대상</th>
+                    <th>조회수</th>
+                    <th>관리</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+
+                <tbody>
+                  {filteredNotices.map((notice) => (
+                    <tr
+                      key={notice.id}
+                      className={`${styles.clickableRow} ${
+                        selectedNoticeId === notice.id
+                          ? styles.selectedRow
+                          : ''
+                      }`}
+                      onClick={() =>
+                        openEditPanel(notice)
+                      }
+                    >
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={
+                            selectedIds.includes(
+                              notice.id
+                            )
+                          }
+                          onChange={(event) =>
+                            handleSelectRow(
+                              notice.id,
+                              event
+                            )
+                          }
+                          onClick={(event) =>
+                            event.stopPropagation()
+                          }
+                          aria-label={`${notice.title} 선택`}
+                        />
+                      </td>
+
+                      <td
+                        className={
+                          styles.noticeIdCell
+                        }
+                      >
+                        <strong title={notice.id}>
+                          {formatNoticeId(
+                            notice.id
+                          )}
+                        </strong>
+                      </td>
+
+                      <td>
+                        <span
+                          className={
+                            styles.noticeTitleText
+                          }
+                          title={notice.title}
+                        >
+                          {notice.title}
+                        </span>
+                      </td>
+
+                      <td>
+                        {notice.category}
+                      </td>
+
+                      <td
+                        className={
+                          styles.noticeDateCell
+                        }
+                      >
+                        {formatDate(
+                          notice.createdAt
+                        )}
+                      </td>
+
+                      <td>
+                        <AdminStatusBadge
+                          tone={
+                            notice.status ===
+                            'published'
+                              ? 'success'
+                              : 'neutral'
+                          }
+                          size="small"
+                        >
+                          {
+                            statusLabels[
+                              notice.status
+                            ]
+                          }
+                        </AdminStatusBadge>
+                      </td>
+
+                      <td>
+                        <AdminStatusBadge
+                          tone={
+                            notice.isPinned
+                              ? 'warning'
+                              : 'neutral'
+                          }
+                          size="small"
+                        >
+                          {notice.isPinned
+                            ? '중요'
+                            : '일반'}
+                        </AdminStatusBadge>
+                      </td>
+
+                      <td>
+                        {notice.target}
+                      </td>
+
+                      <td>
+                        {notice.views.toLocaleString(
+                          'ko-KR'
+                        )}
+                      </td>
+
+                      <td>
+                        <button
+                          type="button"
+                          className={styles.editBtn}
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            openEditPanel(notice)
+                          }}
+                        >
+                          수정하기
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+
+              </table>
+            </div>
+
+          )}
+
         </section>
 
-        {/* 우측 패널 (공지 상세 및 수정 vs 평상시 통계 패널) */}
+
+        {/* ========================================
+            우측: 상세/등록 또는 통계
+        ======================================== */}
+
         {(selectedNotice || isCreating) ? (
-          <aside className={styles.editPanel} ref={panelRef} aria-labelledby="notice-detail-title">
+
+          <aside
+            className={styles.editPanel}
+            ref={panelRef}
+            aria-labelledby="notice-detail-title"
+          >
+
             <header className={styles.panelTopHeader}>
+
               <div>
-                <h2 id="notice-detail-title">{isCreating ? '새 공지 등록' : '공지 상세 보기'}</h2>
-                <p className={styles.requiredGuide}><span>*</span> 표시는 필수 입력 항목입니다.</p>
+                <h2 id="notice-detail-title">
+                  {isCreating
+                    ? '새 공지 등록'
+                    : '공지 상세 보기'}
+                </h2>
+
+                <p className={styles.requiredGuide}>
+                  <span>*</span>
+                  {' '}
+                  표시는 필수 입력 항목입니다.
+                </p>
               </div>
-              <button type="button" onClick={() => { setSelectedNoticeId(null); setIsCreating(false) }} aria-label="닫기">
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedNoticeId(null)
+                  setIsCreating(false)
+                }}
+                aria-label="닫기"
+              >
                 ×
               </button>
+
             </header>
 
+
             <div className={styles.metaFormSection}>
+
               <div className={styles.metaHeaderTitle}>
+
                 <label className={styles.titleField}>
-                  <span>제목 <em className={styles.requiredMark}>*</em></span>
+                  <span>
+                    제목
+                    {' '}
+                    <em className={styles.requiredMark}>
+                      *
+                    </em>
+                  </span>
+
                   <input
                     type="text"
                     value={draftTitle}
-                    onChange={(e) => setDraftTitle(e.target.value)}
+                    onChange={(event) =>
+                      setDraftTitle(
+                        event.target.value
+                      )
+                    }
                     placeholder="공지 제목을 입력하세요"
                     required
                   />
                 </label>
+
                 <label className={styles.importantCheckLabel}>
                   <input
                     type="checkbox"
                     checked={draftIsPinned}
-                    onChange={(e) => setDraftIsPinned(e.target.checked)}
+                    onChange={(event) =>
+                      setDraftIsPinned(
+                        event.target.checked
+                      )
+                    }
                   />
-                  <span>중요 고정</span>
+
+                  <span>
+                    중요 고정
+                  </span>
                 </label>
+
               </div>
 
+
               <dl className={styles.metaDl}>
+
                 <div>
-                  <dt>공지 ID</dt>
-                  <dd>{selectedNotice?.id || '등록 후 자동 생성'}</dd>
-                </div>
-                <div>
-                  <dt>분류 <em className={styles.requiredMark}>*</em></dt>
+                  <dt>
+                    공지 ID
+                  </dt>
+
                   <dd>
-                    <select value={draftCategory} onChange={(e) => setDraftCategory(e.target.value)} required>
+                    {selectedNotice?.id
+                      || '등록 후 자동 생성'}
+                  </dd>
+                </div>
+
+                <div>
+                  <dt>
+                    분류
+                    {' '}
+                    <em className={styles.requiredMark}>
+                      *
+                    </em>
+                  </dt>
+
+                  <dd>
+                    <select
+                      value={draftCategory}
+                      onChange={(event) =>
+                        setDraftCategory(
+                          event.target.value
+                        )
+                      }
+                      required
+                    >
                       {categories
-                        .filter((c) => c !== '전체 분류')
-                        .map((c) => (
-                          <option key={c} value={c}>
-                            {c}
+                        .filter(
+                          (category) =>
+                            category
+                            !== '전체 분류'
+                        )
+                        .map((category) => (
+                          <option
+                            key={category}
+                            value={category}
+                          >
+                            {category}
                           </option>
                         ))}
                     </select>
                   </dd>
                 </div>
+
                 <div>
-                  <dt>게시 상태 <em className={styles.requiredMark}>*</em></dt>
+                  <dt>
+                    게시 상태
+                    {' '}
+                    <em className={styles.requiredMark}>
+                      *
+                    </em>
+                  </dt>
+
                   <dd>
-                    <select value={draftStatus} onChange={(e) => setDraftStatus(e.target.value)} required>
-                      <option value="published">게시 중</option>
-                      <option value="draft">숨김</option>
+                    <select
+                      value={draftStatus}
+                      onChange={(event) =>
+                        setDraftStatus(
+                          event.target.value
+                        )
+                      }
+                      required
+                    >
+                      <option value="published">
+                        게시 중
+                      </option>
+
+                      <option value="draft">
+                        숨김
+                      </option>
                     </select>
                   </dd>
                 </div>
+
                 <div>
-                  <dt>작성일</dt>
-                  <dd>{isCreating ? '등록 시 자동 기록' : formatDateTime(selectedNotice?.createdAt)}</dd>
+                  <dt>
+                    작성일
+                  </dt>
+
+                  <dd>
+                    {isCreating
+                      ? '등록 시 자동 기록'
+                      : formatDateTime(
+                        selectedNotice
+                          ?.createdAt
+                      )}
+                  </dd>
                 </div>
+
                 <div>
-                  <dt>최근 수정</dt>
-                  <dd>{isCreating ? '수정 시 자동 기록' : formatDateTime(selectedNotice?.updatedAt || selectedNotice?.createdAt)}</dd>
+                  <dt>
+                    최근 수정
+                  </dt>
+
+                  <dd>
+                    {isCreating
+                      ? '수정 시 자동 기록'
+                      : formatDateTime(
+                        selectedNotice
+                          ?.updatedAt
+                        || selectedNotice
+                          ?.createdAt
+                      )}
+                  </dd>
                 </div>
+
                 <div>
-                  <dt>노출 대상</dt>
-                  <dd>{selectedNotice?.target || '전체 회원'}</dd>
+                  <dt>
+                    노출 대상
+                  </dt>
+
+                  <dd>
+                    {selectedNotice?.target
+                      || '전체 회원'}
+                  </dd>
                 </div>
+
                 <div>
-                  <dt>조회수</dt>
-                  <dd>{Number(selectedNotice?.views || 0).toLocaleString()}</dd>
+                  <dt>
+                    조회수
+                  </dt>
+
+                  <dd>
+                    {Number(
+                      selectedNotice?.views
+                      || 0
+                    ).toLocaleString(
+                      'ko-KR'
+                    )}
+                  </dd>
                 </div>
+
               </dl>
+
             </div>
 
+
             <div className={styles.previewSection}>
+
               <h4>
-                {isCreating ? '본문 작성' : '본문 미리 보기 및 편집'}{' '}
-                <em className={styles.requiredMark}>*</em>
+                {isCreating
+                  ? '본문 작성'
+                  : '본문 미리 보기 및 편집'}
+                {' '}
+                <em className={styles.requiredMark}>
+                  *
+                </em>
               </h4>
+
               <textarea
                 rows="6"
                 value={draftContent}
-                onChange={(e) => setDraftContent(e.target.value)}
+                onChange={(event) =>
+                  setDraftContent(
+                    event.target.value
+                  )
+                }
                 placeholder="공지사항 본문을 입력하세요..."
                 required
               />
+
             </div>
 
+
             <div className={styles.stepFooter}>
+
               {!isCreating && (
-                <button type="button" className={styles.deleteBtn} onClick={handleDeleteNotice} disabled={isSaving}>
+                <button
+                  type="button"
+                  className={styles.deleteBtn}
+                  onClick={handleDeleteNotice}
+                  disabled={isSaving}
+                >
                   공지 삭제
                 </button>
               )}
-              <button type="button" className={styles.saveBtn} onClick={handleSaveEdit} disabled={isSaving}>
-                {isSaving ? '저장 중...' : isCreating ? '등록하기' : '저장하기'}
+
+              <button
+                type="button"
+                className={styles.saveBtn}
+                onClick={handleSaveEdit}
+                disabled={isSaving}
+              >
+                {isSaving
+                  ? '저장 중...'
+                  : isCreating
+                    ? '등록하기'
+                    : '저장하기'}
               </button>
+
             </div>
+
           </aside>
+
         ) : (
-          /* 평상시 우측 통계 패널 (도넛 & 바 차트) */
-          <aside className={styles.analyticsColumn} ref={panelRef}>
-            <section className={styles.analyticsCard}>
-              <header className={styles.analyticsHeader}>
-                <h2>공지 상태 분포</h2>
-                <span>STATUS</span>
-              </header>
+
+          <aside
+            className={styles.analyticsColumn}
+            ref={panelRef}
+            aria-label="공지사항 분석"
+          >
+
+            <AdminPanel
+              title="공지 상태 분포"
+              eyebrow="STATUS"
+              padding="compact"
+            >
               <div className={styles.statusOverview}>
+
                 <div
                   className={styles.statusDonut}
                   style={{
-                    '--published-end': `${publishedEndRate}%`,
-                    '--draft-end': `${draftEndRate}%`,
+                    '--published-end':
+                      `${publishedEndRate}%`,
+                    '--draft-end':
+                      `${draftEndRate}%`,
                   }}
-                  data-empty={totalCount === 0}
+                  data-empty={
+                    totalCount === 0
+                  }
                   role="img"
-                  aria-label={`전체 ${totalCount}건 중 게시 중 ${donutPublishedCount}건, 숨김 ${donutDraftCount}건, 중요 고정 ${importantCount}건`}
+                  aria-label={
+                    `전체 ${totalCount}건 중 게시 중 ${donutPublishedCount}건, 숨김 ${donutDraftCount}건, 중요 고정 ${importantCount}건`
+                  }
                 >
-                  <span>전체</span>
-                  <strong>{totalCount}건</strong>
+                  <div>
+                    <span>
+                      전체
+                    </span>
+
+                    <strong>
+                      {totalCount}
+                      <small>
+                        건
+                      </small>
+                    </strong>
+                  </div>
                 </div>
+
                 <ul>
                   <li>
                     <span className={styles.dotProgress} />
-                    <span>게시 중</span>
-                    <strong>{donutPublishedCount}건</strong>
+                    <span>
+                      게시 중
+                    </span>
+                    <strong>
+                      {donutPublishedCount}건
+                    </strong>
                   </li>
+
                   <li>
                     <span className={styles.dotScheduled} />
-                    <span>숨김</span>
-                    <strong>{donutDraftCount}건</strong>
+                    <span>
+                      숨김
+                    </span>
+                    <strong>
+                      {donutDraftCount}건
+                    </strong>
                   </li>
+
                   <li>
                     <span className={styles.dotImportant} />
-                    <span>중요 고정</span>
-                    <strong>{importantCount}건</strong>
+                    <span>
+                      중요 고정
+                    </span>
+                    <strong>
+                      {importantCount}건
+                    </strong>
                   </li>
                 </ul>
-              </div>
-              <p className={styles.analyticsCaption}>중요 고정 공지는 게시 상태보다 우선해 표시됩니다.</p>
-            </section>
 
-            <section className={styles.analyticsCard}>
-              <header className={styles.analyticsHeader}>
-                <h2>분류별 공지 현황</h2>
-                <span>CATEGORY</span>
-              </header>
-              <div className={styles.activityBars}>
-                <div>
-                  <span>배송</span>
-                  <i><b style={{ width: '35%' }} /></i>
-                  <strong>1건</strong>
-                </div>
-                <div>
-                  <span>이벤트</span>
-                  <i><b style={{ width: '70%' }} /></i>
-                  <strong>2건</strong>
-                </div>
-                <div>
-                  <span>정책</span>
-                  <i><b style={{ width: '35%' }} /></i>
-                  <strong>1건</strong>
-                </div>
-                <div>
-                  <span>시스템</span>
-                  <i><b style={{ width: '35%' }} /></i>
-                  <strong>1건</strong>
-                </div>
               </div>
-              <p className={styles.analyticsCaption}>현재 등록 공지 데이터 집계 기준</p>
-            </section>
+
+              <p className={styles.analyticsCaption}>
+                중요 고정 공지는 게시 상태보다
+                우선해 표시됩니다.
+              </p>
+            </AdminPanel>
+
+
+            <AdminPanel
+              title="분류별 공지 현황"
+              eyebrow="CATEGORY"
+              padding="compact"
+            >
+              <div className={styles.activityBars}>
+
+                <div>
+                  <span>
+                    배송
+                  </span>
+
+                  <i>
+                    <b
+                      style={{
+                        width: '35%',
+                      }}
+                    />
+                  </i>
+
+                  <strong>
+                    1건
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    이벤트
+                  </span>
+
+                  <i>
+                    <b
+                      style={{
+                        width: '70%',
+                      }}
+                    />
+                  </i>
+
+                  <strong>
+                    2건
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    정책
+                  </span>
+
+                  <i>
+                    <b
+                      style={{
+                        width: '35%',
+                      }}
+                    />
+                  </i>
+
+                  <strong>
+                    1건
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    시스템
+                  </span>
+
+                  <i>
+                    <b
+                      style={{
+                        width: '35%',
+                      }}
+                    />
+                  </i>
+
+                  <strong>
+                    1건
+                  </strong>
+                </div>
+
+              </div>
+
+              <p className={styles.analyticsCaption}>
+                현재 등록 공지 데이터 집계 기준
+              </p>
+            </AdminPanel>
+
           </aside>
+
         )}
+
       </div>
 
+
       {/* 토스트 알림 */}
+
       {toastMessage && (
-        <div className={styles.toast} role="status">
-          <span>{toastMessage}</span>
-          <button type="button" onClick={() => setToastMessage('')}>×</button>
+        <div
+          className={styles.toast}
+          role="status"
+        >
+          <span>
+            {toastMessage}
+          </span>
+
+          <button
+            type="button"
+            onClick={() =>
+              setToastMessage('')
+            }
+            aria-label="알림 닫기"
+          >
+            ×
+          </button>
         </div>
       )}
+
     </section>
   )
 }
+
 
 export default NoticeManage

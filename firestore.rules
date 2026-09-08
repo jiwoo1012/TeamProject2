@@ -658,6 +658,23 @@ service cloud.firestore {
 
 
     // ========================================
+    // AI RECOMMENDATION LOGS
+    // ========================================
+
+    match /aiRecommendationLogs/{logId} {
+
+      // 관리자 대시보드 / AI 추천 기록 관리에서만 조회
+      allow read:
+        if isAdmin();
+
+      // 생성 / 수정 / 삭제는 Cloud Functions Admin SDK가 처리
+      // 클라이언트 직접 쓰기 금지
+      allow create, update, delete:
+        if false;
+    }
+
+
+    // ========================================
     // DEFAULT DENY
     // ========================================
 

@@ -12,14 +12,19 @@ import {
   where,
 } from 'firebase/firestore'
 
+import AdminEmptyState from '../../components/admin/AdminEmptyState'
+import AdminFilterBar from '../../components/admin/AdminFilterBar'
+import AdminPageHeader from '../../components/admin/AdminPageHeader'
+import AdminPanel from '../../components/admin/AdminPanel'
+import AdminStatusBadge from '../../components/admin/AdminStatusBadge'
+import AdminSummaryCard from '../../components/admin/AdminSummaryCard'
+
 import { subscribeToAuthState } from '../../firebase/auth'
 import { db } from '../../firebase/firebase'
 import {
   getCollection,
   updateDocument,
 } from '../../firebase/firestore'
-
-import adminTopOrnament from '../../assets/images/admin/adminTopOrnament.svg'
 
 import styles from './UserManage.module.scss'
 
@@ -55,6 +60,31 @@ const formatDateTime = (timestamp) => {
     minute: '2-digit',
     hour12: false,
   }).format(date)
+}
+
+
+const formatDateTimeLabel = (date) => {
+  if (!date) return ''
+
+  const year = date.getFullYear()
+
+  const month = String(
+    date.getMonth() + 1
+  ).padStart(2, '0')
+
+  const day = String(
+    date.getDate()
+  ).padStart(2, '0')
+
+  const hour = String(
+    date.getHours()
+  ).padStart(2, '0')
+
+  const minute = String(
+    date.getMinutes()
+  ).padStart(2, '0')
+
+  return `${year}.${month}.${day} ${hour}:${minute}`
 }
 
 
@@ -172,12 +202,19 @@ const UserAvatar = ({ nickname }) => (
 
 
 const SummaryIcon = ({ type }) => {
+  const iconProps = {
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.8,
+    strokeLinecap: 'round',
+    strokeLinejoin: 'round',
+    'aria-hidden': true,
+  }
+
   if (type === 'today') {
     return (
-      <svg
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
+      <svg {...iconProps}>
         <circle cx="9" cy="8" r="3" />
 
         <path d="M3.5 19c.4-4 2.2-6 5.5-6s5.1 2 5.5 6M18 6v6M15 9h6" />
@@ -188,10 +225,7 @@ const SummaryIcon = ({ type }) => {
 
   if (type === 'suspended') {
     return (
-      <svg
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
+      <svg {...iconProps}>
         <circle cx="9" cy="8" r="3" />
 
         <path d="M3.5 19c.4-4 2.2-6 5.5-6 1.3 0 2.4.3 3.3.9M16 16h6" />
@@ -202,12 +236,11 @@ const SummaryIcon = ({ type }) => {
 
   if (type === 'admin') {
     return (
-      <svg
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
+      <svg {...iconProps}>
         <path d="M12 3 19 6v5c0 4.6-2.6 7.8-7 10-4.4-2.2-7-5.4-7-10V6l7-3Z" />
+
         <circle cx="12" cy="10" r="2" />
+
         <path d="M8.8 16c.5-2 1.6-3 3.2-3s2.7 1 3.2 3" />
       </svg>
     )
@@ -215,10 +248,7 @@ const SummaryIcon = ({ type }) => {
 
 
   return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
+    <svg {...iconProps}>
       <circle cx="9" cy="8" r="3" />
       <circle cx="17" cy="9" r="2.5" />
 
@@ -226,18 +256,6 @@ const SummaryIcon = ({ type }) => {
     </svg>
   )
 }
-
-
-const RefreshIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    aria-hidden="true"
-  >
-    <path d="M20 6v5h-5M4 18v-5h5" />
-
-    <path d="M6.1 9a7 7 0 0 1 11.8-2.2L20 11M4 13l2.1 4.2A7 7 0 0 0 17.9 15" />
-  </svg>
-)
 
 
 // ========================================
@@ -255,6 +273,9 @@ const UserManage = () => {
 
   const [isSaving, setIsSaving] =
     useState(false)
+
+  const [lastUpdatedAt, setLastUpdatedAt] =
+    useState(null)
 
   const [searchQuery, setSearchQuery] =
     useState('')
@@ -296,7 +317,8 @@ const UserManage = () => {
   // 회원 조회
   // ========================================
 
-  const loadMembers = useCallback(async () => {
+  const loadMembers = useCallback(
+    async (showRefreshToast = false) => {
     setIsLoading(true)
     setLoadError('')
 
@@ -382,6 +404,13 @@ const UserManage = () => {
 
 
       setMembers(nextMembers)
+      setLastUpdatedAt(new Date())
+
+      if (showRefreshToast) {
+        setToastMessage(
+          '회원 목록을 새로고침했습니다.'
+        )
+      }
 
 
       setSelectedId(
@@ -411,25 +440,46 @@ const UserManage = () => {
 
 
   useEffect(() => {
-    const unsubscribe =
-      subscribeToAuthState((user) => {
-        if (!user) {
-          setMembers([])
-          setIsLoading(false)
+  const unsubscribe =
+    subscribeToAuthState((user) => {
+      if (!user) {
+        setMembers([])
+        setIsLoading(false)
 
-          return
-        }
-
-        loadMembers()
-      })
-
-
-    return () => {
-      if (typeof unsubscribe === 'function') {
-        unsubscribe()
+        return
       }
+
+      loadMembers()
+    })
+
+  return () => {
+    if (typeof unsubscribe === 'function') {
+      unsubscribe()
     }
-  }, [loadMembers])
+  }
+}, [loadMembers])
+
+
+// ========================================
+// Toast 자동 닫기
+// ========================================
+
+useEffect(() => {
+  if (!toastMessage) {
+    return undefined
+  }
+
+  const timer = window.setTimeout(
+    () => {
+      setToastMessage('')
+    },
+    2500
+  )
+
+  return () => {
+    window.clearTimeout(timer)
+  }
+}, [toastMessage])
 
 
   // ========================================
@@ -826,7 +876,10 @@ const UserManage = () => {
       if (
         selectedMember.role === 'admin'
         && selectedMember.status === 'active'
-        && (draftRole !== 'admin' || draftStatus !== 'active')
+        && (
+          draftRole !== 'admin'
+          || draftStatus !== 'active'
+        )
         && activeAdminCount <= 1
       ) {
         setToastMessage(
@@ -911,38 +964,18 @@ const UserManage = () => {
       className={styles.page}
       aria-labelledby="user-manage-title"
     >
-
       {/* ========================================
           제목
       ======================================== */}
 
-      <header className={styles.pageToolbar}>
-  <h1 id="user-manage-title">회원 관리</h1>
-
-  <button
-    type="button"
-    onClick={loadMembers}
-    disabled={isLoading}
-  >
-    <RefreshIcon />
-    {isLoading ? '불러오는 중' : '새로 고침'}
-  </button>
-</header>
-
-
-      {/* ========================================
-          전통 문양
-      ======================================== */}
-
-      <div
-        className={styles.ornamentLine}
-        aria-hidden="true"
-      >
-        <img
-          src={adminTopOrnament}
-          alt=""
-        />
-      </div>
+      <AdminPageHeader
+        title="회원 관리"
+        titleId="user-manage-title"
+        onRefresh={() =>
+          loadMembers(true)
+        }
+        isRefreshing={isLoading}
+      />
 
 
       {/* ========================================
@@ -955,20 +988,31 @@ const UserManage = () => {
       >
         <div className={styles.summaryGrid}>
           {summaryCards.map((card) => (
-            <button
+            <AdminSummaryCard
               key={card.key}
-              type="button"
-              className={`
-                ${styles.summaryCard}
-                ${styles[`summaryCard${card.key}`]}
-                ${
-                  activeSummaryKey
-                    === card.key
-                    ? styles.summaryCardActive
-                    : ''
-                }
-              `}
-              aria-pressed={
+              icon={
+                <SummaryIcon
+                  type={card.key}
+                />
+              }
+              label={card.label}
+              value={
+                card.value.toLocaleString(
+                  'ko-KR'
+                )
+              }
+              unit="명"
+              caption={card.caption}
+              tone={
+                card.key === 'suspended'
+                  ? 'danger'
+                  : card.key === 'admin'
+                    ? 'info'
+                    : card.key === 'today'
+                      ? 'warning'
+                      : 'primary'
+              }
+              active={
                 activeSummaryKey
                 === card.key
               }
@@ -977,38 +1021,7 @@ const UserManage = () => {
                   card.key
                 )
               }
-            >
-              <span
-                className={styles.summaryIcon}
-                aria-hidden="true"
-              >
-                <SummaryIcon
-                  type={card.key}
-                />
-              </span>
-
-              <div className={styles.summaryContent}>
-                <h3>
-                  {card.label}
-                </h3>
-
-                <p>
-                  <strong>
-                    {card.value.toLocaleString(
-                      'ko-KR'
-                    )}
-                  </strong>
-
-                  <span>
-                    명
-                  </span>
-                </p>
-
-                <small>
-                  {card.caption}
-                </small>
-              </div>
-            </button>
+            />
           ))}
         </div>
       </section>
@@ -1019,51 +1032,24 @@ const UserManage = () => {
       ======================================== */}
 
       <div className={styles.managementGrid}>
-
         {/* 회원 목록 */}
+
         <section
           className={styles.memberSection}
           aria-labelledby="member-list-title"
         >
-
           {/* 검색 / 필터 */}
-          <div
-            className={styles.filterBar}
-            aria-label="회원 검색 및 필터"
+
+          <AdminFilterBar
+            searchValue={searchQuery}
+            onSearchChange={(value) => {
+              setSearchQuery(value)
+              setCurrentPage(1)
+            }}
+            searchPlaceholder="이름, 이메일, 회원 ID 검색"
+            searchLabel="회원 검색"
+            onReset={resetFilters}
           >
-            <label className={styles.searchField}>
-              <span className={styles.srOnly}>
-                회원 검색
-              </span>
-
-              <svg
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <circle
-                  cx="11"
-                  cy="11"
-                  r="7"
-                />
-
-                <path d="m16 16 4 4" />
-              </svg>
-
-              <input
-                type="search"
-                value={searchQuery}
-                onChange={(event) => {
-                  setSearchQuery(
-                    event.target.value
-                  )
-
-                  setCurrentPage(1)
-                }}
-                placeholder="이름, 이메일, 회원 ID 검색"
-              />
-            </label>
-
-
             <label className={styles.selectField}>
               <span className={styles.srOnly}>
                 회원 상태
@@ -1152,46 +1138,56 @@ const UserManage = () => {
                 </option>
               </select>
             </label>
-
-
-            <button
-              type="button"
-              className={styles.resetButton}
-              onClick={resetFilters}
-            >
-              초기화
-            </button>
-          </div>
+          </AdminFilterBar>
 
 
           {/* 회원 목록 제목 */}
-          <div className={styles.sectionHeading}>
-            <h2 id="member-list-title">
-              회원 목록
-            </h2>
 
-            <span>
-              {filteredMembers.length.toLocaleString(
-                'ko-KR'
-              )}
+          <div className={styles.sectionHeading}>
+            <div>
+              <h2 id="member-list-title">
+                회원 목록
+              </h2>
+
+            </div>
+
+            <span className={styles.memberCount}>
+              총{' '}
+              <strong>
+                {filteredMembers.length.toLocaleString(
+                  'ko-KR'
+                )}
+              </strong>
               명
             </span>
           </div>
 
 
           {/* 회원 목록 */}
+
           {isLoading ? (
-            <div className={styles.emptyState}>
-              회원 목록을 불러오는 중입니다.
-            </div>
+            <AdminEmptyState
+              title="회원 목록을 불러오는 중입니다."
+              description="잠시만 기다려주세요."
+            />
           ) : loadError ? (
-            <div className={styles.emptyState}>
-              {loadError}
-            </div>
+            <AdminEmptyState
+              title="회원 목록을 불러오지 못했습니다."
+              description={loadError}
+              action={
+                <button
+                  type="button"
+                  onClick={loadMembers}
+                >
+                  다시 불러오기
+                </button>
+              }
+            />
           ) : filteredMembers.length === 0 ? (
-            <div className={styles.emptyState}>
-              검색 결과가 없습니다.
-            </div>
+            <AdminEmptyState
+              title="검색 결과가 없습니다."
+              description="검색어나 필터 조건을 다시 확인해주세요."
+            />
           ) : (
             <div className={styles.tableWrap}>
               <table className={styles.memberTable}>
@@ -1246,6 +1242,7 @@ const UserManage = () => {
                       >
                         <td>
                           <span
+                            className={styles.memberId}
                             title={member.id}
                           >
                             {formatMemberId(
@@ -1255,11 +1252,20 @@ const UserManage = () => {
                         </td>
 
                         <td>
-                          {member.nickname}
+                          <strong
+                            className={
+                              styles.memberName
+                            }
+                          >
+                            {member.nickname}
+                          </strong>
                         </td>
 
                         <td>
                           <span
+                            className={
+                              styles.memberEmail
+                            }
                             title={member.email}
                           >
                             {formatTableEmail(
@@ -1273,28 +1279,39 @@ const UserManage = () => {
                         </td>
 
                         <td>
-                          {member.lastLoginAt}
+                          <span
+                            className={
+                              styles.lastLogin
+                            }
+                          >
+                            {member.lastLoginAt}
+                          </span>
                         </td>
 
                         <td>
-                          <span
-                            className={`
-                              ${styles.statusBadge}
-                              ${styles[member.status]}
-                            `}
+                          <AdminStatusBadge
+                            tone={
+                              member.status
+                              === 'active'
+                                ? 'success'
+                                : 'danger'
+                            }
                           >
                             {
                               statusLabels[
                                 member.status
                               ]
                             }
-                          </span>
+                          </AdminStatusBadge>
                         </td>
 
                         <td>
-                          <span
-                            className={
-                              styles.roleBadge
+                          <AdminStatusBadge
+                            tone={
+                              member.role
+                              === 'admin'
+                                ? 'info'
+                                : 'neutral'
                             }
                           >
                             {
@@ -1302,7 +1319,7 @@ const UserManage = () => {
                                 member.role
                               ]
                             }
-                          </span>
+                          </AdminStatusBadge>
                         </td>
 
                         <td>
@@ -1404,7 +1421,6 @@ const UserManage = () => {
               )}
             </div>
           )}
-
         </section>
 
 
@@ -1413,16 +1429,18 @@ const UserManage = () => {
         ======================================== */}
 
         {selectedMember ? (
-
           // 회원 상세
+
           <aside
             className={styles.detailPanel}
             aria-labelledby="member-detail-title"
           >
             <header className={styles.detailHeader}>
-              <h2 id="member-detail-title">
-                회원 상세
-              </h2>
+              <div>
+                <h2 id="member-detail-title">
+                  회원 상세
+                </h2>
+              </div>
 
               <button
                 type="button"
@@ -1453,6 +1471,7 @@ const UserManage = () => {
                 <small>
                   회원 ID
                   <br />
+
                   {selectedMember.id}
                 </small>
               </div>
@@ -1494,12 +1513,22 @@ const UserManage = () => {
                   </dt>
 
                   <dd>
-                    {
-                      selectedMember
-                        .isAdultVerified
-                        ? '인증 완료'
-                        : '미인증'
-                    }
+                    <AdminStatusBadge
+                      tone={
+                        selectedMember
+                          .isAdultVerified
+                          ? 'success'
+                          : 'neutral'
+                      }
+                      size="small"
+                    >
+                      {
+                        selectedMember
+                          .isAdultVerified
+                          ? '인증 완료'
+                          : '미인증'
+                      }
+                    </AdminStatusBadge>
                   </dd>
                 </div>
               </dl>
@@ -1581,7 +1610,9 @@ const UserManage = () => {
                     {
                       selectedMember.orders
                     }
-                    건
+                    <small>
+                      건
+                    </small>
                   </strong>
                 </article>
 
@@ -1599,7 +1630,9 @@ const UserManage = () => {
                           'ko-KR'
                         )
                     }
-                    원
+                    <small>
+                      원
+                    </small>
                   </strong>
                 </article>
 
@@ -1614,7 +1647,9 @@ const UserManage = () => {
                       selectedMember
                         .wishlist
                     }
-                    개
+                    <small>
+                      개
+                    </small>
                   </strong>
                 </article>
 
@@ -1632,7 +1667,9 @@ const UserManage = () => {
                           'ko-KR'
                         )
                     }
-                    P
+                    <small>
+                      P
+                    </small>
                   </strong>
                 </article>
               </div>
@@ -1705,27 +1742,17 @@ const UserManage = () => {
               </button>
             </footer>
           </aside>
-
         ) : (
-
           // 회원 분석
+
           <aside
             className={styles.analyticsColumn}
             aria-label="회원 분석"
           >
-
-            <section className={styles.analyticsCard}>
-              <header className={styles.analyticsHeader}>
-                <h2>
-                  회원 상태 분포
-                </h2>
-
-                <span>
-                  STATUS
-                </span>
-              </header>
-
-
+            <AdminPanel
+              title="회원 상태 분포"
+              padding="compact"
+            >
               <div className={styles.statusOverview}>
                 <div
                   className={styles.statusDonut}
@@ -1734,16 +1761,21 @@ const UserManage = () => {
                       `${activeRate}%`,
                   }}
                 >
-                  <span>
-                    전체
-                  </span>
+                  <div>
+                    <span>
+                      전체 회원
+                    </span>
 
-                  <strong>
-                    {members.length.toLocaleString(
-                      'ko-KR'
-                    )}
-                    명
-                  </strong>
+                    <strong>
+                      {members.length.toLocaleString(
+                        'ko-KR'
+                      )}
+
+                      <small>
+                        명
+                      </small>
+                    </strong>
+                  </div>
                 </div>
 
 
@@ -1782,30 +1814,35 @@ const UserManage = () => {
                   </li>
                 </ul>
               </div>
-            </section>
+            </AdminPanel>
 
 
-            <section className={styles.analyticsCard}>
-              <header className={styles.analyticsHeader}>
-                <h2>
-                  회원 활동 요약
-                </h2>
-
-                <span>
-                  7 DAYS
-                </span>
-              </header>
-
-
+            <AdminPanel
+              title="회원 활동 요약"
+              padding="compact"
+            >
               <div className={styles.activityBars}>
                 {activityItems.map(
                   (item) => (
                     <div
                       key={item.label}
+                      className={
+                        styles.activityBarItem
+                      }
                     >
-                      <span>
-                        {item.label}
-                      </span>
+                      <div
+                        className={
+                          styles.activityBarHeader
+                        }
+                      >
+                        <span>
+                          {item.label}
+                        </span>
+
+                        <strong>
+                          {item.value}명
+                        </strong>
+                      </div>
 
                       <i>
                         <b
@@ -1821,10 +1858,6 @@ const UserManage = () => {
                           }}
                         />
                       </i>
-
-                      <strong>
-                        {item.value}명
-                      </strong>
                     </div>
                   )
                 )}
@@ -1832,13 +1865,19 @@ const UserManage = () => {
 
 
               <p className={styles.analyticsCaption}>
-                현재 조회 데이터 기준
-              </p>
-            </section>
+                현재 조회 데이터 기준:  
 
+                {lastUpdatedAt && (
+                  <strong>
+                    {formatDateTimeLabel(
+                      lastUpdatedAt
+                    )}
+                  </strong>
+                )}
+              </p>
+            </AdminPanel>
           </aside>
         )}
-
       </div>
 
 
@@ -1866,7 +1905,6 @@ const UserManage = () => {
           </button>
         </div>
       )}
-
     </section>
   )
 }
