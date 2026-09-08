@@ -9,11 +9,13 @@
    FONT
 ======================================== */
 
-/*
-  JS Arirang HON 폰트를 로컬 파일로 사용하는 경우
-  @font-face는 폰트 파일 경로가 확정된 후 추가
-*/
-
+@font-face {
+  font-family: 'JS Arirang HON';
+  src: url('../assets/fonts/JSArirangHON.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* ========================================
    ROOT
