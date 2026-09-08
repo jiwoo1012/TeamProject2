@@ -1,6 +1,7 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 
@@ -32,6 +33,8 @@ import pairings from '../../data/pairings.json'
 
 import cartTopOrnament from '../../assets/images/mypage/cartTopOrnament.svg'
 import cartStepOrnament from '../../assets/images/mypage/cartStepOrnament.svg'
+
+import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 
 import styles from './Cart.module.scss'
 
@@ -400,6 +403,8 @@ const CartCheckbox = ({
 
 
 const Cart = () => {
+  const pageRef = useRef(null)
+
   const navigate =
     useNavigate()
 
@@ -982,8 +987,10 @@ const Cart = () => {
       className={
         styles.page
       }
+      ref={pageRef}
       aria-labelledby="cart-title"
     >
+      <MobileTopButton contentRef={pageRef} />
       <img
         className={
           styles.topOrnament

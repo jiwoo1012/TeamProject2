@@ -1,14 +1,44 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { onAuthStateChanged } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 
 import { auth, db } from '../../firebase/firebase'
 
 import GuestChoiceModal from './GuestChoiceModal'
+import makdongImage from '../../assets/characters/M007_Poses03.png'
+import sweetIcon from '../../assets/icons/preferenceQuestions/sweetness-sweet.png'
+import sourIcon from '../../assets/icons/preferenceQuestions/sourness-high.png'
+import savoryIcon from '../../assets/icons/preferenceQuestions/aroma-mild.png'
+import cleanIcon from '../../assets/icons/preferenceQuestions/body-light.png'
+import dryIcon from '../../assets/icons/preferenceQuestions/sweetness-dry.png'
+import richIcon from '../../assets/icons/preferenceQuestions/body-full.png'
+import lightIcon from '../../assets/icons/preferenceQuestions/ABV-light.png'
+import mediumIcon from '../../assets/icons/preferenceQuestions/ABV-moderate.png'
+import strongIcon from '../../assets/icons/preferenceQuestions/ABV-strong.png'
+import veryStrongIcon from '../../assets/icons/preferenceQuestions/ABV-verystrong.png'
+import pawIcon from '../../assets/images/brand/makdong-paw-mark.png'
 
 import styles from './AiSurvey.module.scss'
 
+// 화면 장식 전용 정보. 질문 데이터와 추천에 전달하는 값은 변경하지 않는다.
+const QUESTION_CAPTIONS = {
+  taste: '오늘의 입맛', alcohol: '편안한 한 잔', mood: '오늘의 시간',
+  food: '곁들이는 한 접시', avoidIngredients: '마지막 안전 확인',
+}
+const OPTION_ICONS = {
+  taste: { sweet: sweetIcon, sour: sourIcon, savory: savoryIcon, clean: cleanIcon,
+    dry: dryIcon, bitter: dryIcon, rich: richIcon },
+  alcohol: { light: lightIcon, medium: mediumIcon, strong: strongIcon, veryStrong: veryStrongIcon },
+}
+const TASTE_NOTES = {
+  sweet: '기분이 사르르 녹는, 부드러운 한 잔',
+  sour: '입안에 산뜻하게 번지는 생기',
+  savory: '천천히 음미하는 편안한 풍미',
+  clean: '군더더기 없이 맑은 마무리',
+  dry: '은은한 쌉싸름함과 담백한 여운',
+  unknown: '막동이가 알아서 추천해줄게요!',
+}
 
 // ========================================
 // 로그인 회원용 질문
@@ -414,10 +444,13 @@ const GUEST_QUESTIONS = [
 
 const AiSurvey = () => {
   const navigate = useNavigate()
+  const location = useLocation()
 
   const [isAuthLoading, setIsAuthLoading] = useState(true)
   const [isMember, setIsMember] = useState(false)
-  const [isGuestMode, setIsGuestMode] = useState(false)
+  const [isGuestMode, setIsGuestMode] = useState(
+    () => location.state?.isGuestMode === true
+  )
   const [userPreference, setUserPreference] = useState(null)
 
   const [currentStep, setCurrentStep] = useState(0)
@@ -874,9 +907,7 @@ const AiSurvey = () => {
                 styles.surveyType
               }
             >
-              {isMember
-                ? '오늘의 주안상'
-                : '막둥이와 취향 찾기'}
+              막동이와 취향 찾기
             </span>
 
             <div
@@ -895,6 +926,11 @@ const AiSurvey = () => {
           </div>
 
           <div
+            role="progressbar"
+            aria-label="취향 찾기 진행 상황"
+            aria-valuemin={0}
+            aria-valuemax={questions.length}
+            aria-valuenow={currentStep + 1}
             className={
               styles.progressBar
             }
@@ -920,24 +956,21 @@ const AiSurvey = () => {
           }`}
         >
 
+          <div className={styles.questionHero}>
+          <img className={styles.guideCharacter} src={makdongImage} alt="취향 선택을 안내하는 막동이" />
+
+          <div className={styles.questionHeader}>
           {/* Q */}
           <span
             className={
               styles.questionNumber
             }
           >
-            {currentQuestion.isSafety
-              ? 'SAFETY'
-              : `Q${currentStep + 1}`}
+            {String(currentStep + 1).padStart(2, '0')}. {QUESTION_CAPTIONS[currentQuestion.id]}
           </span>
 
 
           {/* 제목 */}
-          <div
-            className={
-              styles.questionHeader
-            }
-          >
             <h1
               className={
                 styles.questionTitle
@@ -965,6 +998,7 @@ const AiSurvey = () => {
                 {currentQuestion.hint}
               </span>
             )}
+          </div>
           </div>
 
 
@@ -999,7 +1033,7 @@ const AiSurvey = () => {
                         isSelected
                           ? styles.selected
                           : ''
-                      }`}
+                      } ${option.value === 'unknown' ? styles.unknownOption : ''}`}
                       onClick={() =>
                         handleSelect(
                           currentQuestion,
@@ -1015,15 +1049,12 @@ const AiSurvey = () => {
                           styles.optionContent
                         }
                       >
-                        <span
-                          className={
-                            styles.optionEmoji
-                          }
-                        >
-                          {
-                            option.emoji
-                          }
-                        </span>
+                        <img
+                          className={styles.optionIcon}
+                          src={OPTION_ICONS[currentQuestion.id]?.[option.value] || pawIcon}
+                          alt=""
+                          aria-hidden="true"
+                        />
 
                         <div
                           className={
@@ -1051,31 +1082,22 @@ const AiSurvey = () => {
                               }
                             </span>
                           )}
+                          {!option.subLabel && currentQuestion.id === 'taste' && TASTE_NOTES[option.value] && (
+                            <span className={styles.optionSubLabel}>{TASTE_NOTES[option.value]}</span>
+                          )}
                         </div>
                       </div>
 
 
                       <span
+                        aria-hidden="true"
                         className={`${styles.selectIndicator} ${
                           isSelected
                             ? styles.selectIndicatorActive
                             : ''
                         }`}
                       >
-                        {currentQuestion.type ===
-                        'multiple' ? (
-                          isSelected
-                            ? '✓'
-                            : ''
-                        ) : (
-                          <span
-                            className={
-                              isSelected
-                                ? styles.radioDot
-                                : ''
-                            }
-                          />
-                        )}
+                        {isSelected ? '✓' : ''}
                       </span>
                     </button>
                   )
@@ -1211,7 +1233,7 @@ const AiSurvey = () => {
                 handlePrev
               }
             >
-              ← 이전
+              ← 이전으로
             </button>
 
             <button
@@ -1227,8 +1249,8 @@ const AiSurvey = () => {
               }
             >
               {isLastQuestion
-                ? '막둥이 추천 보기'
-                : '다음으로'}
+                ? '막동이 추천 보기'
+                : '막동이에게 알려주기'}
 
               <span>
                 →

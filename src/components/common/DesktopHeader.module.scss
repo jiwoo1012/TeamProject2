@@ -188,7 +188,7 @@
 
   padding: 0;
 
-  color: inherit;
+  color: $color-text-primary;
 
   background: transparent;
 
@@ -198,29 +198,42 @@
 
   cursor: pointer;
 
-
-  img {
-    display: block;
-
-    width: 50px;
-    height: 50px;
-
-    object-fit: contain;
-
-    transition:
-      opacity $transition-fast ease,
-      transform $transition-fast ease;
-  }
+  transition:
+    color $transition-fast ease;
 
 
   &:hover {
-    img {
-      opacity: 0.65;
+    color: $color-primary;
 
+    .iconGlyph {
       transform:
         translateY(-1px);
     }
   }
+}
+
+
+.iconGlyph {
+  display: block;
+
+  width: 50px;
+  height: 50px;
+
+  background-color: currentColor;
+
+  mask-image: var(--icon-src);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+
+  -webkit-mask-image: var(--icon-src);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+
+  transition:
+    background-color $transition-fast ease,
+    transform $transition-fast ease;
 }
 
 
@@ -583,36 +596,47 @@
 
   z-index: $z-dropdown;
 
+  display: grid;
+  grid-template-rows: 0fr;
+
   width: 100%;
 
   padding: 0;
 
-  background:
-    rgba($color-taupe, 0.96);
+  background: $color-bg url('../../assets/images/common/header-hanji2.webp') center / cover no-repeat;
 
   opacity: 0;
-
-  visibility: hidden;
-
-  transform:
-    translateY(-6px);
 
   pointer-events: none;
 
   transition:
-    opacity $transition-fast ease,
-    visibility $transition-fast ease,
-    transform $transition-base ease;
+    grid-template-rows $transition-base cubic-bezier(.22, 1, .36, 1),
+    opacity $transition-fast ease;
+
+  &::after {
+    content: '';
+
+    position: absolute;
+    bottom: -24px;
+    left: 0;
+    z-index: 1;
+
+    width: 100%;
+    aspect-ratio: 2103 / 748;
+
+    background: url('../../assets/images/common/header-hanji.webp') center top / 100% auto no-repeat;
+
+    transform: translateY(50%);
+
+    pointer-events: none;
+  }
 }
 
 
 .megaMenuOpen {
+  grid-template-rows: 1fr;
+
   opacity: 1;
-
-  visibility: visible;
-
-  transform:
-    translateY(0);
 
   pointer-events: auto;
 }
@@ -621,15 +645,25 @@
 .megaContainer {
   @include container;
 
+  position: relative;
+  z-index: 2;
+
   display: flex;
 
-  min-height: 265px;
+  min-height: 0;
+  overflow: hidden;
 
+  padding: 0;
+
+  color: $color-text-primary;
+}
+
+
+.megaMenuOpen .megaContainer {
   padding:
     $space-8
-    0;
-
-  color: $color-white;
+    0
+    $space-16;
 }
 
 
@@ -666,7 +700,7 @@
   padding-left: $space-4;
 
   color:
-    rgba($color-white, 0.84);
+    $color-text-secondary;
 
   font-size: $font-size-sm;
 
@@ -688,7 +722,7 @@
     width: 2px;
     height: 0;
 
-    background: $color-primary-light;
+    background: $color-primary;
 
     transform:
       translateY(-50%);
@@ -699,7 +733,7 @@
 
 
   &:hover {
-    color: $color-white;
+    color: $color-primary;
 
     padding-left: $space-5;
 
@@ -724,7 +758,7 @@
   border-left:
     1px
     solid
-    rgba($color-white, 0.2);
+    $color-border;
 }
 
 
@@ -765,7 +799,7 @@
     margin: 0;
 
     color:
-      rgba($color-white, 0.76);
+      $color-text-secondary;
 
     font-size: $font-size-sm;
 
@@ -801,7 +835,7 @@
     $space-4;
 
   color:
-    rgba($color-white, 0.55);
+    $color-text-muted;
 
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
@@ -818,7 +852,7 @@
   border-left:
     1px
     solid
-    rgba($color-white, 0.2);
+    $color-border;
 }
 
 
@@ -844,7 +878,7 @@
     gap: $space-2;
 
     color:
-      rgba($color-white, 0.72);
+      $color-text-secondary;
 
     font-size: 11px;
 
@@ -855,7 +889,7 @@
 
 
     &:hover {
-      color: $color-white;
+      color: $color-primary;
     }
   }
 }
@@ -875,7 +909,7 @@
   display: flex;
   flex-direction: column;
 
-  color: $color-white;
+  color: $color-text-primary;
 
   text-decoration: none;
 
@@ -900,7 +934,7 @@
   overflow: hidden;
 
   background:
-    rgba($color-white, 0.14);
+    $color-surface;
 
   border-radius: $radius-lg;
 
@@ -925,7 +959,7 @@
   margin-bottom: 3px;
 
   color:
-    rgba($color-white, 0.76);
+    $color-text-muted;
 
   font-size: 10px;
 }

@@ -5,6 +5,7 @@ import { getDocument } from '../../firebase/firestore'
 import { getEventParticipationAvailability } from '../../services/eventParticipation'
 import eventsData from '../../data/events.json'
 import { PATHS } from '../../routes/paths'
+import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 import cardsImage from '../../assets/images/eventPage/cards.png'
 import oImage from '../../assets/images/eventPage/o.png'
 import xImage from '../../assets/images/eventPage/x.png'
@@ -51,6 +52,7 @@ const formatDate = (date) => {
 const EventReady = () => {
   const { eventType } = useParams()
   const builtInConfig = EVENT_READY_CONFIG[eventType]
+  const pageRef = useRef(null)
   const loginNoticeTimerRef = useRef(null)
   const [currentUser, setCurrentUser] = useState(undefined)
   const [loginNotice, setLoginNotice] = useState('')
@@ -182,7 +184,8 @@ const EventReady = () => {
       : `전체 ${event.participationLimit.maxCount}회 참여 가능!`
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} ref={pageRef}>
+      <MobileTopButton contentRef={pageRef} />
       <section className={styles.hero} aria-labelledby="event-ready-title">
         {builtInConfig && (
           <div className={`${styles.sideVisual} ${styles.leftVisual}`} aria-hidden="true">

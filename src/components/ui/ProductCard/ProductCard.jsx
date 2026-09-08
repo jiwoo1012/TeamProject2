@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import styles from './ProductCard.module.scss'
 
-const ProductCard = ({ product, onAddToCart, onToggleWish, isWished = false }) => {
+const ProductCard = ({ product, hoverImageSrc, onAddToCart, onToggleWish, isWished = false }) => {
+  const [loadedHoverImage, setLoadedHoverImage] = useState(null)
   const discountRate = Number.parseInt(product.discountRate, 10) || 0
   const salePrice = Math.round(product.price * (1 - discountRate / 100))
   const isSoldOut = product.status === 'soldout' || Number(product.stock) <= 0
@@ -9,6 +11,18 @@ const ProductCard = ({ product, onAddToCart, onToggleWish, isWished = false }) =
   const productImage = (
     <>
       <img className={styles.image} src={product.imageSrc} alt={product.productName} loading="lazy" />
+      {hoverImageSrc && hoverImageSrc !== product.imageSrc && (
+        <img
+          key={hoverImageSrc}
+          className={`${styles.image} ${styles.hoverImage} ${loadedHoverImage === hoverImageSrc ? styles.hoverImageReady : ''}`}
+          src={hoverImageSrc}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          onLoad={() => setLoadedHoverImage(hoverImageSrc)}
+          onError={() => setLoadedHoverImage(null)}
+        />
+      )}
       {isSoldOut && (
         <span className={styles.soldOutOverlay} aria-label="품절 상품">
           품절

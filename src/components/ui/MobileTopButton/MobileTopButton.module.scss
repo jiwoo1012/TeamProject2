@@ -28,7 +28,7 @@
     cursor: pointer;
     transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease;
 
-    svg { width: 22px; height: 22px; transition: transform 220ms ease; }
+    svg { width: 24px; height: 24px; transition: transform 220ms ease; }
     &:hover { background: $color-primary; color: $color-bg; border-color: $color-primary; }
     &:hover svg { transform: translateY(-3px); }
     &:focus-visible { outline: 2px solid $color-primary; outline-offset: $space-1; }

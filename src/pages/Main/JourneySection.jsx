@@ -137,8 +137,9 @@ const JourneySection = ({ onSkip }) => {
       // Journey가 처음 열렸을 때 각 이미지의 투명도와 크기를 초기화합니다.
       gsap.set(sceneElements, { opacity: 0, scale: 1.06 })
       gsap.set(sceneElements[0], { opacity: 1, scale: 1 })
-      gsap.set(handRef.current, { autoAlpha: 0, xPercent: -7, yPercent: -8 })
-      gsap.set(handleHandRef.current, { autoAlpha: 0, xPercent: -18, yPercent: -20 })
+      // 이미지의 투명 여백을 포함한 손끝 위치를 마우스 좌표에 맞춥니다.
+      gsap.set(handRef.current, { autoAlpha: 0, xPercent: -17, yPercent: -13 })
+      gsap.set(handleHandRef.current, { autoAlpha: 0, xPercent: -9, yPercent: -9 })
       gsap.set(bellRef.current, { autoAlpha: 1 })
       gsap.set(makdongPeekRef.current, { autoAlpha: 0, xPercent: 38, rotate: 2 })
       gsap.set(makdongBundleRef.current, { autoAlpha: 0, yPercent: 42, scale: 0.92 })
@@ -428,10 +429,10 @@ const JourneySection = ({ onSkip }) => {
 
       const canTrackPointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
       if (stage && canTrackPointer && !isMobilePlayback) {
-        const moveHandX = gsap.quickTo(handRef.current, 'x', { duration: 0.12, ease: 'power2.out' })
-        const moveHandY = gsap.quickTo(handRef.current, 'y', { duration: 0.12, ease: 'power2.out' })
-        const moveHandleHandX = gsap.quickTo(handleHandRef.current, 'x', { duration: 0.12, ease: 'power2.out' })
-        const moveHandleHandY = gsap.quickTo(handleHandRef.current, 'y', { duration: 0.12, ease: 'power2.out' })
+        const moveHandX = gsap.quickSetter(handRef.current, 'x', 'px')
+        const moveHandY = gsap.quickSetter(handRef.current, 'y', 'px')
+        const moveHandleHandX = gsap.quickSetter(handleHandRef.current, 'x', 'px')
+        const moveHandleHandY = gsap.quickSetter(handleHandRef.current, 'y', 'px')
         let isHandleMode = null
 
         const isFirstScene = () => {
