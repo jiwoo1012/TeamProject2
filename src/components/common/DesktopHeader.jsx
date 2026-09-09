@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
-import { doc, getDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, onSnapshot } from 'firebase/firestore'
 
 import { auth, db } from '../../firebase/firebase'
+import { getCart } from '../../utils/cartStorage'
 
 // 상품 데이터
 import {
@@ -128,8 +129,18 @@ const DesktopHeader = () => {
   const [openMenu, setOpenMenu] = useState(null)
   const [hoveredShopCategory, setHoveredShopCategory] = useState('liquor')
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isAllMenuOpen, setIsAllMenuOpen] = useState(false)
+  const [openAllMenuSection, setOpenAllMenuSection] = useState('shop')
   const [user, setUser] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [wishlistCount, setWishlistCount] = useState(0)
+  const [cartCount, setCartCount] = useState(() => {
+    try {
+      return getCart().length
+    } catch {
+      return 0
+    }
+  })
 
 
   /* ========================================
@@ -178,6 +189,178 @@ const DesktopHeader = () => {
 
 
   /* ========================================
+     찜 개수 실시간 반영
+  ======================================== */
+
+  useEffect(() => {
+    if (!user || user.isAnonymous) {
+      setWishlistCount(0)
+      return undefined
+    }
+
+    const wishlistRef = collection(
+      db,
+      'users',
+      user.uid,
+      'wishlist'
+    )
+
+    const unsubscribe = onSnapshot(
+      wishlistRef,
+      (snapshot) => {
+        setWishlistCount(snapshot.size)
+      },
+      (error) => {
+        console.error(
+          '찜 개수 조회 실패:',
+          error
+        )
+
+        setWishlistCount(0)
+      }
+    )
+
+    return unsubscribe
+  }, [user])
+
+
+  /* ========================================
+     장바구니 개수 동기화
+
+     같은 탭에서 장바구니를 담거나 삭제한 경우에도
+     바로 숫자가 바뀌도록 클릭 직후 저장값을 다시 읽는다.
+  ======================================== */
+
+  useEffect(() => {
+    let refreshTimer = null
+
+    const refreshCartCount = () => {
+      try {
+        setCartCount(getCart().length)
+      } catch (error) {
+        console.error(
+          '장바구니 개수 조회 실패:',
+          error
+        )
+
+        setCartCount(0)
+      }
+    }
+
+    const scheduleRefresh = () => {
+      window.clearTimeout(refreshTimer)
+
+      refreshTimer = window.setTimeout(
+        refreshCartCount,
+        80
+      )
+    }
+
+    const handleStorage = () => {
+      refreshCartCount()
+    }
+
+    refreshCartCount()
+
+    document.addEventListener(
+      'click',
+      scheduleRefresh,
+      true
+    )
+
+    window.addEventListener(
+      'storage',
+      handleStorage
+    )
+
+    window.addEventListener(
+      'focus',
+      refreshCartCount
+    )
+
+    return () => {
+      window.clearTimeout(refreshTimer)
+
+      document.removeEventListener(
+        'click',
+        scheduleRefresh,
+        true
+      )
+
+      window.removeEventListener(
+        'storage',
+        handleStorage
+      )
+
+      window.removeEventListener(
+        'focus',
+        refreshCartCount
+      )
+    }
+  }, [])
+
+
+  /* ========================================
+     전체메뉴 ESC / 바깥 클릭 / 스크롤 잠금
+  ======================================== */
+
+  useEffect(() => {
+    if (!isAllMenuOpen) {
+      return undefined
+    }
+
+    const previousBodyOverflow =
+      document.body.style.overflow
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setIsAllMenuOpen(false)
+      }
+    }
+
+    const handlePointerDown = (event) => {
+      const target = event.target
+
+      if (
+        target.closest?.(`.${styles.allMenuDrawer}`) ||
+        target.closest?.(`.${styles.allMenuButton}`)
+      ) {
+        return
+      }
+
+      setIsAllMenuOpen(false)
+    }
+
+    document.body.style.overflow = 'hidden'
+
+    document.addEventListener(
+      'keydown',
+      handleKeyDown
+    )
+
+    document.addEventListener(
+      'pointerdown',
+      handlePointerDown
+    )
+
+    return () => {
+      document.body.style.overflow =
+        previousBodyOverflow
+
+      document.removeEventListener(
+        'keydown',
+        handleKeyDown
+      )
+
+      document.removeEventListener(
+        'pointerdown',
+        handlePointerDown
+      )
+    }
+  }, [isAllMenuOpen])
+
+
+  /* ========================================
      로그아웃
   ======================================== */
 
@@ -187,6 +370,7 @@ const DesktopHeader = () => {
 
       closeSearch()
       closeMegaMenu()
+      setIsAllMenuOpen(false)
 
       navigate('/')
     } catch (error) {
@@ -204,6 +388,7 @@ const DesktopHeader = () => {
 
   const openMegaMenu = (menu) => {
     setIsSearchOpen(false)
+    setIsAllMenuOpen(false)
     setOpenMenu(menu)
   }
 
@@ -219,9 +404,35 @@ const DesktopHeader = () => {
 
   const toggleSearch = () => {
     closeMegaMenu()
+    setIsAllMenuOpen(false)
 
     setIsSearchOpen(
       (prev) => !prev
+    )
+  }
+
+
+  const toggleAllMenu = () => {
+    closeMegaMenu()
+    closeSearch()
+
+    setIsAllMenuOpen(
+      (prev) => !prev
+    )
+  }
+
+
+  const closeAllMenu = () => {
+    setIsAllMenuOpen(false)
+  }
+
+
+  const toggleAllMenuSection = (section) => {
+    setOpenAllMenuSection(
+      (current) =>
+        current === section
+          ? null
+          : section
     )
   }
 
@@ -282,6 +493,32 @@ const DesktopHeader = () => {
           styles.headerInner
         }
       >
+        <button
+          type="button"
+          className={`${styles.allMenuButton} ${
+            isAllMenuOpen
+              ? styles.allMenuButtonActive
+              : ''
+          }`}
+          aria-label={
+            isAllMenuOpen
+              ? '전체 메뉴 닫기'
+              : '전체 메뉴 열기'
+          }
+          aria-expanded={isAllMenuOpen}
+          aria-controls="desktop-all-menu"
+          onClick={toggleAllMenu}
+        >
+          <span
+            className={styles.hamburgerIcon}
+            aria-hidden="true"
+          >
+            <span />
+            <span />
+            <span />
+          </span>
+        </button>
+
         <div
           className={
             styles.headerContainer
@@ -292,13 +529,19 @@ const DesktopHeader = () => {
               GNB
           ======================================== */}
 
-          <nav
+          <div
             className={
-              styles.gnb
+              styles.leftNavigation
             }
           >
+            <nav
+              className={
+                styles.gnb
+              }
+              aria-label="주요 메뉴"
+            >
 
-            {/* BRAND */}
+              {/* BRAND */}
 
             <div
               className={
@@ -388,7 +631,8 @@ const DesktopHeader = () => {
               </Link>
             </div>
 
-          </nav>
+            </nav>
+          </div>
 
 
           {/* ========================================
@@ -406,9 +650,10 @@ const DesktopHeader = () => {
             onMouseEnter={
               closeMegaMenu
             }
-            onClick={
-              closeSearch
-            }
+            onClick={() => {
+              closeSearch()
+              closeAllMenu()
+            }}
           >
             <img
               src={jajakLogo}
@@ -543,19 +788,29 @@ const DesktopHeader = () => {
 
             <Link
               to="/mypage/wishlist"
-              className={
-                styles.iconButton
-              }
-              aria-label="찜 목록"
-              onClick={
-                closeSearch
-              }
+              className={`${styles.iconButton} ${styles.countIconButton}`}
+              aria-label={`찜 목록 ${wishlistCount}개`}
+              onClick={() => {
+                closeSearch()
+                closeAllMenu()
+              }}
             >
               <span
                 className={styles.iconGlyph}
                 style={{ '--icon-src': `url(${wishlistIcon})` }}
                 aria-hidden="true"
               />
+
+              {wishlistCount > 0 && (
+                <span
+                  className={styles.countBadge}
+                  aria-hidden="true"
+                >
+                  {wishlistCount > 99
+                    ? '99+'
+                    : wishlistCount}
+                </span>
+              )}
             </Link>
 
 
@@ -563,19 +818,29 @@ const DesktopHeader = () => {
 
             <Link
               to="/cart"
-              className={
-                styles.iconButton
-              }
-              aria-label="장바구니"
-              onClick={
-                closeSearch
-              }
+              className={`${styles.iconButton} ${styles.countIconButton}`}
+              aria-label={`장바구니 ${cartCount}개`}
+              onClick={() => {
+                closeSearch()
+                closeAllMenu()
+              }}
             >
               <span
                 className={styles.iconGlyph}
                 style={{ '--icon-src': `url(${cartIcon})` }}
                 aria-hidden="true"
               />
+
+              {cartCount > 0 && (
+                <span
+                  className={styles.countBadge}
+                  aria-hidden="true"
+                >
+                  {cartCount > 99
+                    ? '99+'
+                    : cartCount}
+                </span>
+              )}
             </Link>
 
           </div>
@@ -599,6 +864,534 @@ const DesktopHeader = () => {
           recommendedProducts
         }
       />
+
+
+      {/* ========================================
+          전체메뉴 - 왼쪽 슬라이드 드로어
+      ======================================== */}
+
+      <div
+        className={`${styles.allMenuBackdrop} ${
+          isAllMenuOpen
+            ? styles.allMenuBackdropOpen
+            : ''
+        }`}
+        aria-hidden="true"
+        onClick={closeAllMenu}
+      />
+
+      <aside
+        id="desktop-all-menu"
+        className={`${styles.allMenuDrawer} ${
+          isAllMenuOpen
+            ? styles.allMenuDrawerOpen
+            : ''
+        }`}
+        aria-hidden={!isAllMenuOpen}
+        aria-label="전체 메뉴"
+      >
+        <div
+          className={
+            styles.allMenuIntro
+          }
+        >
+          <span>
+            ALL MENU
+          </span>
+
+          <h2>
+            자작 둘러보기
+          </h2>
+
+          <p>
+            자작의 모든 메뉴를
+            <br />
+            한눈에 둘러보세요.
+          </p>
+        </div>
+
+
+        <nav
+          className={
+            styles.allMenuAccordion
+          }
+          aria-label="사이트 전체 메뉴"
+        >
+          {/* BRAND */}
+          <section
+            className={
+              styles.allMenuSection
+            }
+          >
+            <button
+              type="button"
+              className={
+                styles.allMenuTrigger
+              }
+              aria-expanded={
+                openAllMenuSection === 'brand'
+              }
+              onClick={() =>
+                toggleAllMenuSection('brand')
+              }
+            >
+              <span>
+                <small>BRAND</small>
+                <strong>브랜드</strong>
+              </span>
+
+              <i
+                className={`${styles.accordionIcon} ${
+                  openAllMenuSection === 'brand'
+                    ? styles.accordionIconOpen
+                    : ''
+                }`}
+                aria-hidden="true"
+              />
+            </button>
+
+            <div
+              className={`${styles.allMenuPanel} ${
+                openAllMenuSection === 'brand'
+                  ? styles.allMenuPanelOpen
+                  : ''
+              }`}
+            >
+              <div
+                className={
+                  styles.allMenuPanelInner
+                }
+              >
+                <Link
+                  to="/brand"
+                  className={
+                    styles.drawerLink
+                  }
+                  onClick={closeAllMenu}
+                >
+                  브랜드 소개
+                </Link>
+
+                <Link
+                  to="/brand/makdong"
+                  className={
+                    styles.drawerLink
+                  }
+                  onClick={closeAllMenu}
+                >
+                  막둥이 소개
+                </Link>
+              </div>
+            </div>
+          </section>
+
+
+          {/* SHOP */}
+          <section
+            className={
+              styles.allMenuSection
+            }
+          >
+            <button
+              type="button"
+              className={
+                styles.allMenuTrigger
+              }
+              aria-expanded={
+                openAllMenuSection === 'shop'
+              }
+              onClick={() =>
+                toggleAllMenuSection('shop')
+              }
+            >
+              <span>
+                <small>SHOP</small>
+                <strong>스토어</strong>
+              </span>
+
+              <i
+                className={`${styles.accordionIcon} ${
+                  openAllMenuSection === 'shop'
+                    ? styles.accordionIconOpen
+                    : ''
+                }`}
+                aria-hidden="true"
+              />
+            </button>
+
+            <div
+              className={`${styles.allMenuPanel} ${
+                openAllMenuSection === 'shop'
+                  ? styles.allMenuPanelOpen
+                  : ''
+              }`}
+            >
+              <div
+                className={
+                  styles.allMenuPanelInner
+                }
+              >
+                <Link
+                  to="/shop"
+                  className={
+                    styles.drawerLink
+                  }
+                  onClick={closeAllMenu}
+                >
+                  전체 상품
+                </Link>
+
+                <div
+                  className={
+                    styles.drawerSubGroup
+                  }
+                >
+                  <Link
+                    to="/shop?category=liquor"
+                    className={
+                      styles.drawerSubTitle
+                    }
+                    onClick={closeAllMenu}
+                  >
+                    전통주
+                  </Link>
+
+                  <div
+                    className={
+                      styles.drawerSubLinks
+                    }
+                  >
+                    {shopSubcategories.liquor.items.map(
+                      ({ label, to }) => (
+                        <Link
+                          to={to}
+                          onClick={closeAllMenu}
+                          key={label}
+                        >
+                          {label}
+                        </Link>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                <div
+                  className={
+                    styles.drawerSubGroup
+                  }
+                >
+                  <Link
+                    to="/shop?category=food"
+                    className={
+                      styles.drawerSubTitle
+                    }
+                    onClick={closeAllMenu}
+                  >
+                    안주
+                  </Link>
+
+                  <div
+                    className={
+                      styles.drawerSubLinks
+                    }
+                  >
+                    {shopSubcategories.food.items.map(
+                      ({ label, to }) => (
+                        <Link
+                          to={to}
+                          onClick={closeAllMenu}
+                          key={label}
+                        >
+                          {label}
+                        </Link>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                <Link
+                  to="/shop?category=glass"
+                  className={
+                    styles.drawerLink
+                  }
+                  onClick={closeAllMenu}
+                >
+                  잔
+                </Link>
+
+                <Link
+                  to="/shop?category=gift"
+                  className={
+                    styles.drawerLink
+                  }
+                  onClick={closeAllMenu}
+                >
+                  선물 세트
+                </Link>
+              </div>
+            </div>
+          </section>
+
+
+          {/* AI */}
+          <section
+            className={
+              styles.allMenuSection
+            }
+          >
+            <button
+              type="button"
+              className={
+                styles.allMenuTrigger
+              }
+              aria-expanded={
+                openAllMenuSection === 'ai'
+              }
+              onClick={() =>
+                toggleAllMenuSection('ai')
+              }
+            >
+              <span>
+                <small>AI CURATOR</small>
+                <strong>AI 추천</strong>
+              </span>
+
+              <i
+                className={`${styles.accordionIcon} ${
+                  openAllMenuSection === 'ai'
+                    ? styles.accordionIconOpen
+                    : ''
+                }`}
+                aria-hidden="true"
+              />
+            </button>
+
+            <div
+              className={`${styles.allMenuPanel} ${
+                openAllMenuSection === 'ai'
+                  ? styles.allMenuPanelOpen
+                  : ''
+              }`}
+            >
+              <div
+                className={
+                  styles.allMenuPanelInner
+                }
+              >
+                <Link
+                  to="/ai"
+                  className={
+                    styles.drawerLink
+                  }
+                  onClick={closeAllMenu}
+                >
+                  주안상 추천 받기
+                </Link>
+
+                <Link
+                  to="/mypage/preference"
+                  className={
+                    styles.drawerLink
+                  }
+                  onClick={closeAllMenu}
+                >
+                  내 취향 분석
+                </Link>
+
+                <Link
+                  to="/mypage/ai-history"
+                  className={
+                    styles.drawerLink
+                  }
+                  onClick={closeAllMenu}
+                >
+                  이전 추천 결과
+                </Link>
+              </div>
+            </div>
+          </section>
+
+
+          {/* EVENT */}
+          <section
+            className={
+              styles.allMenuSection
+            }
+          >
+            <button
+              type="button"
+              className={
+                styles.allMenuTrigger
+              }
+              aria-expanded={
+                openAllMenuSection === 'event'
+              }
+              onClick={() =>
+                toggleAllMenuSection('event')
+              }
+            >
+              <span>
+                <small>EVENT</small>
+                <strong>이벤트</strong>
+              </span>
+
+              <i
+                className={`${styles.accordionIcon} ${
+                  openAllMenuSection === 'event'
+                    ? styles.accordionIconOpen
+                    : ''
+                }`}
+                aria-hidden="true"
+              />
+            </button>
+
+            <div
+              className={`${styles.allMenuPanel} ${
+                openAllMenuSection === 'event'
+                  ? styles.allMenuPanelOpen
+                  : ''
+              }`}
+            >
+              <div
+                className={
+                  styles.allMenuPanelInner
+                }
+              >
+                <Link
+                  to="/events"
+                  className={
+                    styles.drawerLink
+                  }
+                  onClick={closeAllMenu}
+                >
+                  이벤트 전체보기
+                </Link>
+              </div>
+            </div>
+          </section>
+
+
+          {/* MY JAJAK */}
+          <section
+            className={
+              styles.allMenuSection
+            }
+          >
+            <button
+              type="button"
+              className={
+                styles.allMenuTrigger
+              }
+              aria-expanded={
+                openAllMenuSection === 'my'
+              }
+              onClick={() =>
+                toggleAllMenuSection('my')
+              }
+            >
+              <span>
+                <small>MY JAJAK</small>
+                <strong>마이 자작</strong>
+              </span>
+
+              <i
+                className={`${styles.accordionIcon} ${
+                  openAllMenuSection === 'my'
+                    ? styles.accordionIconOpen
+                    : ''
+                }`}
+                aria-hidden="true"
+              />
+            </button>
+
+            <div
+              className={`${styles.allMenuPanel} ${
+                openAllMenuSection === 'my'
+                  ? styles.allMenuPanelOpen
+                  : ''
+              }`}
+            >
+              <div
+                className={
+                  styles.allMenuPanelInner
+                }
+              >
+                <Link
+                  to="/mypage"
+                  className={
+                    styles.drawerLink
+                  }
+                  onClick={closeAllMenu}
+                >
+                  마이페이지
+                </Link>
+
+                <Link
+                  to="/mypage/orders"
+                  className={
+                    styles.drawerLink
+                  }
+                  onClick={closeAllMenu}
+                >
+                  주문 내역
+                </Link>
+
+                <Link
+                  to="/mypage/wishlist"
+                  className={
+                    styles.drawerLink
+                  }
+                  onClick={closeAllMenu}
+                >
+                  찜 목록
+
+                  {wishlistCount > 0 && (
+                    <span
+                      className={
+                        styles.drawerCount
+                      }
+                    >
+                      {wishlistCount}
+                    </span>
+                  )}
+                </Link>
+
+                <Link
+                  to="/cart"
+                  className={
+                    styles.drawerLink
+                  }
+                  onClick={closeAllMenu}
+                >
+                  장바구니
+
+                  {cartCount > 0 && (
+                    <span
+                      className={
+                        styles.drawerCount
+                      }
+                    >
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
+
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    className={
+                      styles.drawerLink
+                    }
+                    onClick={closeAllMenu}
+                  >
+                    관리자페이지
+                  </Link>
+                )}
+              </div>
+            </div>
+          </section>
+        </nav>
+      </aside>
 
 
       {/* ========================================

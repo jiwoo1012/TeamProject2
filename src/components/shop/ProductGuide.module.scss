@@ -316,41 +316,44 @@
 
     position: absolute;
 
-    right: -14px;
-    top: 50%;
+    right: -31px;
+    top: 15px;
 
-    width: 11px;
+    width: 34px;
     height: 2px;
+
+    border-radius: 999px;
 
     background: #fff;
 
-    transform:
-      translateY(-50%);
+    transform: rotate(-32deg);
+    transform-origin: left center;
   }
 
-
+  // 화살촉만 수정
   &::after {
     content: '';
 
     position: absolute;
 
-    right: -20px;
-    top: 50%;
+    right: -27px;
+    top: -5px;
 
-    width: 0;
-    height: 0;
+    width: 9px;
+    height: 9px;
 
-    border-top:
-      5px solid transparent;
+    background: #fff;
 
-    border-bottom:
-      5px solid transparent;
+    // 오른쪽을 향하는 삼각형
+    clip-path: polygon(
+      0 0,
+      100% 50%,
+      0 100%
+    );
 
-    border-left:
-      7px solid #fff;
-
-    transform:
-      translateY(-50%);
+    // 선과 동일한 각도로 ↗
+    transform: rotate(-32deg);
+    transform-origin: center;
   }
 }
 

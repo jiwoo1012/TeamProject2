@@ -10,17 +10,31 @@ const ProductCard = ({
   onAddToCart,
   onToggleWish,
   isWished = false,
+  isInCart = false,
 }) => {
   const [loadedHoverImage, setLoadedHoverImage] = useState(null)
 
-  const discountRate = Number.parseInt(product.discountRate, 10) || 0
-  const salePrice = Math.round(
-    product.price * (1 - discountRate / 100)
-  )
+  const discountRate =
+    Number.parseInt(product.discountRate, 10) || 0
+
+  const salePrice =
+    Math.round(
+      product.price
+      * (1 - discountRate / 100)
+    )
 
   const isSoldOut =
     product.status === 'soldout'
     || Number(product.stock) <= 0
+
+
+  const getFlySourceImage = (event) =>
+    event.currentTarget
+      .closest('article')
+      ?.querySelector(
+        'img:not([aria-hidden="true"])'
+      )
+      ?? null
 
 
   const productImage = (
@@ -32,26 +46,34 @@ const ProductCard = ({
         loading="lazy"
       />
 
-      {hoverImageSrc && hoverImageSrc !== product.imageSrc && (
-        <img
-          key={hoverImageSrc}
-          className={`
-            ${styles.image}
-            ${styles.hoverImage}
-            ${
-              loadedHoverImage === hoverImageSrc
-                ? styles.hoverImageReady
-                : ''
+      {hoverImageSrc
+        && hoverImageSrc !== product.imageSrc
+        && (
+          <img
+            key={hoverImageSrc}
+            className={`
+              ${styles.image}
+              ${styles.hoverImage}
+              ${
+                loadedHoverImage === hoverImageSrc
+                  ? styles.hoverImageReady
+                  : ''
+              }
+            `}
+            src={hoverImageSrc}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            onLoad={() =>
+              setLoadedHoverImage(
+                hoverImageSrc
+              )
             }
-          `}
-          src={hoverImageSrc}
-          alt=""
-          aria-hidden="true"
-          loading="lazy"
-          onLoad={() => setLoadedHoverImage(hoverImageSrc)}
-          onError={() => setLoadedHoverImage(null)}
-        />
-      )}
+            onError={() =>
+              setLoadedHoverImage(null)
+            }
+          />
+        )}
 
       {isSoldOut && (
         <span
@@ -69,7 +91,11 @@ const ProductCard = ({
     <article
       className={`
         ${styles.card}
-        ${isSoldOut ? styles.soldOutCard : ''}
+        ${
+          isSoldOut
+            ? styles.soldOutCard
+            : ''
+        }
       `}
       data-product-guide-card="candidate"
     >
@@ -87,15 +113,27 @@ const ProductCard = ({
             <button
               className={`
                 ${styles.iconButton}
-                ${isWished ? styles.isWished : ''}
+                ${
+                  isWished
+                    ? styles.isWished
+                    : ''
+                }
               `}
               type="button"
-              aria-label={isWished ? '찜 취소' : '찜하기'}
+              aria-label={
+                isWished
+                  ? '찜 취소'
+                  : '찜하기'
+              }
               aria-pressed={isWished}
               data-product-guide-target="wish"
               onClick={(event) => {
                 event.preventDefault()
-                onToggleWish?.(product)
+
+                onToggleWish?.(
+                  product,
+                  getFlySourceImage(event)
+                )
               }}
             >
               {isWished ? '♥' : '♡'}
@@ -104,14 +142,27 @@ const ProductCard = ({
             <button
               className={styles.cartButton}
               type="button"
-              aria-label="장바구니 담기"
+              aria-label={
+                isInCart
+                  ? '장바구니에서 삭제'
+                  : '장바구니 담기'
+              }
+              aria-pressed={isInCart}
               data-product-guide-target="cart"
               onClick={(event) => {
                 event.preventDefault()
-                onAddToCart?.(product)
+
+                onAddToCart?.(
+                  product,
+                  getFlySourceImage(event)
+                )
               }}
             >
-              장바구니 담기
+              {
+                isInCart
+                  ? '✓ 장바구니 담김'
+                  : '장바구니 담기'
+              }
             </button>
           </div>
         )}
