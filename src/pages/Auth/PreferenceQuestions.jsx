@@ -29,7 +29,41 @@ import ABVModerateImg from '../../assets/icons/preferenceQuestions/ABV-moderate.
 import ABVStrongImg from '../../assets/icons/preferenceQuestions/ABV-strong.png'
 import ABVVeryStrongImg from '../../assets/icons/preferenceQuestions/ABV-verystrong.png'
 
-import styles from './PreferenceQuestions.module.scss'
+import aiStyles from '../AiCurator/AiSurvey.module.scss'
+import preferenceStyles from './PreferenceQuestions.module.scss'
+
+const styles = {
+  ...preferenceStyles,
+  preferenceQuestions: [aiStyles.surveyPage, preferenceStyles.preferenceQuestions].filter(Boolean).join(' '),
+  inner: [aiStyles.surveyContainer, preferenceStyles.inner].filter(Boolean).join(' '),
+  progressSection: [aiStyles.progressArea, preferenceStyles.progressSection].filter(Boolean).join(' '),
+  progressTop: [aiStyles.progressTop, preferenceStyles.progressTop].filter(Boolean).join(' '),
+  categoryBadge: [aiStyles.surveyType, preferenceStyles.categoryBadge].filter(Boolean).join(' '),
+  progressText: [aiStyles.progressText, preferenceStyles.progressText].filter(Boolean).join(' '),
+  progress: [aiStyles.progressBar, preferenceStyles.progress].filter(Boolean).join(' '),
+  progressFill: [aiStyles.progressFill, preferenceStyles.progressFill].filter(Boolean).join(' '),
+  questionHeader: [aiStyles.questionHero, preferenceStyles.questionHeader].filter(Boolean).join(' '),
+  makdong: [aiStyles.guideCharacter, preferenceStyles.makdong].filter(Boolean).join(' '),
+  questionCopy: [aiStyles.questionHeader, preferenceStyles.questionCopy].filter(Boolean).join(' '),
+  questionNumber: [aiStyles.questionNumber, preferenceStyles.questionNumber].filter(Boolean).join(' '),
+  questionTitle: [aiStyles.questionTitle, preferenceStyles.questionTitle].filter(Boolean).join(' '),
+  questionDescription: [aiStyles.questionDescription, preferenceStyles.questionDescription].filter(Boolean).join(' '),
+  optionsArea: [aiStyles.questionCard, preferenceStyles.optionsArea].filter(Boolean).join(' '),
+  optionGrid: [aiStyles.optionList, preferenceStyles.optionGrid].filter(Boolean).join(' '),
+  optionCard: [aiStyles.optionButton, preferenceStyles.optionCard].filter(Boolean).join(' '),
+  selected: [aiStyles.selected, preferenceStyles.selected].filter(Boolean).join(' '),
+  unknownOption: [aiStyles.unknownOption, preferenceStyles.unknownOption].filter(Boolean).join(' '),
+  optionContent: [aiStyles.optionContent, preferenceStyles.optionContent].filter(Boolean).join(' '),
+  optionImage: [aiStyles.optionIcon, preferenceStyles.optionImage].filter(Boolean).join(' '),
+  optionText: [aiStyles.optionText, preferenceStyles.optionText].filter(Boolean).join(' '),
+  optionLabel: [aiStyles.optionLabel, preferenceStyles.optionLabel].filter(Boolean).join(' '),
+  optionDescription: [aiStyles.optionSubLabel, preferenceStyles.optionDescription].filter(Boolean).join(' '),
+  check: [aiStyles.selectIndicator, aiStyles.selectIndicatorActive, preferenceStyles.check].filter(Boolean).join(' '),
+  buttonArea: [aiStyles.buttonArea, preferenceStyles.buttonArea].filter(Boolean).join(' '),
+  prevButton: [aiStyles.prevButton, preferenceStyles.prevButton].filter(Boolean).join(' '),
+  nextButton: [aiStyles.nextButton, preferenceStyles.nextButton].filter(Boolean).join(' '),
+  notice: [aiStyles.helperText, preferenceStyles.notice].filter(Boolean).join(' '),
+}
 
 
 const QUESTIONS = [
@@ -231,7 +265,6 @@ const PreferenceQuestions = () => {
   const isLastStep = currentStep === QUESTIONS.length - 1
   const hasAnswer = selectedValues.length > 0
 
-  const isAbvQuestion = currentQuestion.id === 'abv'
 
 
   // ==============================
@@ -329,182 +362,56 @@ const PreferenceQuestions = () => {
   return (
     <main className={styles.preferenceQuestions}>
       <div className={styles.inner}>
-
-        {/* 나중에 하기 */}
         <div className={styles.skipArea}>
-          <button
-            type="button"
-            className={styles.skipButton}
-            onClick={handleSkip}
-          >
-            나중에 할게요
-            <span>›</span>
+          <button type="button" className={styles.skipButton} onClick={handleSkip}>
+            나중에 할게요 <span aria-hidden="true">›</span>
           </button>
         </div>
-
-
-        {/* 진행 영역 */}
-        <section className={styles.progressSection}>
-
-          <div className={styles.categoryBadge}>
-            취향 알아보기
+        <section className={styles.progressSection} aria-label="취향 테스트 진행 상황">
+          <div className={styles.progressTop}>
+            <span className={styles.categoryBadge}>취향 알아보기</span>
+            <p className={styles.progressText}>
+              <strong>{currentStep + 1}</strong><span>/ {QUESTIONS.length} · {currentQuestion.category}</span>
+            </p>
           </div>
-
-          <div className={styles.progress}>
-            <div className={styles.progressLine} />
-
-            {QUESTIONS.map((question, index) => (
-              <span
-                key={question.id}
-                className={`
-                  ${styles.progressDot}
-                  ${index <= currentStep ? styles.activeDot : ''}
-                `}
-              />
-            ))}
+          <div className={styles.progress} role="progressbar" aria-label="취향 테스트" aria-valuemin={0} aria-valuemax={QUESTIONS.length} aria-valuenow={currentStep + 1}>
+            <div className={styles.progressFill} style={{ width: `${((currentStep + 1) / QUESTIONS.length) * 100}%` }} />
           </div>
-
-          <p className={styles.progressText}>
-            {currentStep + 1} / {QUESTIONS.length}
-            {' · '}
-            {currentQuestion.category}
-          </p>
-
         </section>
-
-
-        {/* 질문 제목 + 막둥이 */}
-        <section className={styles.questionHeader}>
-
-          <div className={styles.makdongArea}>
-
-            <div className={styles.speechBubble}>
-              막둥이가 취향을
-              <br />
-              알아가는 중이에요!
-            </div>
-
-            <img
-              src={makdongImg}
-              alt="취향을 알아보는 막둥이"
-              className={styles.makdong}
-            />
-
+        <section className={styles.questionHeader} aria-labelledby="preference-question-title">
+          <img src={makdongImg} alt="취향을 알아보는 막둥이" className={styles.makdong} />
+          <div className={styles.questionCopy}>
+            <span className={styles.questionNumber}>QUESTION {String(currentStep + 1).padStart(2, '0')}</span>
+            <h1 id="preference-question-title" className={styles.questionTitle}>{currentQuestion.title}</h1>
+            <p className={styles.questionDescription}>{currentQuestion.description}</p>
           </div>
-
-          <h1 className={styles.questionTitle}>
-            {currentQuestion.title}
-          </h1>
-
-          <p className={styles.questionDescription}>
-            {currentQuestion.description}
-          </p>
-
         </section>
-
-
-        {/* 선택지 */}
-        <section className={styles.optionsArea}>
-
-          <div
-            className={`
-              ${styles.optionGrid}
-              ${isAbvQuestion ? styles.fiveOptions : ''}
-            `}
-          >
-
+        <section className={styles.optionsArea} aria-labelledby="preference-question-title">
+          <div className={styles.optionGrid}>
             {currentQuestion.options.map((option) => {
               const isSelected = selectedValues.includes(option.value)
-
               return (
-                <button
-                  key={option.value}
-                  type="button"
-                  className={`
-                    ${styles.optionCard}
-                    ${isSelected ? styles.selected : ''}
-                  `}
-                  onClick={() => handleSelect(option.value)}
-                >
-
-                  {isSelected && (
-                    <span className={styles.check}>
-                      ✓
+                <button key={option.value} type="button" aria-pressed={isSelected}
+                  className={`${styles.optionCard} ${isSelected ? styles.selected : ''} ${!option.image ? styles.unknownOption : ''}`}
+                  onClick={() => handleSelect(option.value)}>
+                  <span className={styles.optionContent}>
+                    {option.image ? <img src={option.image} alt="" className={styles.optionImage} /> : <span className={styles.optionIcon} aria-hidden="true">{option.icon}</span>}
+                    <span className={styles.optionText}>
+                      <strong className={styles.optionLabel}>{option.label}</strong>
+                      <span className={styles.optionDescription}>{option.description}</span>
                     </span>
-                  )}
-
-
-                  <div className={styles.optionVisual}>
-
-                    {option.image && (
-                      <img
-                        src={option.image}
-                        alt=""
-                        className={styles.optionImage}
-                      />
-                    )}
-
-                    {!option.image && option.icon && (
-                      <span className={styles.optionIcon}>
-                        {option.icon}
-                      </span>
-                    )}
-
-                  </div>
-
-
-                  <div className={styles.optionText}>
-
-                    <strong className={styles.optionLabel}>
-                      {option.label}
-                    </strong>
-
-                    <span className={styles.optionDescription}>
-                      {option.description}
-                    </span>
-
-                  </div>
-
+                  </span>
+                  {isSelected && <span className={styles.check} aria-hidden="true">✓</span>}
                 </button>
               )
             })}
-
           </div>
-
-
-          {/* 안내 문구 */}
-          <div className={styles.notice}>
-            <span className={styles.noticeIcon}>i</span>
-            선택한 취향은 언제든지 마이페이지에서 변경할 수 있어요.
-          </div>
-
-
-          {/* 이전 / 다음 */}
           <div className={styles.buttonArea}>
-
-            <button
-              type="button"
-              className={styles.prevButton}
-              onClick={handlePrev}
-            >
-              <span>‹</span>
-              이전
-            </button>
-
-            <button
-              type="button"
-              className={styles.nextButton}
-              onClick={handleNext}
-              disabled={!hasAnswer}
-            >
-              {isLastStep ? '완료' : '다음'}
-              <span>›</span>
-            </button>
-
+            <button type="button" className={styles.prevButton} onClick={handlePrev}><span aria-hidden="true">‹</span>이전</button>
+            <button type="button" className={styles.nextButton} onClick={handleNext} disabled={!hasAnswer}>{isLastStep ? '완료' : '다음'}<span aria-hidden="true">›</span></button>
           </div>
-
+          <p className={styles.notice}>선택한 취향은 언제든지 마이페이지에서 변경할 수 있어요.</p>
         </section>
-
       </div>
     </main>
   )

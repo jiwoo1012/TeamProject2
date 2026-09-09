@@ -84,6 +84,28 @@
 .cartToast small { @include mixins.ellipsis; color: $color-text-muted; font-size: $font-size-xs; }
 .cartToast > a { display: flex; gap: $space-2; align-items: center; padding: $space-2; color: $color-primary-light; font-size: $font-size-lg; font-weight: $font-weight-semibold; pointer-events: auto; transition: color $transition-fast ease, transform $transition-fast ease; }
 .cartToast > a:hover { color: $color-primary; transform: translateX($space-1); }
+@media (min-width: $breakpoint-desktop-min) {
+  .cartToast {
+    width: 420px;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: $space-3;
+    padding: $space-3 $space-4;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+  }
+  .toastCheck {
+    width: 28px;
+    height: 28px;
+    font-size: $font-size-md;
+  }
+  .cartToast strong { font-size: $font-size-sm; }
+  .cartToast > a {
+    gap: $space-1;
+    padding: $space-1;
+    font-size: $font-size-xs;
+    white-space: nowrap;
+  }
+}
 @keyframes toastOpen { 0% { opacity: 0; transform: translate(-50%, $space-5); } 10%, 78% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, $space-3); } }
 
 .stylingMarquee { overflow: hidden; background: $color-bg; border-top: 1px solid $color-border; }

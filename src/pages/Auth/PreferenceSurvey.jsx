@@ -48,16 +48,9 @@ const PreferenceSurvey = () => {
         </button>
 
 
-        {/* 모서리 장식 */}
-        <span className={`${styles.corner} ${styles.topLeft}`} />
-        <span className={`${styles.corner} ${styles.topRight}`} />
-        <span className={`${styles.corner} ${styles.bottomLeft}`} />
-        <span className={`${styles.corner} ${styles.bottomRight}`} />
-
-
         <div className={styles.content}>
 
-          {/* 왼쪽 텍스트 영역 */}
+          {/* 오른쪽 텍스트 영역 */}
           <div className={styles.textArea}>
 
             <div className={styles.infoBadge}>
@@ -109,7 +102,7 @@ const PreferenceSurvey = () => {
           </div>
 
 
-          {/* 오른쪽 막둥이 이미지 */}
+          {/* 왼쪽 막둥이 이미지 */}
           <div className={styles.characterArea}>
             <img
               src={makdongImg}

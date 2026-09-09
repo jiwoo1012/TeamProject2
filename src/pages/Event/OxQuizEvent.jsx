@@ -43,6 +43,7 @@ const OxQuizEvent = () => {
 
   const currentQuiz = quizzes[currentIndex]
   const isAnswered = Boolean(selectedAnswer)
+  const isCorrect = isAnswered && selectedAnswer === currentQuiz.answer
   const isLastQuiz = currentIndex === quizzes.length - 1
   const earnedPoints = correctCount * POINTS_PER_ANSWER
 
@@ -131,6 +132,9 @@ const OxQuizEvent = () => {
             {isAnswered ? (
               <>
                 <p className={styles.answerTitle}>정답 : {currentQuiz.answer}</p>
+                <p className={`${styles.feedbackMessage} ${isCorrect ? styles.isCorrect : styles.isWrong}`}>
+                  {isCorrect ? '정답입니다!' : '아쉬워요, 오답입니다!'}
+                </p>
                 <p className={styles.explanation}>{currentQuiz.explanation}</p>
               </>
             ) : (
@@ -143,19 +147,24 @@ const OxQuizEvent = () => {
         </section>
 
         <section className={styles.answerArea} aria-label="OX 답변 선택">
-          {['O', 'X'].map((answer) => (
-            <button
-              className={`${styles.answerButton} ${selectedAnswer === answer ? styles.isSelected : ''} ${answer === 'X' ? styles.isX : ''}`}
-              type="button"
-              disabled={isAnswered}
-              aria-pressed={selectedAnswer === answer}
-              onClick={() => handleAnswer(answer)}
-              key={answer}
-            >
-              <span aria-hidden="true">{answer}</span>
-              <strong>{answer === 'O' ? '맞습니다!' : '아닙니다!'}</strong>
-            </button>
-          ))}
+          {['O', 'X'].map((answer) => {
+            const isThisSelected = selectedAnswer === answer
+            const isCorrectAnswerButton = isAnswered && !isCorrect && answer === currentQuiz.answer
+            return (
+              <button
+                className={`${styles.answerButton} ${isThisSelected ? styles.isSelected : ''} ${answer === 'X' ? styles.isX : ''} ${isThisSelected ? (isCorrect ? styles.isCorrectSelected : styles.isWrongSelected) : ''} ${isCorrectAnswerButton ? styles.isCorrectHint : ''}`}
+                type="button"
+                disabled={isAnswered}
+                aria-pressed={isThisSelected}
+                onClick={() => handleAnswer(answer)}
+                key={answer}
+              >
+                <span aria-hidden="true">{answer}</span>
+                <strong>{answer === 'O' ? '맞습니다!' : '아닙니다!'}</strong>
+                {isCorrectAnswerButton && <span className={styles.correctBadge} aria-hidden="true">✓</span>}
+              </button>
+            )
+          })}
 
           {isAnswered && (
             <button className={styles.continueButton} type="button" onClick={handleContinue}>

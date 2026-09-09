@@ -20,17 +20,26 @@ $quiz-copy-delay: 0.35s;
 .visualArea img { width: 100%; height: 100%; object-fit: cover; }
 .copyArea { display: flex; justify-content: center; flex-direction: column; width: calc(100% - var(--quiz-image-width) + var(--quiz-image-overflow)); height: 100%; margin-left: calc(var(--quiz-image-width) - var(--quiz-image-overflow)); padding: $space-10 $space-20; opacity: 1; transform: translateX(0); transition: opacity $quiz-motion-duration ease, transform $quiz-motion-duration ease; }
 .questionNumber, .answerTitle { font-family: $font-family-display; font-size: $font-size-5xl; font-weight: $font-weight-bold; line-height: $line-height-tight; }
+.feedbackMessage { margin-top: $space-2; font-size: $font-size-2xl; font-weight: $font-weight-bold; }
+.feedbackMessage.isCorrect { color: $color-success; }
+.feedbackMessage.isWrong { color: $color-error; }
 .copyArea h1, .explanation { max-width: 850px; margin-top: $space-6; font-size: $font-size-2xl; font-weight: $font-weight-bold; line-height: $line-height-relaxed; }
 .isAnswered .visualArea { transform: translateX(calc(100vw - var(--quiz-image-width) + var(--quiz-image-overflow) + var(--quiz-image-overflow))); }
 .isAnswered .copyArea { margin-left: 0; animation: copyReveal $quiz-motion-duration ease $quiz-copy-delay both; }
 .answerArea { position: relative; display: grid; grid-template-columns: repeat(2, 1fr); align-items: center; min-height: 0; }
-.answerButton { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: $space-8; height: 100%; color: $color-white; transition: color $quiz-motion-duration ease, transform $quiz-motion-duration ease; }
+.answerButton { position: relative; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: $space-8; height: 100%; color: $color-white; transition: color $quiz-motion-duration ease, transform $quiz-motion-duration ease; }
 .answerButton > span { @include mixins.flex-center; width: min(140px, 20vh); aspect-ratio: 1; font-family: $font-family-display; font-size: 80px; border-radius: 50%; transition: color $quiz-motion-duration ease, background-color $quiz-motion-duration ease, transform $quiz-motion-duration ease, box-shadow $quiz-motion-duration ease; transform: scale(2); }
 .answerButton strong { font-size: $font-size-2xl; }
 .answerButton.isX { color: $color-error; }
 .answerButton:hover:not(:disabled) { transform: translateY(-$space-2); }
 .answerButton.isSelected { color: $color-primary-light; transform: scale(1.04); }
 .answerButton.isSelected > span { background: rgba($color-white, .7); box-shadow: 0 $space-3 $space-8 rgba($color-text-primary, .16); transform: scale(2.15); }
+.answerButton.isCorrectSelected { color: $color-success; }
+.answerButton.isCorrectSelected > span { background: rgba($color-success, .18); box-shadow: 0 $space-3 $space-8 rgba($color-success, .35); }
+.answerButton.isWrongSelected { color: $color-error; }
+.answerButton.isWrongSelected > span { background: rgba($color-error, .18); box-shadow: 0 $space-3 $space-8 rgba($color-error, .35); }
+.answerButton.isCorrectHint > span { outline: 3px solid $color-success; outline-offset: 4px; }
+.correctBadge { @include mixins.flex-center; position: absolute; top: $space-4; width: $space-8; height: $space-8; color: $color-white; font-size: $font-size-lg; font-weight: $font-weight-bold; background: $color-success; border-radius: 50%; }
 .answerButton:disabled { cursor: default; }
 .continueButton { position: absolute; right: $side-margin-desktop; bottom: $space-8; display: flex; align-items: center; justify-content: center; gap: $space-5; min-width: 220px; padding: $space-3 $space-8; font-size: $font-size-md; animation: copyReveal $quiz-motion-duration ease $quiz-copy-delay both; @include event.btn-primary; }
 .quitButton { position: fixed; z-index: $z-dropdown; bottom: $space-8; left: $side-margin-desktop; color: $color-white; font-size: $font-size-md; font-weight: $font-weight-semibold; transition: color $quiz-motion-duration ease, opacity $quiz-motion-duration ease, transform $quiz-motion-duration ease; }
@@ -80,6 +89,7 @@ $quiz-copy-delay: 0.35s;
   .copyArea, .isAnswered .copyArea { width: 100%; height: 100%; margin-left: 0; padding:  $space-6; }
   .isAnswered .copyArea { animation-delay: 0s; }
   .questionNumber, .answerTitle { font-size: $font-size-4xl; }
+  .feedbackMessage { font-size: $font-size-lg; }
   .copyArea h1, .explanation { margin-top: $space-3; font-size: $font-size-lg; line-height: $line-height-relaxed; }
   .answerButton { gap: $space-2; }
   .answerButton > span { width: min(200px, 14vh); font-size: 80px; transform: scale(1.45); }
