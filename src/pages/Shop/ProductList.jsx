@@ -4,6 +4,10 @@ import { Link, useLocation, useSearchParams } from 'react-router-dom'
 
 import { serverTimestamp } from 'firebase/firestore'
 
+import gsap from 'gsap'
+
+import ProductActionBar from '../../components/shop/ProductActionBar'
+
 import ProductCard from '../../components/ui/ProductCard/ProductCard'
 
 import Pagination from '../../components/ui/Pagination/Pagination'
@@ -209,6 +213,22 @@ const ProductList = () => {
   const [selectedAlcohol, setSelectedAlcohol] = useState(null)
 
   const [cartToast, setCartToast] = useState(null)
+
+  const [cartBarItems, setCartBarItems] = useState([])
+
+  const [cartProductIds, setCartProductIds] = useState(
+    () => new Set(getCart().map((item) => item.productId))
+  )
+
+  const [cartBarMode, setCartBarMode] = useState('added')
+
+  const [removedCartItem, setRemovedCartItem] = useState(null)
+
+  const [removedWishProduct, setRemovedWishProduct] = useState(null)
+
+  const [cartBarVersion, setCartBarVersion] = useState(0)
+
+  const [wishBarVersion, setWishBarVersion] = useState(0)
 
   const [wishToast, setWishToast] = useState(null)
 
@@ -1061,6 +1081,240 @@ const ProductList = () => {
 
     )
 
+  const toActionBarItem = (product) => ({
+    productId: product.productId,
+    productName: product.productName,
+    imageSrc: resolveImage(product.imageUrl),
+  })
+
+  const buildCartBarItems = (cartItems) =>
+  cartItems
+    .map((cartItem) =>
+      catalogProducts.find(
+        (product) =>
+          product.productId === cartItem.productId
+      )
+    )
+    .filter(Boolean)
+    .map(toActionBarItem)
+
+  const wishBarItems = useMemo(
+    () =>
+      catalogProducts
+        .filter((product) =>
+          wishes.has(product.productId)
+        )
+        .map(toActionBarItem)
+        .slice(-5),
+    [catalogProducts, wishes]
+  )
+
+
+  const flyProductToActionBar = ({
+    sourceElement,
+    type,
+    productId,
+    imageSrc,
+  }) => {
+    if (
+      !sourceElement
+      || window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      ).matches
+    ) {
+      return
+    }
+
+    const sourceRect =
+      sourceElement.getBoundingClientRect()
+
+    if (
+      sourceRect.width <= 0
+      || sourceRect.height <= 0
+    ) {
+      return
+    }
+
+    const flyingImage =
+      document.createElement('img')
+
+    flyingImage.src =
+      imageSrc
+      || sourceElement.currentSrc
+      || sourceElement.src
+
+    flyingImage.alt = ''
+
+    Object.assign(
+      flyingImage.style,
+      {
+        position: 'fixed',
+        left: `${sourceRect.left}px`,
+        top: `${sourceRect.top}px`,
+        width: `${sourceRect.width}px`,
+        height: `${sourceRect.height}px`,
+        objectFit: 'cover',
+        borderRadius: '18px',
+        pointerEvents: 'none',
+        zIndex: '100000',
+        margin: '0',
+        transformOrigin: 'center center',
+        willChange:
+          'left, top, width, height, opacity, transform',
+        boxShadow:
+          '0 16px 34px rgba(0, 0, 0, 0.18)',
+      }
+    )
+
+    document.body.appendChild(
+      flyingImage
+    )
+
+    let attempts = 0
+    const MAX_TARGET_ATTEMPTS = 24
+
+    const removeFlyingImage = () => {
+      if (flyingImage.parentNode) {
+        flyingImage.remove()
+      }
+    }
+
+    const findTargetAndAnimate = () => {
+      const bar =
+        document.querySelector(
+          `[data-product-action-bar="${type}"]`
+        )
+
+      const target =
+        bar
+          ? [
+              ...bar.querySelectorAll(
+                '[data-product-action-item]'
+              ),
+            ].find(
+              (element) =>
+                element.dataset
+                  .productActionItem
+                === String(productId)
+            )
+          : null
+
+      if (!target) {
+        attempts += 1
+
+        if (
+          attempts
+          < MAX_TARGET_ATTEMPTS
+        ) {
+          window.requestAnimationFrame(
+            findTargetAndAnimate
+          )
+          return
+        }
+
+        gsap.to(
+          flyingImage,
+          {
+            opacity: 0,
+            scale: 0.75,
+            duration: 0.18,
+            ease: 'power2.out',
+            onComplete:
+              removeFlyingImage,
+          }
+        )
+        return
+      }
+
+      const targetRect =
+        target.getBoundingClientRect()
+
+      if (
+        targetRect.width <= 0
+        || targetRect.height <= 0
+      ) {
+        removeFlyingImage()
+        return
+      }
+
+      const previousVisibility =
+        target.style.visibility
+
+      target.style.visibility =
+        'hidden'
+
+      const liftAmount =
+        Math.min(
+          34,
+          Math.max(
+            16,
+            sourceRect.height * 0.06
+          )
+        )
+
+      const timeline =
+        gsap.timeline({
+          onComplete: () => {
+            target.style.visibility =
+              previousVisibility
+
+            gsap.fromTo(
+              target,
+              {
+                opacity: 0,
+                scale: 0.82,
+              },
+              {
+                opacity: 1,
+                scale: 1,
+                duration: 0.2,
+                ease: 'back.out(1.7)',
+                clearProps:
+                  'opacity,transform',
+              }
+            )
+
+            removeFlyingImage()
+          },
+        })
+
+      timeline
+        .to(
+          flyingImage,
+          {
+            top:
+              sourceRect.top
+              - liftAmount,
+            scale: 0.94,
+            duration: 0.12,
+            ease: 'power2.out',
+          }
+        )
+        .to(
+          flyingImage,
+          {
+            left:
+              targetRect.left,
+            top:
+              targetRect.top,
+            width:
+              targetRect.width,
+            height:
+              targetRect.height,
+            scale: 1,
+            borderRadius: '6px',
+            opacity: 0.98,
+            duration: 0.52,
+            ease: 'power3.inOut',
+          }
+        )
+    }
+
+    window.requestAnimationFrame(
+      findTargetAndAnimate
+    )
+  }
+
   // 일반 상품 목록에서는 항상 필터를 보여주고,
 
   // 검색 결과가 4개 이상일 때만 검색 결과 필터를 보여준다.
@@ -1113,25 +1367,85 @@ const ProductList = () => {
 
     setCartToast(null)
 
-    setWishToast({ message, linkTo, linkText, isLoginPrompt })
-
-    window.clearTimeout(wishToastTimerRef.current)
-
-    wishToastTimerRef.current = window.setTimeout(
-
-      () => setWishToast(null),
-
-      3200
-
+    window.clearTimeout(
+      cartToastTimerRef.current
     )
+
+    setWishToast({
+      message,
+      linkTo,
+      linkText,
+      isLoginPrompt,
+    })
+
+    if (
+      message === '찜 목록에 담았어요.'
+      || message === '찜 목록에서 삭제했어요.'
+    ) {
+      setWishBarVersion(
+        (current) => current + 1
+      )
+    }
+
+    window.clearTimeout(
+      wishToastTimerRef.current
+    )
+
+    wishToastTimerRef.current =
+      window.setTimeout(
+        () => setWishToast(null),
+        3200
+      )
 
   }
 
-  // 상품 목록 찜 연결
 
+  const showCartAction = ({
+    mode,
+    message,
+    removedItem = null,
+  }) => {
+
+    setWishToast(null)
+
+    window.clearTimeout(
+      wishToastTimerRef.current
+    )
+
+    setCartBarMode(mode)
+
+    setRemovedCartItem(
+      removedItem
+    )
+
+    setCartToast(message)
+
+    setCartBarVersion(
+      (current) => current + 1
+    )
+
+    window.clearTimeout(
+      cartToastTimerRef.current
+    )
+
+    cartToastTimerRef.current =
+      window.setTimeout(
+        () => {
+          setCartToast(null)
+        },
+        3200
+      )
+
+  }
+
+
+  // 상품 목록 찜 연결
   // 저장 위치: users/{uid}/wishlist/{productId}
 
-  const handleWish = async (product) => {
+  const handleWish = async (
+    product,
+    sourceElement
+  ) => {
 
     const { productId } = product
 
@@ -1153,11 +1467,17 @@ const ProductList = () => {
 
     }
 
-    const isAlreadyWished = wishes.has(productId)
+    const isAlreadyWished =
+      wishes.has(productId)
 
-    if (!isAlreadyWished && wishes.size >= MAX_WISHLIST_COUNT) {
+    if (
+      !isAlreadyWished
+      && wishes.size >= MAX_WISHLIST_COUNT
+    ) {
 
-      showWishToast(`찜은 최대 ${MAX_WISHLIST_COUNT}개까지 저장할 수 있어요.`)
+      showWishToast(
+        `찜은 최대 ${MAX_WISHLIST_COUNT}개까지 저장할 수 있어요.`
+      )
 
       return
 
@@ -1177,7 +1497,8 @@ const ProductList = () => {
 
         setWishes((current) => {
 
-          const next = new Set(current)
+          const next =
+            new Set(current)
 
           next.delete(productId)
 
@@ -1185,7 +1506,13 @@ const ProductList = () => {
 
         })
 
-        showWishToast('찜 목록에서 삭제했어요.')
+        setRemovedWishProduct(
+          product
+        )
+
+        showWishToast(
+          '찜 목록에서 삭제했어요.'
+        )
 
         return
 
@@ -1201,7 +1528,8 @@ const ProductList = () => {
 
           productId,
 
-          createdAt: serverTimestamp(),
+          createdAt:
+            serverTimestamp(),
 
         }
 
@@ -1209,7 +1537,8 @@ const ProductList = () => {
 
       setWishes((current) => {
 
-        const next = new Set(current)
+        const next =
+          new Set(current)
 
         next.add(productId)
 
@@ -1217,121 +1546,406 @@ const ProductList = () => {
 
       })
 
-      showWishToast('찜 목록에 담았어요.')
+      setRemovedWishProduct(null)
+
+      showWishToast(
+        '찜 목록에 담았어요.'
+      )
+
+      flyProductToActionBar({
+        sourceElement,
+        type: 'wish',
+        productId,
+        imageSrc:
+          product.imageSrc,
+      })
 
     } catch (error) {
 
-      console.error('찜 처리 실패:', error)
+      console.error(
+        '찜 처리 실패:',
+        error
+      )
 
-      showWishToast('찜 처리 중 오류가 발생했습니다.')
+      showWishToast(
+        '찜 처리 중 오류가 발생했습니다.'
+      )
 
     }
 
   }
 
-  /*
 
+  const removeCartProduct = (
+    productId
+  ) => {
+
+    const cart = getCart()
+
+    const cartItem =
+      cart.find(
+        (item) =>
+          item.productId ===
+          productId
+      )
+
+    if (!cartItem) {
+      return
+    }
+
+    const product =
+      catalogProducts.find(
+        (item) =>
+          item.productId ===
+          productId
+      )
+
+    const nextCart =
+      cart.filter(
+        (item) =>
+          item.productId !==
+          productId
+      )
+
+    saveCart(nextCart)
+
+    setCartProductIds(
+      new Set(
+        nextCart.map(
+          (item) =>
+            item.productId
+        )
+      )
+    )
+
+    setCartBarItems(
+      (currentItems) => {
+        const baseItems =
+          currentItems.length > 0
+            ? currentItems
+            : buildCartBarItems(
+                cart
+              )
+
+        return baseItems
+          .filter(
+            (item) =>
+              item.productId !==
+              productId
+          )
+          .slice(-5)
+      }
+    )
+
+    showCartAction({
+      mode: 'removed',
+      message:
+        '장바구니에서 삭제했어요.',
+      removedItem: product
+        ? {
+            cartItem,
+            product,
+          }
+        : null,
+    })
+
+  }
+
+
+  /*
     장바구니 연결
 
-    - 같은 상품이 이미 있으면 수량 +1
-
-    - 없으면 quantity: 1로 추가
-
+    - 담겨 있지 않은 상품 클릭 → 장바구니 추가
+    - 이미 담긴 상품 클릭 → 장바구니 삭제
   */
 
   const handleAddToCart = (
 
-    product
+    product,
+    sourceElement
 
   ) => {
 
     const cart = getCart()
 
     const existingItem =
-
       cart.find(
-
         (item) =>
-
           item.productId ===
-
           product.productId
-
       )
 
-    const nextCart =
+    /*
+     * 이미 담긴 상품을 다시 누르면
+     * 장바구니에서 삭제
+     */
+    if (existingItem) {
 
-      existingItem
+      removeCartProduct(
+        product.productId
+      )
 
-        ? cart.map((item) =>
+      return
 
-            item.productId ===
+    }
 
-            product.productId
-
-              ? {
-
-                  ...item,
-
-                  quantity:
-
-                    item.quantity +
-
-                    1,
-
-                }
-
-              : item
-
-          )
-
-        : [
-
-            ...cart,
-
-            {
-
-              productId:
-
-                product.productId,
-
-              quantity: 1,
-
-            },
-
-          ]
+    const nextCart = [
+      ...cart,
+      {
+        productId:
+          product.productId,
+        quantity: 1,
+      },
+    ]
 
     saveCart(nextCart)
 
-    setWishToast(null)
-
-    window.clearTimeout(wishToastTimerRef.current)
-
-    setCartToast(
-
-      product.productName
-
+    setCartProductIds(
+      new Set(
+        nextCart.map(
+          (item) =>
+            item.productId
+        )
+      )
     )
 
-    window.clearTimeout(
+    const clickedBarItem =
+      toActionBarItem(product)
 
-      cartToastTimerRef.current
+    setCartBarItems(
+      (currentItems) => {
+        const baseItems =
+          currentItems.length > 0
+            ? currentItems
+            : buildCartBarItems(
+                nextCart
+              )
 
+        const withoutClickedItem =
+          baseItems.filter(
+            (item) =>
+              item.productId !==
+              product.productId
+          )
+
+        return [
+          ...withoutClickedItem,
+          clickedBarItem,
+        ].slice(-5)
+      }
     )
 
-    cartToastTimerRef.current =
+    showCartAction({
+      mode: 'added',
+      message:
+        '장바구니에 담았어요.',
+    })
 
-      window.setTimeout(
+    flyProductToActionBar({
+      sourceElement,
+      type: 'cart',
+      productId:
+        product.productId,
+      imageSrc:
+        product.imageSrc,
+    })
 
-        () =>
+  }
 
-          setCartToast(null),
 
-        3200
+  const handleRemoveCartBarItem = (
+
+    productId
+
+  ) => {
+
+    removeCartProduct(
+      productId
+    )
+
+  }
+
+
+  const handleUndoCartRemoval = () => {
+
+    if (!removedCartItem) {
+      return
+    }
+
+    const {
+      cartItem,
+      product,
+    } = removedCartItem
+
+    const cart = getCart()
+      .filter(
+        (item) =>
+          item.productId !==
+          cartItem.productId
+      )
+
+    const nextCart = [
+      ...cart,
+      cartItem,
+    ]
+
+    saveCart(nextCart)
+
+    setCartProductIds(
+      new Set(
+        nextCart.map(
+          (item) =>
+            item.productId
+        )
+      )
+    )
+
+    const restoredBarItem =
+      toActionBarItem(product)
+
+    setCartBarItems(
+      (currentItems) => [
+        ...currentItems.filter(
+          (item) =>
+            item.productId !==
+            product.productId
+        ),
+        restoredBarItem,
+      ].slice(-5)
+    )
+
+    showCartAction({
+      mode: 'added',
+      message:
+        '장바구니에 다시 담았어요.',
+    })
+
+  }
+
+
+  const handleRemoveWishBarItem = async (
+
+    productId
+
+  ) => {
+
+    if (!uid) {
+      return
+    }
+
+    const product =
+      catalogProducts.find(
+        (item) =>
+          item.productId ===
+          productId
+      )
+
+    try {
+
+      await deleteDocument(
+
+        `users/${uid}/wishlist`,
+
+        productId
 
       )
 
+      setWishes(
+        (current) => {
+          const next =
+            new Set(current)
+
+          next.delete(productId)
+
+          return next
+        }
+      )
+
+      setRemovedWishProduct(
+        product ?? null
+      )
+
+      showWishToast(
+        '찜 목록에서 삭제했어요.'
+      )
+
+    } catch (error) {
+
+      console.error(
+        '찜 삭제 실패:',
+        error
+      )
+
+      showWishToast(
+        '찜 처리 중 오류가 발생했습니다.'
+      )
+
+    }
+
   }
+
+
+  const handleUndoWishRemoval = async () => {
+
+    if (
+      !uid
+      || !removedWishProduct
+    ) {
+      return
+    }
+
+    const {
+      productId,
+    } = removedWishProduct
+
+    try {
+
+      await setDocument(
+
+        `users/${uid}/wishlist`,
+
+        productId,
+
+        {
+          productId,
+          createdAt:
+            serverTimestamp(),
+        }
+
+      )
+
+      setWishes(
+        (current) => {
+          const next =
+            new Set(current)
+
+          next.add(productId)
+
+          return next
+        }
+      )
+
+      setRemovedWishProduct(null)
+
+      showWishToast(
+        '찜 목록에 담았어요.'
+      )
+
+    } catch (error) {
+
+      console.error(
+        '찜 되돌리기 실패:',
+        error
+      )
+
+      showWishToast(
+        '찜 처리 중 오류가 발생했습니다.'
+      )
+
+    }
+
+  }
+
 
   const alcoholExplain = [
 
@@ -1381,7 +1995,7 @@ const ProductList = () => {
 
       explain:
 
-        '술이 조금 낯설거나 쓴맛을 싫어하시는 나리께 가장 먼저 권해드리는 술이랍니다. 우리 땅에서 자란 싱그러운 과일들을 듬뿍 넣어, 과일 자체의 향긋함과 달콤함을 가득 담아낸 술이지요.',
+        '술이 조금 낯설거나 쓴맛을 싫어하시는 나으리께 가장 먼저 권해드리는 술이랍니다. 우리 땅에서 자란 싱그러운 과일들을 듬뿍 넣어, 과일 자체의 향긋함과 달콤함을 가득 담아낸 술이지요.',
 
       flavor:
 
@@ -1968,32 +2582,34 @@ const ProductList = () => {
                 >
 
                   {visibleProducts.map(
-                    (product) => (
-                      <div
-                        data-product-guide-card="candidate"
-                        style={{
-                          display: 'contents',
-                        }}
-                        key={
-                          product.productId
-                        }
-                      >
-                        <ProductCard
-                          product={product}
-                          hoverImageSrc={resolveHoverImage(product)}
-                          isWished={wishes.has(
-                            product.productId
-                          )}
-                          onToggleWish={
-                            handleWish
-                          }
-                          onAddToCart={
-                            handleAddToCart
-                          }
-                        />
-                      </div>
-                    )
-                  )}
+  (product) => (
+    <div
+      style={{
+        display: 'contents',
+      }}
+      key={
+        product.productId
+      }
+    >
+      <ProductCard
+        product={product}
+        hoverImageSrc={resolveHoverImage(product)}
+        isWished={wishes.has(
+          product.productId
+        )}
+        isInCart={cartProductIds.has(
+          product.productId
+        )}
+        onToggleWish={
+          handleWish
+        }
+        onAddToCart={
+          handleAddToCart
+        }
+      />
+    </div>
+  )
+)}
 
                 </div>
 
@@ -2333,71 +2949,56 @@ const ProductList = () => {
 
       {cartToast && (
 
-        <div
-
-          className={
-
-            styles.cartToast
-
+        <ProductActionBar
+          key={`cart-action-${cartBarVersion}`}
+          type="cart"
+          mode={cartBarMode}
+          items={cartBarItems}
+          onRemove={handleRemoveCartBarItem}
+          onUndo={
+            cartBarMode === 'removed'
+              ? handleUndoCartRemoval
+              : undefined
           }
-
-          role="status"
-
-          aria-live="polite"
-
-        >
-
-          <span
-
-            className={
-
-              styles.toastCheck
-
-            }
-
-            aria-hidden="true"
-
-          >
-
-            ✓
-
-          </span>
-
-          <p>
-
-            <strong>
-
-              장바구니에 담았어요
-
-            </strong>
-
-            <small>
-
-              {cartToast}
-
-            </small>
-
-          </p>
-
-          <Link to={PATHS.cart}>
-
-            장바구니 보기{' '}
-
-            <span aria-hidden="true">
-
-              ›
-
-            </span>
-
-          </Link>
-
-        </div>
+        />
 
       )}
 
 
+      {(
+        wishToast?.message ===
+          '찜 목록에 담았어요.'
+        || wishToast?.message ===
+          '찜 목록에서 삭제했어요.'
+      ) && (
 
-      {wishToast && (
+        <ProductActionBar
+          key={`wish-action-${wishBarVersion}`}
+          type="wish"
+          mode={
+            wishToast.message ===
+              '찜 목록에서 삭제했어요.'
+              ? 'removed'
+              : 'added'
+          }
+          items={wishBarItems}
+          onRemove={handleRemoveWishBarItem}
+          onUndo={
+            wishToast.message ===
+              '찜 목록에서 삭제했어요.'
+              ? handleUndoWishRemoval
+              : undefined
+          }
+        />
+
+      )}
+
+
+      {wishToast &&
+        wishToast.message !==
+          '찜 목록에 담았어요.' &&
+        wishToast.message !==
+          '찜 목록에서 삭제했어요.' && (
 
         <div
 

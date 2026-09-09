@@ -8,10 +8,8 @@ import {
 
 import { createPortal } from 'react-dom'
 
-import cartGuideMakdong
-  from '../../assets/images/shop/cart-guide-makdong.png'
-import wishlistGuideMakdong
-  from '../../assets/images/shop/wishlist-guide-makdong.png'
+import cartGuideMakdong from '../../assets/images/shop/cart-guide-makdong.png'
+import wishlistGuideMakdong from '../../assets/images/shop/wishlist-guide-makdong.png'
 
 import styles from './ProductGuide.module.scss'
 
@@ -188,7 +186,6 @@ const getCandidateCards = () => {
     return explicit
   }
 
-
   const cartButtons = [
     ...document.querySelectorAll(
       'button, a, [role="button"]'
@@ -202,16 +199,13 @@ const getCandidateCards = () => {
     )
   })
 
-
-  const inferred =
-    cartButtons
-      .map((button) =>
-        button.closest(
-          'article, li, [class*="card"], [class*="Card"]'
-        )
+  const inferred = cartButtons
+    .map((button) =>
+      button.closest(
+        'article, li, [class*="card"], [class*="Card"]'
       )
-      .filter(Boolean)
-
+    )
+    .filter(Boolean)
 
   return [
     ...new Set(inferred),
@@ -229,7 +223,6 @@ const findTargetCard = () => {
     return null
   }
 
-
   const purchasable =
     cards.find((card) => {
       const text =
@@ -243,7 +236,6 @@ const findTargetCard = () => {
         )
       )
     })
-
 
   return (
     purchasable
@@ -268,7 +260,6 @@ const fallbackTarget = (
   if (!cardRect) {
     return null
   }
-
 
   if (type === 'wish') {
     const rect = {
@@ -295,7 +286,6 @@ const fallbackTarget = (
     }
   }
 
-
   const rect = {
     left:
       cardRect.left + 20,
@@ -311,7 +301,6 @@ const fallbackTarget = (
 
     height: 42,
   }
-
 
   return {
     x:
@@ -370,6 +359,18 @@ const ProductGuide = ({
   const closeTimerRef =
     useRef(null)
 
+  const prepareTimerRef =
+    useRef(null)
+
+  const alignTimerRef =
+    useRef(null)
+
+  const alignFrameRef =
+    useRef(null)
+
+  const secondAlignFrameRef =
+    useRef(null)
+
 
   const currentStep =
     GUIDE_STEPS[step]
@@ -388,17 +389,14 @@ const ProductGuide = ({
         return
       }
 
-
       const targetButton =
         getTargetButton(
           card,
           currentStep.id
         )
 
-
       const targetRect =
         getRect(targetButton)
-
 
       if (targetRect) {
         setPrimaryTarget({
@@ -422,12 +420,10 @@ const ProductGuide = ({
         )
       }
 
-
       const shortcutRect =
         getRect(
           shortcutRef.current
         )
-
 
       if (shortcutRect) {
         setShortcutTarget({
@@ -444,12 +440,10 @@ const ProductGuide = ({
         })
       }
 
-
       const measuredBar =
         getRect(
           barRef.current
         )
-
 
       if (measuredBar) {
         setBarRect(
@@ -469,6 +463,7 @@ const ProductGuide = ({
     useCallback(
       ({
         hideToday = false,
+        scrollTop = false,
       } = {}) => {
         if (hideToday) {
           localStorage.setItem(
@@ -480,14 +475,11 @@ const ProductGuide = ({
           )
         }
 
-
         setPhase('closing')
-
 
         window.clearTimeout(
           closeTimerRef.current
         )
-
 
         closeTimerRef.current =
           window.setTimeout(
@@ -495,13 +487,11 @@ const ProductGuide = ({
               const card =
                 targetCardRef.current
 
-
               if (card) {
                 card.removeAttribute(
                   'data-product-guide-active'
                 )
               }
-
 
               setPhase('idle')
               setStep(0)
@@ -512,6 +502,31 @@ const ProductGuide = ({
 
               targetCardRef.current =
                 null
+
+
+              /*
+               * X 버튼으로 닫은 경우에만
+               * 스토어 페이지 최상단 이동.
+               *
+               * phase가 idle로 바뀌고
+               * body/html의 overflow 잠금이 해제된 뒤
+               * 스크롤하도록 두 프레임 기다린다.
+               */
+              if (scrollTop) {
+                window.requestAnimationFrame(
+                  () => {
+                    window.requestAnimationFrame(
+                      () => {
+                        window.scrollTo({
+                          top: 0,
+                          left: 0,
+                          behavior: 'auto',
+                        })
+                      }
+                    )
+                  }
+                )
+              }
             },
             220
           )
@@ -520,21 +535,25 @@ const ProductGuide = ({
     )
 
 
-  const handleNext = () => {
-    if (
-      step
-      < GUIDE_STEPS.length - 1
-    ) {
-      setStep(
-        (current) =>
-          current + 1
-      )
+ const handleNext = () => {
+  if (
+    step
+    < GUIDE_STEPS.length - 1
+  ) {
+    setStep(
+      (current) =>
+        current + 1
+    )
 
-      return
-    }
-
-    finishGuide()
+    return
   }
+
+  // 마지막 단계 DONE 클릭 시
+  // 가이드 닫고 스토어 맨 위로 이동
+  finishGuide({
+    scrollTop: true,
+  })
+}
 
 
   const handlePrevious = () => {
@@ -560,7 +579,6 @@ const ProductGuide = ({
       return undefined
     }
 
-
     const hiddenUntil =
       Number(
         localStorage.getItem(
@@ -568,14 +586,12 @@ const ProductGuide = ({
         ) || 0
       )
 
-
     if (
       hiddenUntil
       > Date.now()
     ) {
       return undefined
     }
-
 
     if (
       hiddenUntil > 0
@@ -585,23 +601,110 @@ const ProductGuide = ({
       )
     }
 
-
     startedRef.current =
       true
 
-    setPhase(
-      'preparing'
-    )
-
+    setPhase('preparing')
 
     let attempts = 0
-    let retryTimer = null
+
+
+    const alignCardAndOpen = (
+      card,
+      attempt = 0
+    ) => {
+      if (!card) {
+        return
+      }
+
+      const targetTop =
+        window.innerWidth <= 640
+          ? 76
+          : 112
+
+      card.scrollIntoView({
+        behavior: 'auto',
+        block: 'start',
+        inline: 'nearest',
+      })
+
+      alignFrameRef.current =
+        window.requestAnimationFrame(
+          () => {
+            const firstRect =
+              card.getBoundingClientRect()
+
+            const firstDifference =
+              firstRect.top
+              - targetTop
+
+            if (
+              Math.abs(
+                firstDifference
+              ) > 3
+            ) {
+              window.scrollBy({
+                top:
+                  firstDifference,
+
+                left: 0,
+
+                behavior: 'auto',
+              })
+            }
+
+            secondAlignFrameRef.current =
+              window.requestAnimationFrame(
+                () => {
+                  const finalRect =
+                    card.getBoundingClientRect()
+
+                  const difference =
+                    finalRect.top
+                    - targetTop
+
+                  if (
+                    Math.abs(
+                      difference
+                    ) > 10
+                    && attempt < 8
+                  ) {
+                    alignTimerRef.current =
+                      window.setTimeout(
+                        () => {
+                          alignCardAndOpen(
+                            card,
+                            attempt + 1
+                          )
+                        },
+                        80
+                      )
+
+                    return
+                  }
+
+                  window.clearTimeout(
+                    openTimerRef.current
+                  )
+
+                  openTimerRef.current =
+                    window.setTimeout(
+                      () => {
+                        setStep(0)
+                        setPhase('open')
+                      },
+                      80
+                    )
+                }
+              )
+          }
+        )
+    }
 
 
     const prepare = () => {
       const card =
         findTargetCard()
-
 
       if (
         !card
@@ -609,7 +712,7 @@ const ProductGuide = ({
       ) {
         attempts += 1
 
-        retryTimer =
+        prepareTimerRef.current =
           window.setTimeout(
             prepare,
             100
@@ -618,93 +721,58 @@ const ProductGuide = ({
         return
       }
 
-
       if (!card) {
         setPhase('idle')
 
         return
       }
 
-
       targetCardRef.current =
         card
 
-
-      /*
-       * 실제 hover 상태 먼저 강제.
-       * 장바구니 담기 / 하트가
-       * 렌더링된 상태에서 측정한다.
-       */
       card.setAttribute(
         'data-product-guide-active',
         'true'
       )
 
-
-      /*
-       * 여기 중요.
-       *
-       * 하단 가이드 바가 카드의
-       * 장바구니 버튼을 덮지 않도록
-       * 카드 자체를 화면 위쪽으로 올린다.
-       */
-      const cardRect =
-        card.getBoundingClientRect()
-
-
-      const targetCardTop =
-        clamp(
-          window.innerHeight * 0.12,
-          95,
-          125
-        )
-
-
-      const nextScrollY =
-        Math.max(
-          0,
-          window.scrollY
-          + cardRect.top
-          - targetCardTop
-        )
-
-
-      window.scrollTo({
-        top: nextScrollY,
-        left: 0,
-        behavior: 'auto',
-      })
-
-
-      /*
-       * 스크롤 + hover CSS가
-       * 실제 DOM에 반영된 다음 open
-       */
-      openTimerRef.current =
+      prepareTimerRef.current =
         window.setTimeout(
           () => {
-            setStep(0)
-            setPhase('open')
+            alignCardAndOpen(
+              card
+            )
           },
-          180
+          120
         )
     }
 
 
-    retryTimer =
+    prepareTimerRef.current =
       window.setTimeout(
         prepare,
-        100
+        120
       )
 
 
     return () => {
       window.clearTimeout(
-        retryTimer
+        prepareTimerRef.current
+      )
+
+      window.clearTimeout(
+        alignTimerRef.current
       )
 
       window.clearTimeout(
         openTimerRef.current
+      )
+
+      window.cancelAnimationFrame(
+        alignFrameRef.current
+      )
+
+      window.cancelAnimationFrame(
+        secondAlignFrameRef.current
       )
     }
   }, [
@@ -714,10 +782,6 @@ const ProductGuide = ({
 
   // ========================================
   // SCROLL LOCK
-  //
-  // preparing에는 절대 막지 않음.
-  // 먼저 상품 카드 위치를 위로 옮긴 뒤
-  // open 상태에서만 스크롤 잠금.
   // ========================================
 
   useEffect(() => {
@@ -728,13 +792,11 @@ const ProductGuide = ({
       return undefined
     }
 
-
     const previousBodyOverflow =
       document.body.style.overflow
 
     const previousHtmlOverflow =
-      document
-        .documentElement
+      document.documentElement
         .style
         .overflow
 
@@ -742,8 +804,7 @@ const ProductGuide = ({
     document.body.style.overflow =
       'hidden'
 
-    document
-      .documentElement
+    document.documentElement
       .style
       .overflow =
       'hidden'
@@ -753,8 +814,7 @@ const ProductGuide = ({
       document.body.style.overflow =
         previousBodyOverflow
 
-      document
-        .documentElement
+      document.documentElement
         .style
         .overflow =
         previousHtmlOverflow
@@ -775,7 +835,6 @@ const ProductGuide = ({
       return undefined
     }
 
-
     let firstFrame = null
     let secondFrame = null
 
@@ -788,7 +847,6 @@ const ProductGuide = ({
       window.cancelAnimationFrame(
         secondFrame
       )
-
 
       firstFrame =
         window.requestAnimationFrame(
@@ -843,7 +901,6 @@ const ProductGuide = ({
       return undefined
     }
 
-
     const handleKeyDown = (
       event
     ) => {
@@ -856,23 +913,36 @@ const ProductGuide = ({
         return
       }
 
-
       if (
-        event.key
-        === 'ArrowRight'
-      ) {
-        handleNext()
+  event.key
+  === 'ArrowRight'
+) {
+  if (
+    step
+    < GUIDE_STEPS.length - 1
+  ) {
+    setStep(
+      (current) =>
+        current + 1
+    )
+  } else {
+    finishGuide({
+      scrollTop: true,
+    })
+  }
 
-        return
-      }
-
+  return
+}
 
       if (
         event.key
         === 'ArrowLeft'
         && step > 0
       ) {
-        handlePrevious()
+        setStep(
+          (current) =>
+            current - 1
+        )
       }
     }
 
@@ -903,6 +973,14 @@ const ProductGuide = ({
   useEffect(
     () => () => {
       window.clearTimeout(
+        prepareTimerRef.current
+      )
+
+      window.clearTimeout(
+        alignTimerRef.current
+      )
+
+      window.clearTimeout(
         openTimerRef.current
       )
 
@@ -910,10 +988,17 @@ const ProductGuide = ({
         closeTimerRef.current
       )
 
+      window.cancelAnimationFrame(
+        alignFrameRef.current
+      )
+
+      window.cancelAnimationFrame(
+        secondAlignFrameRef.current
+      )
+
 
       const card =
         targetCardRef.current
-
 
       if (card) {
         card.removeAttribute(
@@ -968,15 +1053,6 @@ const ProductGuide = ({
       currentStep.id
       === 'cart'
     ) {
-      /*
-       * 장바구니:
-       * 실제 버튼의 바로 위.
-       *
-       * top을 계산하지 않고
-       * bottom 기준으로 잡아서
-       * 텍스트 높이에 상관없이
-       * 절대 버튼과 겹치지 않음.
-       */
       const left =
         clamp(
           primaryTarget.x
@@ -999,15 +1075,11 @@ const ProductGuide = ({
           + 22,
       }
     } else {
-      /*
-       * 찜은 현재 화면이 괜찮았으므로
-       * 왼쪽에 배치.
-       */
       const left =
         clamp(
           rect.left
           - calloutWidth
-          - 24,
+          - 18,
 
           18,
 
@@ -1019,9 +1091,9 @@ const ProductGuide = ({
 
       const top =
         clamp(
-          rect.top - 4,
+          rect.top + 42,
 
-          80,
+          70,
 
           viewportHeight - 180
         )
@@ -1064,13 +1136,6 @@ const ProductGuide = ({
       )
 
 
-    /*
-     * 버튼의 TOP 기준으로
-     * 안내 박스 전체를 위에 둔다.
-     *
-     * 높이가 몇 줄이든
-     * 버튼과 절대 겹치지 않는다.
-     */
     shortcutCallout = {
       left,
 
@@ -1081,6 +1146,10 @@ const ProductGuide = ({
     }
   }
 
+
+  // ========================================
+  // RENDER
+  // ========================================
 
   return createPortal(
     <div
@@ -1111,9 +1180,9 @@ const ProductGuide = ({
 
       {phase === 'open' && (
         <>
-          {/* =========================
+          {/* =================================
               SPOTLIGHT
-          ========================= */}
+          ================================= */}
 
           {primaryTarget?.rect && (
             <div
@@ -1180,9 +1249,9 @@ const ProductGuide = ({
           )}
 
 
-          {/* =========================
+          {/* =================================
               TOP ACTIONS
-          ========================= */}
+          ================================= */}
 
           <div
             className={
@@ -1196,7 +1265,9 @@ const ProductGuide = ({
               type="button"
               aria-label="스토어 이용 안내 닫기"
               onClick={() =>
-                finishGuide()
+                finishGuide({
+                  scrollTop: true,
+                })
               }
             >
               ×
@@ -1225,9 +1296,9 @@ const ProductGuide = ({
           </div>
 
 
-          {/* =========================
+          {/* =================================
               CALLOUT 1
-          ========================= */}
+          ================================= */}
 
           {primaryCallout && (
             <div
@@ -1270,9 +1341,9 @@ const ProductGuide = ({
           )}
 
 
-          {/* =========================
+          {/* =================================
               CALLOUT 2
-          ========================= */}
+          ================================= */}
 
           {shortcutCallout && (
             <div
@@ -1310,9 +1381,9 @@ const ProductGuide = ({
           )}
 
 
-          {/* =========================
+          {/* =================================
               FEATURE BAR
-          ========================= */}
+          ================================= */}
 
           <section
             ref={barRef}
@@ -1399,9 +1470,9 @@ const ProductGuide = ({
           </section>
 
 
-          {/* =========================
+          {/* =================================
               BOTTOM CONTROLS
-          ========================= */}
+          ================================= */}
 
           <div
             className={
@@ -1472,8 +1543,7 @@ const ProductGuide = ({
               >
                 {
                   step
-                  === GUIDE_STEPS.length
-                    - 1
+                  === GUIDE_STEPS.length - 1
                     ? 'DONE'
                     : 'NEXT →'
                 }
