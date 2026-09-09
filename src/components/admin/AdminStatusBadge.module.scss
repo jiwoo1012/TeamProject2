@@ -1,0 +1,177 @@
+@use '../../styles/admin/adminVariables' as *;
+
+
+// ========================================
+// BADGE
+// ========================================
+
+.badge {
+  width: fit-content;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  border: 1px solid transparent;
+  border-radius: 999px;
+
+  font-weight: 600;
+
+  line-height: 1;
+  white-space: nowrap;
+}
+
+
+// ========================================
+// SIZE
+// ========================================
+
+.size-default {
+  min-height: 26px;
+
+  padding: 0 10px;
+
+  font-size: 11px;
+}
+
+
+.size-small {
+  min-height: 22px;
+
+  padding: 0 8px;
+
+  font-size: 10px;
+}
+
+
+.size-large {
+  min-height: 30px;
+
+  padding: 0 12px;
+
+  font-size: 12px;
+}
+
+
+// ========================================
+// DOT
+// ========================================
+
+.dot {
+  width: 6px;
+  height: 6px;
+
+  flex: 0 0 6px;
+
+  border-radius: 50%;
+
+  background:
+    currentColor;
+}
+
+
+// ========================================
+// SUCCESS
+// 정상 / 게시 중 / 진행 중 / 배송 완료
+// ========================================
+
+.success {
+  color:
+    $admin-primary-dark;
+
+  background:
+    $admin-primary-light;
+
+  border-color:
+    rgba(
+      86,
+      138,
+      128,
+      0.16
+    );
+}
+
+
+// ========================================
+// WARNING
+// 예정 / 배송 준비 / 확인 필요
+// ========================================
+
+.warning {
+  color:
+    $admin-warning;
+
+  background:
+    $admin-warning-light;
+
+  border-color:
+    rgba(
+      189,
+      138,
+      70,
+      0.18
+    );
+}
+
+
+// ========================================
+// INFO
+// 배송 중 / 처리 중
+// ========================================
+
+.info {
+  color:
+    $admin-info;
+
+  background:
+    $admin-info-light;
+
+  border-color:
+    rgba(
+      111,
+      143,
+      168,
+      0.18
+    );
+}
+
+
+// ========================================
+// DANGER
+// 이용 정지 / 취소 / 환불
+// ========================================
+
+.danger {
+  color:
+    $admin-danger;
+
+  background:
+    $admin-danger-light;
+
+  border-color:
+    rgba(
+      201,
+      111,
+      111,
+      0.18
+    );
+}
+
+
+// ========================================
+// NEUTRAL
+// 숨김 / 종료 / 비활성 / 일반
+// ========================================
+
+.neutral {
+  color:
+    $admin-text-secondary;
+
+  background:
+    #f2f3f2;
+
+  border-color:
+    $admin-border;
+}

@@ -1,10 +1,17 @@
 @use '../../../styles/variables' as *;
 
 .card { min-width: 0; font-family: $font-family-base; }
-.imageWrap { position: relative; overflow: hidden; border-radius: $radius-lg; }
-.imageLink { position: relative; display: block; overflow: hidden; aspect-ratio: 0.78; background: rgba($color-surface, .72); border-radius: $radius-lg; }
+.imageWrap { position: relative; overflow: hidden; border-radius: $radius-xl; }
+.imageLink { position: relative; display: block; overflow: hidden; aspect-ratio: 0.78; background: rgba($color-surface, .72); border-radius: $radius-xl; }
 .image { width: 100%; height: 100%; object-fit: cover; transition: transform $transition-base ease; }
-.actions { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; padding: $space-4; background: linear-gradient(180deg, rgba($color-text-primary, .18), transparent 50%, rgba($color-text-primary, .5)); border-radius: inherit; opacity: 0; pointer-events: none; transition: opacity $transition-base ease; }
+.hoverImage { position: absolute; inset: 0; opacity: 0; transition: opacity $transition-base ease, transform $transition-base ease; }
+@media (hover: hover) and (pointer: fine) {
+  .imageWrap:hover .hoverImageReady, .imageWrap:focus-within .hoverImageReady { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .image { transition: none; }
+}
+.actions { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; padding: $space-4; background: linear-gradient(180deg, rgba($color-text-primary, .1), transparent 45%, rgba($color-text-primary, .38)); border-radius: inherit; opacity: 0; pointer-events: none; transition: opacity $transition-base ease; }
 .actions button { pointer-events: auto; }
 .imageWrap:hover .actions, .imageWrap:focus-within .actions { opacity: 1; }
 .imageWrap:hover .image { transform: scale(1.035); }
@@ -12,17 +19,49 @@
 .soldOutCard .image { transform: none; }
 .iconButton { width: 44px; height: 44px; color: $color-white; font-size: $font-size-3xl;text-align: center; border-radius: 50%;  }
 .isWished { color: $color-error; }
-.cartButton { width: 100%; padding: $space-1 $space-3; color: $color-white; font-size: $font-size-lg; text-align: center; border-bottom: 1px solid $color-white; transition: color $transition-fast ease, border-color $transition-fast ease, transform $transition-fast ease; }
-.cartButton:hover { color: $color-primary-light; border-bottom-color: $color-primary-light; transform: scale(1.04); }
-.info { padding-top: $space-5; display: flex; align-items: center; justify-content: space-between;}
-.name {color: $color-text-primary; font-size: $font-size-md;}
-.priceRow { display: flex; justify-content: flex-end; gap: $space-2; align-items: center; }
-.priceRow strong { font-size: $font-size-lg; font-weight: $font-weight-semibold; }
-.discount { color: $color-error; font-weight: $font-weight-semibold; }
-.originalPrice { color: rgba($color-text-muted, .65); font-size: $font-size-md; text-decoration: line-through; text-decoration-thickness: 1px; }
+.cartButton { width: 100%; padding: $space-1 $space-3; color: $color-white; font-size: $font-size-lg; text-align: center; border-bottom: 1px solid $color-white; transition: color $transition-fast ease, border-color $transition-fast ease; }
+.cartButton:hover { color: $color-primary-light; border-bottom-color: $color-primary-light; }
+.info { padding-top: $space-5; display: flex; flex-direction: column; align-items: flex-start; gap: $space-1; }
+.name { color: $color-text-primary; font-size: $font-size-md; font-weight: $font-weight-medium; }
+.priceRow { display: flex; justify-content: flex-start; gap: $space-2; align-items: baseline; }
+.priceRow strong { font-size: $font-size-xl; font-weight: $font-weight-bold; }
+.discount { color: $color-bg; font-weight: $font-weight-bold; font-size: $font-size-xs; background: $color-primary; padding: 2px $space-2; border-radius: $radius-sm; line-height: 1.4; }
+.originalPrice { color: rgba($color-text-muted, .6); font-size: $font-size-sm; text-decoration: line-through; text-decoration-thickness: 1px; }
 
 @media (hover: none) {
   .actions { opacity: 1; background: none; pointer-events: none; }
   .actions button { pointer-events: auto; }
   .cartButton { width: auto; align-self: flex-start; padding: $space-2 $space-3; }
+}
+
+// ========================================
+// PRODUCT GUIDE
+// 가이드가 실행되는 동안 실제 액션 버튼을 강제로 표시
+// ========================================
+
+.card[data-product-guide-active='true'] {
+  .actions {
+    display: flex !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    transform: translateY(0) !important;
+
+    pointer-events: none !important;
+  }
+
+  .iconButton,
+  .cartButton {
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    transform: none !important;
+  }
+
+  // 실제 hover할 때 두 번째 이미지가 나타나는 구조라면
+  // 가이드에서도 같은 이미지가 보이게 함
+  .hoverImage {
+    opacity: 1 !important;
+  }
 }

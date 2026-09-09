@@ -1,353 +1,496 @@
+@use 'sass:color';
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as mixins;
-@use './eventShared' as event;
 
 .page {
   min-height: 100vh;
-  // 이벤트 준비 / 공지사항 페이지와 같은 상단 여백을 사용한다.
   padding: $space-20 0 $space-16;
   color: $color-text-primary;
   font-family: $font-family-base;
   background: $color-bg;
 }
-
 .container { @include mixins.container; }
-
+.eyebrow {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-base;
+  letter-spacing: .16em;
+}
 .hero {
   position: relative;
   isolation: isolate;
   display: flex;
   align-items: center;
   min-height: 300px;
-  padding: $space-10 42% $space-10 $space-12;
-  overflow: visible;
-  color: $color-white;
-  background:
-    radial-gradient(ellipse at 78% 28%, rgba($color-primary-light, .6), transparent 55%),
-    linear-gradient(135deg, $color-primary-light -75%, $color-primary 58%, $color-primary 100%);
-  border-radius: $radius-xl;
-  box-shadow: 0 $space-3 $space-6 rgba($color-text-primary, .08);
+  padding: $space-10 34% $space-16 $space-12;
+  overflow: hidden;
+  color: $color-bg;
+  background: $color-primary;
+  border-radius: $radius-lg $radius-lg 0 0;
 
-  // 한지는 얇은 상단 띠 안에서만 보이게 해 콘텐츠를 가리지 않는다.
   &::before {
     position: absolute;
-    inset: 0 0 auto;
-    height: $space-3;
-    border-radius: $radius-xl $radius-xl 0 0;
-    background: url('../../assets/images/common/header-hanji.webp') center bottom / 100% auto no-repeat;
-    opacity: .6;
-    content: '';
+    z-index: -1;
+    inset: 0;
+    background: url('../../assets/images/common/header-hanji.webp') center / auto 500% no-repeat;
+    mix-blend-mode: soft-light;
+    opacity: .12;
     pointer-events: none;
+    content: '';
   }
-
   &::after {
     position: absolute;
-    z-index: 0;
-    inset: 0 0 0 48%;
-    border-radius: 0 $radius-xl $radius-xl 0;
-    background-image:
-      radial-gradient(circle at center, rgba($color-white, .08) 2px, transparent 3px),
-      radial-gradient(circle at 55% 52%, transparent 40%, rgba($color-white, .07) 40.5% 41%, transparent 41.5%);
-    background-size: $space-6 $space-6, 100% 100%;
-    mask-image: linear-gradient(to right, transparent, $color-white 30%);
-    content: '';
+    z-index: 3;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: $space-6;
+    background: $color-bg;
+    mask: url('../../assets/images/common/header-hanji.webp') center 42% / 100% 120px no-repeat;
     pointer-events: none;
+    content: '';
+  }
+  .eyebrow { letter-spacing: .08em; color: rgba($color-bg, .8); }
+}
+.heroText {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+
+  h1 {
+    margin-top: $space-4;
+    font-family: $font-family-display;
+    font-size: clamp(#{$font-size-3xl}, 2.8vw, #{$font-size-4xl});
+    font-weight: $font-weight-bold;
+    line-height: $line-height-tight;
+    word-break: keep-all;
   }
 }
-.heroText { position: relative; z-index: 2; min-width: 0; }
-.heroText > p {
-  @include event.ribbon-shape;
-  display: inline-block;
-  padding: $space-2 $space-8;
-  color: $color-primary;
-  background: $color-bg;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-bold;
-  letter-spacing: .16em;
-}
-.heroText h1 {
-  margin-top: $space-4;
-  font-family: $font-family-display;
-  font-size: clamp(#{$font-size-3xl}, 3vw, #{$font-size-4xl});
-  font-weight: $font-weight-bold;
-  line-height: $line-height-tight;
+.heroDescription {
+  margin-top: $space-5;
+  font-size: $font-size-md;
+  line-height: $line-height-relaxed;
   word-break: keep-all;
 }
-.heroText span { display: block; max-width: 32em; margin-top: $space-4; font-size: $font-size-sm; line-height: $line-height-relaxed; word-break: keep-all; }
+.heroLink {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-6;
+  min-height: 44px;
+  margin-top: $space-4;
+  padding: $space-2 0;
+  border-bottom: 1px solid rgba($color-bg, .55);
+  color: inherit;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+
+  span { transition: transform $transition-fast ease; }
+}
 .makdongCrop {
   position: absolute;
   z-index: 1;
-  top: -$space-8;
-  right: 5%;
-  bottom: $space-4;
+  inset: 0 0 $space-6 auto;
   width: 34%;
-  overflow: visible;
+  overflow: hidden;
   pointer-events: none;
 
   &::before {
     position: absolute;
-    left: 12%;
-    right: 12%;
     bottom: 0;
-    height: $space-8;
-    border-radius: 50%;
-    background: radial-gradient(ellipse, rgba($color-text-primary, .28), rgba($color-text-primary, .08) 45%, transparent 72%);
+    left: 50%;
+    width: 52%;
+    height: $space-4;
+    background: radial-gradient(ellipse at center, rgba($color-text-primary, .22), rgba($color-text-primary, 0) 70%);
+    transform: translateX(-50%);
+    content: none;
+  }
+}
+.makdong { position: absolute; top: 50%; left: 50%; width: 110%; max-width: none; height: auto; transform: translate(-50%, -40%); filter: drop-shadow(0 $space-2 $space-3 rgba($color-text-primary, .12)); }
+
+.eventSection {
+  position: relative;
+  isolation: isolate;
+  margin-top: $space-16;
+  scroll-margin-top: $space-30;
+
+  &::before {
+    position: absolute;
+    z-index: -1;
+    top: -$space-16;
+    right: 0;
+    left: 0;
+    height: $space-16;
+    background: linear-gradient(rgba($color-primary, .06), rgba($color-primary, 0));
+    pointer-events: none;
+    content: '';
+  }
+  &::after {
+    position: absolute;
+    top: -$space-10;
+    left: 50%;
+    width: $space-8;
+    height: $space-5;
+    background: url('../../assets/images/eventPage/pattern.png') center / contain no-repeat;
+    opacity: .4;
+    transform: translateX(-50%);
+    pointer-events: none;
     content: '';
   }
 }
-.makdong {
-  position: absolute;
-  bottom: $space-1;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center bottom;
-  transform: translateX(-50%);
-  filter: drop-shadow(0 $space-2 $space-3 rgba($color-text-primary, .12));
-}
-
-
 .sectionHeading {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: $space-5;
-  margin: $space-8 0 $space-6;
+  gap: $space-6;
+  margin-bottom: $space-8;
+  border-bottom: 1px solid $color-border;
 
-  h2 { font-size: $font-size-2xl; font-weight: $font-weight-semibold; line-height: $line-height-tight; word-break: keep-all; }
-  > span { flex-shrink: 0; color: $color-text-secondary; font-size: $font-size-sm; }
+  > div:first-child { padding-bottom: $space-5; }
+  .eyebrow { margin-bottom: $space-2; color: $color-text-secondary; }
+  h2 {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
+    line-height: $line-height-tight;
+    word-break: keep-all;
+  }
+}
+.filters {
+  display: flex;
+  align-items: stretch;
+  gap: $space-6;
+  flex-shrink: 0;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    min-height: 52px;
+    padding: $space-3 0;
+    border-bottom: 2px solid transparent;
+    color: $color-text-secondary;
+    font-size: $font-size-md;
+    white-space: nowrap;
+    transition: color $transition-fast ease, border-color $transition-fast ease;
+    span { font-size: $font-size-sm; font-variant-numeric: tabular-nums; }
+    &:hover { color: $color-primary; }
+  }
+  .selectedFilter { color: $color-primary; border-bottom-color: $color-primary; font-weight: $font-weight-bold; }
 }
 
 .eventGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: $grid-gutter;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-6;
+  align-items: start;
 }
-
 .eventCard {
-  min-width: 0;
+  --event-tint: #{rgba($color-surface, .3)};
   display: flex;
   flex-direction: column;
+  min-width: 0;
   overflow: hidden;
-  background: $color-white;
   border: 1px solid $color-border;
-  border-radius: $radius-xl;
-  transition: border-color $transition-base ease, box-shadow $transition-base ease;
-
-  &:hover { border-color: rgba($color-primary, .5); box-shadow: 0 $space-3 $space-8 rgba($color-text-primary, .06); }
+  border-radius: $radius-md;
+  background: $color-bg;
+  transition: transform $transition-fast ease, border-color $transition-fast ease;
 }
-
+.roulette { --event-tint: #{color.mix($color-primary, $color-bg, 18%)}; }
+.card { --event-tint: #{color.mix($color-primary, $color-bg, 12%)}; }
+.quiz { --event-tint: #{color.mix($color-primary, $color-bg, 8%)}; }
 .imageArea {
   position: relative;
   min-width: 0;
+  height: 220px;
   overflow: hidden;
-  aspect-ratio: 4 / 3;
-  background: $color-surface;
+  background: var(--event-tint);
 
-  > img { width: 100%; height: 100%; object-fit: cover; }
+  > img { width: 100%; height: 100%; object-fit: cover; transition: transform $transition-base ease; }
 }
-
 .gameBanner {
   position: relative;
+  isolation: isolate;
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  background:
-    radial-gradient(90% 120% at 0% 0%, rgba($color-primary-light, .08), transparent 60%),
-    linear-gradient(135deg, $color-bg, $color-white);
 
   &::before {
     position: absolute;
-    width: 70%;
-    aspect-ratio: 1;
-    right: -10%;
-    bottom: -35%;
-    border: 1px solid rgba($color-primary, .12);
+    right: 3%;
+    bottom: 0;
+    width: 80%;
+    height: 14%;
+    border-top: 1px solid rgba($color-primary, .12);
     border-radius: 50%;
-    box-shadow: 0 0 0 $space-8 rgba($color-primary-light, .035);
+    background: linear-gradient(rgba($color-primary, .08), rgba($color-primary, .02));
+    pointer-events: none;
     content: '';
   }
 }
-
-.status {
+.gameMotif {
   position: absolute;
-  z-index: 2;
-  top: $space-4;
-  left: $space-4;
-  padding: $space-1 $space-3;
-  color: $color-white;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-  background: $color-primary;
-  border-radius: $radius-pill;
-}
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
 
-.gameBadge {
-  position: absolute;
-  z-index: 2;
-  bottom: $space-4;
-  left: $space-3;
-  padding: $space-1 $space-5;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-bold;
-  letter-spacing: .04em;
-  white-space: nowrap;
-  @include event.chance-ribbon;
+  &::before, &::after { position: absolute; content: ''; }
 }
-
+.roulette .gameMotif {
+  &::before {
+    top: 10%;
+    left: 8%;
+    width: 38%;
+    aspect-ratio: 1;
+    border: 1px dashed rgba($color-primary, .2);
+    border-radius: 50%;
+  }
+  &::after {
+    top: 16%;
+    left: 11%;
+    width: 32%;
+    aspect-ratio: 1;
+    border: 1px solid rgba($color-primary, .1);
+    border-radius: 50%;
+  }
+}
+.card .gameMotif {
+  &::before, &::after {
+    width: 25%;
+    aspect-ratio: .7;
+    border: 1px solid rgba($color-primary, .16);
+    border-radius: $radius-md;
+    background: rgba($color-bg, .25);
+  }
+  &::before { top: 12%; left: 10%; transform: rotate(-18deg); }
+  &::after { top: 18%; left: 22%; transform: rotate(8deg); }
+}
+.quiz .gameMotif {
+  &::before {
+    top: 12%;
+    left: 8%;
+    width: 45%;
+    height: 26%;
+    border: 1px solid rgba($color-primary, .14);
+    border-radius: $radius-xl $radius-xl $radius-xl 0;
+    background: rgba($color-bg, .24);
+  }
+  &::after {
+    top: 23%;
+    left: 18%;
+    width: $space-1;
+    height: $space-1;
+    border-radius: 50%;
+    background: rgba($color-primary, .2);
+    box-shadow: $space-3 0 rgba($color-primary, .2), $space-6 0 rgba($color-primary, .2);
+  }
+}
+.quiz .cardCharacter { filter: drop-shadow(0 $space-1 $space-1 rgba($color-primary, .16)); }
 .cardCharacter {
   position: absolute;
   z-index: 1;
-  right: 0;
+  right: 5%;
   bottom: 0;
-  width: 85%;
-  height: 90%;
+  width: 76%;
+  height: 94%;
   object-fit: contain;
   object-position: center bottom;
-  filter: drop-shadow(0 $space-2 $space-3 rgba($color-text-primary, .15));
+  transform-origin: center bottom;
   transition: transform $transition-base ease;
-  pointer-events: none;
 }
-
-.eventCard:hover .cardCharacter { transform: translateY(-$space-1) rotate(2deg); }
+.imageFallback { display: grid; place-items: center; height: 100%; color: $color-text-secondary; letter-spacing: .12em; }
 
 .cardContent {
-  flex: 1;
-  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  min-width: 0;
   padding: $space-6;
 
-  h2 { font-size: $font-size-xl; font-weight: $font-weight-bold; line-height: $line-height-tight; word-break: keep-all; overflow-wrap: anywhere; }
-  p { margin-top: $space-3; color: $color-text-secondary; font-size: $font-size-sm; line-height: $line-height-relaxed; word-break: keep-all; overflow-wrap: anywhere; }
-  time { display: block; margin-top: $space-4; color: $color-text-secondary; font-size: $font-size-xs; line-height: $line-height-base; }
-  > a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: $space-6;
-    min-height: 44px;
-    margin-top: $space-5;
-    padding: $space-3 $space-5;
-    font-size: $font-size-sm;
-    @include event.btn-primary;
-    span { font-size: $font-size-xl; line-height: 1; }
+  h3 {
+    margin-top: $space-4;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    line-height: $line-height-tight;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
   }
 }
+.cardMeta { display: flex; flex-wrap: wrap; align-items: center; gap: $space-2 $space-3; }
+.status {
+  display: inline-block;
+  padding: $space-1 $space-2;
+  color: $color-primary;
+  background: rgba($color-primary, .08);
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  white-space: nowrap;
+}
+.benefit { color: $color-primary; font-size: $font-size-sm; font-weight: $font-weight-semibold; word-break: keep-all; }
+.roulette .benefit {
+  padding: $space-2 $space-3;
+  border: 3px double rgba($color-primary, .55);
+  border-radius: $radius-sm;
+  transform: rotate(-2deg);
+}
+.card .cardContent h3 { order: -1; margin-top: 0; margin-bottom: $space-4; }
+.card .benefit { padding-bottom: $space-1; border-bottom: 1px dashed rgba($color-primary, .35); }
+.quiz .benefit { padding: $space-1 $space-2; border-left: 2px solid $color-primary; background: rgba($color-primary, .06); }
+.description {
+  margin-top: $space-3;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  line-height: $line-height-relaxed;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.period {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-1 $space-3;
+  width: 100%;
+  margin-top: $space-5;
+  color: $color-text-secondary;
+  font-size: $font-size-xs;
+  line-height: $line-height-base;
+  font-variant-numeric: tabular-nums;
+  > span:first-child { flex-shrink: 0; }
+}
+.cardLink {
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $space-8;
+  min-height: 44px;
+  margin-top: $space-4;
+  color: $color-primary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  border-bottom: 1px solid rgba($color-primary, .35);
 
+  span { transition: transform $transition-fast ease; }
+}
 .featuredGrid {
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-  grid-template-rows: repeat(2, minmax(240px, auto));
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
 
   .eventCard:not(.featuredCard) {
     display: grid;
-    grid-template-columns: minmax(0, .85fr) minmax(0, 1fr);
-    .imageArea { aspect-ratio: auto; min-height: 240px; }
+    grid-template-columns: minmax(0, .65fr) minmax(0, 1fr);
+    .imageArea { height: 100%; min-height: 240px; }
     .cardContent { justify-content: center; }
   }
 }
-
 .featuredCard {
   grid-column: 1;
   grid-row: 1 / span 2;
+  background: $color-bg;
 
-  .imageArea { flex: 1; min-height: 280px; aspect-ratio: auto; }
-  .cardCharacter { right: 8%; width: 75%; height: 96%; }
-  .cardContent { flex: 0; padding: $space-8; }
-  .cardContent h2 { max-width: 15em; font-size: $font-size-3xl; }
-  .cardContent p { font-size: $font-size-md; }
-  .gameBadge { bottom: $space-6; left: $space-5; }
-  .status { top: $space-6; left: $space-6; }
-}
-
-.endedCard {
-  .imageArea > img { filter: grayscale(.7); opacity: .8; }
-  .status { background: $color-text-secondary; }
-  .cardContent > a { background: $color-text-secondary; border-color: $color-text-secondary; }
-  .cardContent > a:hover { background: $color-text-primary; }
-}
-
-.pagination {
-  @include mixins.flex-center;
-  gap: $space-2;
-  padding-top: $space-8;
-  button {
-    @include mixins.flex-center;
-    min-width: 44px;
-    height: 44px;
-    color: $color-text-secondary;
-    font-size: $font-size-sm;
-    border-radius: 50%;
-    transition: color $transition-fast ease, background $transition-fast ease;
-    &:hover:not(:disabled) { background: $color-surface; }
-    &:disabled { opacity: .3; }
+  .imageArea { flex: 1; min-height: 240px; }
+  .cardCharacter { right: 8%; width: 72%; }
+  .cardContent { padding: $space-8; }
+  .cardContent h3 { font-size: $font-size-3xl; }
+  .benefit { font-size: $font-size-md; }
+  .cardLink {
+    width: 100%;
+    margin-top: $space-6;
+    padding: $space-3 $space-5;
+    border: 0;
+    border-radius: $radius-sm;
+    color: $color-bg;
+    background: $color-primary;
   }
-  .currentPage { color: $color-white; background: $color-primary; }
 }
-
-.cardContent > a:focus-visible,
-.pagination button:focus-visible {
+.endedCard {
+  .imageArea { filter: saturate(.55); }
+  .imageArea > img, .cardCharacter { opacity: .78; }
+  .status { color: $color-text-secondary; background: $color-surface; }
+}
+.emptyState {
+  grid-column: 1 / -1;
+  padding: $space-16 $space-6;
+  text-align: center;
+  color: $color-text-secondary;
+  p { font-size: $font-size-lg; }
+  button { min-height: 44px; margin-top: $space-5; color: $color-primary; text-decoration: underline; text-underline-offset: $space-1; }
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.heroLink:focus-visible, .filters button:focus-visible,
+.cardLink:focus-visible, .emptyState button:focus-visible {
   outline: 2px solid $color-primary;
   outline-offset: $space-1;
 }
+.heroLink:focus-visible { outline-color: $color-bg; }
+.eventSection:focus { outline: none; }
 
+@media (hover: hover) and (pointer: fine) {
+  .eventCard:hover {
+    transform: translateY(-$space-1);
+    border-color: $color-primary;
+    .cardCharacter, .imageArea > img { transform: scale(1.03); }
+    .cardLink span { transform: translateX($space-1); }
+  }
+  .heroLink:hover span { transform: translateX($space-1); }
+}
 @include mixins.tablet {
-  .hero { min-height: 280px; padding: $space-8 40% $space-8 $space-8; }
+  .hero { padding: $space-8 35% $space-12 $space-8; }
   .heroText h1 { font-size: $font-size-3xl; }
-  .makdongCrop { top: -$space-4; right: 2%; width: 36%; }
-  .eventGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .makdongCrop { right: 0; width: 34%; }
+  .sectionHeading { flex-direction: column; align-items: flex-start; gap: 0; }
+  .sectionHeading > div:first-child { padding-bottom: $space-3; }
   .featuredGrid {
-    grid-template-rows: auto;
     .eventCard:not(.featuredCard) {
       display: flex;
-      .imageArea { min-height: 220px; aspect-ratio: 4 / 3; }
+      .imageArea { height: 220px; min-height: 0; }
+      .cardContent { justify-content: flex-start; }
     }
-  }
-  .featuredCard {
-    grid-column: 1 / -1;
-    grid-row: auto;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    .imageArea { min-height: 320px; }
-    .cardContent { justify-content: center; }
-  }
-}
-
-@include mixins.mobile {
-  .page { padding: $space-10 0 $space-12; }
-  .hero { flex-direction: column; min-height: 0; gap: $space-5; padding: $space-8 $space-5 $space-4; text-align: center; }
-  .hero::after { inset: 40% 0 0; border-radius: 0 0 $radius-xl $radius-xl; }
-  .heroText > p { font-size: $font-size-xs; }
-  .heroText h1 { font-size: $font-size-2xl; }
-  .heroText span { max-width: 24em; margin-inline: auto; font-size: $font-size-sm; }
-  .makdongCrop { position: relative; inset: auto; width: min(100%, 240px); height: 240px; flex-shrink: 0; }
-  .sectionHeading {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: $space-3;
-    margin-top: $space-8;
-    h2 { font-size: $font-size-xl; }
-    > span { font-size: $font-size-xs; }
-  }
-  .eventGrid { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; gap: $space-5; }
-  .featuredGrid .eventCard:not(.featuredCard) {
-    display: flex;
-    .imageArea { min-height: 0; aspect-ratio: 16 / 9; }
   }
   .featuredCard {
     grid-column: auto;
     grid-row: auto;
-    .imageArea { flex: auto; min-height: 0; aspect-ratio: 4 / 3; }
+    .imageArea { flex: none; height: 220px; min-height: 0; }
     .cardContent { padding: $space-6; }
-    .cardContent h2 { font-size: $font-size-2xl; }
-    .cardContent p { font-size: $font-size-sm; }
+    .cardContent h3 { font-size: $font-size-2xl; }
+    .benefit { font-size: $font-size-sm; }
   }
-  .cardContent > a { width: 100%; }
 }
-
+@include mixins.mobile {
+  .page { padding: $space-10 0 $space-12; }
+  .hero { display: block; min-height: 0; padding: $space-8 $space-6 $space-12; }
+  .hero::after { height: $space-4; mask-size: 100% 80px; }
+  .heroText h1 { font-size: $font-size-2xl; }
+  .heroDescription { max-width: 72%; font-size: $font-size-sm; margin-top: $space-4; }
+  .heroLink { gap: $space-3; font-size: $font-size-xs; }
+  .makdongCrop { inset: auto 0 $space-4 auto; width: 28%; height: 132px; }
+  .makdongCrop::before { height: $space-2; }
+  .eventSection { margin-top: $space-10; }
+  .eventSection::before { top: -$space-10; height: $space-10; }
+  .eventSection::after { top: -$space-8; width: $space-6; height: $space-4; }
+  .sectionHeading { flex-direction: column; align-items: stretch; gap: $space-3; margin-bottom: $space-6; }
+  .sectionHeading > div:first-child { padding: 0; }
+  .sectionHeading h2 { font-size: $font-size-xl; }
+  .sectionHeading .eyebrow { font-size: $font-size-xs; letter-spacing: .1em; }
+  .filters { gap: $space-6; }
+  .filters button { font-size: $font-size-sm; }
+  .eventGrid, .featuredGrid { grid-template-columns: minmax(0, 1fr); gap: $space-6; }
+  .featuredGrid .eventCard:not(.featuredCard) { display: flex; }
+  .eventGrid .eventCard .imageArea,
+  .featuredGrid .eventCard:not(.featuredCard) .imageArea { flex: none; height: 168px; min-height: 0; }
+  .eventCard .cardCharacter { right: $space-4; width: 55%; height: 96%; }
+  .featuredCard { grid-column: auto; grid-row: auto; }
+  .eventCard .cardContent { padding: $space-6 $space-5; }
+  .eventCard .cardContent h3 { font-size: $font-size-2xl; }
+  .eventCard .benefit { font-size: $font-size-sm; }
+  .cardLink { width: 100%; }
+  .featuredCard .cardLink { margin-top: $space-4; }
+}
 @media (prefers-reduced-motion: reduce) {
-  .eventCard, .cardCharacter, .cardContent > a, .pagination button { transition: none; }
-  .eventCard:hover .cardCharacter { transform: none; }
+  .eventCard, .cardCharacter, .imageArea > img, .cardLink span, .heroLink span, .filters button { transition: none; }
+  .eventCard:hover, .eventCard:hover .cardCharacter, .eventCard:hover .imageArea > img,
+  .eventCard:hover .cardLink span, .heroLink:hover span { transform: none; }
 }

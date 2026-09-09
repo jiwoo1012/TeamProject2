@@ -4,6 +4,7 @@ import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
 import { getCollection } from '../../firebase/firestore'
 import { getEventParticipationAvailability, saveEventParticipation } from '../../services/eventParticipation'
 import { PATHS } from '../../routes/paths'
+import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 import eventsData from '../../data/events.json'
 import rouletteBack from '../../assets/images/eventPage/roulette3.png'
 import rouletteFront from '../../assets/images/eventPage/roulette1.png'
@@ -123,6 +124,7 @@ const formatToday = () =>
 
 const RouletteEvent = () => {
   const event = eventsData[0].event
+  const pageRef = useRef(null)
   const wheelRef = useRef(null)
   const stageRef = useRef(null)
   const currentRotationRef = useRef(0)
@@ -131,6 +133,7 @@ const RouletteEvent = () => {
   const [isAdmin, setIsAdmin] = useState(false)
   const [products, setProducts] = useState([])
   const [hasParticipated, setHasParticipated] = useState(false)
+  const [isAvailabilityLoading, setIsAvailabilityLoading] = useState(true)
   const [isSpinning, setIsSpinning] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [result, setResult] = useState(null)
@@ -148,9 +151,11 @@ const RouletteEvent = () => {
       if (!member) {
         setIsAdmin(false)
         setHasParticipated(false)
+        setIsAvailabilityLoading(false)
         return
       }
 
+      setIsAvailabilityLoading(true)
       try {
         const [availability, memberData] = await Promise.all([
           getEventParticipationAvailability(EVENT_ID, event.participationLimit),
@@ -163,6 +168,8 @@ const RouletteEvent = () => {
         }
       } catch {
         if (active) setErrorMessage('참여 정보를 불러오지 못했습니다.')
+      } finally {
+        if (active) setIsAvailabilityLoading(false)
       }
     })
 
@@ -259,7 +266,7 @@ const RouletteEvent = () => {
   })
 
   const spin = async () => {
-    if (isSpinning || isSaving || hasParticipated) return
+    if (isSpinning || isSaving || isAvailabilityLoading || hasParticipated) return
     if (!user) {
       showLoginNotice('로그인 후 룰렛 이벤트에 참여할 수 있어요.')
       return
@@ -298,7 +305,8 @@ const RouletteEvent = () => {
   }
 
   return (
-    <main className={`${styles.page} ${isSpinning ? styles.isSpinning : ''}`}>
+    <main className={`${styles.page} ${isSpinning ? styles.isSpinning : ''}`} ref={pageRef}>
+      <MobileTopButton contentRef={pageRef} />
       <div className={styles.runningTrail} aria-hidden="true" />
       <div className={styles.runningTrack} aria-hidden="true">
         <img className={styles.runningFrame} src={running2} alt="" />
@@ -328,7 +336,7 @@ const RouletteEvent = () => {
               className={styles.spinButton}
               type="button"
               onClick={spin}
-              disabled={isSpinning || isSaving || hasParticipated}
+              disabled={isSpinning || isSaving || isAvailabilityLoading || hasParticipated}
               aria-label="룰렛 돌리기"
             >
               {isSpinning || isSaving ? '추첨중...' : hasParticipated ? '참여 완료' : '클릭!'}
@@ -337,7 +345,7 @@ const RouletteEvent = () => {
         </div>
 
         <aside className={styles.eventCard}>
-          <p className={styles.chanceRibbon}>{isAdmin ? '관리자 무제한 참여 가능!' : '회원당 1회 참여 가능!'}</p>
+          <p className={styles.chanceRibbon}>{isAdmin ? '관리자 무제한 참여 가능!' : '하루 1회 참여 가능!'}</p>
           <h1>{EVENT_TITLE}</h1>
           <p className={styles.description}>{event.detailDescription}</p>
 

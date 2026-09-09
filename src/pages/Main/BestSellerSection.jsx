@@ -38,10 +38,12 @@ const BestSellerSection = ({
 }) => {
   const [isRevealComplete, setIsRevealComplete] = useState(false)
   const cardRefs = useRef([])
+  const hasDirectNavigationRef = useRef(false)
   const displayProducts = products.length > 0
     ? products
     : fallbackProducts
   const cardCount = displayProducts.length
+  const productsKey = displayProducts.map((product) => product.productId ?? product.id).join('|')
 
   useLayoutEffect(() => {
     const section = sectionRef.current
@@ -55,11 +57,13 @@ const BestSellerSection = ({
     let lastStepTime = 0
     let finalStepReachedAt = 0
     let removeWheelHandler = () => {}
+    let removeNavigationHandler = () => {}
 
     const context = gsap.context(() => {
       const cards = cardRefs.current.slice(0, cardCount)
       const isDesktopStepMode = window.matchMedia('(hover: hover) and (pointer: fine)').matches
       gsap.set(cards, { autoAlpha: 0, y: 48, scale: 0.94 })
+      setIsRevealComplete(false)
 
       const setCardsForStep = (step) => {
         cards.forEach((card, index) => {
@@ -70,6 +74,20 @@ const BestSellerSection = ({
           })
         })
       }
+
+      const handleDirectNavigation = () => {
+        hasDirectNavigationRef.current = true
+        scrollTween?.kill()
+        gsap.killTweensOf(cards)
+        currentStep = cardCount
+        finalStepReachedAt = performance.now()
+        setCardsForStep(cardCount)
+        setIsRevealComplete(true)
+      }
+
+      section.addEventListener('main:section-select', handleDirectNavigation)
+      removeNavigationHandler = () => section.removeEventListener('main:section-select', handleDirectNavigation)
+      if (hasDirectNavigationRef.current) handleDirectNavigation()
 
       if (!isDesktopStepMode) {
         setIsRevealComplete(true)
@@ -222,6 +240,7 @@ const BestSellerSection = ({
     }, section)
 
     return () => {
+      removeNavigationHandler()
       removeWheelHandler()
       scrollTween?.kill()
       exitTimeline?.kill()
@@ -229,10 +248,11 @@ const BestSellerSection = ({
       transitionActiveRef.current = false
       context.revert()
     }
-  }, [cardCount, nextSectionRef, sectionRef, transitionActiveRef])
+  }, [cardCount, productsKey, nextSectionRef, sectionRef, transitionActiveRef])
 
   return (
     <section
+      id="best-seller-section"
       ref={sectionRef}
       className={styles.bestSeller}
       style={{

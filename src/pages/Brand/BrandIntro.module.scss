@@ -81,6 +81,78 @@
   
 }
 
+.storyScrollGuide {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  width: max-content;
+  max-width: calc(100% - #{$space-10});
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-3 $space-5;
+  border-radius: $radius-lg;
+  background: rgba($color-bg, 0.9);
+  color: $color-text-primary;
+  text-align: center;
+  translate: -50% -50%;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
+
+  p {
+    margin: 0;
+    font-family: $font-family-base;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+
+}
+
+.storyScrollGuideHidden {
+  opacity: 0;
+  transform: translateY(24px);
+  visibility: hidden;
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 0.5s;
+}
+
+.storyScene .storyScrollIcon {
+  position: relative;
+  top: auto;
+  left: auto;
+  opacity: 1;
+  translate: none;
+  border-color: currentColor;
+  filter: none;
+
+  i { background: currentColor; }
+}
+
+.storyScrollMobile,
+.storySwipeIcon { display: none; }
+
+@media (max-width: 767px) {
+  .storyScrollDesktop,
+  .storyScene .storyScrollIcon { display: none; }
+  .storyScrollMobile,
+  .storySwipeIcon { display: block; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .storyScrollGuide {
+    transition: none;
+    transform: none;
+  }
+
+  .storyScene .storyScrollIcon i {
+    animation: none;
+  }
+}
+
 .storyStage {
   // 술병 뒤에 보이는 무대/배경 이미지
   position: absolute;
@@ -246,7 +318,7 @@
   display: flex;
   width: 100%;
   height: 100%;
-  transition: transform 450ms cubic-bezier(0.65, 0, 0.35, 1);
+  transition: transform 400ms cubic-bezier(0.65, 0, 0.35, 1);
   will-change: transform;
 }
 
@@ -261,10 +333,13 @@
 }
 
 .senseText {
-  display: flex;
+  display: grid;
   min-width: 0;
   padding-block: $space-4 $space-20;
-  flex-direction: column;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: $space-3;
+  align-items: center;
+  align-content: start;
 }
 
 .senseText > span {
@@ -276,11 +351,12 @@
 }
 
 .senseText h3 {
-  margin: $space-10 0 0;
+  margin: 0;
   font-size: clamp(1.4rem, 1.9vw, 1.85rem);
 }
 
 .senseText p {
+  grid-column: 1 / -1;
   width: 100%;
   max-width: 46rem;
   margin: $space-4 0 0;
@@ -290,6 +366,7 @@
 }
 
 .senseControlButtons {
+  grid-column: 1 / -1;
   position: absolute;
   right: 0;
   bottom: $space-4;
@@ -298,6 +375,25 @@
   align-items: center;
   justify-content: flex-start;
   gap: $space-4;
+}
+
+@media (min-width: 768px) {
+  .senseText {
+    padding-block: 0;
+    align-content: center;
+  }
+
+  .senseText h3 {
+    min-width: 0;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+
+  .senseControlButtons {
+    position: static;
+    width: 100%;
+    margin-top: $space-6;
+  }
 }
 
 .senseControlButtons > button {

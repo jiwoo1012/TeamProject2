@@ -1,11 +1,28 @@
 @use '../../styles/variables' as v;
 
+// Match MyPageLayout's canvas, gutters and OrderHistory's card hierarchy.
 .page {
-  width: min(1606px, calc(100% - 132px));
-  margin: 0 auto;
-  padding: 79px 0 v.$space-16;
+  width: 100%;
+  min-height: 100vh;
+  padding: 60px max(40px, calc((100% - #{v.$container-max}) / 2)) 100px;
+  background: #f8f7f3;
   color: v.$color-text-primary;
   font-family: v.$font-family-base;
+  font-size: v.$font-size-sm;
+  line-height: v.$line-height-base;
+}
+
+.page :where(button, a):focus-visible,
+.cartCheckbox input:focus-visible + .checkboxBox {
+  outline: 2px solid v.$color-primary;
+  outline-offset: 2px;
+}
+
+.page button {
+  cursor: pointer;
+}
+.page button:disabled {
+  cursor: default;
 }
 
 .srOnly {
@@ -13,65 +30,55 @@
   width: 1px;
   height: 1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
   clip-path: inset(50%);
   white-space: nowrap;
 }
 
-.topOrnament {
-  display: block;
-  width: 100%;
-  height: auto;
-  margin-bottom: v.$space-6;
-  transform: scaleX(1.05);
-  transform-origin: left center;
-}
-
 .pageHeader {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 31px;
-  margin-left: v.$space-6;
+  flex-wrap: wrap;
+  gap: v.$space-4;
+  margin-bottom: v.$space-6;
+  padding: 30px;
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
 }
 
 .pageHeader h1 {
   margin: 0;
-  font-size: 32px;
+  font-size: v.$font-size-2xl;
   font-weight: v.$font-weight-bold;
   line-height: v.$line-height-tight;
+  letter-spacing: -0.02em;
 }
 
 .purchaseSteps {
-  position: absolute;
-  right: 494px;
   display: inline-flex;
   align-items: center;
-  gap: v.$space-4;
+  flex-wrap: wrap;
+  gap: v.$space-3;
   color: v.$color-text-muted;
-  font-size: v.$font-size-lg;
+  font-size: v.$font-size-xs;
   font-weight: v.$font-weight-medium;
-  white-space: nowrap;
 }
 
 .currentStep {
-  color: v.$color-text-primary;
+  color: v.$color-primary;
   font-weight: v.$font-weight-bold;
 }
-
 .stepFlower {
-  width: 42px;
-  height: 26px;
-  flex: 0 0 42px;
+  width: 28px;
+  height: 18px;
+  flex: 0 0 28px;
 }
 
 .mainGrid {
   display: grid;
-  grid-template-columns: minmax(0, 1100px) 417px;
+  grid-template-columns: minmax(0, 1fr) 324px;
   align-items: start;
-  gap: 77px;
-  margin-left: v.$space-6;
+  gap: v.$space-6;
 }
 
 .cartArea {
@@ -81,307 +88,237 @@
 .cartTable,
 .emptyCard,
 .summaryCard,
-.recommendationCard {
-  border: 1px solid v.$color-border;
+.recommendationCard,
+.loginGate {
   background: v.$color-white;
+  border-radius: v.$radius-xl;
 }
 
 .cartTable {
   overflow: hidden;
-  border-radius: v.$radius-lg;
+  padding: v.$space-6;
 }
-
-.cartTableHead {
+.cartTableHead,
+.cartRow {
   display: grid;
-  height: 73px;
-  grid-template-columns: minmax(0, 1fr) 180px 160px 180px 100px;
+  grid-template-columns: minmax(0, 1fr) 104px 86px 100px 36px;
   align-items: center;
-  padding: 0 32px;
-  background: #4d7e7b;
-  color: v.$color-white;
-  font-size: v.$font-size-sm;
+  gap: v.$space-3;
+}
+.cartTableHead {
+  min-height: 48px;
+  padding: v.$space-2 v.$space-3;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-md;
+  background: #edf5f2;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-xs;
   font-weight: v.$font-weight-medium;
   text-align: center;
 }
-
 .checkLabel {
   display: inline-flex;
   align-items: center;
   gap: v.$space-2;
   justify-self: start;
-  line-height: 1;
 }
-
-.cartActionGroup {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.clearAllButton {
-  display: inline-flex;
-  min-width: 150px;
-  height: 46px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid v.$color-border;
-  border-radius: 11px;
-  background: v.$color-white;
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-md;
-  font-weight: v.$font-weight-medium;
-  white-space: nowrap;
-}
-
 .cartCheckbox {
   position: relative;
   display: inline-grid;
-  width: 28px;
-  height: 28px;
-  flex: 0 0 28px;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
   place-items: center;
   cursor: pointer;
 }
-
 .cartCheckbox input {
   position: absolute;
   width: 1px;
   height: 1px;
   opacity: 0;
-  pointer-events: none;
 }
-
 .checkboxBox {
   position: relative;
-  display: block;
-  width: 24px;
-  height: 24px;
-  border: 2px solid v.$color-primary;
+  width: 20px;
+  height: 20px;
+  border: 1px solid v.$color-primary;
   border-radius: v.$radius-sm;
   background: v.$color-white;
 }
-
 .cartCheckbox input:checked + .checkboxBox {
-  border-color: v.$color-primary;
   background: v.$color-primary;
 }
-
 .cartCheckbox input:checked + .checkboxBox::after {
   position: absolute;
-  top: 4px;
-  left: 7px;
-  width: 6px;
-  height: 10px;
+  top: 3px;
+  left: 6px;
+  width: 5px;
+  height: 9px;
   border-right: 2px solid v.$color-white;
   border-bottom: 2px solid v.$color-white;
   content: '';
   transform: rotate(45deg);
 }
-
-.headCheckbox .checkboxBox {
-  border-color: v.$color-white;
-  background: transparent;
-}
-
-.headCheckbox input:checked + .checkboxBox {
-  border-color: v.$color-white;
-  background: v.$color-white;
-}
-
-.headCheckbox input:checked + .checkboxBox::after {
-  border-color: v.$color-primary;
-}
-
 .cartRow {
-  display: grid;
-  min-height: 169px;
-  grid-template-columns: minmax(0, 1fr) 180px 160px 180px 100px;
-  align-items: center;
-  padding: 26px 32px;
+  min-height: 112px;
+  padding: v.$space-5 v.$space-3;
 }
-
 .cartRow + .cartRow {
   border-top: 1px solid v.$color-border;
 }
-
 .itemInfo {
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: 28px;
+  gap: v.$space-3;
 }
-
 .productImage {
   display: grid;
-  width: 104px;
-  height: 111px;
-  flex: 0 0 104px;
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
   place-items: center;
   overflow: hidden;
-  border-radius: 11px;
-  background: #ece4d7;
+  border-radius: v.$radius-md;
+  background: v.$color-surface;
   color: v.$color-text-muted;
   font-size: v.$font-size-xs;
 }
-
 .productImage img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-
 .itemCopy,
 .recommendationCopy {
   min-width: 0;
+  overflow-wrap: anywhere;
 }
-
 .itemCopy strong,
 .recommendationCopy strong {
   display: block;
-  color: v.$color-text-primary;
-  font-size: v.$font-size-lg;
+  font-size: v.$font-size-sm;
   font-weight: v.$font-weight-semibold;
   line-height: v.$line-height-base;
 }
-
 .itemCopy span,
 .recommendationCopy span {
   display: block;
-  margin-top: v.$space-2;
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-sm;
+  margin-top: v.$space-1;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
 }
-
 .quantityControl {
   display: inline-grid;
-  width: 137px;
-  height: 50px;
-  grid-template-columns: 40px 1fr 40px;
+  width: 104px;
+  height: 36px;
+  grid-template-columns: 32px 1fr 32px;
   align-items: center;
   justify-self: center;
   overflow: hidden;
   border: 1px solid v.$color-border;
-  border-radius: 11px;
+  border-radius: v.$radius-md;
   background: v.$color-white;
 }
-
 .quantityControl button,
 .quantityControl span {
   display: grid;
   height: 100%;
   place-items: center;
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-md;
+  color: v.$color-text-primary;
+  font-size: v.$font-size-sm;
 }
-
 .discountValue,
 .lineTotal {
-  font-size: v.$font-size-md;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
   text-align: center;
+  overflow-wrap: anywhere;
 }
-
 .discountValue {
   color: v.$color-error;
-  font-weight: v.$font-weight-semibold;
 }
-
-.lineTotal {
-  font-weight: v.$font-weight-semibold;
-}
-
 .priceLabel {
   display: none;
 }
-
 .rowCheck {
   display: grid;
   place-items: center;
 }
-
 .cartActions {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 27px;
+  flex-wrap: wrap;
+  gap: v.$space-3;
+  margin-top: v.$space-4;
 }
-
-.textButton {
+.cartActionGroup {
+  display: flex;
+  align-items: center;
+  gap: v.$space-2;
+}
+.textButton,
+.clearAllButton,
+.outlineButton,
+.browseButton,
+.recommendationItem button {
   display: inline-flex;
-  min-width: 150px;
-  height: 46px;
+  min-height: 36px;
   align-items: center;
   justify-content: center;
+  padding: v.$space-2 v.$space-4;
   border: 1px solid v.$color-border;
-  border-radius: 11px;
+  border-radius: v.$radius-md;
   background: v.$color-white;
-  color: #4d7e7b;
-  font-size: v.$font-size-md;
-  font-weight: v.$font-weight-medium;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-semibold;
+  line-height: v.$line-height-tight;
+  text-align: center;
 }
-
-.outlineButton {
-  display: inline-flex;
-  width: 150px;
-  height: 46px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid v.$color-primary;
-  border-radius: 11px;
+.outlineButton,
+.browseButton {
+  border-color: v.$color-primary;
   background: v.$color-primary;
   color: v.$color-white;
-  font-size: v.$font-size-md;
-  font-weight: v.$font-weight-semibold;
 }
-
 .summaryCard {
   position: sticky;
   top: v.$space-6;
-  align-self: start;
-  margin-top: -72px;
-  min-height: 713px;
-  overflow: hidden;
-  border-radius: 14px;
+  min-width: 0;
+  padding: v.$space-6;
 }
-
 .summaryCard h2 {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: v.$space-3;
-  margin: 0;
-  padding: 36px 29px 23px;
-  color: #346561;
-  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: v.$space-2;
+  margin: 0 0 v.$space-5;
+  padding-bottom: v.$space-4;
+  border-bottom: 1px solid v.$color-text-muted;
+  font-size: v.$font-size-2xl;
   font-weight: v.$font-weight-bold;
+  letter-spacing: -0.02em;
 }
-
-.summaryCard h2::after {
-  display: block;
-  grid-column: 1 / -1;
-  height: 2px;
-  margin-top: 20px;
-  background: #4d7e7b;
-  content: '';
-}
-
 .summaryCard h2 em {
-  align-self: center;
-  padding: v.$space-1 v.$space-3;
+  padding: v.$space-1 v.$space-2;
   border-radius: v.$radius-pill;
-  background: color-mix(in srgb, v.$color-primary 12%, v.$color-white);
+  background: #edf5f2;
   color: v.$color-primary;
   font-size: v.$font-size-xs;
   font-style: normal;
   font-weight: v.$font-weight-semibold;
 }
-
 .summaryList {
   display: grid;
-  gap: 12px;
+  gap: v.$space-3;
   margin: 0;
-  padding: 7px 29px 33px;
+  padding: 0 0 v.$space-5;
   border-bottom: 1px solid v.$color-border;
 }
-
 .summaryList div,
 .pointHeading,
 .pointSection p,
@@ -389,123 +326,224 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: v.$space-4;
+  gap: v.$space-2;
 }
-
 .summaryList dt,
 .summaryList dd {
   margin: 0;
-  font-size: v.$font-size-md;
-  font-weight: v.$font-weight-medium;
-}
-
-.pointSection {
-  padding: 31px 29px 0;
-}
-
-.pointHeading h3 {
-  margin: 0;
-  font-size: 26px;
-  font-weight: v.$font-weight-bold;
-}
-
-.pointHeading span {
-  color: v.$color-text-muted;
   font-size: v.$font-size-sm;
 }
-
+.summaryList dt {
+  color: v.$color-text-muted;
+}
+.summaryList dd {
+  font-weight: v.$font-weight-semibold;
+}
+.pointSection {
+  padding-top: v.$space-5;
+}
+.pointHeading {
+  flex-wrap: wrap;
+}
+.pointHeading h3 {
+  margin: 0;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-bold;
+}
+.pointHeading span {
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
 .pointInputRow {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 112px;
-  gap: 12px;
-  margin-top: 22px;
+  grid-template-columns: minmax(0, 1fr) 80px;
+  gap: v.$space-2;
+  margin-top: v.$space-3;
 }
-
 .pointInputRow label {
   display: flex;
-  height: 52px;
+  min-width: 0;
+  min-height: 40px;
   align-items: center;
+  padding: 0 v.$space-3;
   border: 1px solid v.$color-border;
-  border-radius: 11px;
-  background: v.$color-white;
-  padding: 0 v.$space-4;
+  border-radius: v.$radius-md;
 }
-
+.pointInputRow label:focus-within {
+  outline: 2px solid v.$color-primary;
+  outline-offset: 2px;
+}
 .pointInputRow input {
   width: 100%;
+  min-width: 0;
+  min-height: 40px;
   border: 0;
   outline: 0;
   background: transparent;
   color: v.$color-text-primary;
-  font-size: v.$font-size-md;
+  font-size: v.$font-size-sm;
 }
-
 .pointInputRow button {
+  min-height: 40px;
+  border: 1px solid v.$color-primary;
+  border-radius: v.$radius-md;
+  background: v.$color-white;
+  color: v.$color-primary;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-semibold;
+}
+.pointSection p {
+  margin: v.$space-3 0 0;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
+.pointSection p strong {
+  color: v.$color-primary;
+}
+.totalPrice {
+  flex-wrap: wrap;
+  margin-top: v.$space-5;
+  padding: v.$space-5 0;
+  border-top: 1px solid v.$color-border;
+}
+.totalPrice span {
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+}
+.totalPrice strong {
+  margin-left: auto;
+  color: v.$color-primary;
+  font-size: v.$font-size-2xl;
+  font-weight: v.$font-weight-bold;
+  line-height: v.$line-height-tight;
+  overflow-wrap: anywhere;
+}
+.orderButton {
   display: flex;
+  width: 100%;
+  min-height: 48px;
   align-items: center;
   justify-content: center;
-  border: 2px solid #518c85;
-  border-radius: 11px;
-  background: v.$color-white;
-  color: #518c85;
+  padding: v.$space-3;
+  border: 0;
+  border-radius: v.$radius-md;
+  background: v.$color-primary;
+  color: v.$color-white;
   font-size: v.$font-size-md;
-  font-weight: v.$font-weight-semibold;
+  font-weight: v.$font-weight-bold;
+}
+.orderButton:disabled {
+  background: color-mix(in srgb, v.$color-text-muted 48%, v.$color-white);
+}
+.emptySummary .orderButton {
+  margin-top: v.$space-6;
+}
+.recommendationCard {
+  margin-top: v.$space-6;
+  padding: 30px;
+}
+.recommendationHeader {
+  margin-bottom: v.$space-5;
+}
+.recommendationHeader h2 {
+  margin: 0;
+  padding-bottom: v.$space-3;
+  border-bottom: 1px solid v.$color-text-muted;
+  font-size: v.$font-size-2xl;
+  font-weight: v.$font-weight-bold;
+  line-height: v.$line-height-tight;
+  letter-spacing: -0.02em;
+}
+.recommendationHeader p {
+  margin: v.$space-3 0 0;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-xs;
+}
+.recommendationList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: v.$space-4;
+}
+.recommendationItem {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: center;
+  gap: v.$space-2;
+}
+.recommendationItem .productImage {
+  width: 48px;
+  height: 48px;
+}
+.recommendationItem button {
+  grid-column: 1 / -1;
+  width: 100%;
+  color: v.$color-primary;
+}
+.recommendationEmpty {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: v.$space-6 v.$space-4;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
   text-align: center;
 }
-
-.pointSection p {
-  margin: v.$space-4 0 0;
+.emptyCard,
+.loginGate {
+  display: flex;
+  min-height: 360px;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  padding: v.$space-12 v.$space-6;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.emptyCircle {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  border-radius: v.$radius-pill;
+  background: #edf5f2;
+}
+.emptyCartIcon {
+  width: 32px;
+  height: 32px;
+  stroke: v.$color-primary;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+.emptyCard strong,
+.loginGate h2 {
+  margin: v.$space-5 0 0;
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-bold;
+}
+.loginGate h2 {
+  font-size: v.$font-size-2xl;
+}
+.loginGate p {
+  margin: v.$space-3 0 0;
   color: v.$color-text-muted;
   font-size: v.$font-size-sm;
 }
-
-.pointSection p strong {
-  color: #518c85;
+.browseButton {
+  min-width: 160px;
+  min-height: 40px;
+  margin-top: v.$space-6;
+  font-size: v.$font-size-sm;
 }
-
-.totalPrice {
-  align-items: flex-end;
-  flex-direction: column;
-  justify-content: center;
-  gap: v.$space-2;
-  padding: 37px 29px 25px;
-  color: #518c85;
-  text-align: right;
+.loginGateBrowse {
+  min-height: 36px;
+  margin-top: v.$space-2;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-xs;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
-
-.totalPrice span {
-  font-size: v.$font-size-lg;
-  font-weight: v.$font-weight-semibold;
-}
-
-.totalPrice strong {
-  font-size: 36px;
-  font-weight: v.$font-weight-bold;
-  line-height: v.$line-height-tight;
-}
-
-.orderButton {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  display: flex;
-  height: 82px;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  background: #4d7e7b;
-  color: v.$color-white;
-  font-size: v.$font-size-3xl;
-  font-weight: v.$font-weight-bold;
-  text-align: center;
-}
-
-.orderButton:disabled {
-  background: color-mix(in srgb, v.$color-text-muted 48%, v.$color-white);
-  cursor: default;
-}
-
 .undoToast {
   position: fixed;
   z-index: v.$z-toast;
@@ -515,429 +553,163 @@
   min-height: 48px;
   align-items: center;
   gap: v.$space-3;
-  padding: 0 v.$space-4;
+  padding: v.$space-2 v.$space-4;
   border-radius: v.$radius-md;
   background: v.$color-text-primary;
   box-shadow: v.$shadow-sm;
   color: v.$color-white;
   font-size: v.$font-size-sm;
 }
-
 .undoToast button {
-  border: 0;
-  background: transparent;
+  min-height: 36px;
   color: v.$color-primary-light;
   font: inherit;
   font-weight: v.$font-weight-bold;
-  cursor: pointer;
 }
-
 .undoToast button:last-child {
   color: v.$color-white;
   font-size: v.$font-size-lg;
 }
 
-.recommendationCard {
-  min-height: 300px;
-  margin-top: 47px;
-  padding: 29px 32px 32px;
-  border-radius: 14px;
-}
-
-.recommendationHeader {
-  margin-bottom: 31px;
-}
-
-.recommendationHeader h2 {
-  margin: 0;
-  font-size: v.$font-size-2xl;
-  font-weight: v.$font-weight-bold;
-  line-height: v.$line-height-tight;
-}
-
-.recommendationHeader p {
-  margin-top: v.$space-2;
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-sm;
-  line-height: v.$line-height-base;
-}
-
-.recommendationList {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  align-items: center;
-  justify-items: center;
-  gap: 48px;
-}
-
-.recommendationEmpty {
-  grid-column: 1 / -1;
-  margin: 0;
-  padding: 28px 16px;
-  color: v.$color-text-secondary;
-  font-size: v.$font-size-sm;
-  text-align: center;
-}
-
-.recommendationItem {
-  display: grid;
-  width: 100%;
-  max-width: 286px;
-  grid-template-columns: 85px minmax(0, 1fr);
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-}
-
-.recommendationItem .productImage {
-  width: 85px;
-  height: 90px;
-  flex-basis: 85px;
-}
-
-.recommendationItem button {
-  display: flex;
-  grid-column: 2;
-  min-width: 66px;
-  height: 27px;
-  align-items: center;
-  justify-content: center;
-  justify-self: center;
-  margin-top: v.$space-2;
-  border-radius: 4px;
-  background: rgba(77, 126, 123, 0.5);
-  color: v.$color-white;
-  font-size: v.$font-size-xs;
-  text-align: center;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.recommendationItem button:hover,
-.recommendationItem button:focus-visible {
-  background: v.$color-primary;
-  transform: translateY(-2px);
-}
-
-.recommendationItem button:focus-visible {
-  outline: 2px solid v.$color-primary;
-  outline-offset: 3px;
-}
-
-.emptyCard {
-  display: flex;
-  min-height: 515px;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-  border-radius: v.$radius-xl;
-}
-
-.emptyCircle {
-  display: grid;
-  width: 124px;
-  height: 124px;
-  place-items: center;
-  border-radius: v.$radius-pill;
-  background: color-mix(in srgb, v.$color-primary 52%, v.$color-white);
-}
-
-.loginGate {
-  display: flex;
-  min-height: 515px;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-  padding: 48px 24px;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-xl;
-  background: v.$color-white;
-  text-align: center;
-}
-
-.loginGate h2 {
-  margin: v.$space-10 0 0;
-  font-size: v.$font-size-3xl;
-  font-weight: v.$font-weight-bold;
-}
-
-.loginGate p {
-  margin: v.$space-3 0 0;
-  color: v.$color-text-secondary;
-}
-
-.loginGateBrowse {
-  margin-top: v.$space-3;
-  border: 0;
-  background: transparent;
-  color: v.$color-text-secondary;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.emptyCartIcon {
-  width: 64px;
-  height: 64px;
-  stroke: v.$color-white;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 3.5;
-}
-
-.emptyCard strong {
-  margin-top: v.$space-10;
-  font-size: v.$font-size-3xl;
-  font-weight: v.$font-weight-bold;
-}
-
-.browseButton {
-  display: flex;
-  width: 264px;
-  height: 56px;
-  align-items: center;
-  justify-content: center;
-  margin-top: v.$space-8;
-  border-radius: v.$radius-lg;
-  background: v.$color-primary;
-  color: v.$color-white;
-  font-size: v.$font-size-lg;
-  font-weight: v.$font-weight-bold;
-}
-
-.emptySummary {
-  min-height: 440px;
-}
-
-.emptyRecommendations {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: v.$space-5;
-}
-
-.emptyRecommendationThumb {
-  display: grid;
-  height: 246px;
-  place-items: center;
-  border-radius: v.$radius-sm;
-  background: v.$color-surface;
-  color: v.$color-text-muted;
-  font-size: v.$font-size-sm;
-}
-
-@media (max-width: 1500px) {
-  .page {
-    width: calc(100% - 80px);
-    padding-top: v.$space-12;
-  }
-
+@media (max-width: v.$breakpoint-tablet-max) {
   .mainGrid {
-    grid-template-columns: 1fr;
-    gap: 40px;
-    margin-left: 0;
+    grid-template-columns: minmax(0, 1fr) 300px;
   }
-
-  .pageHeader {
-    position: static;
-    align-items: flex-start;
-    flex-direction: column;
-    gap: v.$space-4;
-    margin-left: 0;
-  }
-
-  .purchaseSteps {
-    position: static;
-    flex-wrap: wrap;
-    gap: v.$space-3;
-    font-size: v.$font-size-md;
-  }
-
   .cartTableHead {
+    display: flex;
+  }
+  .cartTableHead > span {
     display: none;
   }
-
   .cartRow {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: v.$space-4;
-    padding: v.$space-5;
+    gap: v.$space-3;
   }
-
   .itemInfo {
     grid-column: 1 / -1;
   }
-
   .quantityControl {
     grid-column: 1;
     grid-row: 2;
     justify-self: start;
   }
-
   .rowCheck {
     grid-column: 2;
     grid-row: 2;
     justify-self: end;
   }
-
   .discountValue,
   .lineTotal {
     display: flex;
-    grid-row: 3;
+    grid-column: 1 / -1;
     align-items: center;
     justify-content: space-between;
     gap: v.$space-3;
     text-align: left;
   }
-
-  .discountValue {
-    grid-column: 1;
-  }
-
-  .lineTotal {
-    grid-column: 2;
-    color: v.$color-text-primary;
-  }
-
   .priceLabel {
     display: inline;
-    color: v.$color-text-secondary;
-    font-size: v.$font-size-sm;
+    color: v.$color-text-muted;
+    font-size: v.$font-size-xs;
     font-weight: v.$font-weight-medium;
   }
-
-  .summaryCard {
-    position: relative;
-    margin-top: 0;
-    min-height: 0;
-    padding-bottom: 0;
-  }
-
-  .orderButton {
-    position: static;
-    width: 100%;
-  }
-
   .recommendationList {
+    grid-template-columns: 1fr;
+  }
+  .recommendationItem {
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    gap: v.$space-3;
+  }
+  .recommendationItem button {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}
+
+// MyPageLayout's intermediate and mobile spacing.
+@media (max-width: 1024px) {
+  .page {
+    padding: 40px v.$space-6 70px;
+  }
+  .mainGrid {
     gap: v.$space-5;
   }
-
+  .pageHeader,
   .recommendationCard {
-    padding-right: 32px;
-    padding-left: 32px;
+    padding: 26px v.$space-6;
   }
 }
 
 @media (max-width: v.$breakpoint-mobile-max) {
   .page {
-    width: calc(100% - 40px);
-    padding-top: v.$space-8;
+    padding: v.$space-5 v.$space-4 60px;
   }
-
-  .topOrnament {
-    display: none;
-  }
-
   .pageHeader {
-    position: static;
     align-items: flex-start;
     flex-direction: column;
-    gap: v.$space-5;
-    margin-left: 0;
+    gap: v.$space-3;
+    margin-bottom: v.$space-5;
+    padding: v.$space-6 v.$space-4;
+    border-radius: v.$radius-lg;
   }
-
-  .mainGrid {
-    margin-left: 0;
-  }
-
   .purchaseSteps {
-    position: static;
-    flex-wrap: wrap;
-    font-size: v.$font-size-sm;
+    gap: v.$space-2;
   }
-
   .stepFlower {
-    width: 28px;
-    height: 18px;
-    flex-basis: 28px;
+    width: 20px;
+    height: 14px;
+    flex-basis: 20px;
   }
-
-  .recommendationList {
-    grid-template-columns: 1fr;
-    justify-items: stretch;
-    gap: v.$space-4;
+  .mainGrid {
+    grid-template-columns: minmax(0, 1fr);
   }
-
+  .cartTable,
+  .recommendationCard,
+  .summaryCard {
+    padding: v.$space-5 v.$space-4;
+    border-radius: v.$radius-lg;
+  }
+  .summaryCard {
+    position: static;
+  }
+  .cartRow {
+    padding: v.$space-4 0;
+  }
   .cartActions {
     align-items: stretch;
     flex-direction: column;
-    gap: v.$space-3;
   }
-
   .cartActionGroup {
     display: grid;
-    width: 100%;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: v.$space-2;
   }
-
   .textButton,
   .clearAllButton,
   .outlineButton {
-    width: 100%;
     min-width: 0;
+    padding-inline: v.$space-2;
   }
-
-  .clearAllButton {
-    color: v.$color-error;
+  .recommendationCard {
+    margin-top: v.$space-5;
   }
-
   .recommendationItem {
-    max-width: none;
-    grid-template-columns: 72px minmax(0, 1fr) auto;
-    gap: v.$space-3;
+    gap: v.$space-2;
   }
-
-  .recommendationItem .productImage {
-    width: 72px;
-    height: 72px;
-  }
-
   .recommendationItem button {
-    grid-column: 3;
-    grid-row: 1;
-    justify-self: end;
-    margin-top: 0;
+    padding-inline: v.$space-2;
   }
-
-  .emptyRecommendations {
-    grid-template-columns: 1fr;
+  .emptyCard,
+  .loginGate {
+    min-height: 300px;
+    padding: v.$space-8 v.$space-4;
+    border-radius: v.$radius-lg;
   }
-
-  .emptyRecommendationThumb {
-    height: 160px;
-  }
-
   .undoToast {
     right: v.$space-4;
-    bottom: v.$space-4;
+    bottom: calc(80px + env(safe-area-inset-bottom));
     left: v.$space-4;
+    gap: v.$space-2;
     justify-content: space-between;
-  }
-}
-
-@media (max-width: 360px) {
-  .cartRow {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
-  .discountValue {
-    grid-column: 1 / -1;
-    grid-row: 3;
-  }
-
-  .lineTotal {
-    grid-column: 1 / -1;
-    grid-row: 4;
-  }
-
-  .cartActionGroup {
-    grid-template-columns: 1fr;
+    font-size: v.$font-size-xs;
   }
 }

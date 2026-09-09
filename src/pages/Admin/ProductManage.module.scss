@@ -1,469 +1,511 @@
-@use 'sass:color';
+@use '../../styles/admin/adminVariables' as *;
+@use '../../styles/admin/adminMixins' as *;
+@use '../../styles/admin/adminCommon' as *;
 
-// ==========================================
-// 테마 토큰
-// ==========================================
-$bg-canvas: #f8f6f2;
-$bg-surface: #ffffff;
-$primary: #3b5f54;
-$primary-hover: #2e4b42;
-$primary-subtle: #edf3f0;
 
-$text-title: #222524;
-$text-body: #4a504d;
-$text-caption: #7a827e;
-$border-color: #e8e6df;
+// ========================================
+// 상품 관리 전용 보조 토큰
+// 공통 색상/라운드는 관리자 토큰에 맞춤
+// ========================================
 
-$danger: #b24840;
-$danger-subtle: #fbeeed;
+$bg-surface: $admin-surface;
+$primary: $admin-primary;
+$primary-hover: $admin-primary-dark;
+$primary-subtle: $admin-primary-light;
+
+$text-title: $admin-text-primary;
+$text-body: $admin-text-secondary;
+$text-caption: $admin-text-muted;
+$border-color: $admin-border;
+
+$danger: $admin-danger;
+$danger-subtle: $admin-danger-light;
+
 $warning: #c8812c;
 $warning-subtle: #fdf5ea;
 
-$shadow-sm: 0 2px 8px rgba(34, 37, 36, 0.04);
-$shadow-md: 0 6px 18px rgba(34, 37, 36, 0.06);
-$radius-card: 14px;
-$radius-control: 8px;
+$shadow-sm:
+  0 2px 8px
+  rgba(34, 37, 36, 0.04);
+
+$shadow-md:
+  0 10px 30px
+  rgba(0, 0, 0, 0.1);
+
+
+// ========================================
+// PAGE
+// 회원관리 / 리뷰관리 기준
+// ========================================
 
 .page {
-  padding: 32px 40px;
-  background-color: $bg-canvas;
-  min-height: 100vh;
-  color: $text-body;
+  @extend %admin-page;
+
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+
+  margin: 0;
+
+  padding:
+    34px
+    0
+    50px;
+
   box-sizing: border-box;
 }
+
+
+// ========================================
+// SUMMARY
+// ========================================
+
+.summaryArea {
+  @extend %admin-summary-area;
+
+  position: relative;
+  z-index: 1;
+
+  margin-top: -50px;
+}
+
+
+.summaryGrid {
+  @extend %admin-summary-grid;
+
+  width: 90%;
+
+  margin:
+    0
+    auto;
+}
+
+
+// ========================================
+// MANAGEMENT LAYOUT
+// ========================================
+
+.managementGrid {
+  @extend %admin-management-grid;
+
+  width: 100%;
+  min-width: 0;
+
+  margin: 0;
+}
+
+
+// ========================================
+// MAIN SECTION
+// ========================================
+
+.mainSection {
+  min-width: 0;
+
+  @include admin-panel;
+
+  padding: 20px;
+}
+
+
+// ========================================
+// FILTER
+// 실제 검색창/초기화 버튼은 AdminFilterBar가 담당
+// ========================================
+
+.selectField {
+  display: block;
+
+  select {
+    min-width: 128px;
+  }
+}
+
 
 .srOnly {
   position: absolute;
+
   width: 1px;
   height: 1px;
+
   padding: 0;
   margin: -1px;
+
   overflow: hidden;
+
   clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+
   border: 0;
 }
 
-// 툴바 (새로고침 회전 모션 추가)
-.pageToolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
 
-  h1 {
-    font-size: 30px;
-    font-weight: 700;
-    color: $text-title;
-    margin: 0;
-    letter-spacing: -0.02em;
-  }
-
-  button {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    height: 38px;
-    padding: 0 16px;
-    font-size: 13px;
-    font-weight: 500;
-    color: $text-body;
-    background: $bg-surface;
-    border: 1px solid $border-color;
-    border-radius: $radius-control;
-    box-shadow: $shadow-sm;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    svg {
-      width: 15px;
-      height: 15px;
-      stroke: currentColor;
-      transition: transform 0.25s ease;
-    }
-
-    &:hover:not(:disabled) {
-      background: #fdfcf9;
-      color: $primary;
-      border-color: color.adjust($primary, $lightness: 20%);
-
-      svg {
-        transform: rotate(90deg);
-      }
-    }
-
-    &.refreshing {
-      opacity: 0.75;
-      cursor: wait;
-
-      svg {
-        animation: spinRefresh 0.6s linear infinite;
-      }
-    }
-
-    &:disabled {
-      cursor: not-allowed;
-    }
-  }
-}
-
-@keyframes spinRefresh {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-// 전통 문양 선
-.ornamentLine {
-  width: 100%;
-  display: block;
-  margin: 1rem 0 1.8rem;
-  overflow: hidden;
-
-  img {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-}
-
-// ==========================================
-// 상단 요약 카드 (클릭형 필터 버튼)
-// ==========================================
-.summaryArea {
-  margin-bottom: 24px;
-}
-
-.summaryGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
-
-.summaryCard {
-  background: $bg-surface;
-  border: 1px solid $border-color;
-  border-radius: $radius-card;
-  padding: 18px 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  min-height: 94px;
-  box-sizing: border-box;
-  box-shadow: $shadow-sm;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  text-align: left;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: $shadow-md;
-    border-color: color.adjust($primary, $lightness: 20%);
-  }
-
-  &.activeCard {
-    border-color: $primary;
-    background: #fdfefd;
-    box-shadow: 0 0 0 1.5px $primary, $shadow-sm;
-  }
-}
-
-.summaryIcon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: $primary-subtle;
-  color: $primary;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  img { width: 25px; height: 25px; object-fit: contain; }
-
-  &.lowStock {
-    background: $warning-subtle;
-    color: $warning;
-  }
-
-  &.hidden {
-    background: $danger-subtle;
-    color: $danger;
-  }
-}
-
-.summaryContent {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
-  flex: 1;
-
-  h3 {
-    font-size: 13px;
-    font-weight: 500;
-    color: $text-caption;
-    margin: 0;
-  }
-
-  p {
-    margin: 0;
-    font-size: 24px;
-    color: $text-title;
-    font-weight: 700;
-    line-height: 1.2;
-
-    span {
-      font-size: 14px;
-      font-weight: 400;
-      color: $text-caption;
-      margin-left: 3px;
-    }
-  }
-
-  small {
-    font-size: 12px;
-    color: $text-caption;
-    margin-top: 2px;
-  }
-}
-
-// ==========================================
-// 메인 그리드 (좌 1fr : 우 360px)
-// ==========================================
-.managementGrid {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 20px;
-  align-items: start;
-}
-
-.mainSection {
-  background: $bg-surface;
-  border: 1px solid $border-color;
-  border-radius: $radius-card;
-  padding: 24px;
-  box-shadow: $shadow-sm;
-}
-
-.filterBar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-
-.searchField {
-  flex: 1;
-  min-width: 240px;
-  position: relative;
-  display: flex;
-  align-items: center;
-
-  svg {
-    position: absolute;
-    left: 12px;
-    width: 16px;
-    height: 16px;
-    stroke: $text-caption;
-  }
-
-  input {
-    width: 100%;
-    height: 40px;
-    padding: 0 14px 0 36px;
-    background: #fbfaf8;
-    border: 1px solid $border-color;
-    border-radius: $radius-control;
-    font-size: 13px;
-    color: $text-title;
-
-    &:focus {
-      outline: none;
-      border-color: $primary;
-      background: $bg-surface;
-    }
-  }
-}
-
-.selectField select {
-  height: 40px;
-  padding: 0 32px 0 12px;
-  background: #fbfaf8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a827e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 10px center;
-  border: 1px solid $border-color;
-  border-radius: $radius-control;
-  font-size: 13px;
-  color: $text-body;
-  appearance: none;
-  cursor: pointer;
-}
-
-.resetButton {
-  height: 40px;
-  padding: 0 14px;
-  background: transparent;
-  border: 1px solid $border-color;
-  border-radius: $radius-control;
-  font-size: 13px;
-  color: $text-caption;
-  cursor: pointer;
-
-  &:hover {
-    background: #f5f4ef;
-    color: $text-title;
-  }
-}
+// ========================================
+// SECTION HEADING
+// 회원 목록 / 리뷰 목록과 같은 제목 비율
+// ========================================
 
 .sectionHeading {
+  min-height: 58px;
+
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  justify-content: space-between;
 
-  .titleWrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  gap: 20px;
 
-    h2 {
-      font-size: 16px;
-      font-weight: 700;
-      color: $text-title;
-      margin: 0;
-    }
+  padding:
+    0
+    15px;
 
-    span {
-      font-size: 13px;
-      color: $primary;
-      font-weight: 600;
-    }
-  }
+  margin-bottom: 14px;
+}
 
-  .actions {
-    display: flex;
-    gap: 8px;
 
-    .bulkButton {
-      height: 36px;
-      padding: 0 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      background: #fff;
-      border: 1px solid $danger;
-      color: $danger;
-      cursor: pointer;
-    }
+.titleWrap {
+  min-width: 0;
 
-    .registerButton {
-      height: 36px;
-      padding: 0 14px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      background: $primary;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.2s;
+  h2 {
+    margin: 0;
 
-      &:hover {
-        background: $primary-hover;
-      }
-    }
+    color:
+      $admin-text-primary;
+
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.4;
+
+    letter-spacing:
+      -0.02em;
   }
 }
+
+
+.headingRight {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 12px;
+}
+
+
+.productCount {
+  flex-shrink: 0;
+
+  color:
+    $admin-text-secondary;
+
+  font-size: 15px;
+
+  strong {
+    color:
+      $admin-primary-dark;
+
+    font-size: 15px;
+    font-weight: 700;
+  }
+}
+
+
+.actions {
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+
+// ========================================
+// HEADING ACTION BUTTONS
+// 관리자 공통 버튼 비율에 맞춤
+// ========================================
+
+.bulkButton,
+.registerButton {
+  min-height: 32px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    11px;
+
+  border-radius:
+    $admin-radius-sm;
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+
+.bulkButton {
+  border:
+    1px solid
+    $admin-danger;
+
+  background:
+    $admin-surface;
+
+  color:
+    $admin-danger;
+
+  &:hover {
+    background:
+      $admin-danger-light;
+  }
+}
+
+
+.registerButton {
+  border:
+    1px solid
+    $admin-primary;
+
+  background:
+    $admin-primary;
+
+  color:
+    $admin-surface;
+
+  &:hover {
+    background:
+      $admin-primary-dark;
+  }
+}
+
+
+// ========================================
+// TABLE WRAP
+// 회원관리와 같은 외곽선 / 라운드
+// ========================================
 
 .tableWrap {
+  width: 100%;
+  min-width: 0;
+
   overflow-x: auto;
+
+  border:
+    1px solid
+    $admin-border;
+
+  border-radius:
+    $admin-radius-md;
+
+  background:
+    $admin-surface;
 }
 
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 20px;
 
-  button {
-    display: grid;
-    place-items: center;
-    width: 34px;
-    height: 34px;
-    padding: 0;
-    box-sizing: border-box;
-    line-height: 1;
-    border: 1px solid $border-color;
-    border-radius: 50%;
-    color: $text-body;
-    background: $bg-surface;
-    cursor: pointer;
-    &:disabled { opacity: .35; cursor: default; }
-    &.activePage { color: #fff; background: $primary; border-color: $primary; }
-  }
-}
+// ========================================
+// TABLE
+// ========================================
 
 .dataTable {
   width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  font-size: 13px;
+  min-width: 920px;
 
-  th {
-    padding: 12px 14px;
-    background: #faf8f5;
-    color: $text-caption;
-    font-weight: 600;
-    border-bottom: 1px solid $border-color;
+  border-collapse:
+    collapse;
+
+  table-layout:
+    fixed;
+
+  th,
+  td {
+    padding:
+      15px
+      12px;
+
+    border-bottom:
+      1px solid
+      $admin-border;
+
+    text-align: left;
+    vertical-align: middle;
+
+    font-size: 12px;
+
     white-space: nowrap;
   }
 
-  td {
-    padding: 12px 14px;
-    border-bottom: 1px solid #f0eee8;
-    color: $text-body;
-    vertical-align: middle;
+  th {
+    background:
+      #f8f9f8;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing:
+      -0.01em;
   }
 
-  tr.clickableRow {
-    cursor: pointer;
-    transition: background-color 0.15s ease;
+  td {
+    color:
+      $admin-text-primary;
+  }
 
-    &:hover {
-      background-color: #faf7f2;
+  tbody tr {
+    transition:
+      background 0.18s ease;
+  }
+
+  tbody tr:hover {
+    background:
+      #fafcfb;
+  }
+
+  tbody tr:last-child {
+    td {
+      border-bottom: 0;
     }
+  }
 
-    &.selectedRow {
-      background-color: $primary-subtle;
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 5%;
+    text-align: center;
+  }
 
-      td {
-        border-bottom-color: color.adjust($primary-subtle, $lightness: -4%);
-      }
-    }
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 12%;
+  }
+
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 21%;
+  }
+
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 10%;
+  }
+
+  th:nth-child(5),
+  td:nth-child(5) {
+    width: 11%;
+  }
+
+  th:nth-child(6),
+  td:nth-child(6) {
+    width: 8%;
+  }
+
+  th:nth-child(7),
+  td:nth-child(7) {
+    width: 10%;
+  }
+
+  th:nth-child(8),
+  td:nth-child(8) {
+    width: 13%;
+  }
+
+  th:nth-child(9),
+  td:nth-child(9) {
+    width: 10%;
+    text-align: center;
   }
 }
+
+
+.clickableRow {
+  cursor: pointer;
+}
+
+
+.selectedRow {
+  background:
+    rgba(
+      86,
+      138,
+      128,
+      0.065
+    ) !important;
+}
+
+
+// ========================================
+// PRODUCT CELL
+// ========================================
 
 .productCell {
+  min-width: 0;
+
   display: flex;
   align-items: center;
+
   gap: 10px;
+}
 
-  .thumbPlaceholder {
-    width: 36px;
-    height: 36px;
-    overflow: hidden;
-    background: #eae7df;
-    border-radius: 6px;
-    flex-shrink: 0;
 
-    img { width: 100%; height: 100%; object-fit: cover; }
-  }
+.thumbPlaceholder {
+  width: 36px;
+  height: 36px;
 
-  .pName {
-    font-weight: 600;
-    color: $text-title;
+  flex-shrink: 0;
+
+  overflow: hidden;
+
+  border-radius: 6px;
+
+  background:
+    #eae7df;
+
+  img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
   }
 }
 
+
+.pName {
+  min-width: 0;
+
+  overflow: hidden;
+
+  display: block;
+
+  color:
+    $admin-text-primary;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
 .lowStockText {
-  color: $danger;
+  color:
+    $admin-danger;
+
   font-weight: 700;
 
   small {
@@ -471,330 +513,845 @@ $radius-control: 8px;
   }
 }
 
-.statusBadge {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 6px;
+
+// ========================================
+// EDIT BUTTON
+// 회원관리의 상세보기 버튼과 동일한 비율
+// ========================================
+
+.editBtn {
+  min-height: 30px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    11px;
+
+  border:
+    1px solid
+    $admin-border-dark;
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    $admin-surface;
+
+  color:
+    $admin-text-secondary;
+
+  font: inherit;
   font-size: 11px;
   font-weight: 600;
 
-  &.selling { background: $primary-subtle; color: $primary; }
-  &.soldout { background: $warning-subtle; color: $warning; }
-  &.hidden { background: $danger-subtle; color: $danger; }
-}
-
-.editBtn {
-  padding: 6px 12px;
-  background: $bg-surface;
-  border: 1px solid $border-color;
-  border-radius: 6px;
-  font-size: 12px;
-  color: $text-title;
   cursor: pointer;
 
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+
   &:hover {
-    background: $primary;
-    color: #fff;
-    border-color: $primary;
+    color:
+      $admin-primary-dark;
+
+    border-color:
+      rgba(
+        86,
+        138,
+        128,
+        0.5
+      );
+
+    background:
+      $admin-primary-light;
   }
 }
 
-// ==========================================
-// 우측 패널 [상품 수정]
-// ==========================================
-.editPanel {
-  background: $bg-surface;
-  border: 1px solid $border-color;
-  border-radius: $radius-card;
-  padding: 20px;
-  box-shadow: $shadow-sm;
-  animation: fadeIn 0.2s ease-out;
-}
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+// ========================================
+// PAGINATION
+// 회원관리 / 리뷰관리와 동일
+// ========================================
 
-.panelTopHeader {
+.pagination {
+  min-height: 64px;
+
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding-bottom: 14px;
-  border-bottom: 1px solid #f0eee8;
-  margin-bottom: 16px;
+  justify-content: center;
 
-  h2 {
-    font-size: 17px;
-    font-weight: 700;
-    color: $text-title;
-    margin: 0;
-  }
+  gap: 6px;
+
+  padding:
+    16px
+    12px;
+
+  border-top:
+    1px solid
+    $admin-border;
 
   button {
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: $text-caption;
-    cursor: pointer;
-    line-height: 1;
+    width: 32px;
+    height: 32px;
 
-    &:hover { color: $text-title; }
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border:
+      1px solid
+      transparent;
+
+    border-radius:
+      $admin-radius-sm;
+
+    background:
+      transparent;
+
+    color:
+      $admin-text-secondary;
+
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+      background 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
+
+    &:hover:not(:disabled) {
+      color:
+        $admin-primary-dark;
+
+      background:
+        $admin-primary-light;
+    }
+
+    &:disabled {
+      opacity: 0.35;
+
+      cursor: default;
+    }
   }
 }
+
+
+.activePage {
+  color:
+    $admin-surface !important;
+
+  border-color:
+    $admin-primary !important;
+
+  background:
+    $admin-primary !important;
+}
+
+
+// ========================================
+// EDIT / CREATE PANEL
+// ========================================
+
+.editPanel {
+  min-width: 0;
+
+  @include admin-panel;
+
+  padding: 20px;
+
+  animation:
+    fadeIn 0.2s ease-out;
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+.panelTopHeader {
+  min-height: 46px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding-bottom:
+    10px;
+
+  margin-bottom:
+    16px;
+
+  border-bottom:
+    1px solid
+    $admin-border;
+
+  h2 {
+    margin:
+      7px
+      0
+      0;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.35;
+
+    letter-spacing:
+      -0.02em;
+  }
+
+  > button {
+    width: 30px;
+    height: 30px;
+
+    flex:
+      0
+      0
+      30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    background:
+      #f4f5f4;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 19px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+      color 0.18s ease,
+      background 0.18s ease;
+
+    &:hover {
+      color:
+        $admin-text-primary;
+
+      background:
+        #eceeed;
+    }
+  }
+}
+
 
 .selectedProductCard {
   display: flex;
+
   gap: 14px;
+
   padding-bottom: 18px;
-  border-bottom: 1px solid #f2efe8;
   margin-bottom: 18px;
+
+  border-bottom:
+    1px solid
+    $admin-border;
 
   .cardThumb {
     width: 76px;
     height: 76px;
-    overflow: hidden;
-    background: #eae7df;
-    border-radius: 8px;
+
     flex-shrink: 0;
 
-    img { width: 100%; height: 100%; object-fit: cover; }
+    overflow: hidden;
+
+    background:
+      #eae7df;
+
+    border-radius:
+      $admin-radius-sm;
+
+    img {
+      width: 100%;
+      height: 100%;
+
+      object-fit: cover;
+    }
   }
 
   .cardInfo {
+    min-width: 0;
+    flex: 1;
+
     display: flex;
     flex-direction: column;
+
     gap: 4px;
-    flex: 1;
+
     overflow: hidden;
 
     h3 {
+      margin:
+        0
+        0
+        2px;
+
+      overflow: hidden;
+
+      color:
+        $admin-text-primary;
+
       font-size: 14px;
       font-weight: 700;
-      color: $text-title;
-      margin: 0 0 2px;
-      white-space: nowrap;
-      overflow: hidden;
+
       text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     dl {
-      margin: 0;
       display: flex;
       flex-direction: column;
+
       gap: 2px;
+
+      margin: 0;
+
       font-size: 11px;
 
       div {
         display: flex;
+
         gap: 8px;
-        dt { color: $text-caption; width: 44px; }
-        dd { margin: 0; color: $text-body; font-weight: 500; }
+
+        dt {
+          width: 44px;
+
+          color:
+            $admin-text-muted;
+        }
+
+        dd {
+          margin: 0;
+
+          color:
+            $admin-text-secondary;
+
+          font-weight: 500;
+        }
       }
     }
 
     .tagGroup {
       display: flex;
+
       gap: 4px;
+
       margin-top: 4px;
 
       .miniBadge {
-        font-size: 10px;
-        padding: 2px 6px;
-        border-radius: 4px;
-        background: #f2efe9;
-        color: $text-caption;
+        padding:
+          2px
+          6px;
 
-        &.selling { background: $primary-subtle; color: $primary; font-weight: 600; }
-        &.soldout { background: $warning-subtle; color: $warning; font-weight: 600; }
-        &.hidden { background: $danger-subtle; color: $danger; font-weight: 600; }
+        border-radius: 4px;
+
+        background:
+          #f2efe9;
+
+        color:
+          $admin-text-muted;
+
+        font-size: 10px;
+
+        &.selling {
+          background:
+            $admin-primary-light;
+
+          color:
+            $admin-primary;
+
+          font-weight: 600;
+        }
+
+        &.soldout {
+          background:
+            $warning-subtle;
+
+          color:
+            $warning;
+
+          font-weight: 600;
+        }
+
+        &.hidden {
+          background:
+            $admin-danger-light;
+
+          color:
+            $admin-danger;
+
+          font-weight: 600;
+        }
       }
     }
   }
 }
 
+
+// ========================================
+// FORM
+// ========================================
+
 .formContainer {
   display: flex;
   flex-direction: column;
+
   gap: 20px;
 }
+
 
 .formSection {
   display: flex;
   flex-direction: column;
+
   gap: 10px;
 }
 
+
 .sectionBarTitle {
-  font-size: 13px;
-  font-weight: 700;
-  color: $text-title;
-  margin: 0 0 4px;
   position: relative;
+
+  margin:
+    0
+    0
+    4px;
+
   padding-left: 8px;
 
+  color:
+    $admin-text-primary;
+
+  font-size: 15px;
+  font-weight: 700;
+
   &::before {
-    content: '';
     position: absolute;
-    left: 0;
+
     top: 2px;
     bottom: 2px;
+    left: 0;
+
     width: 3px;
-    background: $primary;
+
     border-radius: 2px;
+
+    background:
+      $admin-primary;
+
+    content: '';
   }
 }
+
 
 .formRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   font-size: 12px;
 
-  label { color: $text-body; font-weight: 500; }
+  label {
+    color:
+      $admin-text-secondary;
 
-  input, select {
+    font-weight: 500;
+  }
+
+  input,
+  select {
     width: 140px;
     height: 32px;
-    padding: 0 8px;
-    border: 1px solid $border-color;
-    border-radius: 5px;
-    font-size: 12px;
-    background: #fbfaf8;
-    color: $text-title;
 
-    &:focus { outline: none; border-color: $primary; }
+    padding:
+      0
+      8px;
+
+    border:
+      1px solid
+      $admin-border;
+
+    border-radius:
+      $admin-radius-sm;
+
+    background:
+      #fbfaf8;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 12px;
+
+    &:focus {
+      outline: none;
+
+      border-color:
+        $admin-primary;
+    }
   }
 
   .staticText {
+    color:
+      $admin-text-muted;
+
     font-size: 12px;
-    color: $text-caption;
   }
 }
+
 
 .formFieldBlock {
   display: flex;
   flex-direction: column;
+
   gap: 6px;
 
-  label { font-size: 12px; font-weight: 500; color: $text-body; }
+  label {
+    color:
+      $admin-text-secondary;
+
+    font-size: 12px;
+    font-weight: 500;
+  }
 
   textarea {
     width: 100%;
+
     padding: 8px;
-    border: 1px solid $border-color;
-    border-radius: 6px;
-    font-size: 12px;
-    background: #fbfaf8;
-    resize: none;
+
     box-sizing: border-box;
 
-    &:focus { outline: none; border-color: $primary; }
+    border:
+      1px solid
+      $admin-border;
+
+    border-radius:
+      $admin-radius-sm;
+
+    background:
+      #fbfaf8;
+
+    font-size: 12px;
+
+    resize: none;
+
+    &:focus {
+      outline: none;
+
+      border-color:
+        $admin-primary;
+    }
   }
 }
+
 
 .chipGroup {
   display: flex;
   flex-wrap: wrap;
+
   gap: 6px;
 
   .chip {
-    font-size: 11px;
-    background: #f4f2eb;
-    color: $text-body;
-    padding: 4px 8px;
+    padding:
+      4px
+      8px;
+
+    border:
+      1px solid
+      #e8e4da;
+
     border-radius: 4px;
-    border: 1px solid #e8e4da;
-    button { margin-left: 4px; color: $danger; }
+
+    background:
+      #f4f2eb;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 11px;
+
+    button {
+      margin-left: 4px;
+
+      color:
+        $admin-danger;
+    }
   }
 
   .chipAddBtn {
     width: 24px;
     height: 24px;
-    border: 1px dashed $border-color;
+
+    border:
+      1px dashed
+      $admin-border;
+
     border-radius: 4px;
-    background: none;
-    cursor: pointer;
+
+    background:
+      transparent;
+
+    color:
+      $admin-text-muted;
+
     font-size: 13px;
-    color: $text-caption;
+
+    cursor: pointer;
   }
 }
 
+
 .tagEditor {
   display: flex;
+
   gap: 6px;
-  input { flex: 1; min-width: 0; height: 32px; padding: 0 8px; border: 1px solid $border-color; border-radius: 5px; }
-  button { padding: 0 12px; color: #fff; background: $primary; border-radius: 5px; }
+
+  input {
+    min-width: 0;
+    height: 32px;
+
+    flex: 1;
+
+    padding:
+      0
+      8px;
+
+    border:
+      1px solid
+      $admin-border;
+
+    border-radius:
+      $admin-radius-sm;
+  }
+
+  button {
+    padding:
+      0
+      12px;
+
+    border: 0;
+
+    border-radius:
+      $admin-radius-sm;
+
+    background:
+      $admin-primary;
+
+    color:
+      $admin-surface;
+  }
 }
+
 
 .stepIndicator {
   align-self: flex-end;
-  color: $text-caption;
+
+  color:
+    $admin-text-muted;
+
   font-size: 12px;
 
-  span { color: $primary; font-weight: 700; }
+  span {
+    color:
+      $admin-primary;
+
+    font-weight: 700;
+  }
 }
 
-.fieldGuide, .selectionCount {
+
+.fieldGuide,
+.selectionCount {
   margin: 0;
-  color: $text-caption;
+
+  color:
+    $admin-text-muted;
+
   font-size: 11px;
 }
 
-.selectionCount { text-align: right; color: $primary; font-weight: 600; }
+
+.selectionCount {
+  color:
+    $admin-primary;
+
+  font-weight: 600;
+
+  text-align: right;
+}
+
 
 .pairingPicker {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
   max-height: 330px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 8px;
+
   padding: 2px;
+
   overflow-y: auto;
 
   label {
     position: relative;
-    display: grid;
-    grid-template-columns: 36px minmax(0, 1fr);
-    align-items: center;
-    gap: 7px;
-    min-width: 0;
-    padding: 7px;
-    border: 1px solid $border-color;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: border-color .2s ease, background-color .2s ease;
 
-    input { position: absolute; opacity: 0; pointer-events: none; }
-    span { width: 36px; height: 36px; overflow: hidden; background: #f4f2eb; border-radius: 4px; }
-    img { width: 100%; height: 100%; object-fit: cover; }
-    strong { overflow: hidden; color: $text-body; font-size: 11px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+    min-width: 0;
+
+    display: grid;
+
+    grid-template-columns:
+      36px
+      minmax(0, 1fr);
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 7px;
+
+    border:
+      1px solid
+      $admin-border;
+
+    border-radius:
+      $admin-radius-sm;
+
+    cursor: pointer;
+
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease;
+
+    input {
+      position: absolute;
+
+      opacity: 0;
+
+      pointer-events: none;
+    }
+
+    span {
+      width: 36px;
+      height: 36px;
+
+      overflow: hidden;
+
+      border-radius: 4px;
+
+      background:
+        #f4f2eb;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+
+      object-fit: cover;
+    }
+
+    strong {
+      overflow: hidden;
+
+      color:
+        $admin-text-secondary;
+
+      font-size: 11px;
+      font-weight: 600;
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 }
 
+
 .selectedPairing {
-  border-color: $primary !important;
-  background: $primary-subtle;
+  border-color:
+    $admin-primary !important;
+
+  background:
+    $admin-primary-light;
 }
+
 
 .detailFields {
   display: flex;
   flex-direction: column;
+
   gap: 10px;
+
   padding: 10px;
-  background: #f7f5f0;
-  border: 1px solid $border-color;
-  border-radius: 6px;
+
+  border:
+    1px solid
+    $admin-border;
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    #f7f5f0;
 }
 
-.tasteInputs, .timeInputs {
+
+.tasteInputs,
+.timeInputs {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
   gap: 8px;
 
   label {
     display: grid;
+
     gap: 4px;
-    color: $text-body;
+
+    color:
+      $admin-text-secondary;
+
     font-size: 11px;
   }
 
@@ -802,423 +1359,1176 @@ $radius-control: 8px;
     width: 100%;
     min-width: 0;
     height: 32px;
-    padding: 0 8px;
-    color: $text-title;
-    background: #fbfaf8;
-    border: 1px solid $border-color;
-    border-radius: 5px;
+
+    padding:
+      0
+      8px;
+
+    border:
+      1px solid
+      $admin-border;
+
+    border-radius:
+      $admin-radius-sm;
+
+    background:
+      #fbfaf8;
+
+    color:
+      $admin-text-primary;
   }
 }
+
 
 .albumRow {
   display: flex;
   flex-wrap: wrap;
+
   gap: 6px;
 
-  .mainImgBox, .subImgBox, .uploadPlusBox {
+  .mainImgBox,
+  .subImgBox,
+  .uploadPlusBox {
     width: 58px;
     height: 58px;
-    border-radius: 6px;
+
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
+
     box-sizing: border-box;
+
+    border-radius:
+      $admin-radius-sm;
+
     font-size: 10px;
   }
 
   .mainImgBox {
-    background: #eae7df;
-    color: #636b67;
+    background:
+      #eae7df;
+
+    color:
+      #636b67;
+
     font-weight: 600;
+
     text-align: center;
-    img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+
+    img {
+      width: 100%;
+      height: 100%;
+
+      border-radius: inherit;
+
+      object-fit: cover;
+    }
   }
 
   .subImgBox {
-    background: #eae7df;
-    color: #8c9490;
     position: relative;
-    img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+
+    background:
+      #eae7df;
+
+    color:
+      #8c9490;
+
+    img {
+      width: 100%;
+      height: 100%;
+
+      border-radius: inherit;
+
+      object-fit: cover;
+    }
 
     button {
       position: absolute;
+
       top: 2px;
       right: 2px;
-      background: rgba(0, 0, 0, 0.4);
-      color: #fff;
-      border: none;
+
       width: 14px;
       height: 14px;
-      border-radius: 50%;
-      font-size: 10px;
-      cursor: pointer;
-      line-height: 1;
+
       padding: 0;
+
+      border: 0;
+
+      border-radius: 50%;
+
+      background:
+        rgba(0, 0, 0, 0.4);
+
+      color:
+        #fff;
+
+      font-size: 10px;
+      line-height: 1;
+
+      cursor: pointer;
     }
   }
 
   .uploadPlusBox {
-    border: 1px dashed $border-color;
-    background: #faf8f4;
-    color: $text-caption;
+    border:
+      1px dashed
+      $admin-border;
+
+    background:
+      #faf8f4;
+
+    color:
+      $admin-text-muted;
+
     cursor: pointer;
 
-    span { font-size: 14px; }
-    small { font-size: 9px; }
+    span {
+      font-size: 14px;
+    }
+
+    small {
+      font-size: 9px;
+    }
   }
 }
 
+
 .imageEditTile {
   position: relative;
-  display: flex;
-  flex: 1 1 calc(50% - 6px);
+
   min-width: 118px;
   height: 112px;
-  overflow: hidden;
+
+  flex:
+    1
+    1
+    calc(50% - 6px);
+
+  display: flex;
   align-items: flex-end;
   justify-content: center;
+
+  overflow: hidden;
+
   padding: 0;
-  color: #fff;
-  background: #eae7df;
-  border: 1px solid $border-color;
-  border-radius: 6px;
+
+  border:
+    1px solid
+    $admin-border;
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    #eae7df;
+
+  color:
+    #fff;
+
   cursor: pointer;
 
   img {
     position: absolute;
+
     inset: 0;
+
     width: 100%;
     height: 100%;
+
     object-fit: cover;
   }
 
   &::after {
     position: absolute;
-    inset: auto 0 0;
+
+    right: 0;
+    bottom: 0;
+    left: 0;
+
     height: 38px;
+
+    background:
+      rgba(0, 0, 0, 0.58);
+
     content: '';
-    background: rgba(0, 0, 0, 0.58);
   }
 
   strong {
     position: relative;
     z-index: 1;
+
     width: 100%;
-    padding: 10px 6px;
+
+    padding:
+      10px
+      6px;
+
     font-size: 11px;
     font-weight: 700;
+
     text-align: center;
   }
 
   .emptyImage {
     position: absolute;
-    inset: 0 0 38px;
+
+    inset:
+      0
+      0
+      38px;
+
     display: grid;
+
     place-items: center;
-    color: $text-caption;
+
+    color:
+      $admin-text-muted;
+
     font-size: 11px;
   }
 
-  &:hover, &:focus-visible {
-    border-color: $primary;
-    box-shadow: 0 0 0 2px rgba($primary, 0.12);
+  &:hover,
+  &:focus-visible {
+    border-color:
+      $admin-primary;
+
+    box-shadow:
+      0
+      0
+      0
+      2px
+      rgba(86, 138, 128, 0.12);
   }
 }
+
 
 .metricsGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
   gap: 8px;
+}
 
-  .metricBox {
-    background: #f4f2ec;
-    border-radius: 6px;
-    padding: 8px 10px;
 
-    span {
-      font-size: 10px;
-      color: $text-caption;
-      display: block;
-      margin-bottom: 2px;
-    }
+.metricBox {
+  padding:
+    8px
+    10px;
 
-    p {
-      margin: 0;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+  border-radius:
+    $admin-radius-sm;
 
-      strong {
-        font-size: 13px;
-        color: $text-title;
-      }
+  background:
+    #f4f2ec;
+
+  span {
+    display: block;
+
+    margin-bottom: 2px;
+
+    color:
+      $admin-text-muted;
+
+    font-size: 12px;
+  }
+
+  p {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    margin: 0;
+
+    strong {
+      color:
+        $admin-text-primary;
+
+      font-size: 13px;
     }
   }
 }
+
 
 .dotGrey {
   width: 6px;
   height: 6px;
+
   border-radius: 50%;
-  background: #a9b0ab;
+
+  background:
+    #a9b0ab;
 }
 
+
 .nextActionWrap {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
   width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
   margin-top: 6px;
 
   > button {
-    flex: 0 0 auto;
     min-width: max-content;
+
+    flex:
+      0
+      0
+      auto;
   }
 
   .deleteBtn {
-    height: 34px;
-    padding: 0 14px;
-    color: $danger;
-    background: #fff;
-    border: 1px solid $danger;
-    border-radius: 5px;
-    font-size: 12px;
+    min-height: 32px;
+
+    padding:
+      0
+      11px;
+
+    border:
+      1px solid
+      $admin-danger;
+
+    border-radius:
+      $admin-radius-sm;
+
+    background:
+      $admin-surface;
+
+    color:
+      $admin-danger;
+
+    font-size: 11px;
+
     cursor: pointer;
   }
 
   .nextBtn {
     margin-left: auto;
-    background: none;
-    border: none;
-    color: $primary;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    padding: 6px 0;
 
-    &:hover { text-decoration: underline; }
+    padding:
+      6px
+      0;
+
+    border: 0;
+
+    background:
+      transparent;
+
+    color:
+      $admin-primary;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
   }
 }
 
+
 .detailFieldsTitle {
-  color: $text-title;
+  color:
+    $admin-text-primary;
+
   font-size: 12px;
   font-weight: 700;
 }
 
+
 .stepFooter {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+
   margin-top: 10px;
+}
 
-  .prevBtn {
-    background: none;
-    border: none;
-    color: $primary;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    padding: 6px 0;
 
-    &:hover { text-decoration: underline; }
-  }
+.prevBtn,
+.nextBtn {
+  padding:
+    6px
+    0;
 
-  .finalActions {
-    display: flex;
-    gap: 8px;
+  border: 0;
 
-    .deleteBtn {
-      height: 34px;
-      padding: 0 12px;
-      border: 1px solid $danger;
-      color: $danger;
-      background: #fff;
-      border-radius: 5px;
-      font-size: 12px;
-      cursor: pointer;
-    }
+  background:
+    transparent;
 
-    .saveBtn {
-      height: 34px;
-      padding: 0 16px;
-      background: $primary;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
+  color:
+    $admin-primary;
 
-      &:hover { background: $primary-hover; }
-    }
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
   }
 }
 
-.panelFooterActions {
+
+.finalActions {
   display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 10px;
-  padding-top: 14px;
-  border-top: 1px solid $border-color;
 
-  .deleteBtn { height: 34px; padding: 0 14px; color: $danger; background: #fff; border: 1px solid $danger; border-radius: 5px; cursor: pointer; }
-  .saveBtn { height: 34px; padding: 0 18px; color: #fff; background: $primary; border: 0; border-radius: 5px; font-weight: 600; cursor: pointer; }
+  gap: 8px;
 }
 
-// ==========================================
-// 평상시 통계 패널 (우측)
-// ==========================================
+
+.deleteBtn,
+.saveBtn {
+  min-height: 32px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    11px;
+
+  border-radius:
+    $admin-radius-sm;
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+
+.deleteBtn {
+  border:
+    1px solid
+    $admin-danger;
+
+  background:
+    $admin-surface;
+
+  color:
+    $admin-danger;
+
+  &:hover {
+    background:
+      $admin-danger-light;
+  }
+}
+
+
+.saveBtn {
+  border:
+    1px solid
+    $admin-primary;
+
+  background:
+    $admin-primary;
+
+  color:
+    $admin-surface;
+
+  &:hover {
+    background:
+      $admin-primary-dark;
+  }
+}
+
+
+// ========================================
+// ANALYTICS
+// AdminPanel은 공통 컴포넌트 사용
+// ========================================
+
 .analyticsColumn {
+  position: sticky;
+
+  top: 24px;
+
+  min-width: 0;
+
   display: flex;
   flex-direction: column;
+
   gap: 16px;
-  animation: fadeIn 0.2s ease-out;
 }
 
-.analyticsCard {
-  background: $bg-surface;
-  border: 1px solid $border-color;
-  border-radius: $radius-card;
-  padding: 20px;
-  box-shadow: $shadow-sm;
-}
-
-.analyticsHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-
-  h2 {
-    font-size: 15px;
-    font-weight: 700;
-    color: $text-title;
-    margin: 0;
-  }
-
-  span {
-    font-size: 11px;
-    color: #a0a6a2;
-    font-weight: 600;
-  }
-}
 
 .statusOverview {
   display: flex;
+  flex-direction: column;
   align-items: center;
+
   gap: 20px;
+
+  ul {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 9px;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+  }
+
+  li {
+    min-height: 28px;
+
+    display: grid;
+
+    grid-template-columns:
+      8px
+      minmax(0, 1fr)
+      auto;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 12px;
+
+    strong {
+      color:
+        $admin-text-primary;
+
+      font-size: 12px;
+      font-weight: 700;
+    }
+  }
 }
 
+
 .statusDonut {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  background: conic-gradient($primary 0 var(--selling-rate, 0%), $warning var(--selling-rate, 0%) var(--low-rate, 0%), $danger var(--low-rate, 0%) 100%);
+  position: relative;
+
+  width: 148px;
+  height: 148px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: relative;
-  flex-shrink: 0;
 
-  &::before {
-    content: '';
+  border-radius: 50%;
+
+  background:
+    conic-gradient(
+      $admin-primary
+        0
+        var(--selling-rate, 0%),
+      #d9a05d
+        var(--selling-rate, 0%)
+        var(--low-rate, 0%),
+      #ead9d6
+        var(--low-rate, 0%)
+        100%
+    );
+
+  &::after {
     position: absolute;
-    width: 66px;
-    height: 66px;
+
+    width: 104px;
+    height: 104px;
+
     border-radius: 50%;
-    background: $bg-surface;
+
+    background:
+      $admin-surface;
+
+    content: '';
   }
 
-  span, strong { position: relative; z-index: 1; }
-  span { font-size: 11px; color: $text-caption; }
-  strong { font-size: 15px; color: $text-title; }
-}
+  span,
+  strong {
+    position: relative;
+    z-index: 1;
+  }
 
-.statusOverview ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1;
+  span {
+    color:
+      $admin-text-muted;
 
-  li {
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  strong {
+    position: relative;
+    z-index: 1;
+
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 12px;
+    align-items: baseline;
+    justify-content: center;
 
-    span:nth-child(2) {
-      margin-left: 6px;
-      color: $text-body;
-      flex: 1;
+    gap: 3px;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 25px;
+    font-weight: 700;
+    line-height: 1.15;
+
+    small {
+      color:
+        $admin-text-secondary;
+
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 1;
     }
   }
 }
 
-.dotSelling { width: 8px; height: 8px; border-radius: 50%; background: $primary; }
-.dotLow { width: 8px; height: 8px; border-radius: 50%; background: $warning; }
-.dotHidden { width: 8px; height: 8px; border-radius: 50%; background: $danger; }
+
+.dotSelling,
+.dotLow,
+.dotHidden {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+}
+
+
+.dotSelling {
+  background:
+    $admin-primary;
+}
+
+
+.dotLow {
+  background:
+    #d9a05d;
+}
+
+
+.dotHidden {
+  background:
+    #d69a95;
+}
+
 
 .activityBars {
   display: flex;
   flex-direction: column;
-  gap: 12px;
 
-  div {
-    display: flex;
+  gap: 15px;
+
+  > div {
+    display: grid;
+
+    grid-template-columns:
+      minmax(0, 82px)
+      minmax(0, 1fr)
+      auto;
+
     align-items: center;
-    gap: 12px;
-    font-size: 12px;
 
-    span { width: 75px; color: $text-caption; flex-shrink: 0; }
-    i {
-      flex: 1;
-      height: 6px;
-      background: #f0eee8;
-      border-radius: 4px;
-      overflow: hidden;
+    gap: 9px;
+  }
 
-      b { display: block; height: 100%; background: $primary; }
+  span {
+    min-width: 0;
+
+    overflow: hidden;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 11px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  i {
+    height: 6px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background:
+      #edf0ee;
+
+    b {
+      display: block;
+
+      height: 100%;
+
+      border-radius: inherit;
+
+      background:
+        $admin-primary;
     }
-    strong { width: 35px; text-align: right; }
+  }
+
+  strong {
+    color:
+      $admin-text-primary;
+
+    font-size: 11px;
+    font-weight: 700;
   }
 }
 
+
 .analyticsCaption {
-  margin: 16px 0 0;
-  font-size: 11px;
-  color: #a5aca7;
+  margin:
+    18px
+    0
+    0;
+
+  padding-top:
+    12px;
+
+  border-top:
+    1px solid
+    $admin-border;
+
+  color:
+    $admin-text-muted;
+
+  font-size: 10px;
+  line-height: 1.3;
+
   text-align: right;
 }
 
-// 토스트
+
+// ========================================
+// TOAST
+// 회원관리와 같은 위치 / 크기
+// ========================================
+
 .toast {
   position: fixed;
-  bottom: 32px;
-  right: 32px;
-  background: #2b302d;
-  color: #ffffff;
-  padding: 12px 18px;
-  border-radius: 8px;
-  box-shadow: $shadow-md;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 13px;
+
+  right: 28px;
+  bottom: 28px;
+
   z-index: 1000;
 
+  min-width: 260px;
+  max-width: 420px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding:
+    13px
+    15px;
+
+  border:
+    1px solid
+    rgba(
+      86,
+      138,
+      128,
+      0.25
+    );
+
+  border-radius:
+    $admin-radius-md;
+
+  background:
+    $admin-surface;
+
+  box-shadow:
+    $shadow-md;
+
+  span {
+    color:
+      $admin-text-primary;
+
+    font-size: 11px;
+    font-weight: 600;
+  }
+
   button {
-    background: none;
-    border: none;
-    color: #9ea4a0;
-    cursor: pointer;
+    width: 25px;
+    height: 25px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 50%;
+
+    background:
+      #f3f4f3;
+
+    color:
+      $admin-text-secondary;
+
     font-size: 16px;
+
+    cursor: pointer;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 1280
+// ========================================
+
+@media (max-width: 1280px) {
+  .dataTable {
+    min-width: 920px;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 1180
+// ========================================
+
+@media (max-width: 1180px) {
+  .managementGrid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .analyticsColumn,
+  .editPanel {
+    position: static;
+  }
+
+  .analyticsColumn {
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 12px;
+
+    align-items: start;
+  }
+
+  .editPanel {
+    max-width: none;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 850
+// ========================================
+
+@media (max-width: 850px) {
+  .summaryArea {
+    margin-top:
+      -8px;
+  }
+
+  .summaryGrid {
+    width: 100%;
+  }
+
+  .mainSection {
+    padding: 16px;
+  }
+
+  .analyticsColumn {
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 12px;
+
+    align-items: start;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 767
+// ========================================
+
+@media (max-width: 767px) {
+  .page {
+    padding-bottom:
+      30px;
+  }
+
+  .summaryArea {
+    margin-top: 0;
+  }
+
+  .summaryGrid {
+    width: 100%;
+
+    margin-inline:
+      auto;
+  }
+
+  .mainSection {
+    padding: 14px;
+  }
+
+  .selectField {
+    width: 100%;
+    min-width: 0;
+
+    select {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
+  .sectionHeading {
+    min-height: auto;
+
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-top: 18px;
+    margin-bottom: 16px;
+
+    padding:
+      0
+      2px;
+  }
+
+  .titleWrap {
+    min-width: 0;
+
+    h2 {
+      margin: 0;
+
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+  }
+
+  .headingRight {
+    flex: 0 1 auto;
+
+    gap: 7px;
+  }
+
+  .productCount {
+    font-size: 13px;
+
+    strong {
+      font-size: 16px;
+    }
+  }
+
+  .actions {
+    gap: 5px;
+  }
+
+  .bulkButton,
+  .registerButton {
+    min-height: 30px;
+
+    padding:
+      0
+      8px;
+
+    font-size: 10px;
+  }
+
+  .tableWrap {
+    overscroll-behavior-inline:
+      contain;
+
+    -webkit-overflow-scrolling:
+      touch;
+  }
+
+  .dataTable {
+    min-width: 880px;
+  }
+
+  .editPanel {
+    padding: 16px;
+
+    scroll-margin-top:
+      92px;
+  }
+
+  .panelTopHeader {
+    h2 {
+      font-size: 20px;
+    }
+  }
+
+  .formRow {
+    align-items: stretch;
+
+    flex-direction: column;
+
+    gap: 6px;
+
+    input,
+    select {
+      width: 100%;
+
+      box-sizing: border-box;
+    }
+  }
+
+  .pairingPicker {
+    grid-template-columns:
+      minmax(0, 1fr);
+
+    max-height: 280px;
+  }
+
+  .tasteInputs,
+  .timeInputs,
+  .metricsGrid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+  .imageEditTile {
+    min-width: 0;
+
+    flex-basis:
+      calc(50% - 4px);
+  }
+
+  .analyticsColumn {
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 12px;
+
+    align-items: start;
+  }
+
+  .statusDonut {
+    width: 118px;
+    height: 118px;
+
+    &::after {
+      width: 82px;
+      height: 82px;
+    }
+
+    strong {
+      font-size: 22px;
+    }
+  }
+
+  .statusOverview {
+    gap: 14px;
+
+    li {
+      font-size: 10px;
+
+      strong {
+        font-size: 10px;
+      }
+    }
+  }
+
+  .activityBars {
+    gap: 12px;
+
+    > div {
+      grid-template-columns:
+        minmax(0, 54px)
+        minmax(0, 1fr)
+        auto;
+
+      gap: 6px;
+    }
+
+    span,
+    strong {
+      font-size: 9px;
+    }
+  }
+
+  .analyticsCaption {
+    margin:
+      18px
+      0
+      0;
+
+    padding-top:
+      10px;
+
+    font-size: 9px;
+  }
+
+  .toast {
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+
+    min-width: 0;
+    max-width: none;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - VERY SMALL
+// ========================================
+
+@media (max-width: 520px) {
+  .sectionHeading {
+    align-items: flex-start;
+
+    flex-wrap: wrap;
+  }
+
+  .headingRight {
+    width: 100%;
+
+    justify-content: space-between;
+  }
+
+  .actions {
+    margin-left: auto;
   }
 }

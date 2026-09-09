@@ -1,0 +1,985 @@
+.guideRoot {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+
+  width: 100vw;
+  height: 100dvh;
+
+  overflow: hidden;
+
+  font-family: inherit;
+
+  opacity: 1;
+
+  transition: opacity 0.22s ease;
+}
+
+
+.guideRoot.closing {
+  opacity: 0;
+}
+
+
+// ========================================
+// BACKDROP
+// ========================================
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+
+  background:
+    rgba(17, 17, 17, 0.78);
+}
+
+
+// ========================================
+// SPOTLIGHT
+// ========================================
+
+.spotlight {
+  position: fixed;
+  z-index: 4;
+
+  box-sizing: border-box;
+
+  background: transparent;
+
+  border:
+    2px solid
+    rgba(255, 255, 255, 0.94);
+
+  box-shadow:
+    0 0 0 9999px
+      rgba(17, 17, 17, 0.78),
+    0 0 0 4px
+      rgba(255, 255, 255, 0.06);
+
+  pointer-events: none;
+}
+
+
+.spotlight.cart {
+  border-radius: 7px;
+
+  border-color: #72c8be;
+}
+
+
+.spotlight.wish {
+  border-radius: 50%;
+
+  border-color: #ec6b61;
+}
+
+
+// ========================================
+// TOP ACTIONS
+// ========================================
+
+.topActions {
+  position: fixed;
+
+  top:
+    max(
+      24px,
+      env(safe-area-inset-top)
+    );
+
+  right: 28px;
+
+  z-index: 20;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  gap: 15px;
+}
+
+
+.closeButton,
+.hideToday,
+.skipButton,
+.nextButton,
+.mockShortcut {
+  border: 0;
+
+  font: inherit;
+
+  cursor: pointer;
+}
+
+
+.closeButton {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  background: transparent;
+
+  color: #fff;
+
+  font-size: 38px;
+  font-weight: 200;
+  line-height: 1;
+}
+
+
+.hideToday {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0;
+
+  background: transparent;
+
+  color: #fff;
+
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+
+
+  span {
+    width: 22px;
+    height: 22px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border:
+      1px solid
+      rgba(255, 255, 255, 0.9);
+
+    border-radius: 50%;
+
+    font-size: 11px;
+  }
+}
+
+
+// ========================================
+// CALLOUT
+// ========================================
+
+.callout {
+  position: fixed;
+  z-index: 14;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 9px;
+
+  box-sizing: border-box;
+
+  padding: 9px 11px;
+
+  overflow: visible;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.15);
+
+  border-radius: 12px;
+
+  background:
+    rgba(18, 18, 18, 0.74);
+
+  color: #fff;
+
+  backdrop-filter: blur(5px);
+
+  pointer-events: none;
+
+
+  strong {
+    display: block;
+
+    padding-top: 1px;
+
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.48;
+
+    letter-spacing: -0.025em;
+
+    word-break: keep-all;
+
+
+    b {
+      font-weight: 900;
+    }
+  }
+}
+
+
+.numberBadge {
+  width: 25px;
+  height: 25px;
+
+  flex: 0 0 25px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  color: #fff;
+
+  font-size: 11px;
+  font-weight: 800;
+
+
+  &.cart {
+    background: #5f9a92;
+  }
+
+
+  &.wish {
+    background: #e16056;
+  }
+}
+
+
+// ========================================
+// CART CALLOUT POINTER
+// 실제 장바구니 버튼으로 내려감
+// ========================================
+
+.cartCallout {
+  &::before {
+    content: '';
+
+    position: absolute;
+
+    left: 50%;
+    bottom: -14px;
+
+    width: 2px;
+    height: 11px;
+
+    border-radius: 999px;
+
+    background: #fff;
+
+    transform:
+      translateX(-50%);
+  }
+
+
+  &::after {
+    content: '';
+
+    position: absolute;
+
+    left: 50%;
+    bottom: -20px;
+
+    width: 0;
+    height: 0;
+
+    border-left:
+      5px solid transparent;
+
+    border-right:
+      5px solid transparent;
+
+    border-top:
+      7px solid #fff;
+
+    transform:
+      translateX(-50%);
+  }
+}
+
+
+// ========================================
+// WISH CALLOUT POINTER
+// ========================================
+
+.wishCallout {
+  &::before {
+    content: '';
+
+    position: absolute;
+
+    right: -31px;
+    top: 15px;
+
+    width: 34px;
+    height: 2px;
+
+    border-radius: 999px;
+
+    background: #fff;
+
+    transform: rotate(-32deg);
+    transform-origin: left center;
+  }
+
+  // 화살촉만 수정
+  &::after {
+    content: '';
+
+    position: absolute;
+
+    right: -27px;
+    top: -5px;
+
+    width: 9px;
+    height: 9px;
+
+    background: #fff;
+
+    // 오른쪽을 향하는 삼각형
+    clip-path: polygon(
+      0 0,
+      100% 50%,
+      0 100%
+    );
+
+    // 선과 동일한 각도로 ↗
+    transform: rotate(-32deg);
+    transform-origin: center;
+  }
+}
+
+
+// ========================================
+// SHORTCUT CALLOUT POINTER
+//
+// 문구 안을 절대 가로지르지 않음.
+// 박스 바깥 아래쪽에서만 표시.
+// ========================================
+
+.shortcutCallout {
+  &::before {
+    content: '';
+
+    position: absolute;
+
+    left: 50%;
+    bottom: -14px;
+
+    width: 2px;
+    height: 11px;
+
+    border-radius: 999px;
+
+    background: #fff;
+
+    transform:
+      translateX(-50%);
+  }
+
+
+  &::after {
+    content: '';
+
+    position: absolute;
+
+    left: 50%;
+    bottom: -20px;
+
+    width: 0;
+    height: 0;
+
+    border-left:
+      5px solid transparent;
+
+    border-right:
+      5px solid transparent;
+
+    border-top:
+      7px solid #fff;
+
+    transform:
+      translateX(-50%);
+  }
+}
+
+
+// ========================================
+// BOTTOM FEATURE BAR
+// ========================================
+
+.featureBar {
+  position: fixed;
+
+  left: 50%;
+  bottom: 94px;
+
+  z-index: 11;
+
+  width:
+    min(
+      760px,
+      calc(100vw - 180px)
+    );
+
+  min-height: 88px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    220px;
+
+  align-items: center;
+
+  gap: 18px;
+
+  box-sizing: border-box;
+
+  padding:
+    12px
+    20px
+    12px
+    154px;
+
+  border-radius: 999px;
+
+  box-shadow:
+    0 16px 38px
+    rgba(0, 0, 0, 0.2);
+
+  transform:
+    translateX(-50%);
+
+
+  &.cart {
+    background: #649b93;
+  }
+
+
+  &.wish {
+    background: #e16056;
+  }
+}
+
+
+// ========================================
+// CHARACTER
+// ========================================
+
+.characterWrap {
+  position: absolute;
+
+  left: 20px;
+  bottom: -1px;
+
+  width: 132px;
+  height: 142px;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  pointer-events: none;
+
+
+  img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: contain;
+
+    object-position:
+      center bottom;
+  }
+}
+
+
+// ========================================
+// DEMO ITEMS
+// ========================================
+
+.demoItems {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+}
+
+
+.demoItem,
+.addItem {
+  width: 50px;
+  height: 58px;
+
+  flex: 0 0 50px;
+
+  box-sizing: border-box;
+
+  border-radius: 7px;
+}
+
+
+.demoItem {
+  position: relative;
+
+  background: #fff;
+
+
+  i {
+    position: absolute;
+
+    top: 4px;
+    right: 4px;
+
+    width: 15px;
+    height: 15px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+      rgba(86, 145, 137, 0.92);
+
+    color: #fff;
+
+    font-size: 9px;
+    font-style: normal;
+    line-height: 1;
+  }
+}
+
+
+.featureBar.wish {
+  .demoItem i {
+    background:
+      rgba(225, 96, 86, 0.94);
+  }
+}
+
+
+.addItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1.5px dashed
+    rgba(255, 255, 255, 0.92);
+
+  color:
+    rgba(255, 255, 255, 0.96);
+
+  font-size: 24px;
+  font-weight: 300;
+}
+
+
+// ========================================
+// SHORTCUT
+// ========================================
+
+.mockShortcut {
+  width: 100%;
+  min-height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding:
+    0 12px
+    0 20px;
+
+  border-radius: 999px;
+
+  background: #fff;
+
+  color: #467d76;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  white-space: nowrap;
+
+  cursor: default;
+
+
+  span {
+    width: 38px;
+    height: 38px;
+
+    flex: 0 0 38px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #477f77;
+
+    color: #fff;
+
+    font-size: 20px;
+    line-height: 1;
+  }
+}
+
+
+.featureBar.wish {
+  .mockShortcut {
+    color: #e16056;
+  }
+
+
+  .mockShortcut span {
+    background: #e16056;
+  }
+}
+
+
+// ========================================
+// BOTTOM CONTROLS
+// ========================================
+
+.bottomControls {
+  position: fixed;
+
+  left: 50%;
+  bottom:
+    max(
+      12px,
+      calc(
+        env(safe-area-inset-bottom)
+        + 6px
+      )
+    );
+
+  z-index: 20;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 8px;
+
+  transform:
+    translateX(-50%);
+}
+
+
+.pageCount {
+  min-width: 44px;
+
+  padding: 5px 10px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(255, 255, 255, 0.16);
+
+  color: #fff;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  text-align: center;
+}
+
+
+.controlRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 16px;
+}
+
+
+.skipButton,
+.nextButton {
+  min-height: 32px;
+
+  padding: 0;
+
+  background: transparent;
+
+  font-size: 17px;
+  font-weight: 800;
+}
+
+
+.skipButton {
+  color:
+    rgba(255, 255, 255, 0.58);
+}
+
+
+.nextButton {
+  color: #fff;
+}
+
+
+.divider {
+  width: 1px;
+  height: 18px;
+
+  background:
+    rgba(255, 255, 255, 0.34);
+}
+
+
+// ========================================
+// SHORT LAPTOP
+// ========================================
+
+@media (max-height: 780px) {
+  .featureBar {
+    bottom: 78px;
+
+    width:
+      min(
+        710px,
+        calc(100vw - 130px)
+      );
+
+    min-height: 76px;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      205px;
+
+    padding:
+      8px
+      16px
+      8px
+      138px;
+  }
+
+
+  .characterWrap {
+    left: 18px;
+
+    width: 116px;
+    height: 124px;
+  }
+
+
+  .demoItem,
+  .addItem {
+    width: 44px;
+    height: 50px;
+
+    flex-basis: 44px;
+  }
+
+
+  .mockShortcut {
+    min-height: 50px;
+
+    font-size: 12px;
+  }
+
+
+  .bottomControls {
+    bottom: 7px;
+  }
+
+
+  .callout {
+    strong {
+      font-size: 13px;
+    }
+  }
+}
+
+
+// ========================================
+// TABLET
+// ========================================
+
+@media (max-width: 980px) {
+  .featureBar {
+    width:
+      calc(100vw - 70px);
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      200px;
+
+    padding-left: 138px;
+  }
+
+
+  .characterWrap {
+    left: 16px;
+
+    width: 116px;
+    height: 128px;
+  }
+
+
+  .callout {
+    strong {
+      font-size: 13px;
+    }
+  }
+}
+
+
+// ========================================
+// MOBILE
+// ========================================
+
+@media (max-width: 640px) {
+  .topActions {
+    top: 12px;
+    right: 12px;
+
+    gap: 8px;
+  }
+
+
+  .closeButton {
+    width: 31px;
+    height: 31px;
+
+    font-size: 30px;
+  }
+
+
+  .hideToday {
+    font-size: 10px;
+
+
+    span {
+      width: 18px;
+      height: 18px;
+
+      font-size: 9px;
+    }
+  }
+
+
+  .featureBar {
+    bottom: 80px;
+
+    width:
+      calc(100vw - 28px);
+
+    min-height: 142px;
+
+    grid-template-columns: 1fr;
+
+    gap: 8px;
+
+    padding:
+      14px
+      14px
+      12px
+      108px;
+
+    border-radius: 28px;
+  }
+
+
+  .characterWrap {
+    left: 0;
+    bottom: 0;
+
+    width: 108px;
+    height: 122px;
+  }
+
+
+  .demoItems {
+    gap: 5px;
+  }
+
+
+  .demoItem,
+  .addItem {
+    width: 36px;
+    height: 44px;
+
+    flex-basis: 36px;
+  }
+
+
+  .demoItem i {
+    width: 13px;
+    height: 13px;
+
+    font-size: 8px;
+  }
+
+
+  .mockShortcut {
+    min-height: 42px;
+
+    padding:
+      0 9px
+      0 12px;
+
+    font-size: 10px;
+
+
+    span {
+      width: 28px;
+      height: 28px;
+
+      flex-basis: 28px;
+
+      font-size: 16px;
+    }
+  }
+
+
+  .callout {
+    padding: 7px 8px;
+
+    gap: 6px;
+
+    border-radius: 9px;
+
+
+    strong {
+      font-size: 10px;
+      line-height: 1.45;
+    }
+  }
+
+
+  .numberBadge {
+    width: 21px;
+    height: 21px;
+
+    flex-basis: 21px;
+
+    font-size: 9px;
+  }
+
+
+  .skipButton,
+  .nextButton {
+    font-size: 14px;
+  }
+}

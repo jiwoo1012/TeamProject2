@@ -17,6 +17,7 @@ import makdong from '../../assets/characters/M007_Poses01.png'
 import useSectionWheelSnap from './useSectionWheelSnap'
 import useStickyBrandHeader from './useStickyBrandHeader'
 import styles from './BrandIntro.module.scss'
+import journeyStyles from '../Main/JourneySection.module.scss'
 import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 
 const senseItems = [
@@ -102,13 +103,67 @@ const BrandIntro = () => {
   const secondSectionRef = useRef(null)
   const bottleRef = useRef(null)
   const stageRef = useRef(null)
-  const [activeSenseIndex, setActiveSenseIndex] = useState(0)
+  const [senseTrackIndex, setSenseTrackIndex] = useState(1)
+  const [isSenseTransitionEnabled, setIsSenseTransitionEnabled] = useState(true)
+  const activeSenseIndex = (senseTrackIndex - 1 + senseItems.length) % senseItems.length
+  const [hasManualSenseInteraction, setHasManualSenseInteraction] = useState(false)
+  const [isSenseHovered, setIsSenseHovered] = useState(false)
+  const [isScrollGuideVisible, setIsScrollGuideVisible] = useState(true)
   const senseTouchRef = useRef(null)
   const activeSense = senseItems[activeSenseIndex]
 
-  const handleSenseChange = (index) => setActiveSenseIndex(index)
-  const handlePreviousSense = () => setActiveSenseIndex((index) => (index - 1 + senseItems.length) % senseItems.length)
-  const handleNextSense = () => setActiveSenseIndex((index) => (index + 1) % senseItems.length)
+  const handleSenseChange = (index) => {
+    setHasManualSenseInteraction(true)
+    setSenseTrackIndex(index + 1)
+  }
+  const handlePreviousSense = () => {
+    setHasManualSenseInteraction(true)
+    setSenseTrackIndex((index) => Math.max(0, index - 1))
+  }
+  const handleNextSense = () => {
+    setHasManualSenseInteraction(true)
+    setSenseTrackIndex((index) => Math.min(senseItems.length + 1, index + 1))
+  }
+
+  const handleSenseTransitionEnd = (event) => {
+    if (event.target !== event.currentTarget || event.propertyName !== 'transform') return
+    if (senseTrackIndex !== 0 && senseTrackIndex !== senseItems.length + 1) return
+    setIsSenseTransitionEnabled(false)
+    setSenseTrackIndex(senseTrackIndex === 0 ? senseItems.length : 1)
+  }
+
+  useLayoutEffect(() => {
+    if (isSenseTransitionEnabled) return undefined
+    let secondFrame
+    const firstFrame = window.requestAnimationFrame(() => {
+      secondFrame = window.requestAnimationFrame(() => setIsSenseTransitionEnabled(true))
+    })
+    return () => {
+      window.cancelAnimationFrame(firstFrame)
+      window.cancelAnimationFrame(secondFrame)
+    }
+  }, [isSenseTransitionEnabled])
+
+  useEffect(() => {
+    if (hasManualSenseInteraction || isSenseHovered) return undefined
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let intervalId
+    const updatePlayback = () => {
+      window.clearInterval(intervalId)
+      if (motionQuery.matches || document.hidden) return
+      intervalId = window.setInterval(() => {
+        setSenseTrackIndex((index) => Math.min(senseItems.length + 1, index + 1))
+      }, 1800)
+    }
+    updatePlayback()
+    motionQuery.addEventListener('change', updatePlayback)
+    document.addEventListener('visibilitychange', updatePlayback)
+    return () => {
+      window.clearInterval(intervalId)
+      motionQuery.removeEventListener('change', updatePlayback)
+      document.removeEventListener('visibilitychange', updatePlayback)
+    }
+  }, [hasManualSenseInteraction, isSenseHovered])
 
   const handleSenseTouchEnd = (event) => {
     const start = senseTouchRef.current
@@ -124,6 +179,20 @@ const BrandIntro = () => {
 
   useStickyBrandHeader()
   useSectionWheelSnap([{ ref: secondSectionRef }])
+
+  useEffect(() => {
+    if (!isScrollGuideVisible) return undefined
+    const handleScroll = () => setIsScrollGuideVisible(false)
+    const handleWheel = (event) => {
+      if (event.deltaY !== 0) handleScroll()
+    }
+    window.addEventListener('wheel', handleWheel, { passive: true })
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      window.removeEventListener('wheel', handleWheel)
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [isScrollGuideVisible])
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger)
@@ -297,6 +366,19 @@ const BrandIntro = () => {
             src={brandBottle}
             alt="자작 전통주 병"
           />
+          <div
+            className={`${styles.storyScrollGuide} ${!isScrollGuideVisible ? styles.storyScrollGuideHidden : ''}`}
+            aria-hidden={!isScrollGuideVisible}
+          >
+            <p className={styles.storyScrollDesktop}>아래로 스크롤해 자작의 이야기를 만나보세요</p>
+            <p className={styles.storyScrollMobile}>위로 쓸어 자작의 이야기를 만나보세요</p>
+            <span className={`${journeyStyles.sceneScrollCursor} ${styles.storyScrollIcon}`} aria-hidden="true">
+              <i />
+            </span>
+            <svg className={styles.storySwipeIcon} width="24" height="28" viewBox="0 0 24 28" fill="none" aria-hidden="true">
+              <path d="M12 24V4M5 11l7-7 7 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
         </div>
       </section>
 
@@ -345,8 +427,15 @@ const BrandIntro = () => {
           <p>빛과 향, 맛을 천천히 살펴보세요. 마음이 가는 감각부터 시작해도 좋습니다.</p>
         </header>
 
-        <div className={styles.senseSlider} data-reveal>
-          <div className={styles.senseCards} aria-live="polite">
+        <div
+          className={styles.senseSlider}
+          data-reveal
+          onMouseEnter={() => setIsSenseHovered(true)}
+          onMouseLeave={() => setIsSenseHovered(false)}
+          onFocus={() => setHasManualSenseInteraction(true)}
+          onTouchStart={() => setHasManualSenseInteraction(true)}
+        >
+          <div className={styles.senseCards} aria-live={hasManualSenseInteraction ? 'polite' : 'off'}>
             <article className={styles.senseCard}>
               <div className={styles.senseImageFrame}
                 tabIndex={0}
@@ -368,15 +457,19 @@ const BrandIntro = () => {
               >
                 <div
                   className={styles.senseImageTrack}
-                  style={{ transform: `translateX(-${activeSenseIndex * 100}%)` }}
+                  style={{
+                    transform: `translateX(-${senseTrackIndex * 100}%)`,
+                    transition: isSenseTransitionEnabled ? undefined : 'none',
+                  }}
+                  onTransitionEnd={handleSenseTransitionEnd}
                 >
-                  {senseItems.map((item, index) => (
+                  {[senseItems.at(-1), ...senseItems, senseItems[0]].map((item, index) => (
                     <img
                       key={`${item.number}-${index}`}
                       src={item.image}
                       draggable={false}
-                      alt={index === activeSenseIndex ? item.alt : ''}
-                      aria-hidden={index !== activeSenseIndex}
+                      alt={index === senseTrackIndex ? item.alt : ''}
+                      aria-hidden={index !== senseTrackIndex}
                     />
                   ))}
                 </div>
@@ -385,8 +478,6 @@ const BrandIntro = () => {
                 <span>{activeSense.number}</span>
                 <h3>{activeSense.title}</h3>
                 <p>{activeSense.description}</p>
-              </div>
-            </article>
             <div className={styles.senseControlButtons} aria-label="다섯 가지 감각 슬라이드 조작">
               <button type="button" onClick={handlePreviousSense} aria-label="이전 감각 보기">
                 <span aria-hidden="true">←</span>
@@ -407,6 +498,8 @@ const BrandIntro = () => {
                 <span aria-hidden="true">→</span>
               </button>
             </div>
+              </div>
+            </article>
           </div>
         </div>
       </section>

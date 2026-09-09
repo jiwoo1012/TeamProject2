@@ -1,394 +1,208 @@
-import { useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { collection, onSnapshot } from 'firebase/firestore'
 import eventsData from '../../data/events.json'
+import { db } from '../../firebase/firebase'
 import { PATHS } from '../../routes/paths'
 import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
-
 import makdongImage from '../../assets/characters/M007_Poses03.png'
-import rouletteCharacter from '../../assets/characters/M007_Poses07.png'
-import cardGameCharacter from '../../assets/characters/M007_Poses02.png'
-import oxQuizCharacter from '../../assets/characters/M007_Poses04.png'
-
+import rouletteCharacter from '../../assets/characters/M007_Poses09.png'
+import cardGameCharacter from '../../assets/characters/M007_Poses10.png'
+import oxQuizCharacter from '../../assets/characters/M007_Poses08.png'
 import styles from './EventList.module.scss'
 
+const bannerImages = import.meta.glob('../../assets/images/banner/eventBanner*.png', {
+  eager: true, import: 'default',
+})
 
-const bannerImages = import.meta.glob(
-  '../../assets/images/banner/eventBanner*.png',
-  {
-    eager: true,
-    import: 'default',
-  }
-)
+// 화면용 카피만 관리합니다. 원본 데이터와 게임 이동 경로는 유지합니다.
+const gamePresentation = {
+  roulette: {
+    character: rouletteCharacter,
+    benefit: '100% 당첨', title: '막동이 행운 룰렛',
+    description: '오늘의 운을 돌려보세요. 포인트와 특별한 경품이 기다리고 있어요.',
+    cta: '지금 룰렛 돌리기',
+  },
+  card: {
+    character: cardGameCharacter,
+    benefit: '짝을 맞추면 포인트', cta: '카드 맞추기',
+  },
+  quiz: {
+    character: oxQuizCharacter,
+    benefit: '정답 맞히고 포인트', cta: '퀴즈 풀기',
+  },
+}
 
-const PAGE_SIZE = 3
-
+const getGameType = (title = '') => {
+  if (title.includes('룰렛')) return 'roulette'
+  if (/O\s?X/.test(title)) return 'quiz'
+  if (/카드|짝\s?맞추기/.test(title)) return 'card'
+  return null
+}
 
 const resolveBanner = (bannerUrl) => {
+  if (/^(data:|https?:\/\/)/.test(bannerUrl ?? '')) return bannerUrl
   const fileName = bannerUrl?.split('/').pop()
-
-  return Object.entries(bannerImages).find(([path]) =>
-    path.endsWith(`/${fileName}`)
-  )?.[1]
+  return Object.entries(bannerImages).find(([path]) => path.endsWith('/' + fileName))?.[1]
 }
 
-
-const formatDate = (date) => {
-  const [year, month, day] = date.split('-')
-
-  return `${year}.${month.padStart(2, '0')}.${day.padStart(2, '0')}`
+const normalizeEvent = (source, fallbackId) => {
+  const event = source.event ?? source
+  return {
+    ...event,
+    id: event.eventId ?? source.id ?? fallbackId,
+    image: event.image ?? {},
+    eventPeriod: event.eventPeriod ?? { startDate: '', endDate: '' },
+    participationLimit: event.participationLimit ?? { type: 'per_user_total', maxCount: 1 },
+    precautions: event.precautions ?? [],
+    isActive: event.isActive !== false && event.status !== 'ended',
+    bannerSrc: resolveBanner(event.image?.bannerUrl),
+  }
 }
 
+const formatDate = (date = '') => {
+  const match = typeof date === 'string' && date.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/)
+  return match ? [match[1], match[2].padStart(2, '0'), match[3].padStart(2, '0')].join('.') : '일정 확인 중'
+}
+
+const getDestination = (event, gameType) => {
+  if (!event.isActive) return PATHS.mypage + '/events'
+  if (gameType === 'roulette') return PATHS.events + '/roulette'
+  if (gameType === 'quiz') return PATHS.eventReady + '/ox-quiz'
+  if (gameType === 'card') return PATHS.eventReady + '/card-game'
+  return PATHS.eventReady + '/' + encodeURIComponent(event.id)
+}
 
 const EventList = () => {
-  const [currentPage, setCurrentPage] = useState(1)
+  const [activeFilter, setActiveFilter] = useState('active')
+  const [events, setEvents] = useState(() => eventsData.map(
+    (item, index) => normalizeEvent(item, 'event-' + (index + 1))
+  ))
   const eventGridRef = useRef(null)
 
+  useEffect(() => onSnapshot(collection(db, 'events'), (snapshot) => {
+    if (snapshot.empty) return
+    setEvents(snapshot.docs.map((item) => normalizeEvent({ id: item.id, ...item.data() }, item.id)))
+  }, (error) => {
+    console.error('이벤트 목록 조회 실패:', error)
+  }), [])
 
-  const events = eventsData.map(
-    ({ event }, index) => ({
-      ...event,
+  const activeCount = events.filter((event) => event.isActive).length
+  const filters = [
+    { value: 'all', label: '전체', count: events.length },
+    { value: 'active', label: '진행중', count: activeCount },
+    { value: 'ended', label: '종료', count: events.length - activeCount },
+  ]
+  const visibleEvents = useMemo(() => {
+    const filtered = events.filter((event) => activeFilter === 'all'
+      || (activeFilter === 'active' ? event.isActive : !event.isActive))
+    // Firestore의 반환 순서와 무관하게 진행 중인 룰렛을 먼저 보여줍니다.
+    const rank = (event) => !event.isActive ? 2 : getGameType(event.title) === 'roulette' ? 0 : 1
+    return filtered.sort((a, b) => rank(a) - rank(b))
+  }, [events, activeFilter])
+  const featuredEvent = visibleEvents.find((event) => event.isActive && getGameType(event.title) === 'roulette')
 
-      id: `event-${index + 1}`,
-
-      bannerSrc: resolveBanner(
-        event.image.bannerUrl
-      ),
+  const handleShowActive = () => {
+    setActiveFilter('active')
+    eventGridRef.current?.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      block: 'start',
     })
-  )
-
-
-  const totalPages = Math.max(
-    1,
-    Math.ceil(events.length / PAGE_SIZE)
-  )
-
-
-  const visibleEvents = events.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
-  )
-
-  const featuredEvent = visibleEvents.find((event) => event.isActive)
-
-
-  const handlePage = (page) => {
-    setCurrentPage(page)
-
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    })
+    eventGridRef.current?.focus({ preventScroll: true })
   }
-
 
   return (
     <main className={styles.page}>
       <div className={styles.container}>
-
-        {/* ========================================
-            이벤트 상단 배너
-        ======================================== */}
-
-        <section className={styles.hero}>
-
+        <section className={styles.hero} aria-labelledby="event-hero-title">
           <div className={styles.heroText}>
-            <p>EVENT</p>
-
-            <h1>
-              막동이와 함께하는<br />자작의 즐거운 순간
-            </h1>
-
-            <span>
-              오늘의 한잔처럼, 소소하지만 기분 좋은 이벤트를 만나보세요.
-            </span>
-          </div>
-
-
-          <div className={styles.makdongCrop}>
-            <img
-              className={styles.makdong}
-              src={makdongImage}
-              alt="술잔을 머리에 얹고 인사하는 막동이"
-            />
-          </div>
-
-        </section>
-
-
-        {/* ========================================
-            이벤트 목록
-        ======================================== */}
-
-        <div className={styles.sectionHeading}>
-          <div>
-            <h2>한 잔의 여유, 한 번의 즐거움</h2>
-          </div>
-          <span>진행 중 {events.filter((event) => event.isActive).length} · 전체 {events.length}</span>
-        </div>
-
-        <section
-          className={`${styles.eventGrid} ${featuredEvent ? styles.featuredGrid : ''}`}
-          ref={eventGridRef}
-          aria-label="이벤트 목록"
-        >
-          {visibleEvents.map((event) => {
-
-            /*
-              이벤트 종류 확인
-
-              현재 이벤트 제목을 기준으로
-              각각 다른 페이지로 연결한다.
-            */
-            const isRoulette =
-              event.title.includes('룰렛')
-
-            const isOxQuiz =
-              event.title.includes('OX') ||
-              event.title.includes('O X')
-
-            const isCardGame =
-              event.title.includes('카드') ||
-              event.title.includes('짝맞추기') ||
-              event.title.includes('짝 맞추기')
-
-
-            /*
-              게임 타입 뱃지 + 캐릭터
-
-              진행 중인 게임형 이벤트에만 노출해서
-              "지금 바로 즐기는 게임"이라는 걸
-              목록에서부터 보여준다.
-            */
-            let gameType = null
-
-            if (isRoulette) {
-              gameType = {
-                label: 'ROULETTE',
-                character: rouletteCharacter,
-              }
-            } else if (isOxQuiz) {
-              gameType = {
-                label: 'OX QUIZ',
-                character: oxQuizCharacter,
-              }
-            } else if (isCardGame) {
-              gameType = {
-                label: 'CARD GAME',
-                character: cardGameCharacter,
-              }
-            }
-
-
-            /*
-              이벤트 이동 경로
-
-              룰렛
-              → /events/roulette
-
-              OX 퀴즈
-              → /events/ox-quiz
-
-              카드 게임
-              → /events/card-game
-
-              종료 이벤트
-              → 마이페이지 이벤트 내역
-            */
-            let destination = PATHS.events
-
-
-            if (!event.isActive) {
-              destination = `${PATHS.mypage}/events`
-            } else if (isRoulette) {
-              destination = `${PATHS.events}/roulette`
-            } else if (isOxQuiz) {
-              destination = `${PATHS.eventReady}/ox-quiz`
-            } else if (isCardGame) {
-              destination = `${PATHS.eventReady}/card-game`
-            }
-
-
-            /*
-              카드 버튼 문구
-            */
-            let buttonText = '이벤트 참여하기'
-
-
-            if (!event.isActive) {
-              buttonText = '당첨 확인'
-            } else if (isRoulette) {
-              buttonText = '룰렛 돌리러 가기'
-            } else if (isOxQuiz) {
-              buttonText = '퀴즈 풀러 가기'
-            } else if (isCardGame) {
-              buttonText = '카드 맞추러 가기'
-            }
-
-
-            return (
-              <article
-                className={`
-                  ${styles.eventCard}
-                  ${event.id === featuredEvent?.id ? styles.featuredCard : ''}
-                  ${
-                    event.isActive
-                      ? ''
-                      : styles.endedCard
-                  }
-                `}
-                key={event.id}
-              >
-
-                {/* 이벤트 이미지 */}
-                <div className={styles.imageArea}>
-
-                  {gameType && event.isActive ? (
-
-                    /*
-                      게임형 이벤트는 실제 배너 사진 대신
-                      브랜드 그라디언트 카드를 그려서
-                      캐릭터 일러스트가 묻히지 않게 한다.
-                    */
-                    <div className={styles.gameBanner}>
-                      <span className={styles.gameBadge}>
-                        {gameType.label}
-                      </span>
-
-                      <img
-                        className={styles.cardCharacter}
-                        src={gameType.character}
-                        alt=""
-                        aria-hidden="true"
-                      />
-                    </div>
-
-                  ) : (
-
-                    <img
-                      src={event.bannerSrc}
-                      alt={`${event.title} 배너`}
-                    />
-
-                  )}
-
-                  <span className={styles.status}>
-                    {event.isActive
-                      ? '진행 중'
-                      : '종료'}
-                  </span>
-
-                </div>
-
-
-                {/* 이벤트 내용 */}
-                <div className={styles.cardContent}>
-
-                  <h2>
-                    {event.title}
-                  </h2>
-
-
-                  <p>
-                    {event.description}
-                  </p>
-
-
-                  <time>
-                    {formatDate(
-                      event.eventPeriod.startDate
-                    )}
-                    {' ~ '}
-                    {formatDate(
-                      event.eventPeriod.endDate
-                    )}
-                  </time>
-
-
-                  <Link to={destination}>
-                    {buttonText}
-
-                    <span aria-hidden="true">
-                      ›
-                    </span>
-                  </Link>
-
-                </div>
-
-              </article>
-            )
-          })}
-        </section>
-
-
-        {/* ========================================
-            페이지네이션
-        ======================================== */}
-
-        <nav
-          className={styles.pagination}
-          aria-label="이벤트 목록 페이지"
-        >
-
-          <button
-            type="button"
-            aria-label="이전 페이지"
-            disabled={currentPage === 1}
-            onClick={() =>
-              handlePage(currentPage - 1)
-            }
-          >
-            ‹
-          </button>
-
-
-          {Array.from(
-            {
-              length: totalPages,
-            },
-            (_, index) => index + 1
-          ).map((page) => (
-            <button
-              className={
-                currentPage === page
-                  ? styles.currentPage
-                  : ''
-              }
-              type="button"
-              aria-current={
-                currentPage === page
-                  ? 'page'
-                  : undefined
-              }
-              onClick={() =>
-                handlePage(page)
-              }
-              key={page}
-            >
-              {page}
+            <h1 id="event-hero-title">잘 왔어요!<br />막동이랑 한 판 놀다 가요.</h1>
+            <p className={styles.heroDescription}>룰렛도, 카드도 준비했어요.<br />오늘은 뭐부터 해볼까요?</p>
+            <button className={styles.heroLink} type="button" onClick={handleShowActive}>
+              진행 중인 이벤트 {activeCount}개 <span aria-hidden="true">→</span>
             </button>
-          ))}
+          </div>
+          <div className={styles.makdongCrop}>
+            <img className={styles.makdong} src={makdongImage} alt="술잔을 머리에 얹고 인사하는 막동이" />
+          </div>
+        </section>
 
+        <section className={styles.eventSection} ref={eventGridRef} tabIndex={-1} aria-labelledby="event-list-title">
+          <div className={styles.sectionHeading}>
+            <div>
+              <h2 id="event-list-title">한 잔의 여유, 한 번의 즐거움</h2>
+            </div>
+            <div className={styles.filters} role="group" aria-label="이벤트 상태 필터">
+              {filters.map((filter) => (
+                <button key={filter.value} type="button"
+                  className={activeFilter === filter.value ? styles.selectedFilter : ''}
+                  aria-pressed={activeFilter === filter.value}
+                  aria-controls="event-results"
+                  onClick={() => setActiveFilter(filter.value)}>
+                  {filter.label} <span>{filter.count}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+          <p className={styles.srOnly} role="status">
+            {filters.find((filter) => filter.value === activeFilter).label} 이벤트 {visibleEvents.length}개
+          </p>
+          <div id="event-results" className={[styles.eventGrid, featuredEvent ? styles.featuredGrid : ''].join(' ')}>
+            {visibleEvents.map((event) => {
+              const gameType = getGameType(event.title)
+              const presentation = gamePresentation[gameType]
+              const isFeatured = event.id === featuredEvent?.id
+              const isDaily = event.participationLimit.type === 'per_day_once'
+              const benefit = event.isActive && presentation
+                ? [isDaily && '매일 참여', presentation.benefit].filter(Boolean).join(' · ')
+                : ''
 
-          <button
-            type="button"
-            aria-label="다음 페이지"
-            disabled={
-              currentPage === totalPages
-            }
-            onClick={() =>
-              handlePage(currentPage + 1)
-            }
-          >
-            ›
-          </button>
-
-        </nav>
-
+              return (
+                <article key={event.id} className={[
+                  styles.eventCard, gameType ? styles[gameType] : '',
+                  isFeatured ? styles.featuredCard : '', !event.isActive ? styles.endedCard : '',
+                ].filter(Boolean).join(' ')}>
+                  <div className={styles.imageArea}>
+                    {presentation ? (
+                      <div className={styles.gameBanner}>
+                        <span className={styles.gameMotif} aria-hidden="true" />
+                        <img className={styles.cardCharacter} src={presentation.character} alt="" aria-hidden="true" />
+                      </div>
+                    ) : event.bannerSrc ? (
+                      <img src={event.bannerSrc} alt={event.title + ' 배너'} loading="lazy" />
+                    ) : <span className={styles.imageFallback}>JAJAK EVENT</span>}
+                  </div>
+                  <div className={styles.cardContent}>
+                    <div className={styles.cardMeta}>
+                      <span className={styles.status}>{event.isActive ? '진행 중' : '종료'}</span>
+                      {benefit && <span className={styles.benefit}>{benefit}</span>}
+                    </div>
+                    <h3>{isFeatured ? presentation.title : event.title}</h3>
+                    <p className={styles.description}>{isFeatured ? presentation.description : event.description}</p>
+                    <p className={styles.period}>
+                      <span>기간</span>
+                      <span>{formatDate(event.eventPeriod.startDate)} — {formatDate(event.eventPeriod.endDate)}</span>
+                    </p>
+                    <Link className={styles.cardLink} to={getDestination(event, gameType)}>
+                      {!event.isActive ? '이벤트 보기' : presentation?.cta ?? '이벤트 참여하기'}
+                      <span aria-hidden="true">→</span>
+                    </Link>
+                  </div>
+                </article>
+              )
+            })}
+            {visibleEvents.length === 0 && (
+              <div className={styles.emptyState}>
+                <p>{activeFilter === 'ended' ? '아직 끝난 놀이는 없어요. 지금 열려 있는 놀이를 만나볼까요?' : '다음 놀이를 준비하고 있어요. 조금만 기다려 주세요!'}</p>
+                <button type="button" onClick={() => setActiveFilter('all')}>전체 이벤트 보기 →</button>
+              </div>
+            )}
+          </div>
+        </section>
       </div>
       <MobileTopButton contentRef={eventGridRef} />
     </main>
   )
 }
-
 
 export default EventList

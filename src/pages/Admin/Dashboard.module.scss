@@ -1,253 +1,1562 @@
-@use '../../styles/variables' as v;
+@use '../../styles/admin/adminVariables' as *;
+@use '../../styles/admin/adminMixins' as *;
+@use '../../styles/admin/adminCommon' as *;
 
-.page { width: 100%; color: v.$color-text-primary; }
 
-.pageHeader, .sectionHeading, .panelHeader, .cardTopline, .chartSummary, .statusList li > div {
+// ========================================
+// PAGE
+// ========================================
+
+.page {
+  @extend %admin-page;
+
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+
+  margin: 0;
+
+  padding:
+    34px
+    0
+    50px;
+
+  box-sizing: border-box;
+
+  color:
+    $admin-text-secondary;
+}
+
+
+// ========================================
+// SUMMARY
+// ========================================
+
+.summaryArea {
+  @extend %admin-summary-area;
+
+  position: relative;
+  z-index: 1;
+
+  margin-top: -50px;
+}
+
+
+.summaryGrid {
+  @extend %admin-summary-grid;
+
+  width: 90%;
+
+  margin:
+    0
+    auto;
+}
+
+
+.summarySvg {
+  width: 23px;
+  height: 23px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+  }
+}
+
+
+// ========================================
+// DASHBOARD GRID
+// ========================================
+
+.dashboardGrid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    285px;
+
+  align-items: start;
+
+  gap: 18px;
+}
+
+
+.mainColumn {
+  min-width: 0;
+}
+
+
+// ========================================
+// COMMON PANEL
+// ========================================
+
+.panel,
+.sidePanel {
+  min-width: 0;
+
+  @include admin-panel;
+}
+
+
+.panel {
+  padding: 20px;
+}
+
+
+.sidePanel {
+  padding:
+    18px
+    19px;
+}
+
+
+.clickablePanel {
+  cursor: pointer;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+
+  &:hover {
+    transform:
+      translateY(-1px);
+
+    border-color:
+      rgba(
+        86,
+        138,
+        128,
+        0.42
+      );
+
+    box-shadow:
+      0
+      6px
+      16px
+      rgba(
+        52,
+        77,
+        72,
+        0.055
+      );
+
+    .panelArrow {
+      color:
+        $admin-primary-dark;
+
+      transform:
+        translateX(2px);
+    }
+  }
+
+  &:focus-visible {
+    outline:
+      2px solid
+      $admin-primary;
+
+    outline-offset:
+      3px;
+  }
+}
+
+
+.panelArrow {
+  color:
+    #94aaa5;
+
+  font-size: 12px;
+
+  transition:
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+
+.panelHeader,
+.smallPanelHeader,
+.sideHeader,
+.trendHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  gap: 12px;
 }
 
-.pageHeader {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  align-items: flex-start;
-  gap: v.$space-8;
-  margin-bottom: v.$space-6;
-  padding: 0 0 v.$space-3;
-  background: v.$color-bg;
+
+.panelHeader {
+  margin-bottom: 18px;
+
+  h2 {
+    margin: 0;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 20px;
+    font-weight: 700;
+  }
 }
 
-.pageHeader h1, .pageHeader p, .sectionHeading h2, .sectionHeading p, .panelHeader h2,
-.panelHeader p, .summaryCard h3, .summaryCard p, .aiEmpty p { margin: 0; }
 
-.sectionHeading p, .panelHeader p {
-  color: v.$color-primary;
-  font-size: v.$font-size-xs;
-  font-weight: v.$font-weight-bold;
-  letter-spacing: 0.12em;
+.smallPanelHeader {
+  margin-bottom: 18px;
+
+  h2 {
+    margin: 0;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  button {
+    padding: 0;
+
+    border: 0;
+
+    background:
+      transparent;
+
+    color:
+      $admin-primary-dark;
+
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+  }
 }
 
-.pageHeader h1 {
-  margin-top: 0;
-  font-family: v.$font-family-base;
-  font-size: v.$font-size-2xl;
-  font-weight: v.$font-weight-bold;
-  letter-spacing: -0.04em;
-  line-height: v.$line-height-tight;
+
+// ========================================
+// SALES PANEL
+// ========================================
+
+.salesPanel {
+  min-height: 270px;
+
+  margin-bottom: 18px;
 }
 
-.description { margin-top: v.$space-2 !important; color: v.$color-text-secondary; font-size: v.$font-size-sm; }
 
-.dataNotice, .periodLabel, .statusMarker, .aiBadge {
-  display: inline-flex;
+.salesTotal {
+  display: flex;
+  align-items: baseline;
+
+  gap: 5px;
+
+  strong {
+    color:
+      $admin-primary-dark;
+
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  span {
+    color:
+      $admin-primary-dark;
+
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  small {
+    margin-left: 3px;
+
+    color:
+      $admin-text-muted;
+
+    font-size: 9px;
+  }
+}
+
+
+.salesChart {
+  position: relative;
+
+  width: 100%;
+  height: 205px;
+
+  min-width: 0;
+
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+
+    display: block;
+  }
+}
+
+
+// ========================================
+// MIDDLE GRID
+// ========================================
+
+.middleGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 18px;
+
+  margin-bottom: 18px;
+}
+
+
+// ========================================
+// ORDER STATUS - DOUGHNUT
+// ========================================
+
+.orderStatusContent {
+  width: 88%;
+  margin-inline: auto;
+  min-height: 190px;
+
+  display: grid;
+
+  grid-template-columns:
+    168px
+    minmax(0, 1fr);
+
   align-items: center;
-  border-radius: v.$radius-pill;
+
+  gap: 24px;
+
+  padding:
+    2px
+    4px
+    4px;
+}
+
+
+.orderStatusDonut {
+  position: relative;
+
+  width: 168px;
+  height: 168px;
+
+  justify-self: center;
+
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+
+    display: block;
+  }
+}
+
+
+.orderStatusCenter {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 2px;
+
+  pointer-events: none;
+
+  transform:
+    translate(
+      -50%,
+      -50%
+    );
+
+  span {
+    color:
+      $admin-text-muted;
+
+    font-size: 9px;
+    font-weight: 600;
+  }
+
+  strong {
+    display: flex;
+    align-items: baseline;
+
+    gap: 3px;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.15;
+
+    small {
+      color:
+        $admin-text-secondary;
+
+      font-size: 15px;
+      font-weight: 600;
+    }
+  }
+}
+
+
+.statusLegend {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 11px;
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+
+  li {
+    min-width: 0;
+
+    display: grid;
+
+    grid-template-columns:
+      8px
+      minmax(0, 1fr)
+      auto;
+
+    align-items: center;
+
+    gap: 8px;
+  }
+
+  strong {
+    color:
+      $admin-text-primary;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    white-space: nowrap;
+  }
+}
+
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+
+  display: block;
+
+  border-radius: 50%;
+}
+
+
+.statusDot1 {
+  background:
+    #548b84;
+}
+
+
+.statusDot2 {
+  background:
+    #dba457;
+}
+
+
+.statusDot3 {
+  background:
+    #719aad;
+}
+
+
+.statusDot4 {
+  background:
+    #9bbfaf;
+}
+
+
+.statusDot5 {
+  background:
+    #d99690;
+}
+
+
+.statusName {
+  min-width: 0;
+
+  overflow: hidden;
+
+  color:
+    $admin-text-secondary;
+
+  font-size: 15px;
+
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.dataNotice {
-  gap: v.$space-2;
-  padding: v.$space-2 v.$space-4;
-  border: 1px solid v.$color-border;
-  background: v.$color-white;
-  color: v.$color-text-muted;
-  font-size: v.$font-size-xs;
-}
 
-.dataNotice span { width: 7px; height: 7px; border-radius: 50%; background: v.$color-warning; }
-.summarySection { margin-bottom: v.$space-6; }
-.sectionHeading { align-items: flex-end; gap: v.$space-4; margin-bottom: v.$space-4; }
+// ========================================
+// POPULAR PRODUCTS
+// ========================================
 
-.sectionHeading h2, .panelHeader h2 {
-  margin-top: v.$space-1;
-  font-size: v.$font-size-xl;
-  letter-spacing: -0.025em;
-}
+.productRanking {
+  width: 88%;
+  margin: 0 auto;
 
-.sectionHeading > span, .textAction { color: v.$color-text-muted; font-size: v.$font-size-xs; }
-
-.summaryGrid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: v.$space-4;
-}
-
-.summaryCard, .panel {
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-xl;
-  background: v.$color-white;
-}
-
-.summaryCard { position: relative; min-width: 0; padding: v.$space-4; overflow: hidden; }
-
-.summaryCard::after {
-  position: absolute;
-  right: -32px;
-  bottom: -48px;
-  width: 110px;
-  border-radius: 50%;
-  aspect-ratio: 1;
-  background: v.$color-primary;
-  content: '';
-  opacity: 0.06;
-}
-
-.summaryCard h3 { color: v.$color-text-secondary; font-size: v.$font-size-sm; font-weight: v.$font-weight-medium; }
-.cardTopline i { width: 9px; border-radius: 50%; aspect-ratio: 1; background: v.$color-primary; }
-.metricValue { display: flex; align-items: baseline; gap: v.$space-2; margin-top: v.$space-5 !important; }
-.metricValue strong { font-size: v.$font-size-3xl; line-height: 1; }
-.metricValue span, .metricCaption { color: v.$color-text-muted; font-size: v.$font-size-xs; }
-.metricCaption { margin-top: v.$space-3 !important; }
-.light .cardTopline i, .light::after { background: v.$color-primary-light; }
-.neutral .cardTopline i, .neutral::after { background: v.$color-taupe; }
-
-.warning {
-  border-color: color-mix(in srgb, v.$color-warning 45%, v.$color-border);
-  background: color-mix(in srgb, v.$color-warning 5%, v.$color-white);
-}
-
-.warning .cardTopline i, .warning::after { background: v.$color-warning; }
-
-.analyticsGrid, .bottomGrid { display: grid; gap: v.$space-4; margin-bottom: v.$space-4; }
-.analyticsGrid, .bottomGrid { grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.75fr); }
-.panel { min-width: 0; padding: v.$space-5; }
-.panelHeader { gap: v.$space-4; margin-bottom: v.$space-6; }
-
-.periodLabel, .statusMarker, .aiBadge {
-  padding: v.$space-2 v.$space-3;
-  font-size: v.$font-size-xs;
-  font-weight: v.$font-weight-semibold;
-}
-
-.periodLabel { background: v.$color-bg; color: v.$color-text-secondary; }
-
-.statusMarker {
-  background: color-mix(in srgb, v.$color-warning 13%, v.$color-white);
-  color: color-mix(in srgb, v.$color-warning 75%, v.$color-text-primary);
-}
-
-.chartSummary { justify-content: flex-start; gap: v.$space-4; margin-bottom: v.$space-4; }
-.chartSummary > span { color: v.$color-text-muted; font-size: v.$font-size-sm; }
-.chartSummary strong { font-size: v.$font-size-2xl; }
-.chartSummary small, .statusList small, .aiMetrics small {
-  color: v.$color-text-muted;
-  font-size: v.$font-size-xs;
-  font-weight: v.$font-weight-regular;
-}
-
-.chartFrame {
-  position: relative;
-  display: grid;
-  height: 220px;
-  border-bottom: 1px solid v.$color-border;
-  place-items: center;
-}
-
-.chartFrame > p {
-  position: relative;
-  z-index: 1;
-  padding: v.$space-3 v.$space-4;
-  border-radius: v.$radius-pill;
-  background: color-mix(in srgb, v.$color-white 88%, transparent);
-  color: v.$color-text-muted;
-  font-size: v.$font-size-sm;
-}
-
-.chartGrid { position: absolute; inset: 0; display: grid; grid-template-rows: repeat(4, 1fr); }
-.chartGrid i { border-top: 1px dashed color-mix(in srgb, v.$color-border 68%, transparent); }
-.chartLabels { display: grid; grid-template-columns: repeat(7, 1fr); padding-top: v.$space-3; color: v.$color-text-muted; font-size: v.$font-size-xs; text-align: center; }
-
-.orderOverview {
-  display: grid;
-  grid-template-columns: minmax(132px, 0.85fr) minmax(150px, 1fr);
-  gap: v.$space-6;
-  align-items: center;
-}
-
-.donutChart {
-  display: grid;
-  width: min(100%, 172px);
-  margin-inline: auto;
-  border-radius: 50%;
-  aspect-ratio: 1;
-  background: conic-gradient(v.$color-border 0 100%);
-  place-items: center;
-}
-
-.donutChart::before {
-  width: 68%;
-  border-radius: 50%;
-  aspect-ratio: 1;
-  background: v.$color-white;
-  content: '';
-  grid-area: 1 / 1;
-}
-
-.donutChart > div {
-  position: relative;
-  display: grid;
-  grid-area: 1 / 1;
-  text-align: center;
-}
-
-.donutChart strong { font-size: v.$font-size-2xl; line-height: 1; }
-.donutChart span { margin-top: v.$space-2; color: v.$color-text-muted; font-size: v.$font-size-xs; }
-
-.statusList { display: grid; gap: v.$space-4; margin: 0; padding: 0; list-style: none; }
-.statusList li > div { gap: v.$space-3; font-size: v.$font-size-sm; }
-.statusList strong { font-size: v.$font-size-md; }
-.statusList li > div > span { display: inline-flex; align-items: center; gap: v.$space-2; }
-.statusList li > div > span i { width: 8px; border-radius: 50%; aspect-ratio: 1; background: v.$color-primary; }
-.statusList li:nth-child(2) > div > span i { background: v.$color-warning; }
-.statusList li:nth-child(3) > div > span i { background: v.$color-primary-light; }
-.statusList li:nth-child(4) > div > span i { background: v.$color-taupe; }
-.statusList li:nth-child(5) > div > span i { background: v.$color-error; }
-.pendingStatus { color: color-mix(in srgb, v.$color-warning 78%, v.$color-text-primary); font-weight: v.$font-weight-semibold; }
-
-.tableWrap { overflow-x: auto; }
-.tableWrap table { width: 100%; min-width: 720px; border-collapse: collapse; }
-.tableWrap th, .tableWrap td { padding: v.$space-4 v.$space-3; border-bottom: 1px solid v.$color-border; font-size: v.$font-size-sm; text-align: left; white-space: nowrap; }
-.tableWrap th { background: v.$color-bg; color: v.$color-text-secondary; font-size: v.$font-size-xs; font-weight: v.$font-weight-semibold; }
-.tableWrap .emptyTable { height: 170px; color: v.$color-text-muted; text-align: center; }
-.emptyTable strong, .emptyTable span { display: block; }
-.emptyTable strong { color: v.$color-text-secondary; font-size: v.$font-size-sm; }
-.emptyTable span { margin-top: v.$space-2; font-size: v.$font-size-xs; }
-
-.aiPanel {
   display: flex;
   flex-direction: column;
-  background: linear-gradient(150deg, v.$color-white 0%, color-mix(in srgb, v.$color-primary 8%, v.$color-white) 100%);
+
+  gap: 13px;
+
+  padding: 0;
+
+  list-style: none;
+
+  li {
+    display: grid;
+
+    grid-template-columns:
+      18px
+      84px
+      minmax(0, 1fr)
+      30px;
+
+    align-items: center;
+
+    gap: 7px;
+  }
+
+  li > strong:last-child {
+    color:
+      $admin-text-muted;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    text-align: right;
+  }
 }
 
-.aiBadge { background: v.$color-primary; color: v.$color-white; }
-.aiMetrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: v.$space-3; }
-.aiMetrics > div { padding: v.$space-4; border: 1px solid color-mix(in srgb, v.$color-primary 20%, v.$color-border); border-radius: v.$radius-lg; background: color-mix(in srgb, v.$color-white 80%, transparent); }
-.aiMetrics span, .aiMetrics strong { display: block; }
-.aiMetrics span { color: v.$color-text-secondary; font-size: v.$font-size-xs; }
-.aiMetrics strong { margin-top: v.$space-3; font-size: v.$font-size-xl; }
 
-.aiEmpty { display: flex; flex: 1; align-items: center; justify-content: center; gap: v.$space-4; min-height: 130px; color: v.$color-text-muted; font-size: v.$font-size-sm; line-height: v.$line-height-relaxed; }
-.aiEmpty i { position: relative; width: 40px; border: 2px solid v.$color-primary; border-radius: 50%; aspect-ratio: 1; opacity: 0.65; }
-.aiEmpty i::before, .aiEmpty i::after { position: absolute; top: 13px; width: 5px; border-radius: 50%; aspect-ratio: 1; background: v.$color-primary; content: ''; }
-.aiEmpty i::before { left: 9px; }
-.aiEmpty i::after { right: 9px; }
+.rankNumber {
+  width: 22px;
+  height: 22px;
 
-@media (max-width: v.$breakpoint-tablet-max) {
-  .summaryGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .analyticsGrid, .bottomGrid { grid-template-columns: 1fr; }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius:
+    4px;
+
+  background:
+    $admin-primary;
+
+  color:
+    $admin-surface;
+
+  font-size: 12px;
+  font-weight: 700;
 }
 
-@media (max-width: v.$breakpoint-mobile-max) {
-  .pageHeader { position: static; align-items: flex-start; flex-direction: column; gap: v.$space-4; padding: 0; }
-  .pageHeader h1 { font-size: v.$font-size-3xl; }
-  .summaryGrid { grid-template-columns: 1fr; }
-  .summaryCard, .panel { padding: v.$space-5; border-radius: v.$radius-lg; }
-  .metricValue { margin-top: v.$space-4 !important; }
-  .chartFrame { height: 180px; }
-  .chartFrame > p { max-width: 220px; text-align: center; }
-  .aiMetrics { grid-template-columns: 1fr; }
-  .orderOverview { grid-template-columns: 1fr; }
-  .statusList { width: 100%; max-width: 280px; margin-inline: auto; }
+
+.productName {
+  overflow: hidden;
+  padding-left: 5px;
+
+  color:
+    $admin-text-secondary;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.productTrack {
+  height: 15px;
+
+  overflow: hidden;
+
+  border-radius:
+    999px;
+
+  background:
+    #e6e9e7;
+
+  i {
+    display: block;
+
+    height: 100%;
+
+    border-radius:
+      inherit;
+
+    background:
+      $admin-primary;
+  }
+}
+
+
+// ========================================
+// PENDING ORDERS
+// ========================================
+
+.pendingOrdersPanel {
+  margin-bottom: 18px;
+}
+
+
+.tableWrap {
+  width: 100%;
+  min-width: 0;
+
+  overflow-x: auto;
+
+  border:
+    1px solid
+    $admin-border;
+
+  border-radius:
+    $admin-radius-md;
+
+  background:
+    $admin-surface;
+
+  -webkit-overflow-scrolling:
+    touch;
+}
+
+
+.ordersTable {
+  width: 100%;
+  min-width: 650px;
+
+  border-collapse:
+    collapse;
+
+  table-layout:
+    fixed;
+
+  th,
+  td {
+    padding:
+      10px
+      8px;
+
+    border-bottom:
+      1px solid
+      $admin-border;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 12px;
+
+    text-align: center;
+    vertical-align: middle;
+
+    white-space: nowrap;
+  }
+
+  th {
+    background:
+      #f8f9f8;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  tbody {
+    tr {
+      cursor: pointer;
+
+      transition:
+        background 0.15s ease;
+
+      &:hover {
+        background:
+          #fafcfb;
+      }
+
+      &:last-child td {
+        border-bottom: 0;
+      }
+    }
+  }
+
+  button {
+    min-height: 26px;
+
+    padding:
+      0
+      7px;
+
+    border:
+      1px solid
+      $admin-border-dark;
+
+    border-radius:
+      $admin-radius-sm;
+
+    background:
+      $admin-surface;
+
+    color:
+      $admin-primary-dark;
+
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    &:hover {
+      background:
+        $admin-primary-light;
+    }
+  }
+}
+
+
+.shippingBadge,
+.paymentBadge {
+  min-width: 50px;
+  min-height: 24px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    7px;
+
+  border-radius:
+    999px;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+
+.shippingBadge {
+  color:
+    #a96e25;
+
+  background:
+    #fff5e6;
+}
+
+
+.paymentBadge {
+  color:
+    $admin-primary-dark;
+
+  background:
+    $admin-primary-light;
+}
+
+
+// ========================================
+// TREND GRID
+// ========================================
+
+.trendGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 18px;
+}
+
+
+.trendPanel {
+  min-width: 0;
+
+  padding:
+    20px
+    20px
+    17px;
+}
+
+
+.trendHeader {
+  min-height: 25px;
+
+  margin-bottom: 14px;
+
+  h2 {
+    margin: 0;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 20px;
+    font-weight: 700;
+  }
+}
+
+
+.trendHeaderRight {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+
+.chartLegend {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  span {
+    display: flex;
+    align-items: center;
+
+    gap: 4px;
+
+    color:
+      $admin-text-muted;
+
+    font-size: 13px;
+  }
+
+  i {
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+  }
+}
+
+
+.memberLegend {
+  background:
+    $admin-primary;
+}
+
+
+.guestLegend {
+  background:
+    #d99a94;
+}
+
+
+// ========================================
+// TREND CHART - CHART.JS
+// ========================================
+
+.trendChart {
+  position: relative;
+
+  width: 100%;
+  height: 172px;
+
+  min-width: 0;
+
+  margin-bottom: 14px;
+
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+
+    display: block;
+  }
+}
+
+
+// ========================================
+// TREND SUMMARY
+// ========================================
+
+.trendSummary {
+  min-height: 66px;
+
+  display: grid;
+
+  grid-template-columns:
+    38px
+    minmax(0, 1fr)
+    1px
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding:
+    9px
+    11px;
+
+  border:
+    1px solid
+    rgba(
+      86,
+      138,
+      128,
+      0.35
+    );
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    $admin-surface;
+}
+
+
+.trendSummaryIcon {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  svg {
+    width: 17px;
+    height: 17px;
+  }
+}
+
+
+.memberTrendIcon {
+  color:
+    $admin-primary-dark;
+
+  background:
+    $admin-primary-light;
+}
+
+
+.aiTrendIcon {
+  color:
+    #b7833d;
+
+  background:
+    #fff5e4;
+}
+
+
+.trendPrimary {
+  min-width: 0;
+
+  small {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 3px;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 13px;
+  }
+
+  strong {
+    color:
+      $admin-primary-dark;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    white-space: nowrap;
+  }
+}
+
+
+.summaryDivider {
+  width: 1px;
+  height: 42px;
+
+  background:
+    $admin-border;
+}
+
+
+.trendSecondary {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+
+  p {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 7px;
+
+    margin: 0;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 13px;
+  }
+
+  strong {
+    color:
+      $admin-text-primary;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+  }
+}
+
+
+// ========================================
+// RIGHT COLUMN
+// ========================================
+
+.rightColumn {
+  position: sticky;
+
+  top: 24px;
+
+  align-self: start;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
+}
+
+
+.sideHeader {
+  margin-bottom: 15px;
+
+  h2 {
+    margin: 0;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 20px;
+    font-weight: 700;
+  }
+}
+
+
+// ========================================
+// ALERT
+// ========================================
+
+.alertList {
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+
+  li {
+    border-bottom:
+      1px solid
+      $admin-border;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  button {
+    width: 100%;
+    min-height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 8px;
+
+    padding: 0;
+
+    border: 0;
+
+    background:
+      transparent;
+
+    font: inherit;
+
+    cursor: pointer;
+
+    &:hover span {
+      color:
+        $admin-primary-dark;
+    }
+  }
+
+  span {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 12px;
+
+    i {
+      width: 6px;
+      height: 6px;
+
+      flex:
+        0
+        0
+        6px;
+
+      border-radius: 50%;
+
+      background:
+        $admin-danger;
+    }
+  }
+
+  strong {
+    min-width: 30px;
+
+    padding:
+      2px
+      5px;
+
+    border:
+      1px solid
+      rgba(
+        214,
+        100,
+        92,
+        0.55
+      );
+
+    border-radius:
+      999px;
+
+    color:
+      $admin-danger;
+
+    font-size: 12px;
+    font-weight: 600;
+  }
+}
+
+
+// ========================================
+// NOTICE
+// ========================================
+
+.noticeList {
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+
+  li {
+    display: grid;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto;
+
+    gap: 8px;
+
+    padding:
+      11px
+      0;
+
+    border-bottom:
+      1px solid
+      $admin-border;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  span {
+    overflow: hidden;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 12px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    color:
+      $admin-text-muted;
+
+    font-size: 12px;
+
+    white-space: nowrap;
+  }
+}
+
+
+// ========================================
+// QUICK LINKS
+// ========================================
+
+.quickGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      1fr
+    );
+
+  gap: 7px;
+
+  button {
+    min-height: 34px;
+
+    padding:
+      0
+      7px;
+
+    border:
+      1px solid
+      transparent;
+
+    border-radius:
+      $admin-radius-sm;
+
+    background:
+      #eef0ef;
+
+    color:
+      $admin-text-secondary;
+
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+      color 0.18s ease,
+      border-color 0.18s ease,
+      background 0.18s ease;
+
+    &:hover {
+      color:
+        $admin-surface;
+
+      border-color:
+        $admin-primary;
+
+      background:
+        $admin-primary;
+    }
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 1400
+// ========================================
+
+@media (max-width: 1400px) {
+  .dashboardGrid {
+    grid-template-columns:
+      minmax(0, 1fr)
+      260px;
+  }
+
+  .summaryGrid {
+    width: 92%;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 1180
+// ========================================
+
+@media (max-width: 1180px) {
+  .dashboardGrid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .rightColumn {
+    position: static;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+
+    margin-top: 2px;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 850
+// ========================================
+
+@media (max-width: 850px) {
+  .summaryArea {
+    margin-top:
+      -8px;
+  }
+
+  .summaryGrid {
+    width: 100%;
+  }
+
+  .middleGrid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+  .trendGrid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .rightColumn {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 767
+// ========================================
+
+@media (max-width: 767px) {
+  .page {
+    padding-bottom:
+      30px;
+  }
+
+  .summaryArea {
+    margin-top: 0;
+  }
+
+  .summaryGrid {
+    width: 100%;
+
+    margin-inline:
+      auto;
+  }
+
+  .dashboardGrid {
+    gap: 14px;
+  }
+
+  .panel {
+    padding: 16px;
+  }
+
+  .sidePanel {
+    padding: 15px;
+  }
+
+  .panelHeader {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 6px;
+
+    h2 {
+      font-size: 17px;
+    }
+  }
+
+  .salesTotal {
+    strong {
+      font-size: 18px;
+    }
+  }
+
+  .salesChart {
+    height: 190px;
+  }
+
+  .middleGrid {
+    gap: 10px;
+  }
+
+  .smallPanelHeader,
+  .trendHeader {
+    h2 {
+      font-size: 14px;
+    }
+  }
+
+  .orderStatusContent {
+    grid-template-columns:
+      136px
+      minmax(0, 1fr);
+
+    gap: 14px;
+  }
+
+  .orderStatusDonut {
+    width: 136px;
+    height: 136px;
+  }
+
+  .orderStatusCenter {
+    strong {
+      font-size: 21px;
+
+      small {
+        font-size: 8px;
+      }
+    }
+  }
+
+  .statusLegend {
+    gap: 8px;
+
+    strong,
+    .statusName {
+      font-size: 8px;
+    }
+  }
+
+  .productRanking {
+    li {
+      grid-template-columns:
+        16px
+        66px
+        minmax(0, 1fr)
+        27px;
+
+      gap: 5px;
+    }
+  }
+
+  .productName {
+    font-size: 8px;
+  }
+
+  .rankNumber {
+    width: 16px;
+    height: 16px;
+
+    font-size: 7px;
+  }
+
+  .ordersTable {
+    min-width: 620px;
+  }
+
+  .trendPanel {
+    padding: 16px;
+  }
+
+  .trendChart {
+    height: 165px;
+  }
+
+  .rightColumn {
+    gap: 10px;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 600
+// ========================================
+
+@media (max-width: 600px) {
+  .middleGrid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .rightColumn {
+    grid-template-columns:
+      1fr;
+  }
+
+  .trendSummary {
+    grid-template-columns:
+      34px
+      minmax(0, 1fr)
+      1px
+      minmax(0, 1fr);
+
+    gap: 8px;
+  }
+}
+
+
+@media (max-width: 520px) {
+  .orderStatusContent {
+    grid-template-columns:
+      112px
+      minmax(0, 1fr);
+
+    gap: 10px;
+  }
+
+  .orderStatusDonut {
+    width: 112px;
+    height: 112px;
+  }
+
+  .statusLegend {
+    gap: 6px;
+
+    li {
+      gap: 5px;
+    }
+  }
+
+  .productTrack {
+    height: 10px;
+  }
 }

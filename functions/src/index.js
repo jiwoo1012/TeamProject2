@@ -112,6 +112,7 @@ exports.recommendJajak =
     recommendationOptions,
 
     async (request) => {
+      let aiLogRef = null
       try {
         // ========================================
         // 1. 요청 데이터
@@ -375,6 +376,66 @@ exports.recommendJajak =
               ),
           }
         )
+        // ========================================
+        // 관리자용 AI 추천 이용 로그 생성
+        //
+        // 회원 / 비회원 모두 저장
+        // ========================================
+
+        aiLogRef =
+          db
+            .collection(
+              'aiRecommendationLogs'
+            )
+            .doc()
+
+
+        await aiLogRef.set({
+          uid:
+            request.auth
+              ?.uid
+            || null,
+
+          userType:
+            surveyType,
+
+          status:
+            'pending',
+
+          createdAt:
+            FieldValue
+              .serverTimestamp(),
+
+          updatedAt:
+            FieldValue
+              .serverTimestamp(),
+
+          mode:
+            USE_MOCK_AI
+              ? 'mock'
+              : 'openai',
+
+          todaySurvey:
+            todaySurvey || null,
+
+          model:
+            null,
+
+          candidateCount:
+            0,
+
+          recommendationCount:
+            0,
+
+          recommendationId:
+            null,
+
+          errorType:
+            null,
+
+          errorMessage:
+            null,
+        })
 
 
         // ========================================
@@ -529,6 +590,48 @@ exports.recommendJajak =
 
 
         // ========================================
+        // 관리자용 AI 로그 성공 처리
+        // ========================================
+
+        if (aiLogRef) {
+          await aiLogRef.update({
+            status:
+              'success',
+
+            updatedAt:
+              FieldValue
+                .serverTimestamp(),
+
+            model:
+              result.meta
+                ?.model
+              || null,
+
+            candidateCount:
+              result.meta
+                ?.candidateCount
+              || 0,
+
+            recommendationCount:
+              result
+                .recommendations
+                ?.length
+              || 0,
+
+            recommendationId:
+              recommendationId
+              || null,
+
+            errorType:
+              null,
+
+            errorMessage:
+              null,
+          })
+        }
+
+
+        // ========================================
         // 11. 완료 로그
         // ========================================
 
@@ -576,6 +679,41 @@ exports.recommendJajak =
           recommendationId,
         }
       } catch (error) {
+        // ========================================
+        // 관리자용 AI 로그 실패 처리
+        // ========================================
+
+        if (aiLogRef) {
+          try {
+            await aiLogRef.update({
+              status:
+                'failed',
+
+              updatedAt:
+                FieldValue
+                  .serverTimestamp(),
+
+              errorType:
+                error?.code
+                || error?.message
+                || 'UNKNOWN_ERROR',
+
+              errorMessage:
+                error?.message
+                || '알 수 없는 오류',
+            })
+          } catch (logError) {
+            logger.error(
+              'AI 추천 실패 로그 저장 오류',
+              {
+                message:
+                  logError?.message,
+              }
+            )
+          }
+        }
+
+
         // ========================================
         // Firebase HttpsError
         // ========================================

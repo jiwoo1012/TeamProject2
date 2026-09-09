@@ -12,38 +12,247 @@ $quiz-copy-delay: 0.35s;
 :global(body.jajak-ox-quiz) { overflow: hidden; }
 :global(body.jajak-ox-quiz header), :global(body.jajak-ox-quiz footer), :global(body.jajak-ox-quiz nav[aria-label='모바일 하단 메뉴']) { display: none; }
 
-.page { position: fixed; z-index: $z-modal; inset: 0; overflow: hidden; color: $color-white; font-family: $font-family-base; @include event.stage-background-dark; }
-.quizShell { display: grid; grid-template-rows: auto minmax(0, 1fr) minmax(250px, 46vh); height: 100dvh; opacity: 1; transition: opacity $quiz-motion-duration ease, transform $quiz-motion-duration ease; }
-.progressHeader { display: flex; align-items: center; justify-content: space-between; min-height: 132px; padding-inline: $side-margin-desktop; font-size: $font-size-xl; }
-.questionPanel { --quiz-image-width: 52vw; --quiz-image-overflow: 10vw; position: relative; min-height: 0; overflow: hidden; color: $color-text-primary; background: rgba($color-bg, 0.86); animation: panelReveal $quiz-motion-duration ease both; }
-.visualArea { position: absolute; top: 0; bottom: 0; left: calc(-1 * var(--quiz-image-overflow)); width: var(--quiz-image-width); overflow: hidden; border-radius: $radius-pill; transition: transform $quiz-slide-duration cubic-bezier(.22, 1, .36, 1); will-change: transform; }
-.visualArea img { width: 100%; height: 100%; object-fit: cover; }
-.copyArea { display: flex; justify-content: center; flex-direction: column; width: calc(100% - var(--quiz-image-width) + var(--quiz-image-overflow)); height: 100%; margin-left: calc(var(--quiz-image-width) - var(--quiz-image-overflow)); padding: $space-10 $space-20; opacity: 1; transform: translateX(0); transition: opacity $quiz-motion-duration ease, transform $quiz-motion-duration ease; }
-.questionNumber, .answerTitle { font-family: $font-family-display; font-size: $font-size-5xl; font-weight: $font-weight-bold; line-height: $line-height-tight; }
-.copyArea h1, .explanation { max-width: 850px; margin-top: $space-6; font-size: $font-size-2xl; font-weight: $font-weight-bold; line-height: $line-height-relaxed; }
-.isAnswered .visualArea { transform: translateX(calc(100vw - var(--quiz-image-width) + var(--quiz-image-overflow) + var(--quiz-image-overflow))); }
-.isAnswered .copyArea { margin-left: 0; animation: copyReveal $quiz-motion-duration ease $quiz-copy-delay both; }
-.answerArea { position: relative; display: grid; grid-template-columns: repeat(2, 1fr); align-items: center; min-height: 0; }
-.answerButton { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: $space-8; height: 100%; color: $color-white; transition: color $quiz-motion-duration ease, transform $quiz-motion-duration ease; }
-.answerButton > span { @include mixins.flex-center; width: min(140px, 20vh); aspect-ratio: 1; font-family: $font-family-display; font-size: 80px; border-radius: 50%; transition: color $quiz-motion-duration ease, background-color $quiz-motion-duration ease, transform $quiz-motion-duration ease, box-shadow $quiz-motion-duration ease; transform: scale(2); }
-.answerButton strong { font-size: $font-size-2xl; }
-.answerButton.isX { color: $color-error; }
-.answerButton:hover:not(:disabled) { transform: translateY(-$space-2); }
-.answerButton.isSelected { color: $color-primary-light; transform: scale(1.04); }
-.answerButton.isSelected > span { background: rgba($color-white, .7); box-shadow: 0 $space-3 $space-8 rgba($color-text-primary, .16); transform: scale(2.15); }
-.answerButton:disabled { cursor: default; }
-.continueButton { position: absolute; right: $side-margin-desktop; bottom: $space-8; display: flex; align-items: center; justify-content: center; gap: $space-5; min-width: 220px; padding: $space-3 $space-8; font-size: $font-size-md; animation: copyReveal $quiz-motion-duration ease $quiz-copy-delay both; @include event.btn-primary; }
-.quitButton { position: fixed; z-index: $z-dropdown; bottom: $space-8; left: $side-margin-desktop; color: $color-white; font-size: $font-size-md; font-weight: $font-weight-semibold; transition: color $quiz-motion-duration ease, opacity $quiz-motion-duration ease, transform $quiz-motion-duration ease; }
+.page {
+  position: fixed;
+  z-index: $z-modal;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: clamp(28px, 6.5vh, 76px) clamp(24px, 7vw, 120px) clamp(18px, 4vh, 48px);
+  color: $color-white;
+  font-family: $font-family-base;
+  background-color: $color-text-primary;
+  background-image: linear-gradient(180deg, rgba($color-text-primary, .55) 0%, rgba($color-text-primary, .82) 100%), url('../../assets/images/eventPage/O,X_Qbackground.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+// Flex column with `margin: auto` centers the whole composition when it's
+// shorter than the viewport, and falls back to a scrollable top alignment
+// instead of clipping when it's taller (short mobile screens, big zoom).
+.quizShell {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 3vh, 32px);
+  width: 100%;
+  max-width: 940px;
+  margin: auto;
+  opacity: 1;
+  transition: opacity $quiz-motion-duration ease, transform $quiz-motion-duration ease;
+}
+
+// Detached from .quizShell and pinned to the true page corner, independent
+// of the centered content column's own width/margins.
+.quitButton {
+  position: absolute;
+  top: clamp(16px, 3.5vh, 40px);
+  left: clamp(16px, 4vw, 56px);
+  z-index: 1;
+  color: rgba($color-white, .68);
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  transition: color $quiz-motion-duration ease, transform $quiz-motion-duration ease;
+}
 .quitButton:hover { color: $color-primary-light; transform: translateX(-$space-1); }
 
+// --- Quiz status header: "1/10 ⋯ 현재 맞춘 정답" + thin progress line ---
+.progressHeader { display: flex; flex-direction: column; gap: $space-1; }
+.progressMeta { display: flex; align-items: center; justify-content: space-between; font-size: clamp(11px, 1vw, 13px); color: rgba($color-white, .7); }
+.progressMeta strong:first-child { font-family: $font-family-display; font-size: clamp(15px, 1.6vw, 19px); color: $color-primary-light; }
+.progressBar { position: relative; height: 5px; overflow: visible; background: rgba($color-white, .16); border-radius: $radius-pill; }
+.progressBar span { position: absolute; inset: 0; width: 0; background: linear-gradient(90deg, $color-primary-light, $color-primary); border-radius: inherit; transition: width $quiz-slide-duration cubic-bezier(.22, 1, .36, 1); }
+.progressKnob {
+  position: absolute;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  background: $color-bg;
+  border: 2px solid $color-primary-light;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba($color-text-primary, .45);
+  transform: translate(-50%, -50%);
+  transition: left $quiz-slide-duration cubic-bezier(.22, 1, .36, 1);
+}
+
+// --- Point reward HUD: compact status line + milestone track ---
+.rewardTrack { display: flex; flex-direction: column; gap: $space-1; }
+.rewardSummary { @include mixins.flex-between; font-size: clamp(10px, .95vw, 12px); color: rgba($color-white, .6); }
+.rewardTotal { position: relative; font-family: $font-family-display; font-size: clamp(13px, 1.3vw, 16px); font-weight: $font-weight-bold; color: event.$color-reward; }
+.pointBurst {
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  margin-bottom: 2px;
+  color: event.$color-reward;
+  font-size: clamp(10px, 1vw, 12px);
+  font-weight: $font-weight-bold;
+  white-space: nowrap;
+  animation: pointBurstFloat .9s ease-out both;
+  pointer-events: none;
+}
+.rewardTrackRow { position: relative; width: 82%; max-width: 520px; margin-inline: auto; padding-top: 12px; }
+.rewardLine { position: absolute; top: 8px; left: 0; right: 0; height: 3px; overflow: hidden; background: rgba($color-white, .14); border-radius: $radius-pill; }
+.rewardLine span { position: absolute; inset: 0; width: 0; background: linear-gradient(90deg, event.$color-reward, color-mix(in srgb, event.$color-reward 65%, $color-white)); border-radius: inherit; transition: width $quiz-slide-duration cubic-bezier(.22, 1, .36, 1); }
+.rewardMilestones { position: relative; z-index: 1; display: flex; list-style: none; margin: 0; padding: 0; }
+.rewardMilestone { display: flex; flex: 1; flex-direction: column; align-items: center; gap: 3px; min-width: 0; }
+.rewardNode {
+  @include mixins.flex-center;
+  width: 16px;
+  height: 16px;
+  color: transparent;
+  font-size: 8px;
+  font-weight: $font-weight-bold;
+  background: rgba($color-white, .16);
+  border: 1.5px solid rgba($color-white, .32);
+  border-radius: 50%;
+  transition: background-color $quiz-motion-duration ease, border-color $quiz-motion-duration ease, box-shadow $quiz-motion-duration ease, transform $quiz-motion-duration ease;
+}
+.rewardLabel { font-size: clamp(9px, .85vw, 11px); color: rgba($color-white, .48); transition: color $quiz-motion-duration ease; @include mixins.ellipsis; max-width: 100%; }
+.rewardMilestone.isCurrent .rewardNode { border-color: event.$color-reward; background: rgba(event.$color-reward, .16); box-shadow: 0 0 0 3px rgba(event.$color-reward, .16); }
+.rewardMilestone.isCurrent .rewardLabel { color: rgba($color-white, .78); }
+.rewardMilestone.isCompleted .rewardNode { color: $color-text-primary; background: event.$color-reward; border-color: event.$color-reward; }
+.rewardMilestone.isCompleted .rewardLabel { color: event.$color-reward; font-weight: $font-weight-bold; }
+.rewardMilestone.isPulsing .rewardNode { animation: milestonePop .5s ease; }
+
+@keyframes pointBurstFloat {
+  0% { opacity: 0; transform: translateY(4px); }
+  25% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-$space-6); }
+}
+@keyframes milestonePop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.35); box-shadow: 0 0 0 6px rgba(event.$color-reward, .25); }
+  100% { transform: scale(1); }
+}
+
+// --- Question card: arched image + cream copy panel ---
+.questionPanel {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(160px, 36%) 1fr;
+  width: 100%;
+  min-height: clamp(200px, 29vh, 310px);
+  margin-top: clamp(-16px, -1.8vh, -6px);
+  overflow: hidden;
+  color: $color-text-primary;
+  background: rgba($color-bg, 0.92);
+  border-radius: $radius-xl;
+  animation: panelReveal $quiz-motion-duration ease both;
+}
+.cardMark { position: absolute; top: $space-4; right: $space-5; z-index: 1; width: 34px; height: auto; opacity: .55; pointer-events: none; }
+.visualArea {
+  position: relative;
+  width: 122%;
+  height: 100%;
+  margin-left: -22%;
+  overflow: hidden;
+  border-radius: $radius-pill;
+  transition: filter $quiz-motion-duration ease;
+}
+.visualArea img { width: 100%; height: 100%; object-fit: cover; }
+.isAnswered .visualArea { filter: brightness(.94) saturate(.94); }
+.copyArea {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: clamp(20px, 4vh, 36px) clamp(24px, 4vw, 48px);
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity $quiz-motion-duration ease, transform $quiz-motion-duration ease;
+}
+.questionNumber, .answerTitle { font-family: $font-family-display; font-size: clamp(20px, 2.6vw, 28px); font-weight: $font-weight-bold; line-height: $line-height-tight; }
+.questionNumber { color: color-mix(in srgb, event.$color-reward 60%, $color-text-secondary); }
+.feedbackHead { display: flex; align-items: baseline; gap: $space-3; flex-wrap: wrap; }
+.feedbackMessage { font-size: clamp(13px, 1.3vw, 16px); font-weight: $font-weight-bold; }
+.feedbackMessage.isCorrect { color: $color-success; }
+.feedbackMessage.isWrong { color: $color-error; }
+.copyArea h1 { margin-top: $space-3; font-size: clamp(15px, 1.5vw, 19px); font-weight: $font-weight-bold; line-height: $line-height-relaxed; }
+.explanation { max-width: 620px; margin-top: $space-3; font-size: clamp(13px, 1.2vw, 16px); font-weight: $font-weight-medium; line-height: $line-height-relaxed; color: $color-text-secondary; }
+.isAnswered .copyArea { animation: copyReveal $quiz-motion-duration ease $quiz-copy-delay both; }
+
+// --- O/X answer cards: medium, centered, not viewport-filling ---
+.answerArea {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
+  margin-top: clamp(8px, 1.6vh, 20px);
+  gap: clamp(24px, 4.5vw, 46px);
+}
+.answerButton {
+  position: relative;
+  z-index: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: clamp(8px, 1.7vh, 15px);
+  min-height: clamp(140px, 18.5vh, 192px);
+  color: $color-white;
+  background: linear-gradient(160deg, color-mix(in srgb, $color-primary-light 65%, $color-primary) 0%, color-mix(in srgb, $color-primary 82%, $color-text-primary) 100%);
+  border-radius: $radius-lg;
+  box-shadow: 0 $space-2 $space-6 rgba($color-text-primary, .18);
+  transition: transform $quiz-motion-duration ease, filter $quiz-motion-duration ease, box-shadow $quiz-motion-duration ease;
+}
+.answerButton.isX { background: linear-gradient(160deg, color-mix(in srgb, $color-error 88%, $color-warning) 0%, color-mix(in srgb, $color-error 84%, $color-text-primary) 100%); }
+.answerGlyph {
+  font-family: $font-family-base;
+  font-size: clamp(44px, 6.5vw, 72px);
+  font-weight: 800;
+  line-height: 1;
+  color: $color-white;
+  text-shadow: 0 3px 0 rgba($color-text-primary, .16), 0 $space-2 $space-4 rgba($color-text-primary, .28);
+  transition: transform $quiz-motion-duration ease;
+}
+.answerButton strong { font-size: clamp(13px, 1.2vw, 15px); font-weight: $font-weight-semibold; opacity: .92; text-shadow: 0 2px 6px rgba($color-text-primary, .3); }
+.answerButton:disabled { cursor: default; }
+.answerButton:disabled:not(.isSelected):not(.isCorrectHint) { opacity: .35; filter: grayscale(.35); }
+.answerButton.isSelected { z-index: 2; box-shadow: inset 0 0 0 3px rgba($color-white, .55), 0 $space-3 $space-8 rgba($color-text-primary, .38); transform: translateY(-2px) scale(1.02); }
+.answerButton.isSelected .answerGlyph { transform: scale(1.06); }
+// $color-success and $color-primary share the same hex value, so a plain success-colored
+// ring/wash disappears on the teal O block — mix it toward white so it stays visible on
+// both the teal and coral blocks regardless of which one is "correct".
+.answerButton.isCorrectSelected { box-shadow: inset 0 0 0 3px color-mix(in srgb, $color-success 30%, $color-white), 0 $space-3 $space-8 rgba($color-success, .45); }
+.answerButton.isWrongSelected { box-shadow: inset 0 0 0 3px color-mix(in srgb, $color-error 30%, $color-white), 0 $space-3 $space-8 rgba($color-error, .45); }
+.answerButton.isCorrectHint { z-index: 1; box-shadow: inset 0 0 0 3px color-mix(in srgb, $color-success 30%, $color-white); }
+.correctBadge { @include mixins.flex-center; position: absolute; top: $space-2; z-index: 2; width: $space-6; height: $space-6; color: $color-success; font-size: $font-size-sm; font-weight: $font-weight-bold; background: $color-white; border-radius: 50%; box-shadow: 0 $space-1 $space-3 rgba($color-text-primary, .35); }
+
+@media (hover: hover) {
+  .answerButton:hover:not(:disabled) { z-index: 1; filter: brightness(1.06); box-shadow: 0 $space-3 $space-8 rgba($color-text-primary, .3); transform: translateY(-3px) scale(1.02); }
+}
+.answerButton:active:not(:disabled) { filter: brightness(.96); transform: scale(.97); }
+
+// --- Next-question CTA: lives inside the feedback copy, bottom-right ---
+.continueButton {
+  align-self: flex-end;
+  margin-top: auto;
+  padding-top: $space-4;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding-inline: $space-6;
+  min-height: 48px;
+  color: $color-bg;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  background: $color-text-primary;
+  border-radius: $radius-md;
+  transition: background-color $quiz-motion-duration ease, transform $quiz-motion-duration ease;
+  animation: copyReveal $quiz-motion-duration ease $quiz-copy-delay both;
+}
+.continueButton span { transition: transform $quiz-motion-duration ease; }
+.continueButton:hover { background: $color-text-secondary; transform: translateY(-2px); }
+.continueButton:hover span { transform: translateX(3px); }
+
 .modalBackdrop { @include event.modal-backdrop; animation: backdropIn $quiz-motion-duration ease both; }
-.quitModal, .resultModal { @include event.modal-box; animation: modalIn $quiz-motion-duration cubic-bezier(.22, 1, .36, 1) both; }
-.quitModal { padding: $space-8; }
-.quitModal h2, .resultModal h2 { @include event.modal-heading; }
-.quitModal > p { margin-top: $space-2; color: $color-text-secondary; font-size: $font-size-md; line-height: $line-height-relaxed; text-align: center; }
-.quitModal > div { display: grid; grid-template-columns: repeat(2, 1fr); gap: $space-3; margin-top: $space-8; }
-.quitModal button { padding: $space-3 $space-5; @include event.btn-primary; }
-.quitModal button:last-child { @include event.btn-secondary; }
+.resultModal { @include event.modal-box; animation: modalIn $quiz-motion-duration cubic-bezier(.22, 1, .36, 1) both; }
+.resultModal h2 { @include event.modal-heading; }
 .resultModal { position: relative; isolation: isolate; padding: $space-12; }
 .resultModal::before { @include event.result-glow; }
 .closeButton { @include event.modal-close-button; }
@@ -61,34 +270,37 @@ $quiz-copy-delay: 0.35s;
 @keyframes panelReveal { from { opacity: 0; transform: translateY($space-3); } to { opacity: 1; transform: translateY(0); } }
 
 @include mixins.tablet {
-  .progressHeader { min-height: 96px; padding-inline: $side-margin-tablet; }
-  .quizShell { grid-template-rows: auto minmax(0, 1fr) minmax(230px, 44vh); }
-  .copyArea { padding: $space-8 $space-10; }
-  .questionPanel { --quiz-image-width: 62vw; --quiz-image-overflow: 22vw; }
-  .copyArea h1, .explanation { font-size: $font-size-xl; }
-  .answerButton > span { width: min(108px, 18vh); transform: scale(1.8); }
-  .answerButton.isSelected > span { transform: scale(1.95); }
-  .continueButton { right: $side-margin-tablet; }
-  .quitButton { left: $side-margin-tablet; }
+  .page { padding: clamp(20px, 5vh, 56px) clamp(16px, 5vw, 56px) clamp(16px, 3.5vh, 40px); }
+  .quizShell { max-width: 830px; }
+  .rewardMilestones { gap: $space-1; }
 }
 
 @include mixins.mobile {
-  .quizShell { grid-template-rows: auto minmax(0, 1fr) minmax(190px, 40vh); }
-  .progressHeader { min-height: 64px; padding-inline: $side-margin-mobile; font-size: $font-size-sm; }
-  .questionPanel { display: grid; grid-template-rows: minmax(0, 1.1fr) minmax(0, .9fr); padding: $space-6; }
-  .visualArea, .isAnswered .visualArea { position: static; width: 100%; height: 100%; border-radius: 200px; transform: none; transition: none; }
-  .copyArea, .isAnswered .copyArea { width: 100%; height: 100%; margin-left: 0; padding:  $space-6; }
-  .isAnswered .copyArea { animation-delay: 0s; }
-  .questionNumber, .answerTitle { font-size: $font-size-4xl; }
-  .copyArea h1, .explanation { margin-top: $space-3; font-size: $font-size-lg; line-height: $line-height-relaxed; }
-  .answerButton { gap: $space-2; }
-  .answerButton > span { width: min(200px, 14vh); font-size: 80px; transform: scale(1.45); }
-  .answerButton.isSelected > span { transform: scale(1.6); }
-  .answerButton strong { font-size: $font-size-md; }
-  .continueButton { right: $side-margin-mobile; bottom: $space-4; min-width: 150px; padding: $space-2 $space-4; font-size: $font-size-sm; }
-  .quitButton { bottom: $space-4; left: $side-margin-mobile; font-size: $font-size-sm; }
-  .quitModal, .resultModal { padding: $space-10 $space-5 $space-8; }
-  .quitModal h2, .resultModal h2 { font-size: $font-size-2xl; }
+  .page { padding: clamp(12px, 2.5vh, 20px) clamp(12px, 4vw, 20px); }
+  .quizShell { gap: clamp(10px, 2vh, 18px); }
+  .quitButton { font-size: $font-size-xs; }
+
+  .rewardTrackRow { width: 92%; max-width: none; padding-top: 15px; }
+  .rewardLine { top: 6px; }
+  .rewardNode { width: 13px; height: 13px; border-width: 1.5px; }
+  .rewardMilestones { gap: 2px; }
+  .rewardLabel { font-size: 8px; }
+  .rewardSummary { font-size: 10px; }
+  .rewardTotal { font-size: $font-size-xs; }
+
+  .questionPanel { grid-template-columns: 1fr; grid-template-rows: minmax(0, 140px) auto; margin-top: 0; border-radius: $radius-lg; }
+  .visualArea { width: 100%; height: 100%; margin-left: 0; border-radius: 0 0 $radius-lg $radius-lg; }
+  .copyArea { padding: $space-4 $space-5; }
+  .feedbackHead { gap: $space-2; }
+  .continueButton { align-self: stretch; justify-content: center; padding-top: $space-3; }
+
+  .answerArea { flex-direction: column; max-width: 320px; margin-top: 0; gap: $space-3; }
+  .answerButton { min-height: 88px; flex-direction: row; justify-content: flex-start; padding-inline: $space-6; gap: $space-4; border-radius: $radius-md; }
+  .answerGlyph { font-size: 34px; }
+  .correctBadge { top: 50%; right: $space-4; left: auto; transform: translateY(-50%); }
+
+  .resultModal { padding: $space-10 $space-5 $space-8; }
+  .resultModal h2 { font-size: $font-size-2xl; }
   .resultPoint { min-height: 140px; }
   .resultPoint strong { font-size: $font-size-4xl; }
   .resultModal dl > div { grid-template-columns: 90px 1fr; gap: $space-2; font-size: $font-size-sm; }
@@ -97,5 +309,5 @@ $quiz-copy-delay: 0.35s;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .questionPanel, .visualArea, .copyArea, .answerButton, .answerButton > span, .continueButton { transition-duration: .01ms; animation-duration: .01ms; }
+  .questionPanel, .visualArea, .copyArea, .answerButton, .answerGlyph, .continueButton, .rewardLine span, .rewardNode, .pointBurst { transition-duration: .01ms; animation-duration: .01ms; }
 }

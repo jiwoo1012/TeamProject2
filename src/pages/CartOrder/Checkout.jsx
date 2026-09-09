@@ -8,7 +8,6 @@ import { auth, db } from '../../firebase/firebase'
 import { addDocument, getCollection, updateDocument } from '../../firebase/firestore'
 import { PATHS } from '../../routes/paths'
 import { getCart, saveCart, syncRemoteCart } from '../../utils/cartStorage'
-import cartTopOrnament from '../../assets/images/mypage/cartTopOrnament.svg'
 import cartStepOrnament from '../../assets/images/mypage/cartStepOrnament.svg'
 import styles from './Checkout.module.scss'
 
@@ -539,7 +538,6 @@ const Checkout = () => {
 
   return (
     <section className={styles.page} aria-labelledby="checkout-title">
-      <img className={styles.topOrnament} src={cartTopOrnament} alt="" />
 
       <header className={styles.pageHeader}>
         <h1 id="checkout-title">주문서 작성 / 결제</h1>
@@ -655,7 +653,7 @@ const Checkout = () => {
               <div className={styles.paymentSection}>
                 <h3>결제 수단 선택 / 결제</h3>
                 <div className={styles.paymentOptions}>
-                  <strong>일반 결제</strong>
+                  <strong><em className={styles.requiredMark}>*</em> 일반 결제</strong>
                   {[
                     ['bank', '무통장 입금'], ['card', '신용카드'], ['virtual', '가상계좌'],
                     ['payco', '페이코'], ['naver', '네이버페이'], ['kakao', '카카오페이'], ['toss', '토스페이'],

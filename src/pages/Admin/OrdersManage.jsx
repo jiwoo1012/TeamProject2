@@ -5,6 +5,13 @@ import {
   useState,
 } from 'react'
 
+import AdminEmptyState from '../../components/admin/AdminEmptyState'
+import AdminFilterBar from '../../components/admin/AdminFilterBar'
+import AdminPageHeader from '../../components/admin/AdminPageHeader'
+import AdminPanel from '../../components/admin/AdminPanel'
+import AdminStatusBadge from '../../components/admin/AdminStatusBadge'
+import AdminSummaryCard from '../../components/admin/AdminSummaryCard'
+
 import {
   getCollection,
   updateDocument,
@@ -13,8 +20,6 @@ import {
   ORDER_STATUS,
   getOrderStatusLabel,
 } from '../../constants/orderStatus'
-
-import adminTopOrnament from '../../assets/images/admin/adminTopOrnament.svg'
 
 import styles from './OrdersManage.module.scss'
 
@@ -148,35 +153,6 @@ const normalizeOrder = (document, member) => {
 // 아이콘
 // ========================================
 
-const RefreshIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M20 6v5h-5M4 18v-5h5" />
-    <path d="M6.1 9a7 7 0 0 1 11.8-2.2L20 11M4 13l2.1 4.2A7 7 0 0 0 17.9 15" />
-  </svg>
-)
-
-
-const SearchIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-  >
-    <circle cx="11" cy="11" r="7" />
-    <path d="m16 16 4 4" />
-  </svg>
-)
-
-
 const TruckIcon = () => (
   <svg
     viewBox="0 0 24 24"
@@ -197,7 +173,15 @@ const TruckIcon = () => (
 const SummaryIcon = ({ type }) => {
   if (type === 'today') {
     return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
         <rect x="4" y="5" width="16" height="15" rx="2" />
         <path d="M8 3v4M16 3v4M4 10h16M8 14h3M8 17h6" />
       </svg>
@@ -206,7 +190,15 @@ const SummaryIcon = ({ type }) => {
 
   if (type === 'ready') {
     return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
         <path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5v-9Z" />
         <path d="m3 7.5 9 4.5 9-4.5M12 12v9M8 5l9 4.5" />
       </svg>
@@ -215,7 +207,15 @@ const SummaryIcon = ({ type }) => {
 
   if (type === 'request') {
     return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
         <path d="M12 3 21 19H3L12 3Z" />
         <path d="M12 9v4M12 16.5v.5" />
       </svg>
@@ -223,7 +223,15 @@ const SummaryIcon = ({ type }) => {
   }
 
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
+    <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
       <path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5" />
     </svg>
   )
@@ -248,6 +256,9 @@ const OrdersManage = () => {
 
   const [quickFilter, setQuickFilter] =
     useState('전체')
+
+  const [currentPage, setCurrentPage] =
+    useState(1)
 
   const [selectedOrderId, setSelectedOrderId] =
     useState(null)
@@ -574,6 +585,70 @@ const OrdersManage = () => {
 
 
   // ========================================
+  // 페이지네이션
+  // ========================================
+
+  const pageSize = 10
+
+  const totalPages =
+    Math.max(
+      1,
+      Math.ceil(
+        filteredOrders.length
+        / pageSize
+      )
+    )
+
+  const safeCurrentPage =
+    Math.min(
+      currentPage,
+      totalPages
+    )
+
+  const visibleOrders =
+    filteredOrders.slice(
+      (
+        safeCurrentPage - 1
+      ) * pageSize,
+      safeCurrentPage
+      * pageSize
+    )
+
+  const pageStart =
+    Math.max(
+      1,
+      Math.min(
+        safeCurrentPage - 2,
+        totalPages - 4
+      )
+    )
+
+  const pageNumbers =
+    Array.from(
+      {
+        length:
+          Math.min(
+            5,
+            totalPages
+          ),
+      },
+      (_, index) =>
+        pageStart + index
+    )
+
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [
+    searchQuery,
+    orderStatus,
+    paymentStatus,
+    sortOrder,
+    quickFilter,
+  ])
+
+
+  // ========================================
   // 새로 고침
   // ========================================
 
@@ -593,6 +668,7 @@ const OrdersManage = () => {
     setPaymentStatus('all')
     setSortOrder('latest')
     setQuickFilter('전체')
+    setCurrentPage(1)
   }
 
 
@@ -608,6 +684,7 @@ const OrdersManage = () => {
     setOrderStatus('all')
     setPaymentStatus('all')
     setQuickFilter(filterByKey[key])
+    setCurrentPage(1)
   }
 
 
@@ -814,48 +891,15 @@ const OrdersManage = () => {
     >
 
       {/* ========================================
-          상단 툴바
+          제목
       ======================================== */}
 
-      <header
-        className={styles.pageToolbar}
-      >
-        <h1 id="order-manage-title">
-          주문 관리
-        </h1>
-
-        <button
-          type="button"
-          onClick={handleRefresh}
-          disabled={isRefreshing || isLoading}
-          className={
-            isRefreshing
-              ? styles.refreshing
-              : ''
-          }
-        >
-          <RefreshIcon />
-
-          {isRefreshing
-            ? '불러오는 중'
-            : '새로 고침'}
-        </button>
-      </header>
-
-
-      {/* ========================================
-          전통 문양 구분선
-      ======================================== */}
-
-      <div
-        className={styles.ornamentLine}
-        aria-hidden="true"
-      >
-        <img
-          src={adminTopOrnament}
-          alt=""
-        />
-      </div>
+      <AdminPageHeader
+        title="주문 관리"
+        titleId="order-manage-title"
+        onRefresh={handleRefresh}
+        isRefreshing={isRefreshing || isLoading}
+      />
 
 
       {/* ========================================
@@ -866,57 +910,41 @@ const OrdersManage = () => {
         className={styles.summaryArea}
         aria-label="주문 현황 요약"
       >
-        <div
-          className={styles.summaryGrid}
-        >
-          {summaryCards.map(
-            (card) => (
-              <button
-                key={card.key}
-                type="button"
-                className={`${styles.summaryCard} ${styles[`summaryCard${card.key}`]} ${activeSummaryKey === card.key ? styles.summaryCardActive : ''}`}
-                aria-pressed={activeSummaryKey === card.key}
-                onClick={() => handleSummaryFilter(card.key)}
-              >
-                <span
-                  className={styles.summaryIcon}
-                  aria-hidden="true"
-                >
-                  <SummaryIcon type={card.key} />
-                </span>
-
-                <div
-                  className={
-                    styles.summaryContent
-                  }
-                >
-                  <h3>
-                    {card.label}
-                  </h3>
-
-                  <p>
-                    <strong>
-                      {card.value.toLocaleString(
-                        'ko-KR'
-                      )}
-                    </strong>
-
-                    <span>
-                      {card.unit}
-                    </span>
-                  </p>
-
-                  <small>
-                    <b>
-                      {card.caption}
-                    </b>
-
-                    {card.subCaption}
-                  </small>
-                </div>
-              </button>
-            )
-          )}
+        <div className={styles.summaryGrid}>
+          {summaryCards.map((card) => (
+            <AdminSummaryCard
+              key={card.key}
+              icon={
+                <SummaryIcon
+                  type={card.key}
+                />
+              }
+              label={card.label}
+              value={card.value.toLocaleString(
+                'ko-KR'
+              )}
+              unit={card.unit}
+              caption={`${card.caption} ${card.subCaption}`}
+              tone={
+                card.key === 'request'
+                  ? 'danger'
+                  : card.key === 'ready'
+                    ? 'warning'
+                    : card.key === 'today'
+                      ? 'info'
+                      : 'primary'
+              }
+              active={
+                activeSummaryKey
+                === card.key
+              }
+              onClick={() =>
+                handleSummaryFilter(
+                  card.key
+                )
+              }
+            />
+          ))}
         </div>
       </section>
 
@@ -937,54 +965,39 @@ const OrdersManage = () => {
 
         <section
           className={styles.mainSection}
+          aria-labelledby="order-list-title"
         >
 
-          {/* 필터 */}
+          {/* 검색 / 필터 */}
 
-          <div
-            className={styles.filterBar}
+          <AdminFilterBar
+            searchValue={searchQuery}
+            onSearchChange={(value) => {
+              setSearchQuery(value)
+              setQuickFilter(null)
+              setCurrentPage(1)
+            }}
+            searchPlaceholder="주문 번호, 주문자명, 상품명 검색"
+            searchLabel="주문 검색"
+            onReset={resetFilters}
           >
-            <label
-              className={
-                styles.searchField
-              }
-            >
-              <span
-                className={styles.srOnly}
-              >
-                주문 검색
+            <label className={styles.selectField}>
+              <span className={styles.srOnly}>
+                주문 상태
               </span>
 
-              <SearchIcon />
-
-              <input
-                type="search"
-                value={searchQuery}
-                onChange={(event) =>
-                  setSearchQuery(
-                    event.target.value
-                  )
-                }
-                placeholder="주문 번호, 주문자명, 상품명 검색"
-              />
-            </label>
-
-
-            <label
-              className={
-                styles.selectField
-              }
-            >
               <select
                 value={orderStatus}
-                onChange={(event) =>
+                onChange={(event) => {
                   setOrderStatus(
                     event.target.value
                   )
-                }
+                  setQuickFilter(null)
+                  setCurrentPage(1)
+                }}
               >
                 <option value="all">
-                  주문 상태
+                  전체 주문 상태
                 </option>
 
                 <option value="결제 완료">
@@ -1009,24 +1022,23 @@ const OrdersManage = () => {
               </select>
             </label>
 
+            <label className={styles.selectField}>
+              <span className={styles.srOnly}>
+                결제 상태
+              </span>
 
-            <label
-              className={
-                styles.selectField
-              }
-            >
               <select
-                value={
-                  paymentStatus
-                }
-                onChange={(event) =>
+                value={paymentStatus}
+                onChange={(event) => {
                   setPaymentStatus(
                     event.target.value
                   )
-                }
+                  setQuickFilter(null)
+                  setCurrentPage(1)
+                }}
               >
                 <option value="all">
-                  결제 상태
+                  전체 결제 상태
                 </option>
 
                 <option value="결제 완료">
@@ -1039,17 +1051,19 @@ const OrdersManage = () => {
               </select>
             </label>
 
+            <label className={styles.selectField}>
+              <span className={styles.srOnly}>
+                정렬
+              </span>
 
-            <label
-              className={`${styles.selectField} ${styles.sortField}`}
-            >
               <select
                 value={sortOrder}
-                onChange={(event) =>
+                onChange={(event) => {
                   setSortOrder(
                     event.target.value
                   )
-                }
+                  setCurrentPage(1)
+                }}
               >
                 <option value="latest">
                   최신순
@@ -1068,18 +1082,7 @@ const OrdersManage = () => {
                 </option>
               </select>
             </label>
-
-
-            <button
-              type="button"
-              className={
-                styles.resetButton
-              }
-              onClick={resetFilters}
-            >
-              초기화
-            </button>
-          </div>
+          </AdminFilterBar>
 
 
           {/* 빠른 필터 */}
@@ -1103,11 +1106,12 @@ const OrdersManage = () => {
                         ? styles.activeQuick
                         : ''
                     }
-                    onClick={() =>
+                    onClick={() => {
                       setQuickFilter(
                         filter
                       )
-                    }
+                      setCurrentPage(1)
+                    }}
                   >
                     {filter}
                   </button>
@@ -1119,169 +1123,251 @@ const OrdersManage = () => {
 
           {/* 목록 제목 */}
 
-          <div
-            className={
-              styles.sectionHeading
-            }
-          >
-            <div
-              className={
-                styles.titleWrap
-              }
-            >
-              <h2>주문 목록</h2>
-
-              <span>
-                {
-                  filteredOrders.length
-                }
-                건
-              </span>
+          <div className={styles.sectionHeading}>
+            <div className={styles.titleWrap}>
+              <h2 id="order-list-title">
+                주문 목록
+              </h2>
             </div>
+
+            <span className={styles.orderCount}>
+              총{' '}
+              <strong>
+                {filteredOrders.length.toLocaleString(
+                  'ko-KR'
+                )}
+              </strong>
+              건
+            </span>
           </div>
 
 
-          {/* 주문 테이블 */}
+          {/* 주문 목록 */}
 
-          <div
-            className={styles.tableWrap}
-          >
-            <table
-              className={
-                styles.dataTable
-              }
-            >
-              <thead>
-                <tr>
-                  <th>주문 번호</th>
-                  <th>주문자</th>
-                  <th>주문 상품</th>
-                  <th>주문일</th>
-                  <th>결제 금액</th>
-                  <th>결제 상태</th>
-                  <th>배송 상태</th>
-                  <th>관리</th>
-                </tr>
-              </thead>
+          {isLoading ? (
+            <AdminEmptyState
+              title="주문 목록을 불러오는 중입니다."
+              description="잠시만 기다려주세요."
+            />
+          ) : loadError ? (
+            <AdminEmptyState
+              title="주문 목록을 불러오지 못했습니다."
+              description={loadError}
+            />
+          ) : filteredOrders.length === 0 ? (
+            <AdminEmptyState
+              title="검색 결과가 없습니다."
+              description="검색어나 필터 조건을 다시 확인해주세요."
+            />
+          ) : (
+            <>
+              <div className={styles.tableWrap}>
+                <table className={styles.dataTable}>
+                  <thead>
+                    <tr>
+                      <th>주문 번호</th>
+                      <th>주문자</th>
+                      <th>주문 상품</th>
+                      <th>주문일</th>
+                      <th>결제 금액</th>
+                      <th>결제 상태</th>
+                      <th>배송 상태</th>
+                      <th>관리</th>
+                    </tr>
+                  </thead>
 
-              <tbody>
-                {!isLoading && filteredOrders.length > 0 ? (
-                  filteredOrders.map(
-                    (order) => (
-                      <tr
-                        key={order.id}
-                        className={
-                          selectedOrderId ===
-                          order.id
-                            ? styles.selectedRow
-                            : ''
-                        }
-                      >
-                        <td>
-                          <strong
-                            className={styles.orderId}
-                            title={order.id}
-                            aria-label={`전체 주문번호 ${order.id}`}
-                          >
-                            {formatOrderId(order.id)}
-                          </strong>
-                        </td>
-
-                        <td>
-                          {
-                            order.customer
-                          }
-                        </td>
-
-                        <td
+                  <tbody>
+                    {visibleOrders.map(
+                      (order) => (
+                        <tr
+                          key={order.id}
                           className={
-                            styles.productCell
+                            selectedOrderId ===
+                            order.id
+                              ? styles.selectedRow
+                              : ''
+                          }
+                          onClick={() =>
+                            openOrderDetail(
+                              order
+                            )
                           }
                         >
-                          {order.product}
-                        </td>
+                          <td>
+                            <strong
+                              className={styles.orderId}
+                              title={order.id}
+                              aria-label={`전체 주문번호 ${order.id}`}
+                            >
+                              {formatOrderId(
+                                order.id
+                              )}
+                            </strong>
+                          </td>
 
-                        <td>
-                          {order.date}
-                        </td>
+                          <td>
+                            {order.customer}
+                          </td>
 
-                        <td>
-                          {formatPrice(
-                            order.amount
-                          )}
-                        </td>
-
-                        <td>
-                          <span
-                            className={`${styles.statusBadge} ${
-                              order.payment.includes('취소')
-                              || order.payment.includes('환불')
-                                ? styles.refund
-                                : styles.paid
-                            }`}
-                          >
-                            {
-                              order.payment
-                            }
-                          </span>
-                        </td>
-
-                        <td>
-                          <span
-                            className={`${styles.statusBadge} ${
-                              order.delivery ===
-                              '배송 준비'
-                                ? styles.ready
-                                : order.delivery ===
-                                  '배송 중'
-                                  ? styles.shipping
-                                  : order.delivery ===
-                                    '배송 완료'
-                                    ? styles.completed
-                                    : styles.waiting
-                            }`}
-                          >
-                            {
-                              order.delivery
-                            }
-                          </span>
-                        </td>
-
-                        <td>
-                          <button
-                            type="button"
+                          <td
                             className={
-                              styles.detailButton
-                            }
-                            onClick={() =>
-                              openOrderDetail(
-                                order
-                              )
+                              styles.productCell
                             }
                           >
-                            상세 보기
-                          </button>
-                        </td>
-                      </tr>
+                            {order.product}
+                          </td>
+
+                          <td>
+                            {order.date}
+                          </td>
+
+                          <td>
+                            {formatPrice(
+                              order.amount
+                            )}
+                          </td>
+
+                          <td>
+                            <AdminStatusBadge
+                              tone={
+                                order.payment.includes(
+                                  '취소'
+                                )
+                                || order.payment.includes(
+                                  '환불'
+                                )
+                                  ? 'danger'
+                                  : 'success'
+                              }
+                              size="small"
+                            >
+                              {order.payment}
+                            </AdminStatusBadge>
+                          </td>
+
+                          <td>
+                            <AdminStatusBadge
+                              tone={
+                                order.delivery ===
+                                '배송 준비'
+                                  ? 'warning'
+                                  : order.delivery ===
+                                    '배송 중'
+                                    ? 'info'
+                                    : order.delivery ===
+                                      '배송 완료'
+                                      ? 'success'
+                                      : order.delivery ===
+                                        '주문 취소'
+                                        ? 'danger'
+                                        : 'neutral'
+                              }
+                              size="small"
+                            >
+                              {order.delivery}
+                            </AdminStatusBadge>
+                          </td>
+
+                          <td>
+                            <button
+                              type="button"
+                              className={
+                                styles.detailButton
+                              }
+                              onClick={(event) => {
+                                event.stopPropagation()
+                                openOrderDetail(
+                                  order
+                                )
+                              }}
+                            >
+                              상세 보기
+                            </button>
+                          </td>
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {totalPages > 1 && (
+                <nav
+                  className={
+                    styles.pagination
+                  }
+                  aria-label="주문 목록 페이지"
+                >
+                  <button
+                    type="button"
+                    disabled={
+                      safeCurrentPage === 1
+                    }
+                    onClick={() =>
+                      setCurrentPage(
+                        (page) =>
+                          Math.max(
+                            1,
+                            page - 1
+                          )
+                      )
+                    }
+                    aria-label="이전 페이지"
+                  >
+                    ‹
+                  </button>
+
+                  {pageNumbers.map(
+                    (page) => (
+                      <button
+                        key={page}
+                        type="button"
+                        className={
+                          safeCurrentPage
+                          === page
+                            ? styles.activePage
+                            : ''
+                        }
+                        onClick={() =>
+                          setCurrentPage(
+                            page
+                          )
+                        }
+                        aria-current={
+                          safeCurrentPage
+                          === page
+                            ? 'page'
+                            : undefined
+                        }
+                      >
+                        {page}
+                      </button>
                     )
-                  )
-                ) : (
-                  <tr>
-                    <td
-                      colSpan="8"
-                      className={
-                        styles.emptyState
-                      }
-                    >
-                        {isLoading
-                          ? '주문 데이터를 불러오는 중입니다.'
-                          : loadError || '조건에 맞는 주문이 없습니다.'}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                  )}
+
+                  <button
+                    type="button"
+                    disabled={
+                      safeCurrentPage
+                      === totalPages
+                    }
+                    onClick={() =>
+                      setCurrentPage(
+                        (page) =>
+                          Math.min(
+                            totalPages,
+                            page + 1
+                          )
+                      )
+                    }
+                    aria-label="다음 페이지"
+                  >
+                    ›
+                  </button>
+                </nav>
+              )}
+            </>
+          )}
 
         </section>
 
@@ -1296,22 +1382,11 @@ const OrdersManage = () => {
           }
         >
 
-          <section
-            className={
-              styles.analyticsCard
-            }
+          <AdminPanel
+            title="주문 상태 분포"
+            padding="compact"
           >
-            <header
-              className={
-                styles.analyticsHeader
-              }
-            >
-              <h2>
-                주문 상태 분포
-              </h2>
 
-              <span>STATUS</span>
-            </header>
 
 
             <div
@@ -1333,7 +1408,12 @@ const OrdersManage = () => {
                   <span>전체</span>
 
                   <strong>
-                    {totalCount.toLocaleString('ko-KR')}건
+                    {totalCount.toLocaleString(
+                      'ko-KR'
+                    )}
+                    <small>
+                      건
+                    </small>
                   </strong>
                 </div>
               </div>
@@ -1405,25 +1485,13 @@ const OrdersManage = () => {
                 </li>
               </ul>
             </div>
-          </section>
+          </AdminPanel>
 
-
-          <section
-            className={
-              styles.analyticsCard
-            }
+          <AdminPanel
+            title="최근 7일 주문 현황"
+            padding="compact"
           >
-            <header
-              className={
-                styles.analyticsHeader
-              }
-            >
-              <h2>
-                최근 7일 주문 현황
-              </h2>
 
-              <span>7 DAYS</span>
-            </header>
 
 
             <div
@@ -1535,7 +1603,7 @@ const OrdersManage = () => {
                 </div>
               </dl>
             </div>
-          </section>
+          </AdminPanel>
 
         </aside>
 
@@ -1735,12 +1803,25 @@ const OrdersManage = () => {
                           {step}
                         </strong>
 
-                        <small>
-                          {index <=
-                          currentStepIndex
-                            ? selectedOrder.time
-                            : '-'}
-                        </small>
+                        <small
+  className={
+    styles.stepDateTime
+  }
+>
+  {index <= currentStepIndex ? (
+    <>
+      <span>
+        {selectedOrder.date}
+      </span>
+
+      <span>
+        {selectedOrder.time}
+      </span>
+    </>
+  ) : (
+    <span>-</span>
+  )}
+</small>
                       </div>
                     )
                   )}

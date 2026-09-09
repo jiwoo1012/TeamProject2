@@ -257,20 +257,22 @@ const useSectionReveals = ({
     }
     window.addEventListener('main:events-reveal', replayEventsReveal)
 
-    const isDesktopStepMode = window.matchMedia('(hover: hover) and (pointer: fine)').matches
-    const mobileEventsRevealTrigger = !isDesktopStepMode
-      ? ScrollTrigger.create({
-        trigger: eventsGridRef.current,
-        start: 'top 75%',
-        once: true,
-        onEnter: () => eventsReveal.restart(true),
-      })
-      : null
+    // 베스트셀러 → 이벤트 휠 전환 시 main:events-reveal 커스텀 이벤트로 재생되지만,
+    // 섹션 바로가기 등 다른 방식으로 진입했을 때를 위한 fallback 트리거.
+    // 이미 재생된 경우(휠 전환) 다시 재생하지 않도록 progress로 확인한다.
+    const eventsRevealFallbackTrigger = ScrollTrigger.create({
+      trigger: eventsGridRef.current,
+      start: 'top 75%',
+      once: true,
+      onEnter: () => {
+        if (eventsReveal.progress() === 0) eventsReveal.restart(true)
+      },
+    })
 
     return () => {
       const timelines = [aiReveal, featureReveal, makdongReveal, eventsReveal]
       window.removeEventListener('main:events-reveal', replayEventsReveal)
-      mobileEventsRevealTrigger?.kill()
+      eventsRevealFallbackTrigger.kill()
       featureSection.removeEventListener('pointermove', handleFeaturePointerMove)
       featureSection.removeEventListener('pointerleave', resetFeatureCup)
       gsap.killTweensOf(featureCup)

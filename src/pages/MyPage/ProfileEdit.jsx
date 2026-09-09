@@ -753,7 +753,7 @@ const ProfileEdit = () => {
                   </strong>
 
                   <span>
-                    나리님
+                    나으리님
                   </span>
 
                   <p>

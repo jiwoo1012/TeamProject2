@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 
 import { db } from '../../firebase/firebase'
 import Pagination from '../../components/ui/Pagination/Pagination'
+import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 import searchIconImage from '../../assets/icons/searchIcon.png'
 import styles from './NoticeList.module.scss'
 
@@ -29,6 +30,7 @@ const CATEGORY_BADGE_CLASS = {
 }
 
 const NoticeList = () => {
+  const pageRef = useRef(null)
   const [notices, setNotices] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
@@ -72,7 +74,8 @@ const NoticeList = () => {
   }, [searchQuery, activeCategory])
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} ref={pageRef}>
+      <MobileTopButton contentRef={pageRef} />
       <section className={styles.hero}>
         <h1>공지사항</h1>
         <p>자작의 새로운 소식과 서비스 안내를 확인해주세요.</p>

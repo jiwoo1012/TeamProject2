@@ -3,133 +3,79 @@
 .signup {
   position: relative;
   width: 100%;
-  height: calc(100vh - var(--auth-header-height, 0px));
-  background: $color-surface;
-  overflow: hidden;
+  min-height: max(760px, calc(100svh - var(--auth-header-height, 0px)));
   display: flex;
   align-items: center;
-
+  padding: 100px 0 140px;
+  background: linear-gradient(120deg, #F2EDE4, #EAE3D8);
+  overflow: clip;
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background-size: 100% 100%;
+    pointer-events: none;
+    z-index: 2;
+  }
   &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
     top: 0;
-    height: 220px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 50' preserveAspectRatio='none'%3E%3Cpath d='M0,0 L1440,0 L1440,20 C1200,30 960,10 720,18 C480,26 240,10 0,20 Z' fill='%23FDFBF9'/%3E%3C/svg%3E");
-    background-size: 100% 100%;
-    pointer-events: none;
-    z-index: 2;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 100' preserveAspectRatio='none'%3E%3Cpath d='M0 0H1440V54C1290 30 1170 68 1010 48S840 12 670 40S340 98 180 64S60 52 0 62Z' fill='%23FDFBF9'/%3E%3C/svg%3E");
   }
-
   &::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
     bottom: 0;
-    height: 0px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 80' preserveAspectRatio='none'%3E%3Cpath d='M0,40 C240,70 480,10 720,30 C960,50 1200,10 1440,35 L1440,80 L0,80 Z' fill='%23FDFBF9'/%3E%3C/svg%3E");
-    background-size: 100% 100%;
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  @media (max-width: $breakpoint-mobile-max) {
-    height: auto;
-    min-height: calc(100vh - var(--auth-header-height, 0px));
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    overflow: visible;
-
-    &::before,
-    &::after {
-      display: none;
-    }
+    height: 140px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 140' preserveAspectRatio='none'%3E%3Cpath d='M0 50C160 14 270 132 440 86S750 -4 930 24S1240 14 1440 52V140H0Z' fill='%23FDFBF9'/%3E%3C/svg%3E");
   }
 }
-
 .visual {
   position: absolute;
-  left: 350px;
-  top: 52%;
-  transform: translateY(-50%);
-  // 뷰포트 높이에 맞춰 가변 - 원본 비율(820:800)을 유지하면서 100vh 안에 들어오도록 clamp 처리
-  height: clamp(380px, 78vh, 800px);
-  aspect-ratio: 820 / 800;
-  width: auto;
-  border-radius: 500px 760px 1560px 0;
+  left: 0;
+  top: 50%;
+  transform: translateY(-54%);
+  width: 59%;
+  height: min(72vh, 760px);
+  min-height: 520px;
+  border-radius: 0 46% 40% 0 / 0 48% 42% 0;
+  background: $color-surface;
   overflow: hidden;
-  z-index: 1;
-
+  pointer-events: none;
   img {
-    width: 65%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 50% 20%;
-  }
-
-  @media (max-width: $breakpoint-mobile-max) {
-    position: static;
-    transform: none;
-    width: 100%;
-    height: 240px;
-    aspect-ratio: auto;
-    border-radius: 0;
-    background: $color-surface;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-
-    img {
-      width: auto;
-      height: auto;
-      max-width: 100%;
-      object-fit: contain;
-    }
+    position: absolute;
+    top: -64px;
+    left: 50%;
+    display: block;
+    width: 60%;
+    height: auto;
+    transform: translateX(-50%);
   }
 }
-
-.container {
-  position: relative;
-  max-width: 1440px;
-  width: 100%;
-  margin: 0 auto;
-
-  @media (max-width: $breakpoint-mobile-max) {
-    max-width: none;
-    display: flex;
-    flex-direction: column;
-  }
-}
-
 .formArea {
-  margin-left: 934px;
-  width: 400px;
-  margin-top: 100px;
+  margin-left: min(calc(66% + 120px), calc(100% - 360px));
+  width: min(100%, 360px);
+  margin-top: 0;
 
   h1 {
     font-family: $font-family-display;
-    font-size: clamp(28px, 4vh, $font-size-5xl);
+    font-size: clamp(28px, 3.2vw, $font-size-5xl);
     font-weight: $font-weight-bold;
     color: $color-text-primary;
     line-height: $line-height-tight;
-    margin-bottom: clamp($space-4, 3vh, $space-8);
+    margin-bottom: $space-4;
   }
 
   form {
     display: flex;
     flex-direction: column;
-    gap: $space-2;
+    gap: $space-1;
   }
 
   label {
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
     color: $color-text-primary;
-    margin-top: $space-4;
+    margin-top: $space-2;
   }
 
   input[type='email'],
@@ -170,7 +116,7 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  margin-top: $space-4;
+  margin-top: $space-2;
 }
 
 .passwordField {
@@ -278,7 +224,7 @@
 }
 
 .switchLink {
-  margin-top: clamp($space-4, 3vh, $space-8);
+  margin-top: $space-4;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -287,6 +233,8 @@
 }
 
 .switchLinkAction {
+  text-decoration: underline;
+  text-underline-offset: 4px;
   color: $color-primary;
   font-weight: $font-weight-semibold;
   transition: color $transition-fast ease;
@@ -421,4 +369,119 @@
   width: 30px;   
   height: auto;
   opacity: 0.7;
+}
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding-right: $side-margin-desktop;
+  z-index: 3;
+}
+.formArea {
+  h1 { white-space: nowrap; }
+  form, > .switchLink { width: 92%; }
+  form > label, .fieldLabel { font-size: $font-size-xs; }
+  .hint, .hintError, > .switchLink, .agreeLabel { font-size: 11px; }
+  .checkboxBox { width: $space-4; height: $space-4; }
+  form > .submitButton {
+    height: 44px;
+    margin-top: $space-3;
+    font-size: $font-size-md;
+  }
+  input[type='email'], input[type='password'], input[type='text'] {
+    width: 100%; min-width: 0; font-family: $font-family-base;
+    height: $space-10;
+    padding-inline: $space-3;
+    font-size: $font-size-xs;
+  }
+  .passwordField input { padding-right: $space-12; }
+  .rememberLabel, .agreeLabel { font-size: $font-size-xs; margin-top: $space-2; line-height: $line-height-relaxed; }
+}
+.hint, .hintError, .error { line-height: $line-height-relaxed; }
+.switchLink { gap: $space-4; line-height: $line-height-relaxed; font-size: $font-size-xs; }
+.switchLinkAction { color: $color-text-primary; white-space: nowrap; }
+.togglePasswordButton { min-width: 44px; min-height: 44px; right: $space-1; display: grid; place-items: center; }
+.eyeIcon { width: $space-6; }
+.checkboxBox {
+  input:focus-visible + & { outline: 2px solid $color-primary; outline-offset: $space-1; }
+}
+.submitButton, .togglePasswordButton, .switchLinkAction {
+  &:focus-visible { outline: 2px solid $color-primary; outline-offset: $space-1; }
+}
+@media (min-width: $breakpoint-tablet-min) and (max-width: $breakpoint-tablet-max) {
+  .container { padding-right: $side-margin-tablet; }
+  .formArea { margin-left: 62%; width: 38%; }
+  .visual { width: 56%; min-height: 460px; }
+}
+@media (max-width: $breakpoint-mobile-max) {
+  .signup {
+    min-height: calc(100svh - var(--auth-header-height, 0px));
+    flex-direction: column;
+    padding: $space-8 0 $space-20;
+    &::before { height: $space-12; }
+    &::after { height: $space-12; }
+  }
+  .visual {
+    position: relative;
+    top: auto;
+    align-self: flex-start;
+    transform: none;
+    width: 78%;
+    height: 220px;
+    min-height: 0;
+    border-radius: 0 46% 40% 0;
+    img { top: 0; }
+  }
+  .container { padding: $space-6 $side-margin-mobile 0; }
+  .formArea {
+    width: min(100%, 400px);
+    margin: 0 auto;
+    padding: 0;
+    input[type='email'], input[type='password'], input[type='text'] {
+      min-height: $space-12;
+      font-size: $font-size-md;
+    }
+    h1 { font-size: $font-size-3xl; margin-bottom: $space-4; white-space: normal; }
+  }
+  .switchLink { margin-top: $space-4; }
+}
+
+// 기존 배치용 transform과 분리해서 등장 시에만 이동한다.
+@keyframes authFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes authRiseIn {
+  from { opacity: 0; translate: 0 18px; }
+  to { opacity: 1; translate: 0 0; }
+}
+@keyframes authCharacterIn {
+  from { opacity: 0; translate: -28px 12px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .signup::before { animation: authFadeIn 800ms ease-out both; }
+  .signup::after { animation: authFadeIn 1000ms 100ms ease-out both; }
+  .visual { animation: authFadeIn 700ms ease-out both; }
+  .visual img { animation: authCharacterIn 1100ms 100ms cubic-bezier(.22, 1, .36, 1) both; }
+  .formArea > h1 { animation: authRiseIn 800ms 200ms cubic-bezier(.22, 1, .36, 1) both; }
+  .formArea form > * {
+    animation: authRiseIn 650ms cubic-bezier(.22, 1, .36, 1) both;
+  }
+  @for $item from 1 through 16 {
+    .formArea form > :nth-child(#{$item}) {
+      animation-delay: 280ms + ($item - 1) * 55ms;
+    }
+  }
+  .formArea > .switchLink {
+    animation: authRiseIn 700ms 1050ms cubic-bezier(.22, 1, .36, 1) both;
+  }
+  // 키보드로 바로 진입하거나 오류가 발생하면 안내와 입력을 즉시 표시한다.
+  .formArea form > :focus,
+  .formArea form > :focus-within,
+  .formArea form > .error,
+  .formArea form > .hintError,
+  .formArea > .switchLink:focus-within { animation: none; }
 }

@@ -269,7 +269,7 @@ const MyPageLayout = () => {
                   </strong>
 
                   <span className={styles.levelText}>
-                    나리님
+                    나으리님
                   </span>
                 </div>
 

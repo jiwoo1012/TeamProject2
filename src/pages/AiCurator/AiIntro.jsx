@@ -90,6 +90,7 @@ const liquorProducts =
 
 
 // 카드에 사용할 상품 16개
+
 const CARD_PRODUCTS =
   liquorProducts.slice(
     0,
@@ -196,7 +197,12 @@ const AiIntro = () => {
     )
 
     navigate(
-      '/ai/survey'
+      '/ai/survey',
+      {
+        state: {
+          isGuestMode: true,
+        },
+      }
     )
   }
 
@@ -283,14 +289,14 @@ const AiIntro = () => {
                   product
                 )
 
+
               return (
                 <div
-                  key={
-                    product
-                      ?.productId ??
+                  key={`${
+                    product?.productId ??
                     product?.id ??
-                    index
-                  }
+                    'product'
+                  }-${index}`}
                   className={
                     styles.card
                   }
@@ -306,6 +312,7 @@ const AiIntro = () => {
                       }
                       alt={
                         product?.name ||
+                        product?.productName ||
                         '전통주 상품'
                       }
                       className={

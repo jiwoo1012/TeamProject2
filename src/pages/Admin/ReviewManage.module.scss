@@ -1,1535 +1,95 @@
-@use '../../styles/variables' as v;
+@use '../../styles/admin/adminVariables' as *;
+@use '../../styles/admin/adminMixins' as *;
+@use '../../styles/admin/adminCommon' as *;
 
 
 // ========================================
-// 전체
+// PAGE
 // ========================================
 
 .page {
-  width: 100%;
-  min-width: 0;
-  min-height: 100%;
+  @extend %admin-page;
 
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+
+  margin: 0;
+
+  // 바깥 좌우 여백은 AdminLayout이 담당
   padding:
-    v.$space-8
-    v.$space-10
-    56px;
+    34px
+    0
+    50px;
 
   box-sizing: border-box;
-
-  background: #f8f6f2;
-  color: #494642;
-}
-
-
-.page button,
-.page input,
-.page select {
-  font: inherit;
 }
 
 
 // ========================================
-// 상단
-// ========================================
-
-.pageToolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: v.$space-4;
-
-  min-height: 48px;
-
-  h1 {
-    margin: 0;
-
-    color: #292725;
-    font-size: 30px;
-    font-weight: v.$font-weight-bold;
-    line-height: 1.2;
-    letter-spacing: -0.04em;
-  }
-}
-
-
-.refreshButton {
-  min-height: 38px;
-  padding: 0 16px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-
-  border: 1px solid #aaa39a;
-  border-radius: 5px;
-  background: #fff;
-
-  color: #77716a;
-  font-size: 12px;
-  font-weight: 500;
-
-  cursor: pointer;
-
-  transition:
-    border-color 0.2s ease,
-    color 0.2s ease,
-    background 0.2s ease;
-
-  svg {
-    width: 15px;
-    height: 15px;
-
-    fill: none;
-    stroke: currentcolor;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-width: 1.8;
-  }
-
-  &:hover:not(:disabled) {
-    border-color: #538983;
-    color: #538983;
-  }
-
-  &:disabled {
-    cursor: wait;
-    opacity: 0.55;
-  }
-}
-
-
-// ========================================
-// 전통 문양
-// ========================================
-
-.topOrnament {
-  display: block;
-
-  width: 100%;
-  height: auto;
-
-  margin-top: 6px;
-  margin-bottom: -2px;
-
-  pointer-events: none;
-}
-
-
-// ========================================
-// 요약 카드
+// SUMMARY
 // ========================================
 
 .summaryArea {
-  margin-top: 0;
+  @extend %admin-summary-area;
+
+  position: relative;
+  z-index: 1;
+
+  margin-top: -50px;
 }
 
 
 .summaryGrid {
-  display: grid;
-  grid-template-columns:
-    repeat(
-      4,
-      minmax(0, 1fr)
-    );
+  @extend %admin-summary-grid;
 
-  gap: 16px;
-}
+  width: 90%;
 
-
-.summaryCard {
-  min-width: 0;
-  min-height: 126px;
-
-  padding: 20px 22px;
-
-  display: flex;
-  align-items: center;
-  gap: 17px;
-
-  border: 1px solid #e2ddd6;
-  border-radius: 10px;
-  background: #fff;
-}
-
-
-.summaryIcon {
-  width: 42px;
-  height: 42px;
-
-  flex: 0 0 42px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-
-  svg {
-    width: 19px;
-    height: 19px;
-
-    fill: none;
-    stroke: currentcolor;
-    stroke-width: 1.7;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-}
-
-
-.summaryIconTotal {
-  color: #62927e;
-  background: #eff7f2;
-}
-
-
-.summaryIconRating {
-  color: #6995a7;
-  background: #eff6f8;
-}
-
-
-.summaryIconReport {
-  color: #dd716a;
-  background: #fff1ee;
-}
-
-
-.summaryIconHidden {
-  color: #bf893b;
-  background: #fff8ed;
-}
-
-
-.summaryContent {
-  min-width: 0;
-
-  display: grid;
-  gap: 4px;
-
-  small {
-    color: #4f4a45;
-    font-size: 14px;
-    font-weight: 600;
-  }
-
-  strong {
-    display: flex;
-    align-items: baseline;
-    gap: 5px;
-
-    color: #171614;
-    font-size: 30px;
-    line-height: 1.1;
-    font-weight: 700;
-    letter-spacing: -0.04em;
-
-    em {
-      color: #5d5751;
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 500;
-    }
-  }
-
-  i {
-    margin-top: 8px;
-
-    color: #8b9aa0;
-    font-size: 9px;
-    font-style: normal;
-  }
-}
-
-
-.reportCaption {
-  color: #d9655e !important;
+  margin:
+    0
+    auto;
 }
 
 
 // ========================================
-// 메인
+// MANAGEMENT LAYOUT
 // ========================================
 
 .managementGrid {
-  display: grid;
+  @extend %admin-management-grid;
 
-  grid-template-columns:
-    minmax(0, 1fr)
-    275px;
+  width: 100%;
+  min-width: 0;
 
-  gap: 15px;
-
-  align-items: start;
-
-  margin-top: 20px;
+  margin: 0;
 }
 
+
+// ========================================
+// MAIN SECTION
+// ========================================
 
 .mainSection {
   min-width: 0;
 
-  overflow: hidden;
+  @include admin-panel;
 
-  border: 1px solid #8e877f;
-  border-radius: 14px;
-  background: #fff;
+  padding: 20px;
 }
 
 
 // ========================================
-// 필터
+// FILTER
 // ========================================
-
-.filterBar {
-  padding:
-    18px
-    18px
-    10px;
-
-  display: grid;
-
-  grid-template-columns:
-    minmax(220px, 1fr)
-    96px
-    105px
-    96px
-    58px;
-
-  gap: 7px;
-}
-
-
-.searchField {
-  position: relative;
-
-  svg {
-    position: absolute;
-
-    top: 50%;
-    left: 11px;
-
-    width: 19px;
-    height: 19px;
-
-    transform:
-      translateY(-50%);
-
-    fill: none;
-    stroke: #242220;
-    stroke-width: 2;
-
-    pointer-events: none;
-  }
-
-  input {
-    width: 100%;
-    height: 39px;
-
-    box-sizing: border-box;
-
-    padding:
-      0
-      10px
-      0
-      39px;
-
-    border: 1px solid #9e9891;
-    border-radius: 6px;
-    outline: 0;
-
-    background: #fff;
-
-    color: #4e4944;
-    font-size: 10px;
-
-    &::placeholder {
-      color: #8d8780;
-    }
-
-    &:focus {
-      border-color: #538983;
-    }
-  }
-}
-
 
 .selectField {
-  min-width: 0;
+  display: block;
 
   select {
-    width: 100%;
-    height: 39px;
-
-    padding: 0 8px;
-
-    border: 1px solid #9e9891;
-    border-radius: 6px;
-    outline: 0;
-
-    background: #fff;
-
-    color: #56514c;
-    font-size: 10px;
-
-    cursor: pointer;
-
-    &:focus {
-      border-color: #538983;
-    }
+    min-width: 128px;
   }
 }
 
-
-.sortField {
-  min-width: 0;
-}
-
-
-.resetButton {
-  min-width: 0;
-  height: 39px;
-
-  border: 1px solid #9e9891;
-  border-radius: 6px;
-  background: #fff;
-
-  color: #5c5650;
-  font-size: 10px;
-
-  cursor: pointer;
-
-  &:hover {
-    border-color: #538983;
-    color: #538983;
-  }
-}
-
-
-// ========================================
-// 평점 필터
-// ========================================
-
-.ratingFilterRow {
-  padding:
-    0
-    18px
-    15px;
-
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  > span {
-    flex: 0 0 auto;
-
-    color: #69635d;
-    font-size: 9px;
-    font-weight: 600;
-  }
-
-  > div {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-
-    button {
-      min-width: 34px;
-      height: 23px;
-
-      padding: 0 9px;
-
-      border: 0;
-      border-radius: 999px;
-
-      background: #e9e8e6;
-
-      color: #5f5a54;
-      font-size: 8px;
-      font-weight: 600;
-
-      cursor: pointer;
-
-      transition:
-        background 0.18s ease,
-        color 0.18s ease;
-    }
-
-    .activeRating {
-      background: #548983;
-      color: #fff;
-    }
-  }
-}
-
-
-// ========================================
-// 목록 제목
-// ========================================
-
-.sectionHeading {
-  min-height: 59px;
-
-  padding: 0 20px;
-
-  display: flex;
-  align-items: center;
-
-  border-top:
-    1px solid #ebe6df;
-  border-bottom:
-    1px solid #ebe6df;
-
-  > div {
-    display: flex;
-    align-items: baseline;
-    gap: 11px;
-  }
-
-  h2 {
-    margin: 0;
-
-    color: #3a3632;
-    font-size: 19px;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-  }
-
-  span {
-    color: #77716a;
-    font-size: 10px;
-  }
-}
-
-
-// ========================================
-// 테이블
-// ========================================
-
-.tableWrap {
-  width: 100%;
-  overflow-x: auto;
-}
-
-
-.reviewTable {
-  width: 100%;
-  min-width: 795px;
-
-  table-layout: fixed;
-  border-collapse: collapse;
-
-  thead {
-    background: #f4efe7;
-
-    tr {
-      height: 42px;
-    }
-
-    th {
-      padding: 0 7px;
-
-      color: #645e58;
-      font-size: 8.5px;
-      font-weight: 600;
-
-      text-align: center;
-      white-space: nowrap;
-    }
-  }
-
-
-  tbody {
-    tr {
-      height: 48px;
-
-      border-bottom:
-        1px solid #d7d1c9;
-
-      cursor: pointer;
-
-      transition:
-        background 0.15s ease;
-
-      &:hover {
-        background: #faf8f5;
-      }
-
-      &:last-child {
-        border-bottom: 0;
-      }
-    }
-
-    td {
-      padding: 0 7px;
-
-      overflow: hidden;
-
-      color: #5c5650;
-      font-size: 8px;
-
-      text-align: center;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-
-
-  th:nth-child(1) {
-    width: 11%;
-  }
-
-  th:nth-child(2) {
-    width: 17%;
-  }
-
-  th:nth-child(3) {
-    width: 12%;
-  }
-
-  th:nth-child(4) {
-    width: 12%;
-  }
-
-  th:nth-child(5) {
-    width: 18%;
-  }
-
-  th:nth-child(6) {
-    width: 12%;
-  }
-
-  th:nth-child(7) {
-    width: 9%;
-  }
-
-  th:nth-child(8) {
-    width: 9%;
-  }
-}
-
-
-.selectedRow {
-  background:
-    #f4faf7 !important;
-}
-
-
-.reviewId {
-  color: #56514b !important;
-}
-
-
-.productTableCell {
-  min-width: 0;
-
-  display: flex;
-  align-items: center;
-  gap: 7px;
-
-  text-align: left;
-
-  > span:last-child {
-    min-width: 0;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-    color: #4d4843;
-    font-weight: 500;
-  }
-}
-
-
-.tableThumb {
-  width: 24px;
-  height: 24px;
-
-  flex: 0 0 24px;
-
-  display: block;
-
-  overflow: hidden;
-
-  border-radius: 3px;
-  background: #ddd;
-
-  img {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-  }
-}
-
-
-.reviewSummary {
-  text-align: left !important;
-}
-
-
-.stars {
-  color: #dedbd5;
-
-  font-size: 9px;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-
-  > span {
-    color: #f1b62b;
-  }
-}
-
-
-// ========================================
-// 상태
-// ========================================
-
-.statusBadge {
-  min-width: 46px;
-  min-height: 22px;
-
-  padding: 0 8px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  box-sizing: border-box;
-
-  border: 1px solid;
-  border-radius: 999px;
-
-  font-size: 7px;
-  font-weight: 500;
-}
-
-
-.visible {
-  border-color: #a4c8c2;
-  background: #f6fbfa;
-  color: #4d8580;
-}
-
-
-.hidden {
-  border-color: #cac6c0;
-  background: #f3f2f0;
-  color: #77716b;
-}
-
-
-.detailButton {
-  height: 24px;
-  padding: 0 8px;
-
-  border: 1px solid #c6bfb6;
-  border-radius: 4px;
-  background: #fff;
-
-  color: #57514b;
-  font-size: 7px;
-
-  cursor: pointer;
-
-  &:hover {
-    border-color: #538983;
-    color: #538983;
-  }
-}
-
-
-// ========================================
-// 빈 상태
-// ========================================
-
-.emptyState {
-  min-height: 220px;
-
-  padding: 30px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-
-  box-sizing: border-box;
-
-  color: #969088;
-  font-size: 11px;
-
-  text-align: center;
-
-  button {
-    height: 30px;
-    padding: 0 12px;
-
-    border: 1px solid #bbb5ad;
-    border-radius: 5px;
-    background: #fff;
-
-    cursor: pointer;
-  }
-}
-
-
-// ========================================
-// 페이지네이션
-// ========================================
-
-.pagination {
-  min-height: 55px;
-
-  padding: 0 17px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-
-  border-top:
-    1px solid #ebe6df;
-
-  button {
-    width: 27px;
-    height: 27px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    border: 1px solid transparent;
-    border-radius: 50%;
-    background: transparent;
-
-    color: #77716b;
-    font-size: 9px;
-
-    cursor: pointer;
-
-    &:hover:not(:disabled) {
-      border-color: #b7cbc5;
-      color: #538983;
-    }
-
-    &:disabled {
-      cursor: default;
-      opacity: 0.3;
-    }
-  }
-
-
-  .currentPage {
-    border-color: #538983;
-    background: #538983;
-    color: #fff;
-  }
-}
-
-
-// ========================================
-// 우측 통계
-// ========================================
-
-.analyticsColumn {
-  min-width: 0;
-
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-
-.analyticsCard {
-  padding: 21px 20px;
-
-  border: 1px solid #8e877f;
-  border-radius: 14px;
-  background: #fff;
-
-  h2 {
-    margin: 0;
-
-    color: #3b3732;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-  }
-}
-
-
-// ========================================
-// 상품별 TOP5
-// ========================================
-
-.topProductList {
-  margin-top: 20px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-
-.topProductRow {
-  display: grid;
-
-  grid-template-columns:
-    72px
-    minmax(0, 1fr)
-    25px;
-
-  align-items: center;
-  gap: 7px;
-
-  > span {
-    overflow: hidden;
-
-    color: #56514c;
-    font-size: 7px;
-
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  > i {
-    height: 5px;
-
-    overflow: hidden;
-
-    border-radius: 999px;
-    background: #e1e2df;
-
-    b {
-      display: block;
-
-      height: 100%;
-
-      border-radius: inherit;
-      background: #548983;
-    }
-  }
-
-  > strong {
-    color: #77716b;
-    font-size: 7px;
-    font-weight: 500;
-    text-align: right;
-  }
-}
-
-
-.analyticsEmpty {
-  margin: 0;
-
-  color: #98928b;
-  font-size: 9px;
-}
-
-
-// ========================================
-// 별점 분포
-// ========================================
-
-.ratingDistribution {
-  margin-top: 20px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-
-.ratingBarRow {
-  display: grid;
-
-  grid-template-columns:
-    53px
-    minmax(0, 1fr)
-    23px
-    23px;
-
-  align-items: center;
-  gap: 6px;
-}
-
-
-.ratingLabel {
-  color: #222;
-
-  font-size: 7px;
-  letter-spacing: 0.4px;
-
-  white-space: nowrap;
-
-  i {
-    color: #c9c7c2;
-    font-style: normal;
-  }
-}
-
-
-.ratingTrack {
-  height: 5px;
-
-  overflow: hidden;
-
-  border-radius: 999px;
-  background: #dddeda;
-
-  b {
-    display: block;
-    height: 100%;
-
-    border-radius: inherit;
-    background: #548983;
-  }
-}
-
-
-.ratingBarRow > strong {
-  color: #5f5953;
-  font-size: 7px;
-  font-weight: 500;
-  text-align: right;
-}
-
-
-.ratingBarRow > small {
-  color: #918b84;
-  font-size: 6px;
-  text-align: right;
-}
-
-
-.averageRating {
-  margin-top: 17px;
-
-  display: flex;
-  justify-content: flex-end;
-  align-items: baseline;
-  gap: 4px;
-
-  color: #6c665f;
-  font-size: 7px;
-
-  strong {
-    color: #538983;
-    font-size: 10px;
-  }
-}
-
-
-// ========================================
-// 우측 리뷰 상세
-// ========================================
-
-.detailPanel {
-  min-width: 0;
-
-  padding: 20px 18px 15px;
-
-  border: 1px solid #8e877f;
-  border-radius: 14px;
-  background: #fff;
-}
-
-
-.detailHeading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  h2 {
-    margin: 0;
-
-    color: #3b3732;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-  }
-
-  > button {
-    width: 26px;
-    height: 26px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border: 0;
-    background: transparent;
-
-    color: #625d57;
-    font-size: 17px;
-
-    cursor: pointer;
-  }
-}
-
-
-// ========================================
-// 상세 상품
-// ========================================
-
-.detailProduct {
-  margin-top: 17px;
-
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-
-.detailThumb {
-  width: 62px;
-  height: 62px;
-
-  flex: 0 0 62px;
-
-  display: block;
-
-  overflow: hidden;
-
-  border-radius: 5px;
-  background: #d8d8d8;
-
-  img {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-  }
-}
-
-
-.detailProduct > div {
-  min-width: 0;
-
-  strong {
-    display: block;
-
-    overflow: hidden;
-
-    color: #4a4540;
-    font-size: 10px;
-    font-weight: 600;
-
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  a {
-    display: inline-block;
-
-    margin-top: 7px;
-
-    color: #538983;
-    font-size: 7px;
-    font-weight: 500;
-
-    text-decoration: none;
-  }
-}
-
-
-.detailDivider {
-  height: 1px;
-
-  margin: 13px 0;
-
-  background: #b9b4ad;
-}
-
-
-// ========================================
-// 상세 정보
-// ========================================
-
-.detailInfo {
-  margin: 0;
-
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-
-  > div {
-    display: grid;
-
-    grid-template-columns:
-      58px
-      minmax(0, 1fr);
-
-    align-items: center;
-    gap: 8px;
-  }
-
-  dt,
-  dd {
-    margin: 0;
-  }
-
-  dt {
-    color: #548983;
-    font-size: 7px;
-    font-weight: 500;
-  }
-
-  dd {
-    min-width: 0;
-
-    overflow-wrap: anywhere;
-
-    color: #69635c;
-    font-size: 7px;
-    font-weight: 500;
-  }
-}
-
-
-.detailRating {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-
-  > span:last-child {
-    color: #538983;
-    font-size: 7px;
-  }
-}
-
-
-// ========================================
-// 리뷰 내용
-// ========================================
-
-.reviewContentArea {
-  margin-top: 15px;
-
-  h3 {
-    margin: 0 0 6px;
-
-    color: #548983;
-    font-size: 7px;
-    font-weight: 500;
-  }
-
-  > div {
-    min-height: 67px;
-
-    padding: 9px 10px;
-
-    box-sizing: border-box;
-
-    border: 1px solid #7fa8a4;
-    border-radius: 4px;
-
-    background: #fff;
-
-    color: #69635e;
-    font-size: 7px;
-    line-height: 1.6;
-  }
-}
-
-
-// ========================================
-// 첨부 이미지
-// ========================================
-
-.attachmentArea {
-  margin-top: 14px;
-
-  h3 {
-    margin: 0 0 7px;
-
-    color: #548983;
-    font-size: 7px;
-    font-weight: 500;
-
-    span {
-      color: #89837c;
-    }
-  }
-}
-
-
-.attachmentList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-
-  button {
-    width: 48px;
-    height: 48px;
-
-    padding: 0;
-
-    overflow: hidden;
-
-    border: 0;
-    border-radius: 4px;
-    background: #ddd;
-
-    cursor: pointer;
-
-    img {
-      width: 100%;
-      height: 100%;
-
-      object-fit: cover;
-    }
-  }
-}
-
-
-.noAttachment {
-  margin: 0;
-
-  color: #aaa49d;
-  font-size: 7px;
-}
-
-
-// ========================================
-// 상세 액션
-// ========================================
-
-.detailActions {
-  margin-top: 19px;
-
-  display: flex;
-  justify-content: flex-end;
-  gap: 6px;
-
-  button {
-    min-width: 50px;
-    height: 25px;
-
-    padding: 0 8px;
-
-    border-radius: 4px;
-    background: #fff;
-
-    font-size: 7px;
-
-    cursor: pointer;
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: wait;
-    }
-  }
-}
-
-
-.hideButton {
-  border: 1px solid #669792;
-  color: #538983;
-}
-
-
-.deleteButton {
-  border: 1px solid #9a938b;
-  color: #6d6760;
-
-  &:hover {
-    border-color: #dc6c64;
-    color: #dc6c64;
-  }
-}
-
-
-// ========================================
-// 삭제 확인 모달
-// ========================================
-
-.modalBackdrop {
-  position: fixed;
-  inset: 0;
-
-  z-index: 300;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 24px;
-
-  background:
-    rgba(34, 31, 28, 0.25);
-}
-
-
-.confirmModal {
-  width: min(
-    360px,
-    100%
-  );
-
-  padding: 28px;
-
-  box-sizing: border-box;
-
-  border-radius: 14px;
-  background: #fff;
-
-  box-shadow:
-    0 18px 50px
-      rgba(
-        45,
-        39,
-        34,
-        0.16
-      );
-
-  text-align: center;
-
-  h3 {
-    margin:
-      12px
-      0
-      8px;
-
-    color: #3e3934;
-    font-size: 18px;
-  }
-
-  p {
-    margin: 0;
-
-    color: #8b857e;
-    font-size: 11px;
-    line-height: 1.55;
-  }
-
-  > strong {
-    display: block;
-
-    margin-top: 14px;
-
-    color: #5b554f;
-    font-size: 11px;
-  }
-
-  > div {
-    margin-top: 22px;
-
-    display: grid;
-    grid-template-columns:
-      1fr 1fr;
-
-    gap: 8px;
-
-    button {
-      height: 38px;
-
-      border-radius: 6px;
-
-      font-size: 10px;
-
-      cursor: pointer;
-
-      &:first-child {
-        border:
-          1px solid
-          #ccc5bd;
-        background: #fff;
-        color: #69635d;
-      }
-
-      &:last-child {
-        border:
-          1px solid
-          #dc6860;
-        background: #dc6860;
-        color: #fff;
-      }
-    }
-  }
-}
-
-
-.warningIcon {
-  width: 38px;
-  height: 38px;
-
-  margin: 0 auto;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-
-  background: #fff1ef;
-  color: #db6961;
-
-  font-size: 18px;
-  font-weight: 700;
-}
-
-
-// ========================================
-// 토스트
-// ========================================
-
-.toast {
-  position: fixed;
-
-  right: 30px;
-  bottom: 30px;
-
-  z-index: 350;
-
-  min-width: 250px;
-
-  padding:
-    12px
-    13px
-    12px
-    16px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-
-  border: 1px solid #cbd8d1;
-  border-radius: 8px;
-  background: #fff;
-
-  box-shadow:
-    0 10px 30px
-      rgba(
-        42,
-        37,
-        33,
-        0.12
-      );
-
-  color: #5e5953;
-  font-size: 10px;
-
-  button {
-    border: 0;
-    background: transparent;
-
-    color: #77716a;
-    font-size: 16px;
-
-    cursor: pointer;
-  }
-}
-
-
-// ========================================
-// 접근성
-// ========================================
 
 .srOnly {
   position: absolute;
@@ -1542,13 +102,7 @@
 
   overflow: hidden;
 
-  clip: rect(
-    0,
-    0,
-    0,
-    0
-  );
-
+  clip: rect(0, 0, 0, 0);
   white-space: nowrap;
 
   border: 0;
@@ -1556,848 +110,1990 @@
 
 
 // ========================================
-// 반응형
+// RATING FILTER
 // ========================================
-
-@media (
-  max-width: 1300px
-) {
-  .summaryGrid {
-    grid-template-columns:
-      repeat(2, 1fr);
-  }
-
-
-  .managementGrid {
-    grid-template-columns:
-      minmax(0, 1fr)
-      250px;
-  }
-
-
-  .filterBar {
-    grid-template-columns:
-      minmax(190px, 1fr)
-      90px
-      100px;
-
-    .sortField {
-      grid-column: 1 / 2;
-    }
-
-    .resetButton {
-      width: 70px;
-    }
-  }
-}
-
-
-@media (
-  max-width: 1050px
-) {
-  .managementGrid {
-    grid-template-columns:
-      1fr;
-  }
-
-
-  .analyticsColumn {
-    display: grid;
-    grid-template-columns:
-      1fr 1fr;
-  }
-
-
-  .detailPanel {
-    width: 100%;
-    box-sizing: border-box;
-  }
-}
-
-
-@media (
-  max-width: 760px
-) {
-  .page {
-    padding:
-      24px
-      18px
-      45px;
-  }
-
-
-  .pageToolbar {
-    h1 {
-      font-size: 24px;
-    }
-  }
-
-
-  .summaryGrid {
-    grid-template-columns:
-      1fr;
-  }
-
-
-  .filterBar {
-    display: flex;
-    flex-wrap: wrap;
-
-    .searchField {
-      flex:
-        1
-        0
-        100%;
-    }
-
-    .selectField {
-      flex:
-        1
-        1
-        30%;
-    }
-
-    .resetButton {
-      width: auto;
-      flex: 1;
-    }
-  }
-
-
-  .ratingFilterRow {
-    align-items: flex-start;
-
-    > div {
-      flex-wrap: wrap;
-    }
-  }
-
-
-  .analyticsColumn {
-    grid-template-columns:
-      1fr;
-  }
-
-
-  .reviewTable {
-    min-width: 780px;
-  }
-}
-
-
-// ========================================
-// 주문관리와 맞춘 가독성 보정
-// ========================================
-
-.filterBar {
-  .searchField input,
-  .selectField select,
-  .resetButton {
-    font-size: 13px;
-  }
-}
 
 .ratingFilterRow {
-  > span {
-    font-size: 13px;
-  }
+  display: flex;
+  align-items: center;
 
-  > div button {
-    min-width: 42px;
-    height: 30px;
-    font-size: 12px;
-  }
-}
-
-.sectionHeading {
-  min-height: 66px;
-
-  h2 {
-    font-size: 21px;
-  }
-
-  span {
-    font-size: 13px;
-  }
-}
-
-.reviewTable {
-  thead {
-    tr {
-      height: 52px;
-    }
-
-    th {
-      font-size: 14px;
-      vertical-align: middle;
-    }
-  }
-
-  tbody {
-    tr {
-      height: 64px;
-    }
-
-    td {
-      font-size: 14px;
-      line-height: 1.35;
-      vertical-align: middle;
-    }
-  }
-}
-
-.reviewId {
-  font-weight: 700;
-  letter-spacing: 0.01em;
-}
-
-.productTableCell > span:last-child,
-.reviewSummary {
-  font-size: 14px;
-}
-
-.tableThumb {
-  width: 32px;
-  height: 32px;
-  flex-basis: 32px;
-}
-
-.stars {
-  font-size: 15px;
-}
-
-.statusBadge {
-  min-width: 58px;
-  min-height: 28px;
-  font-size: 12px;
-}
-
-.detailButton {
-  min-width: 66px;
-  height: 32px;
-  padding: 0 12px;
-  font-size: 12px;
-}
-
-.pagination {
-  min-height: 62px;
-  font-size: 13px;
-
-  strong {
-    font-size: 14px;
-  }
-}
-
-.analyticsCard {
-  h2 {
-    font-size: 19px;
-  }
-}
-
-.topProductRow {
-  grid-template-columns: 92px minmax(0, 1fr) 34px;
-
-  > span,
-  > strong {
-    font-size: 12px;
-  }
-}
-
-.ratingLabel,
-.ratingBarRow > strong,
-.ratingBarRow > small,
-.averageRating,
-.analyticsEmpty {
-  font-size: 12px;
-}
-
-.averageRating strong {
-  font-size: 16px;
-}
-
-.detailPanel {
-  padding: 26px 24px 22px;
-}
-
-.detailHeading {
-  h2 {
-    font-size: 23px;
-  }
-
-  > button {
-    width: 34px;
-    height: 34px;
-    font-size: 25px;
-  }
-}
-
-.detailProduct > div {
-  strong {
-    font-size: 16px;
-  }
-
-  a {
-    font-size: 13px;
-  }
-}
-
-.detailInfo {
   gap: 12px;
 
+  margin-top: 10px;
+  padding:
+    0
+    2px
+    14px;
+
+  border-bottom:
+    1px solid
+    $admin-border;
+
+  > span {
+    flex-shrink: 0;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 12px;
+    font-weight: 700;
+  }
+
   > div {
-    grid-template-columns: 76px minmax(0, 1fr);
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 6px;
   }
 
-  dt,
-  dd,
-  .detailRating > span:last-child {
-    font-size: 14px;
-  }
-}
+  button {
+    min-width: 42px;
+    min-height: 28px;
 
-.reviewContentArea,
-.attachmentArea {
-  h3 {
-    font-size: 14px;
-  }
-}
+    padding:
+      0
+      10px;
 
-.reviewContentArea > div,
-.noAttachment {
-  font-size: 14px;
-}
+    border:
+      1px solid
+      transparent;
 
-.detailActions button {
-  min-width: 86px;
-  height: 36px;
-  font-size: 13px;
-}
+    border-radius:
+      999px;
 
+    background:
+      #f1f3f2;
 
-// ========================================
-// 주문관리 UI 기준 통일
-// ========================================
+    color:
+      $admin-text-secondary;
 
-.summaryArea {
-  margin-top: 1px;
-  margin-bottom: 20px;
-}
+    font: inherit;
+    font-size: 11px;
+    font-weight: 600;
 
-.summaryGrid {
-  gap: 15px;
-}
+    cursor: pointer;
 
-.summaryCard {
-  min-height: 122px;
-  padding: 20px 18px;
+    transition:
+      color 0.18s ease,
+      border-color 0.18s ease,
+      background 0.18s ease;
 
-  border-color: #e4dfd8;
-  border-radius: 9px;
-  box-shadow: 0 1px 2px rgba(54, 45, 38, 0.02);
-}
+    &:hover {
+      color:
+        $admin-primary-dark;
 
-.summaryIcon {
-  width: 37px;
-  height: 37px;
-  flex-basis: 37px;
-}
+      border-color:
+        rgba(
+          86,
+          138,
+          128,
+          0.28
+        );
 
-.summaryContent {
-  gap: 4px;
-
-  small {
-    font-size: 13px;
-  }
-
-  strong {
-    font-size: 28px;
-
-    em {
-      font-size: 13px;
+      background:
+        $admin-primary-light;
     }
   }
-
-  i {
-    margin-top: 8px;
-    font-size: 12px;
-  }
 }
 
-.managementGrid {
-  grid-template-columns: minmax(0, 1fr) 270px;
-  gap: 16px;
-  margin-top: 0;
+
+.activeRating {
+  color:
+    $admin-surface !important;
+
+  border-color:
+    $admin-primary !important;
+
+  background:
+    $admin-primary !important;
 }
 
-.mainSection,
-.analyticsCard {
-  border-color: #8d877f;
-}
 
-.filterBar {
-  min-height: 66px;
-  padding: 14px 19px 8px;
-  align-items: center;
-}
-
-.ratingFilterRow {
-  min-height: 44px;
-  padding: 0 19px 13px;
-  align-items: center;
-}
-
-.ratingFilterRow > div button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-}
+// ========================================
+// SECTION HEADING
+// ========================================
 
 .sectionHeading {
-  min-height: 59px;
-  padding: 0 20px;
-}
+  min-height: 58px;
 
-.reviewTable {
-  thead {
-    background: #f5f0e8;
-
-    tr {
-      height: 48px;
-    }
-  }
-
-  tbody {
-    tr {
-      height: 58px;
-      border-bottom-color: #d8d2ca;
-
-      &:hover {
-        background: #faf8f5;
-      }
-    }
-
-    td {
-      padding: 0 8px;
-    }
-  }
-}
-
-.selectedRow {
-  background: #f5faf8 !important;
-}
-
-.statusBadge,
-.detailButton,
-.pagination button {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  line-height: 1;
-}
+  justify-content: space-between;
 
-.analyticsColumn {
-  gap: 14px;
-}
+  gap: 20px;
 
-.analyticsCard {
-  padding: 20px 18px;
-}
+  padding:
+    0
+    15px;
 
-.topProductList,
-.ratingDistribution {
-  margin-top: 18px;
-}
+  margin-bottom: 14px;
 
-
-// 공지관리 상단 요약 카드 크기 기준
-.summaryArea {
-  margin-top: 0;
-  margin-bottom: 24px;
-}
-
-.summaryGrid {
-  gap: 16px;
-}
-
-.summaryCard {
-  min-height: 94px;
-  padding: 18px 20px;
-  gap: 16px;
-  border-radius: 12px;
-}
-
-.summaryIcon {
-  width: 44px;
-  height: 44px;
-  flex-basis: 44px;
-  border-radius: 12px;
-}
-
-.summaryContent {
-  gap: 2px;
-
-  small {
-    font-size: 13px;
-    font-weight: 500;
+  > div {
+    min-width: 0;
   }
+
+  h2 {
+    margin: 0;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.4;
+
+    letter-spacing:
+      -0.02em;
+  }
+}
+
+
+.reviewCount {
+  flex-shrink: 0;
+
+  color:
+    $admin-text-secondary;
+
+  font-size: 15px;
 
   strong {
-    font-size: 24px;
-    line-height: 1.2;
+    color:
+      $admin-primary-dark;
 
-    em {
-      font-size: 14px;
-      font-weight: 400;
+    font-size: 15px;
+    font-weight: 700;
+  }
+}
+
+
+// ========================================
+// TABLE WRAP
+// ========================================
+
+.tableWrap {
+  width: 100%;
+  min-width: 0;
+
+  overflow-x: auto;
+
+  border:
+    1px solid
+    $admin-border;
+
+  border-radius:
+    $admin-radius-md;
+
+  background:
+    $admin-surface;
+
+  scrollbar-width: thin;
+
+  scrollbar-color:
+    rgba(
+      86,
+      138,
+      128,
+      0.28
+    )
+    transparent;
+
+  &::-webkit-scrollbar {
+    height: 7px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background:
+      transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius:
+      999px;
+
+    background:
+      rgba(
+        86,
+        138,
+        128,
+        0.28
+      );
+  }
+}
+
+
+// ========================================
+// TABLE
+// ========================================
+
+.reviewTable {
+  width: 100%;
+  min-width: 900px;
+
+  border-collapse:
+    collapse;
+
+  table-layout:
+    fixed;
+
+  th,
+  td {
+    padding:
+      15px
+      11px;
+
+    border-bottom:
+      1px solid
+      $admin-border;
+
+    text-align: left;
+    vertical-align: middle;
+
+    font-size: 12px;
+
+    white-space: nowrap;
+  }
+
+  th {
+    background:
+      #f8f9f8;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing:
+      -0.01em;
+  }
+
+  td {
+    overflow: hidden;
+
+    color:
+      $admin-text-primary;
+
+    text-overflow:
+      ellipsis;
+  }
+
+  tbody tr {
+    cursor: pointer;
+
+    transition:
+      background
+      0.18s ease;
+  }
+
+  tbody tr:hover {
+    background:
+      #fafcfb;
+  }
+
+  tbody tr:last-child {
+    td {
+      border-bottom: 0;
     }
   }
 
-  i {
-    margin-top: 2px;
-    font-size: 12px;
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 10%;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 18%;
+  }
+
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 11%;
+  }
+
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 12%;
+  }
+
+  th:nth-child(5),
+  td:nth-child(5) {
+    width: 18%;
+  }
+
+  th:nth-child(6),
+  td:nth-child(6) {
+    width: 11%;
+  }
+
+  th:nth-child(7),
+  td:nth-child(7) {
+    width: 10%;
+  }
+
+  th:nth-child(8),
+  td:nth-child(8) {
+    width: 10%;
+
+    text-align: center;
   }
 }
 
 
-// 표와 분석 카드의 밀도 보정
-.mainSection,
-.analyticsCard {
-  border-color: #e4dfd8;
+// ========================================
+// SELECTED ROW
+// ========================================
+
+.selectedRow {
+  background:
+    rgba(
+      86,
+      138,
+      128,
+      0.065
+    ) !important;
 }
 
-.reviewSummary {
-  text-align: center !important;
-}
 
-.detailButton {
-  min-width: 58px;
-  height: 28px;
-  padding: 0 8px;
+// ========================================
+// TABLE CONTENT
+// ========================================
+
+.reviewId {
+  color:
+    $admin-text-muted;
+
   font-size: 11px;
 }
 
-.ratingBarRow {
-  grid-template-columns: 60px minmax(0, 1fr) 26px 30px;
-  gap: 6px;
+
+.authorName {
+  display: block;
+
+  overflow: hidden;
+
+  color:
+    $admin-text-primary;
+
+  font-weight: 700;
+
+  text-overflow:
+    ellipsis;
 }
 
-.ratingLabel,
-.ratingBarRow > strong,
-.ratingBarRow > small {
+
+.productTableCell {
   min-width: 0;
-  line-height: 1;
-  white-space: nowrap;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  > span:last-child {
+    min-width: 0;
+
+    display: block;
+
+    overflow: hidden;
+
+    color:
+      $admin-text-primary;
+
+    font-weight: 600;
+
+    text-overflow:
+      ellipsis;
+
+    white-space:
+      nowrap;
+  }
 }
 
-.ratingBarRow > strong,
-.ratingBarRow > small {
-  justify-self: end;
-  text-align: right;
+
+.tableThumb {
+  width: 34px;
+  height: 34px;
+
+  flex:
+    0
+    0
+    34px;
+
+  display: block;
+
+  overflow: hidden;
+
+  border-radius:
+    6px;
+
+  background:
+    #eef0ee;
+
+  img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit:
+      cover;
+  }
 }
 
 
-// 필터와 상세 패널의 컨트롤 정렬
-.filterBar {
-  grid-template-columns: minmax(240px, 1fr) 96px 105px 96px 72px;
-  gap: 8px;
+.reviewSummary {
+  display: block;
+
+  overflow: hidden;
+
+  color:
+    $admin-text-secondary;
+
+  text-overflow:
+    ellipsis;
+
+  white-space:
+    nowrap;
 }
 
-.searchField input,
-.selectField select,
-.resetButton {
-  height: 40px;
-  line-height: 40px;
+
+// ========================================
+// STAR
+// ========================================
+
+.stars {
+  color:
+    #dedbd5;
+
+  font-size: 12px;
+
+  letter-spacing:
+    0.4px;
+
+  white-space:
+    nowrap;
+
+  > span {
+    color:
+      #e9b743;
+  }
 }
 
-.selectField select {
-  padding: 0 10px;
-}
 
-.resetButton {
-  padding: 0 10px;
+// ========================================
+// VIEW BUTTON
+// ========================================
+
+.viewButton {
+  min-height: 30px;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  line-height: 1;
-}
 
-.detailPanel {
-  padding: 24px;
-  border-color: #e4dfd8;
-}
+  padding:
+    0
+    11px;
 
-.detailProduct {
-  margin-top: 20px;
-}
+  border:
+    1px solid
+    $admin-border-dark;
 
-.detailDivider {
-  margin: 17px 0;
-  background: #e4dfd8;
-}
+  border-radius:
+    $admin-radius-sm;
 
-.detailInfo {
-  gap: 10px;
+  background:
+    $admin-surface;
 
-  > div {
-    min-height: 30px;
-    align-items: center;
+  color:
+    $admin-text-secondary;
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+
+  &:hover {
+    color:
+      $admin-primary-dark;
+
+    border-color:
+      rgba(
+        86,
+        138,
+        128,
+        0.5
+      );
+
+    background:
+      $admin-primary-light;
   }
 }
 
-.reviewContentArea {
-  margin-top: 18px;
 
-  > div {
-    min-height: 80px;
-    padding: 12px;
-  }
-}
+// ========================================
+// PAGINATION
+// ========================================
 
-.attachmentArea {
-  margin-top: 18px;
-}
+.pagination {
+  min-height: 64px;
 
-.detailActions {
+  display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 8px;
+
+  gap: 6px;
+
+  padding:
+    16px
+    12px;
+
+  border-top:
+    1px solid
+    $admin-border;
 
   button {
-    min-width: 82px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    line-height: 1;
+
+    border:
+      1px solid
+      transparent;
+
+    border-radius:
+      $admin-radius-sm;
+
+    background:
+      transparent;
+
+    color:
+      $admin-text-secondary;
+
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+      background 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
+
+    &:hover:not(:disabled) {
+      color:
+        $admin-primary-dark;
+
+      background:
+        $admin-primary-light;
+    }
+
+    &:disabled {
+      opacity: 0.35;
+
+      cursor: default;
+    }
+  }
+}
+
+
+.activePage {
+  color:
+    $admin-surface !important;
+
+  border-color:
+    $admin-primary !important;
+
+  background:
+    $admin-primary !important;
+}
+
+
+// ========================================
+// ANALYTICS COLUMN
+// ========================================
+
+.analyticsColumn {
+  position: sticky;
+
+  top: 24px;
+
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
+}
+
+
+// ========================================
+// TOP PRODUCTS
+// ========================================
+
+.topProductList {
+  display: flex;
+  flex-direction: column;
+
+  gap: 15px;
+}
+
+
+.topProductRow {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 92px)
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 9px;
+
+  > span {
+    min-width: 0;
+
+    overflow: hidden;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 11px;
+
+    text-overflow:
+      ellipsis;
+
+    white-space:
+      nowrap;
+  }
+
+  > i {
+    position: relative;
+
+    width: 100%;
+    height: 7px;
+
+    display: block;
+
+    overflow: hidden;
+
+    border-radius:
+      999px;
+
+    background:
+      #eef0ef;
+
+    > b {
+      height: 100%;
+
+      display: block;
+
+      border-radius:
+        inherit;
+
+      background:
+        $admin-primary;
+
+      transition:
+        width
+        0.3s ease;
+    }
+  }
+
+  > strong {
+    min-width: 30px;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-align:
+      right;
+  }
+}
+
+
+.analyticsEmpty {
+  margin:
+    8px
+    0
+    0;
+
+  color:
+    $admin-text-muted;
+
+  font-size: 11px;
+}
+
+
+// ========================================
+// RATING DISTRIBUTION
+// ========================================
+
+.ratingDistribution {
+  display: flex;
+  flex-direction: column;
+
+  gap: 13px;
+}
+
+
+.ratingBarRow {
+  display: grid;
+
+  grid-template-columns:
+    30px
+    minmax(0, 1fr)
+    30px
+    30px;
+
+  align-items: center;
+
+  gap: 7px;
+}
+
+
+.ratingLabel {
+  color:
+    $admin-text-secondary;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  white-space:
+    nowrap;
+}
+
+
+.ratingTrack {
+  position: relative;
+
+  width: 100%;
+  height: 7px;
+
+  display: block;
+
+  overflow: hidden;
+
+  border-radius:
+    999px;
+
+  background:
+    #eef0ef;
+
+  b {
+    height: 100%;
+
+    display: block;
+
+    border-radius:
+      inherit;
+
+    background:
+      $admin-primary;
+  }
+}
+
+
+.ratingBarRow > strong {
+  color:
+    $admin-text-primary;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-align:
+    right;
+}
+
+
+.ratingBarRow > small {
+  color:
+    $admin-text-muted;
+
+  font-size: 10px;
+
+  text-align:
+    right;
+}
+
+
+.analyticsCaption {
+  margin:
+    18px
+    0
+    0;
+
+  padding-top:
+    13px;
+
+  border-top:
+    1px solid
+    $admin-border;
+
+  color:
+    $admin-text-muted;
+
+  font-size: 10px;
+  line-height: 1.5;
+
+  text-align:
+    right;
+
+  strong {
+    color:
+      $admin-text-secondary;
+
+    font-weight: 700;
   }
 }
 
 
 // ========================================
-// 모바일 재배치
+// DETAIL PANEL
 // ========================================
 
-@media (max-width: 767px) {
-  .topOrnament {
-    display: none;
-  }
+.detailPanel {
+  position: sticky;
 
-  .page {
-    padding: 18px 16px 40px;
-  }
+  top: 24px;
 
-  .summaryArea {
-    margin-bottom: 16px;
-  }
+  min-width: 0;
 
-  .summaryGrid {
-    gap: 12px;
-  }
+  @include admin-panel;
 
-  .managementGrid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 16px;
-  }
+  padding: 20px;
+}
 
-  .mainSection,
-  .analyticsColumn,
-  .analyticsCard,
-  .detailPanel {
-    width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-  }
 
-  .filterBar {
-    padding: 16px 14px 10px;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-  }
+// ========================================
+// DETAIL HEADER
+// ========================================
 
-  .searchField {
-    width: 100%;
-    grid-column: 1 / -1;
-  }
+.detailHeader {
+  min-height: 46px;
 
-  .selectField,
-  .sortField,
-  .resetButton {
-    width: 100%;
-    min-width: 0;
-  }
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
 
-  .selectField select,
-  .resetButton {
-    border-color: #c8ddd8;
-    background: #f3f8f6;
-    color: #456f6b;
-    font-weight: 600;
-    text-align: center;
-    text-align-last: center;
-  }
+  gap: 16px;
 
-  .selectField select:focus,
-  .resetButton:hover {
-    border-color: #7eaaa5;
-    background: #eaf4f1;
-    color: #35625e;
-  }
+  padding-bottom:
+    10px;
 
-  .resetButton {
-    grid-column: 2;
-  }
+  border-bottom:
+    1px solid
+    $admin-border;
 
-  .ratingFilterRow {
-    min-height: 0;
-    padding: 2px 14px 14px;
+  > div {
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 9px;
 
-    > div {
-      width: 100%;
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 6px;
+    gap: 2px;
+  }
 
-      button {
-        width: 100%;
-        min-width: 0;
-        padding: 0;
-      }
+  h2 {
+    margin:
+      7px
+      0
+      0;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 30px;
+
+    letter-spacing:
+      -0.02em;
+  }
+
+  > button {
+    width: 30px;
+    height: 30px;
+
+    margin-top: 7px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border: 0;
+    border-radius: 50%;
+
+    background:
+      #f4f5f4;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 19px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+      color 0.18s ease,
+      background 0.18s ease;
+
+    &:hover {
+      color:
+        $admin-text-primary;
+
+      background:
+        #eceeed;
     }
   }
+}
 
-  .sectionHeading {
-    min-height: 56px;
-    padding: 0 16px;
 
-    h2 {
-      font-size: 19px;
-    }
-  }
+// ========================================
+// DETAIL PRODUCT
+// ========================================
 
-  .tableWrap {
-    padding: 12px;
-    overflow: visible;
-    box-sizing: border-box;
-  }
+.detailProduct {
+  display: flex;
+  align-items: center;
 
-  .reviewTable {
+  gap: 13px;
+
+  padding:
+    18px
+    0;
+
+  > div {
     min-width: 0;
+
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+    gap: 6px;
+  }
+
+  strong {
+    overflow: hidden;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    text-overflow:
+      ellipsis;
+
+    white-space:
+      nowrap;
+  }
+
+  a {
+    width:
+      fit-content;
+
+    color:
+      $admin-primary-dark;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    text-decoration:
+      none;
+
+    &:hover {
+      text-decoration:
+        underline;
+    }
+  }
+}
+
+
+.detailThumb {
+  width: 56px;
+  height: 56px;
+
+  flex:
+    0
+    0
+    56px;
+
+  display: block;
+
+  overflow: hidden;
+
+  border-radius:
+    $admin-radius-md;
+
+  background:
+    #eef0ee;
+
+  img {
+    width: 100%;
+    height: 100%;
+
     display: block;
 
-    thead {
-      display: none;
-    }
+    object-fit:
+      cover;
+  }
+}
 
-    tbody {
-      display: grid;
-      gap: 12px;
-    }
 
-    tbody tr {
-      min-width: 0;
-      height: auto;
-      padding: 16px;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px 18px;
-      box-sizing: border-box;
-      border: 1px solid #d8e4df;
-      border-radius: 12px;
-      background: #fff;
-      box-shadow: 0 3px 12px rgba(57, 85, 78, 0.05);
-    }
+// ========================================
+// DETAIL BLOCK
+// ========================================
 
-    tbody td {
-      min-width: 0;
-      padding: 0;
-      display: grid;
-      align-content: start;
-      gap: 7px;
-      overflow: visible;
-      color: #3f3b37;
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 1.55;
-      text-align: left;
-      text-overflow: clip;
-      white-space: normal;
+.detailBlock {
+  padding:
+    17px
+    0;
 
-      &::before {
-        content: attr(data-label);
-        color: #4d7e7b;
-        font-size: 12px;
-        font-weight: 700;
-        line-height: 1.2;
-      }
+  border-top:
+    1px solid
+    $admin-border;
 
-      &:nth-child(1),
-      &:nth-child(2),
-      &:nth-child(5),
-      &:nth-child(8) {
-        grid-column: 1 / -1;
-      }
-    }
+  h3 {
+    margin:
+      0
+      0
+      12px;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 15px;
+    font-weight: 700;
   }
 
-  .reviewSummary {
-    padding: 11px 12px !important;
-    border-radius: 8px;
-    background: #f3f8f6;
-    text-align: left !important;
-    overflow-wrap: anywhere;
-  }
+  dl {
+    display: flex;
+    flex-direction: column;
 
-  .productTableCell {
     gap: 10px;
 
-    > span:last-child {
-      font-size: 14px;
-      font-weight: 600;
+    margin: 0;
+  }
+
+  dl > div {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 14px;
+  }
+
+  dt {
+    flex-shrink: 0;
+
+    color:
+      $admin-text-muted;
+
+    font-size: 13px;
+  }
+
+  dd {
+    min-width: 0;
+
+    margin: 0;
+
+    overflow-wrap:
+      anywhere;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    text-align:
+      right;
+  }
+}
+
+
+.detailRating {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 7px;
+
+  > span:last-child {
+    color:
+      $admin-primary-dark;
+
+    font-size: 12px;
+  }
+}
+
+
+// ========================================
+// REVIEW CONTENT
+// ========================================
+
+.reviewContentBox {
+  min-height: 90px;
+
+  padding:
+    12px
+    13px;
+
+  border:
+    1px solid
+    rgba(
+      86,
+      138,
+      128,
+      0.32
+    );
+
+  border-radius:
+    $admin-radius-md;
+
+  background:
+    #fbfdfc;
+
+  color:
+    $admin-text-secondary;
+
+  font-size: 12px;
+  line-height: 1.65;
+
+  white-space:
+    pre-wrap;
+
+  word-break:
+    break-word;
+}
+
+
+// ========================================
+// ATTACHMENTS
+// ========================================
+
+.attachmentCount {
+  color:
+    $admin-text-muted;
+
+  font-size: 11px;
+  font-weight: 500;
+}
+
+
+.attachmentList {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  button {
+    width: 56px;
+    height: 56px;
+
+    padding: 0;
+
+    overflow: hidden;
+
+    border:
+      1px solid
+      $admin-border;
+
+    border-radius:
+      $admin-radius-sm;
+
+    background:
+      #eef0ee;
+
+    cursor: pointer;
+
+    transition:
+      border-color 0.18s ease,
+      transform 0.18s ease;
+
+    &:hover {
+      border-color:
+        $admin-primary;
+
+      transform:
+        translateY(-1px);
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+
+      display: block;
+
+      object-fit:
+        cover;
     }
   }
+}
 
-  .tableThumb {
-    width: 40px;
-    height: 40px;
-    flex-basis: 40px;
-    border-radius: 6px;
+
+.noAttachment {
+  margin: 0;
+
+  color:
+    $admin-text-muted;
+
+  font-size: 11px;
+}
+
+
+// ========================================
+// DETAIL FOOTER
+// ========================================
+
+.detailFooter {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 8px;
+
+  padding-top:
+    17px;
+
+  border-top:
+    1px solid
+    $admin-border;
+
+  button {
+    min-height: 38px;
+
+    border-radius:
+      $admin-radius-sm;
+
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+      opacity 0.18s ease,
+      background 0.18s ease,
+      border-color 0.18s ease;
+
+    &:disabled {
+      opacity: 0.5;
+
+      cursor: default;
+    }
+  }
+}
+
+
+.hideButton {
+  text-align: center;
+  border:
+    1px solid
+    rgba(
+      86,
+      138,
+      128,
+      0.42
+    );
+
+  background:
+    $admin-surface;
+
+  color:
+    $admin-primary-dark;
+
+  &:hover:not(:disabled) {
+    background:
+      $admin-primary-light;
+  }
+}
+
+
+.deleteButton {
+  text-align: center;
+  border:
+    1px solid
+    rgba(
+      201,
+      111,
+      111,
+      0.35
+    );
+
+  background:
+    $admin-surface;
+
+  color:
+    $admin-danger;
+
+  &:hover:not(:disabled) {
+    background:
+      $admin-danger-light;
+  }
+}
+
+
+// ========================================
+// DELETE MODAL
+// ========================================
+
+.modalBackdrop {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 300;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background:
+    rgba(
+      25,
+      35,
+      33,
+      0.32
+    );
+}
+
+
+.confirmModal {
+  width:
+    min(
+      390px,
+      100%
+    );
+
+  padding:
+    28px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  border:
+    1px solid
+    $admin-border;
+
+  border-radius:
+    $admin-radius-lg;
+
+  background:
+    $admin-surface;
+
+  box-shadow:
+    0
+    18px
+    48px
+    rgba(
+      0,
+      0,
+      0,
+      0.14
+    );
+
+  text-align:
+    center;
+
+  > h3 {
+    margin:
+      14px
+      0
+      7px;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 18px;
+    font-weight: 700;
   }
 
-  .reviewId {
-    font-size: 14px !important;
+  > p {
+    margin: 0;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 12px;
+    line-height: 1.55;
   }
 
-  .stars {
-    font-size: 16px;
+  > strong {
+    max-width: 100%;
+
+    margin-top:
+      12px;
+
+    overflow: hidden;
+
+    color:
+      $admin-primary-dark;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-overflow:
+      ellipsis;
+
+    white-space:
+      nowrap;
   }
 
-  .statusBadge {
-    justify-self: start;
-  }
-
-  .detailButton {
+  > div:last-child {
     width: 100%;
-    height: 36px;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 8px;
+
+    margin-top:
+      22px;
+
+    button {
+      min-height: 40px;
+
+      border-radius:
+        $admin-radius-sm;
+
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+
+      cursor: pointer;
+
+      &:first-child {
+        border:
+          1px solid
+          $admin-border-dark;
+
+        background:
+          $admin-surface;
+
+        color:
+          $admin-text-secondary;
+      }
+
+      &:last-child {
+        border:
+          1px solid
+          $admin-danger;
+
+        background:
+          $admin-danger;
+
+        color:
+          $admin-surface;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+
+        cursor: default;
+      }
+    }
+  }
+}
+
+
+.warningIcon {
+  width: 42px;
+  height: 42px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    $admin-danger-light;
+
+  color:
+    $admin-danger;
+
+  font-size: 20px;
+  font-weight: 800;
+}
+
+
+// ========================================
+// TOAST
+// ========================================
+
+.toast {
+  position: fixed;
+
+  right: 28px;
+  bottom: 28px;
+
+  z-index: 1000;
+
+  min-width: 260px;
+  max-width: 420px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding:
+    13px
+    15px;
+
+  border:
+    1px solid
+    rgba(
+      86,
+      138,
+      128,
+      0.25
+    );
+
+  border-radius:
+    $admin-radius-md;
+
+  background:
+    $admin-surface;
+
+  box-shadow:
+    0
+    10px
+    30px
+    rgba(
+      0,
+      0,
+      0,
+      0.1
+    );
+
+  span {
+    color:
+      $admin-text-primary;
+
+    font-size: 11px;
+    font-weight: 600;
   }
 
-  .pagination {
-    min-height: 58px;
-    padding: 0 12px;
+  button {
+    flex-shrink: 0;
+
+    width: 25px;
+    height: 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 50%;
+
+    background:
+      #f3f4f3;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 16px;
+
+    cursor: pointer;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 1280
+// ========================================
+
+@media (max-width: 1280px) {
+  .reviewTable {
+    min-width: 900px;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 1180
+// ========================================
+
+@media (max-width: 1180px) {
+  .managementGrid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .analyticsColumn,
+  .detailPanel {
+    position: static;
   }
 
   .analyticsColumn {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 12px;
+
+    align-items:
+      start;
   }
 
   .detailPanel {
-    padding: 20px;
+    max-width: none;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 850
+// ========================================
+
+@media (max-width: 850px) {
+  .summaryArea {
+    margin-top:
+      -8px;
   }
 
-  .detailInfo > div {
-    grid-template-columns: 72px minmax(0, 1fr);
+  .summaryGrid {
+    width: 100%;
+  }
+
+  .mainSection {
+    padding: 16px;
+  }
+
+  .analyticsColumn {
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 12px;
+
+    align-items:
+      start;
+  }
+
+  .topProductRow {
+    grid-template-columns:
+      minmax(0, 80px)
+      minmax(0, 1fr)
+      auto;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 767
+// ========================================
+
+@media (max-width: 767px) {
+
+  .page {
+    padding-bottom: 30px;
+  }
+
+
+  // ========================================
+  // SUMMARY
+  // ========================================
+
+  .summaryArea {
+    margin-top: 0;
+  }
+
+
+  .summaryGrid {
+    width: 100%;
+
+    margin-inline: auto;
+  }
+
+
+  // ========================================
+  // MAIN SECTION
+  // ========================================
+
+  .mainSection {
+    padding: 14px;
+  }
+
+
+  // ========================================
+  // FILTER
+  // ========================================
+
+  .selectField {
+    min-width: 0;
+
+    select {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
+
+  // ========================================
+  // RATING FILTER
+  // ========================================
+
+  .ratingFilterRow {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 12px;
+
+    padding:
+      0
+      2px
+      14px;
+
+    border-bottom:
+      1px solid
+      $admin-border;
+
+    > span {
+      flex-shrink: 0;
+
+      padding: 0;
+
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    > div {
+      min-width: 0;
+
+      display: flex;
+      align-items: center;
+
+      flex-wrap: nowrap;
+
+      gap: 5px;
+    }
+
+    button {
+      min-width: 38px;
+      min-height: 28px;
+
+      padding:
+        0
+        8px;
+
+      font-size: 10px;
+
+      white-space: nowrap;
+    }
+  }
+
+
+  // ========================================
+  // LIST HEADING
+  // ========================================
+
+  .sectionHeading {
+    min-height: auto;
+
+    display: flex;
+
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-top: 22px;
+    margin-bottom: 16px;
+
+    padding:
+      0
+      2px;
+
+    h2 {
+      margin: 0;
+
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+  }
+
+
+  .reviewCount {
+    flex-shrink: 0;
+
+    font-size: 13px;
+
+    strong {
+      font-size: 16px;
+    }
+  }
+
+
+  // ========================================
+  // TABLE
+  // ========================================
+
+  .reviewTable {
+    min-width: 880px;
+  }
+
+
+  // ========================================
+  // ANALYTICS
+  // ========================================
+
+  .analyticsColumn {
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 12px;
+
+    align-items: start;
+  }
+
+
+  .topProductList {
+    gap: 12px;
+  }
+
+
+  .topProductRow {
+    grid-template-columns:
+      minmax(0, 64px)
+      minmax(0, 1fr)
+      auto;
+
+    gap: 6px;
+
+    > span,
+    > strong {
+      font-size: 10px;
+    }
+  }
+
+
+  // ========================================
+  // RATING DISTRIBUTION
+  // ========================================
+
+  .ratingDistribution {
+    gap: 11px;
+  }
+
+
+  .ratingBarRow {
+    grid-template-columns:
+      26px
+      minmax(0, 1fr)
+      26px
+      28px;
+
+    gap: 5px;
+  }
+
+
+  .ratingLabel,
+  .ratingBarRow > strong {
+    font-size: 10px;
+  }
+
+
+  .ratingBarRow > small {
+    font-size: 9px;
+  }
+
+
+  .analyticsCaption {
+    margin:
+      18px
+      0
+      0;
+
+    padding-top: 10px;
+
+    font-size: 9px;
+    line-height: 1.3;
+  }
+
+
+  // ========================================
+  // DETAIL
+  // ========================================
+
+  .detailPanel {
+    padding: 16px;
+  }
+
+
+  .detailBlock {
+    dt,
+    dd {
+      font-size: 12px;
+    }
+  }
+
+
+  // ========================================
+  // TOAST
+  // ========================================
+
+  .toast {
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+
+    min-width: 0;
+    max-width: none;
   }
 }

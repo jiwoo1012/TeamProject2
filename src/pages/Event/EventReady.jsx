@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { subscribeToAuthState } from '../../firebase/auth'
+import { getDocument } from '../../firebase/firestore'
 import { getEventParticipationAvailability } from '../../services/eventParticipation'
 import eventsData from '../../data/events.json'
 import { PATHS } from '../../routes/paths'
+import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 import cardsImage from '../../assets/images/eventPage/cards.png'
 import oImage from '../../assets/images/eventPage/o.png'
 import xImage from '../../assets/images/eventPage/x.png'
@@ -23,7 +25,7 @@ const EVENT_READY_CONFIG = {
       '처음 주어진 5초 동안 그림들의 위치를 확인합니다.',
       '게임이 시작되면, 같은 그림을 가진 카드 두 장을 뒤집어 포인트를 획득합니다.',
       '제한시간이 끝나거나 틀린 카드를 뒤집을 때까지 같은 쌍의 카드를 계속 찾아냅니다.',
-      '나리의 기억력으로 포인트를 최대한 쟁취해보세요!',
+      '나으리의 기억력으로 포인트를 최대한 쟁취해보세요!',
     ],
   },
   'ox-quiz': {
@@ -49,11 +51,30 @@ const formatDate = (date) => {
 
 const EventReady = () => {
   const { eventType } = useParams()
-  const config = EVENT_READY_CONFIG[eventType]
+  const builtInConfig = EVENT_READY_CONFIG[eventType]
+  const pageRef = useRef(null)
   const loginNoticeTimerRef = useRef(null)
   const [currentUser, setCurrentUser] = useState(undefined)
   const [loginNotice, setLoginNotice] = useState('')
   const [availability, setAvailability] = useState(null)
+  const [customEvent, setCustomEvent] = useState(null)
+  const [isEventLoading, setIsEventLoading] = useState(!builtInConfig)
+  const [isAvailabilityLoading, setIsAvailabilityLoading] = useState(false)
+
+  const config = useMemo(() => builtInConfig ?? (customEvent ? {
+      eventId: customEvent.id,
+      buttonText: '참여하기',
+      destination: null,
+      steps: customEvent.steps ?? [
+        customEvent.method ?? '이벤트 내용을 확인합니다.',
+        '참여하기 버튼을 눌러 이벤트에 참여합니다.',
+        '이벤트 결과와 혜택은 마이페이지에서 확인할 수 있습니다.',
+      ],
+    } : null), [builtInConfig, customEvent])
+
+  const event = builtInConfig
+    ? eventsData[builtInConfig.eventIndex].event
+    : customEvent
 
   useEffect(() => {
     const unsubscribe = subscribeToAuthState(setCurrentUser)
@@ -65,49 +86,123 @@ const EventReady = () => {
   }, [])
 
   useEffect(() => {
-    if (!config || !currentUser || currentUser.isAnonymous) {
+    let isMounted = true
+    if (builtInConfig) {
+      setIsEventLoading(false)
+      return undefined
+    }
+
+    setIsEventLoading(true)
+    getDocument('events', decodeURIComponent(eventType))
+      .then((document) => {
+        if (!isMounted) return
+        const data = document?.event ?? document
+        setCustomEvent(data ? {
+          ...data,
+          id: document.id,
+          eventPeriod: data.eventPeriod ?? { startDate: '', endDate: '' },
+          participationLimit: data.participationLimit ?? { type: 'per_user_total', maxCount: 1 },
+          precautions: data.precautions ?? [],
+        } : null)
+      })
+      .catch((error) => {
+        console.error('등록 이벤트 조회 실패:', error)
+        if (isMounted) setCustomEvent(null)
+      })
+      .finally(() => {
+        if (isMounted) setIsEventLoading(false)
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [builtInConfig, eventType])
+
+  useEffect(() => {
+    if (!config || !event || !currentUser || currentUser.isAnonymous) {
       setAvailability(null)
+      setIsAvailabilityLoading(false)
       return
     }
-    const event = eventsData[config.eventIndex].event
+    let isMounted = true
+    setIsAvailabilityLoading(true)
     getEventParticipationAvailability(config.eventId, event.participationLimit)
-      .then(setAvailability)
-      .catch(() => setAvailability(null))
-  }, [config, currentUser])
+      .then((result) => {
+        if (isMounted) setAvailability(result)
+      })
+      .catch(() => {
+        if (isMounted) setAvailability(null)
+      })
+      .finally(() => {
+        if (isMounted) setIsAvailabilityLoading(false)
+      })
 
-  const handleStart = (eventObject) => {
-    if (currentUser && !currentUser.isAnonymous && availability?.canParticipate !== false) return
+    return () => {
+      isMounted = false
+    }
+  }, [config, currentUser, event])
 
-    eventObject.preventDefault()
+  const showNotice = (message) => {
     window.clearTimeout(loginNoticeTimerRef.current)
-    setLoginNotice(currentUser && !currentUser.isAnonymous
-      ? '이 이벤트의 참여 가능 횟수를 모두 사용했어요.'
-      : '로그인 후 이벤트에 참여할 수 있어요.')
+    setLoginNotice(message)
     loginNoticeTimerRef.current = window.setTimeout(() => setLoginNotice(''), 2600)
   }
 
-  if (!config) return <Navigate to={PATHS.events} replace />
+  const handleStart = (eventObject) => {
+    if (!currentUser || currentUser.isAnonymous) {
+      eventObject.preventDefault()
+      showNotice('로그인 후 이벤트에 참여할 수 있어요.')
+      return
+    }
+    if (isAvailabilityLoading || !availability) {
+      eventObject.preventDefault()
+      return
+    }
+    if (availability?.canParticipate === false) {
+      eventObject.preventDefault()
+      showNotice('이 이벤트의 참여 가능 횟수를 모두 사용했어요.')
+      return
+    }
+    if (!config.destination) {
+      eventObject.preventDefault()
+      showNotice('이벤트 점검중입니다.')
+    }
+  }
 
-  const event = eventsData[config.eventIndex].event
+  if (isEventLoading) return <main className={styles.page} aria-busy="true" />
+  if (!config || !event) return <Navigate to={PATHS.events} replace />
+
   const isCardGame = eventType === 'card-game'
+  const isSignedIn = Boolean(currentUser && !currentUser.isAnonymous)
+  const isStartDisabled = isSignedIn && (
+    isAvailabilityLoading || !availability || availability.canParticipate === false
+  )
+  const participationLabel = availability?.isAdmin
+    ? '관리자 무제한 참여 가능!'
+    : event.participationLimit.type === 'per_day_once'
+      ? `하루 ${event.participationLimit.maxCount}회 참여 가능!`
+      : `전체 ${event.participationLimit.maxCount}회 참여 가능!`
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} ref={pageRef}>
+      <MobileTopButton contentRef={pageRef} />
       <section className={styles.hero} aria-labelledby="event-ready-title">
-        <div className={`${styles.sideVisual} ${styles.leftVisual}`} aria-hidden="true">
-          {isCardGame ? (
-            <img className={styles.cards} src={cardsImage} alt="" />
-          ) : (
-            <div className={styles.oxImages}>
-              <img src={oImage} alt="" />
-              <img src={xImage} alt="" />
-            </div>
-          )}
-        </div>
+        {builtInConfig && (
+          <div className={`${styles.sideVisual} ${styles.leftVisual}`} aria-hidden="true">
+            {isCardGame ? (
+              <img className={styles.cards} src={cardsImage} alt="" />
+            ) : (
+              <div className={styles.oxImages}>
+                <img src={oImage} alt="" />
+                <img src={xImage} alt="" />
+              </div>
+            )}
+          </div>
+        )}
 
         <article className={styles.infoCard}>
           <p className={styles.chanceRibbon}>
-            {event.participationLimit.maxCount}회 참여 가능!
+            {participationLabel}
           </p>
 
           <h1 id="event-ready-title">{event.title}</h1>
@@ -126,20 +221,34 @@ const EventReady = () => {
             </div>
           </dl>
 
-          <Link className={styles.startButton} to={config.destination} onClick={handleStart}>
-            {config.buttonText}<span aria-hidden="true">›</span>
-          </Link>
+          {config.destination ? (
+            isStartDisabled ? (
+              <button className={styles.startButton} type="button" disabled>
+                {config.buttonText}<span aria-hidden="true">›</span>
+              </button>
+            ) : (
+              <Link className={styles.startButton} to={config.destination} onClick={handleStart}>
+                {config.buttonText}<span aria-hidden="true">›</span>
+              </Link>
+            )
+          ) : (
+            <button className={styles.startButton} type="button" onClick={handleStart} disabled={isStartDisabled}>
+              {config.buttonText}<span aria-hidden="true">›</span>
+            </button>
+          )}
 
           <ul className={styles.precautions}>
-            {event.precautions.slice(1, 3).map((precaution) => (
+            {event.precautions.slice(builtInConfig ? 1 : 0, builtInConfig ? 3 : 2).map((precaution) => (
               <li key={precaution}>{precaution}</li>
             ))}
           </ul>
         </article>
 
-        <div className={`${styles.sideVisual} ${styles.rightVisual}`}>
-          <img src={config.character} alt={config.characterAlt} />
-        </div>
+        {builtInConfig && (
+          <div className={`${styles.sideVisual} ${styles.rightVisual}`}>
+            <img src={config.character} alt={config.characterAlt} />
+          </div>
+        )}
       </section>
 
       <section className={styles.instructions} aria-labelledby="instruction-title">
@@ -158,7 +267,9 @@ const EventReady = () => {
         <div className={styles.loginNotice} role="alert">
           <span aria-hidden="true">!</span>
           <strong>{loginNotice}</strong>
-          <Link to={PATHS.login}>로그인하러 가기 <span aria-hidden="true">›</span></Link>
+          {loginNotice.includes('로그인') && (
+            <Link to={PATHS.login}>로그인하러 가기 <span aria-hidden="true">›</span></Link>
+          )}
         </div>
       )}
     </main>

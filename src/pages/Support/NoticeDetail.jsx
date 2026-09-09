@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
 
 import { db } from '../../firebase/firebase'
+import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 import styles from './NoticeDetail.module.scss'
 
 const formatDate = (timestamp) => {
@@ -31,6 +32,7 @@ const CATEGORY_BADGE_CLASS = {
 }
 
 const NoticeDetail = () => {
+  const pageRef = useRef(null)
   const { noticeId } = useParams()
   const navigate = useNavigate()
   const [notice, setNotice] = useState(null)
@@ -79,7 +81,8 @@ const NoticeDetail = () => {
   }, [notice, siblingNotices])
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} ref={pageRef}>
+      <MobileTopButton contentRef={pageRef} />
       <section className={styles.content}>
         <h1 className={styles.pageTitle}>공지사항</h1>
 

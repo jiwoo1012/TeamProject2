@@ -1,164 +1,229 @@
 @use '../../styles/variables' as v;
 
 .page {
-  width: min(1320px, calc(100% - 80px));
-  min-height: 0;
-  margin: 0 auto;
-  padding: v.$space-12 0 v.$space-20;
+  width: 100%;
+  min-height: 100vh;
+  padding: 60px max(40px, calc((100% - #{v.$container-max}) / 2)) 100px;
+  background: #f8f7f3;
   color: v.$color-text-primary;
   font-family: v.$font-family-base;
-}
-
-.topOrnament {
-  display: block;
-  width: 100%;
-  height: auto;
-  margin-bottom: v.$space-5;
-  transform: scaleX(1.05);
-  transform-origin: left center;
+  font-size: v.$font-size-sm;
+  line-height: v.$line-height-base;
 }
 
 .purchaseSteps {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: v.$space-4;
-  margin: v.$space-5 240px v.$space-8 0;
+  flex-wrap: wrap;
+  gap: v.$space-3;
+  margin-bottom: v.$space-6;
+  padding: 30px;
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
   color: v.$color-text-muted;
-  font-size: v.$font-size-lg;
-  font-weight: v.$font-weight-semibold;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-medium;
 }
-
-.purchaseSteps strong { color: v.$color-text-primary; }
-.stepFlower { width: 42px; height: 26px; flex: 0 0 42px; }
+.purchaseSteps strong {
+  color: v.$color-primary;
+  font-weight: v.$font-weight-bold;
+}
+.stepFlower {
+  width: 28px;
+  height: 18px;
+  flex: 0 0 28px;
+}
 
 .completeCard {
   position: relative;
+  width: 100%;
   overflow: hidden;
-  width: 940px;
-  min-height: 0;
-  margin: 0 auto;
-  padding: 54px 122px 46px;
-  border: 1px solid color-mix(in srgb, v.$color-taupe 48%, v.$color-border);
-  border-radius: v.$radius-sm;
-  background-color: v.$color-bg;
-  background-image:
-    linear-gradient(rgb(253 251 249 / 46%), rgb(253 251 249 / 46%)),
-    url('../../assets/images/mypage/orderCompleteHanji.png');
-  background-position: center;
-  background-size: auto, 680px;
-  box-shadow: v.$shadow-sm;
+  padding: v.$space-10 30px;
+  border-radius: v.$radius-xl;
+  background: v.$color-white;
 }
-
 .celebrationCanvas {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
 }
-
 .completeCard > :not(.celebrationCanvas) {
   position: relative;
   z-index: 1;
 }
-
 .checkIcon {
-  width: 88px;
-  height: 88px;
+  display: block;
+  width: 64px;
+  height: 64px;
   margin: 0 auto;
   object-fit: contain;
-  filter: drop-shadow(0 2px 1px rgb(89 65 43 / 10%));
 }
-
 .heroArea {
-  width: 690px;
-  margin: v.$space-6 auto 0;
-  padding: v.$space-8 v.$space-6 v.$space-6;
-  border-top: 1px solid color-mix(in srgb, v.$color-taupe 58%, transparent);
-  border-bottom: 1px solid color-mix(in srgb, v.$color-taupe 58%, transparent);
-  border-radius: 0;
-  background: transparent;
+  width: 100%;
+  max-width: 640px;
+  margin: v.$space-5 auto 0;
 }
-
-.completeCopy { text-align: center; }
+.completeCopy {
+  text-align: center;
+  overflow-wrap: anywhere;
+}
 .completeCopy h1 {
   margin: 0;
-  font-size: v.$font-size-4xl;
-  font-family: v.$font-family-display;
+  font-size: v.$font-size-2xl;
   font-weight: v.$font-weight-bold;
   line-height: v.$line-height-tight;
+  letter-spacing: -0.02em;
 }
-.orderNumber { margin: v.$space-5 0 v.$space-4; color: v.$color-text-secondary; font-size: v.$font-size-md; }
-.orderNumber strong { color: v.$color-taupe; font-weight: v.$font-weight-bold; }
-.completeCopy > p:last-child { margin: 0; color: v.$color-text-secondary; font-size: v.$font-size-md; line-height: v.$line-height-relaxed; }
-
-.mascotPlaceholder {
-  display: grid;
-  width: 150px;
-  height: 132px;
-  place-items: center;
-  background: transparent;
-  font-size: 86px;
-  line-height: 1;
-  transform: translateY(-4px);
+.orderNumber {
+  margin: v.$space-4 0 v.$space-3;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
 }
-
+.orderNumber strong {
+  color: v.$color-primary;
+  font-weight: v.$font-weight-semibold;
+}
+.completeCopy > p:last-child {
+  margin: 0;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+  line-height: v.$line-height-relaxed;
+}
 .orderInfo {
-  width: 690px;
-  margin: 36px auto 0;
-  padding: 28px 38px;
-  border: 1px solid color-mix(in srgb, v.$color-taupe 46%, v.$color-border);
-  border-radius: v.$radius-sm;
-  background: rgb(255 253 250 / 48%);
-  box-shadow: inset 0 0 0 3px rgb(140 126 111 / 10%);
+  width: 100%;
+  max-width: 640px;
+  margin: v.$space-8 auto 0;
+  padding: v.$space-6;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+  background: v.$color-white;
 }
-
-.orderInfo h2 { margin: 0 0 v.$space-5; font-size: v.$font-size-2xl; font-weight: v.$font-weight-bold; }
-.orderInfo dl { display: grid; gap: v.$space-4; margin: 0; }
-.orderInfo dl div { display: grid; grid-template-columns: 160px 1fr; }
-.orderInfo dt, .orderInfo dd { margin: 0; font-size: v.$font-size-md; }
-.orderInfo dt { color: v.$color-text-secondary; }
-.orderInfo dd { font-weight: v.$font-weight-medium; }
-
+.orderInfo h2 {
+  margin: 0 0 v.$space-5;
+  padding-bottom: v.$space-3;
+  border-bottom: 1px solid v.$color-text-muted;
+  font-size: v.$font-size-2xl;
+  font-weight: v.$font-weight-bold;
+  line-height: v.$line-height-tight;
+  letter-spacing: -0.02em;
+}
+.orderInfo dl {
+  display: grid;
+  gap: v.$space-4;
+  margin: 0;
+}
+.orderInfo dl div {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: v.$space-3;
+}
+.orderInfo dt,
+.orderInfo dd {
+  margin: 0;
+  font-size: v.$font-size-sm;
+  overflow-wrap: anywhere;
+}
+.orderInfo dt {
+  color: v.$color-text-muted;
+}
+.orderInfo dd {
+  font-weight: v.$font-weight-semibold;
+  text-align: right;
+}
+.orderInfo dl div:last-child {
+  padding-top: v.$space-4;
+  border-top: 1px solid v.$color-border;
+}
+.orderInfo dl div:last-child dd {
+  color: v.$color-primary;
+}
 .actions {
   display: flex;
   justify-content: center;
-  gap: 34px;
-  margin-top: 38px;
+  gap: v.$space-3;
+  margin-top: v.$space-6;
 }
-
 .actions button {
   display: inline-flex;
-  width: 194px;
-  height: 50px;
+  min-width: 160px;
+  min-height: 40px;
   align-items: center;
   justify-content: center;
-  border-radius: v.$radius-sm;
-  font-size: v.$font-size-md;
+  padding: v.$space-2 v.$space-4;
+  border-radius: v.$radius-md;
+  font-size: v.$font-size-sm;
   font-weight: v.$font-weight-semibold;
+  line-height: v.$line-height-tight;
   text-align: center;
+  cursor: pointer;
+}
+.actions button:focus-visible {
+  outline: 2px solid v.$color-primary;
+  outline-offset: 2px;
+}
+.homeButton {
+  border: 1px solid v.$color-border;
+  background: v.$color-white;
+  color: v.$color-text-secondary;
+}
+.historyButton {
+  border: 1px solid v.$color-primary;
+  background: v.$color-primary;
+  color: v.$color-white;
+}
+.homeButton:hover {
+  border-color: v.$color-primary;
+  color: v.$color-primary;
+}
+.historyButton:hover {
+  background: color-mix(in srgb, v.$color-primary 90%, black);
 }
 
-.homeButton { border: 1px solid v.$color-border; background: v.$color-white; color: v.$color-text-secondary; }
-.historyButton { border: 1px solid v.$color-taupe; background: v.$color-taupe; color: v.$color-white; transition: background v.$transition-fast ease, transform v.$transition-fast ease; }
-.historyButton:hover { background: v.$color-text-secondary; transform: translateY(-2px); }
-
-@media (max-width: v.$breakpoint-tablet-max) {
-  .page { width: calc(100% - 80px); }
-  .purchaseSteps { margin-right: 0; }
-  .completeCard { width: 100%; padding-right: v.$space-10; padding-left: v.$space-10; }
+@media (max-width: 1024px) {
+  .page {
+    padding: 40px v.$space-6 70px;
+  }
+  .purchaseSteps {
+    padding: 26px v.$space-6;
+  }
+  .completeCard {
+    padding: v.$space-8 v.$space-6;
+  }
 }
-
 @media (max-width: v.$breakpoint-mobile-max) {
-  .page { width: calc(100% - 40px); min-height: auto; padding-top: v.$space-8; }
-  .topOrnament { display: none; }
-  .purchaseSteps { flex-wrap: wrap; justify-content: center; margin: 0 0 v.$space-8; font-size: v.$font-size-sm; }
-  .completeCard { padding: v.$space-8 v.$space-5; }
-  .heroArea { width: 100%; padding: v.$space-6 v.$space-4; }
-  .completeCopy h1 { font-size: v.$font-size-2xl; }
-  .mascotPlaceholder { margin: 0 auto; }
-  .orderInfo { width: 100%; padding: v.$space-5; }
-  .orderInfo dl div { grid-template-columns: 110px 1fr; }
-  .actions { flex-direction: column; gap: v.$space-3; }
-  .actions button { width: 100%; }
+  .page {
+    padding: v.$space-5 v.$space-4 60px;
+  }
+  .purchaseSteps {
+    justify-content: flex-start;
+    gap: v.$space-2;
+    margin-bottom: v.$space-5;
+    padding: v.$space-6 v.$space-4;
+    border-radius: v.$radius-lg;
+  }
+  .stepFlower {
+    width: 20px;
+    height: 14px;
+    flex-basis: 20px;
+  }
+  .completeCard {
+    padding: v.$space-8 v.$space-4;
+    border-radius: v.$radius-lg;
+  }
+  .orderInfo {
+    padding: v.$space-5 v.$space-4;
+  }
+  .orderInfo dl div {
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: v.$space-2;
+  }
+  .actions {
+    flex-direction: column;
+  }
+  .actions button {
+    width: 100%;
+    min-width: 0;
+  }
 }

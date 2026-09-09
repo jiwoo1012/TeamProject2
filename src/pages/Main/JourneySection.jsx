@@ -102,6 +102,9 @@ const JourneySection = ({ onSkip }) => {
   const finaleTransitionRef = useRef(null)
   const skipButtonRef = useRef(null)
   const finishJourneyRef = useRef(null)
+  const progressRef = useRef(null)
+  const progressFillRef = useRef(null)
+  const progressValueRef = useRef(null)
 
   useLayoutEffect(() => {
     let scrollTween
@@ -122,6 +125,8 @@ const JourneySection = ({ onSkip }) => {
     const section = sectionRef.current
     const sceneCursor = sceneCursorRef.current
     const stage = section?.querySelector(`.${styles.stage}`)
+    const progressElement = progressRef.current
+    const progressValue = progressValueRef.current
 
     root.classList.add(scrollbarClass)
     root.classList.remove('main-header-visible')
@@ -137,8 +142,9 @@ const JourneySection = ({ onSkip }) => {
       // Journey가 처음 열렸을 때 각 이미지의 투명도와 크기를 초기화합니다.
       gsap.set(sceneElements, { opacity: 0, scale: 1.06 })
       gsap.set(sceneElements[0], { opacity: 1, scale: 1 })
-      gsap.set(handRef.current, { autoAlpha: 0, xPercent: -7, yPercent: -8 })
-      gsap.set(handleHandRef.current, { autoAlpha: 0, xPercent: -18, yPercent: -20 })
+      // 이미지의 투명 여백을 포함한 손끝 위치를 마우스 좌표에 맞춥니다.
+      gsap.set(handRef.current, { autoAlpha: 0, xPercent: -17, yPercent: -13 })
+      gsap.set(handleHandRef.current, { autoAlpha: 0, xPercent: -9, yPercent: -9 })
       gsap.set(bellRef.current, { autoAlpha: 1 })
       gsap.set(makdongPeekRef.current, { autoAlpha: 0, xPercent: 38, rotate: 2 })
       gsap.set(makdongBundleRef.current, { autoAlpha: 0, yPercent: 42, scale: 0.92 })
@@ -169,9 +175,22 @@ const JourneySection = ({ onSkip }) => {
       removeCursorPointerHandler = () => window.removeEventListener('pointermove', followCursor)
 
       let isFinishing = false
+      const setProgressFill = gsap.quickSetter(progressFillRef.current, 'scaleX')
+      let lastProgressPercent = -1
+      const updateProgress = (progress) => {
+        const value = Math.min(1, Math.max(0, progress))
+        setProgressFill(value)
+        const percent = value === 1 ? 100 : Math.floor(value * 100)
+        if (percent === lastProgressPercent) return
+        lastProgressPercent = percent
+        progressElement.setAttribute('aria-valuenow', String(percent))
+        progressValue.textContent = `${percent}%`
+      }
+      updateProgress(0)
       const finishJourney = () => {
         if (isFinishing) return
         isFinishing = true
+        updateProgress(1)
         autoScrollTween?.kill()
         isAutoPlaying = false
         sceneCursor?.classList.remove(styles.autoScrolling)
@@ -189,9 +208,10 @@ const JourneySection = ({ onSkip }) => {
       // 마지막 메시지에서는 멈추며 기존 버튼으로 메인에 진입합니다.
       const timeline = gsap.timeline({
         paused: isMobilePlayback,
-        onUpdate: () => {
+        onUpdate: function () {
+          if (!isFinishing) updateProgress(this.progress())
           if (!isMobilePlayback) return
-          const isOpening = timeline.progress() <= 0.04
+          const isOpening = this.progress() <= 0.04
           stage?.classList.toggle(styles.openingScene, isOpening)
           gsap.set(bellRef.current, { autoAlpha: isOpening ? 1 : 0 })
         },
@@ -428,10 +448,10 @@ const JourneySection = ({ onSkip }) => {
 
       const canTrackPointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
       if (stage && canTrackPointer && !isMobilePlayback) {
-        const moveHandX = gsap.quickTo(handRef.current, 'x', { duration: 0.12, ease: 'power2.out' })
-        const moveHandY = gsap.quickTo(handRef.current, 'y', { duration: 0.12, ease: 'power2.out' })
-        const moveHandleHandX = gsap.quickTo(handleHandRef.current, 'x', { duration: 0.12, ease: 'power2.out' })
-        const moveHandleHandY = gsap.quickTo(handleHandRef.current, 'y', { duration: 0.12, ease: 'power2.out' })
+        const moveHandX = gsap.quickSetter(handRef.current, 'x', 'px')
+        const moveHandY = gsap.quickSetter(handRef.current, 'y', 'px')
+        const moveHandleHandX = gsap.quickSetter(handleHandRef.current, 'x', 'px')
+        const moveHandleHandY = gsap.quickSetter(handleHandRef.current, 'y', 'px')
         let isHandleMode = null
 
         const isFirstScene = () => {
@@ -731,6 +751,20 @@ const JourneySection = ({ onSkip }) => {
         <span ref={bellRef} className={styles.doorBell} aria-hidden="true" />
         <div className={styles.shade} aria-hidden="true" />
         <div ref={finaleTransitionRef} className={styles.finaleTransition} aria-hidden="true" />
+        <div
+          ref={progressRef}
+          className={styles.introProgress}
+          role="progressbar"
+          aria-label="인트로 재생 진행률"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={0}
+        >
+          <div className={styles.progressTrack} aria-hidden="true">
+            <span ref={progressFillRef} className={styles.progressFill} />
+          </div>
+          <span ref={progressValueRef} className={styles.progressValue} aria-hidden="true">0%</span>
+        </div>
 
         {/* [자주 수정하는 곳 4] 인트로 건너뛰기 버튼 문구 */}
         <button ref={skipButtonRef} className={styles.skipButton} type="button" onClick={onSkip}>

@@ -1,528 +1,2008 @@
-@use 'sass:color';
-// ==========================================
-// 테마 토큰 (어드민 전사 통일)
-// ==========================================
-$bg-canvas: #f8f6f2;
-$bg-surface: #ffffff;
-$primary: #3b5f54;
-$primary-hover: #2e4b42;
-$primary-subtle: #edf3f0;
+@use '../../styles/admin/adminVariables' as *;
+@use '../../styles/admin/adminMixins' as *;
+@use '../../styles/admin/adminCommon' as *;
 
-$text-title: #222524;
-$text-body: #4a504d;
-$text-caption: #7a827e;
-$border-color: #e8e6df;
 
-$danger: #b24840;
-$danger-subtle: #fbeeed;
-$warning: #c8812c;
-$warning-subtle: #fdf5ea;
-$info: #2b70ad;
-$info-subtle: #eef5fb;
-
-$shadow-sm: 0 2px 8px rgba(34, 37, 36, 0.04);
-$shadow-md: 0 6px 18px rgba(34, 37, 36, 0.06);
-$radius-card: 14px;
-$radius-control: 8px;
+// ========================================
+// PAGE
+// ========================================
 
 .page {
-  padding: 32px 40px;
-  background-color: $bg-canvas;
-  min-height: 100vh;
-  color: $text-body;
+  @extend %admin-page;
+
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+
+  margin: 0;
+
+  padding:
+    34px
+    0
+    50px;
+
   box-sizing: border-box;
 }
+
+
+// ========================================
+// SUMMARY
+// ========================================
+
+.summaryArea {
+  @extend %admin-summary-area;
+
+  position: relative;
+  z-index: 1;
+
+  margin-top: -50px;
+}
+
+
+.summaryGrid {
+  @extend %admin-summary-grid;
+
+  width: 90%;
+
+  margin:
+    0
+    auto;
+}
+
+
+.summaryIconImage {
+  width: 23px;
+  height: 23px;
+
+  display: block;
+
+  object-fit: contain;
+}
+
+
+// ========================================
+// MANAGEMENT LAYOUT
+// ========================================
+
+.managementGrid {
+  @extend %admin-management-grid;
+
+  width: 100%;
+  min-width: 0;
+
+  margin: 0;
+}
+
+
+// ========================================
+// MAIN PANEL
+// ========================================
+
+.mainSection {
+  min-width: 0;
+
+  @include admin-panel;
+
+  padding: 20px;
+}
+
+
+// ========================================
+// FILTER
+// ========================================
+
+.selectField {
+  display: block;
+
+  select {
+    min-width: 128px;
+  }
+}
+
 
 .srOnly {
   position: absolute;
+
   width: 1px;
   height: 1px;
+
   padding: 0;
   margin: -1px;
+
   overflow: hidden;
+
   clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+
   border: 0;
 }
 
-// 툴바 (새로고침 회전 모션 포함)
-.pageToolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
 
-  h1 {
-    font-size: 30px;
-    font-weight: 700;
-    color: $text-title;
-    margin: 0;
-    letter-spacing: -0.02em;
-  }
+// ========================================
+// EVENT STATUS FILTER
+// ========================================
+
+.topFilterBar {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  gap: 12px;
+
+  margin-top: 12px;
+
+  padding:
+    0
+    2px
+    14px;
+
+  border-bottom:
+    1px solid
+    $admin-border;
+}
+
+
+.tabGroup {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 6px;
 
   button {
+    min-height: 30px;
+
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    height: 38px;
-    padding: 0 16px;
-    font-size: 13px;
-    font-weight: 500;
-    color: $text-body;
-    background: $bg-surface;
-    border: 1px solid $border-color;
-    border-radius: $radius-control;
-    box-shadow: $shadow-sm;
+    justify-content: center;
+
+    gap: 5px;
+
+    padding:
+      0
+      11px;
+
+    border: 0;
+    border-radius: 999px;
+
+    background:
+      #f0f2f1;
+
+    color:
+      $admin-text-secondary;
+
+    font: inherit;
+    font-size: 10px;
+    font-weight: 600;
+
+    white-space: nowrap;
+
     cursor: pointer;
-    transition: all 0.2s ease;
 
-    svg {
-      width: 15px;
-      height: 15px;
-      stroke: currentColor;
-      transition: transform 0.25s ease;
+    transition:
+      color 0.18s ease,
+      background 0.18s ease;
+
+    span {
+      min-width: 18px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      padding:
+        1px
+        5px;
+
+      border-radius: 999px;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.72
+        );
+
+      color:
+        inherit;
+
+      font-size: 9px;
+      font-weight: 700;
     }
 
-    &:hover:not(:disabled) {
-      background: #fdfcf9;
-      color: $primary;
-      border-color: color.adjust($primary, $lightness: 20%);
-      svg { transform: rotate(90deg); }
-    }
+    &:hover {
+      color:
+        $admin-primary-dark;
 
-    &.refreshing {
-      opacity: 0.75;
-      cursor: wait;
-      svg { animation: spinRefresh 0.6s linear infinite; }
+      background:
+        $admin-primary-light;
     }
   }
 }
 
-@keyframes spinRefresh {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+
+.activeTab {
+  color:
+    $admin-surface !important;
+
+  background:
+    $admin-primary !important;
+
+  span {
+    color:
+      $admin-surface !important;
+
+    background:
+      rgba(
+        255,
+        255,
+        255,
+        0.18
+      ) !important;
+  }
 }
 
-.ornamentLine {
+
+// ========================================
+// SECTION HEADING
+// ========================================
+
+.sectionHeading {
+  min-height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding:
+    0
+    15px;
+
+  margin-bottom: 14px;
+}
+
+
+.titleWrap {
+  min-width: 0;
+
+  h2 {
+    margin: 0;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.4;
+
+    letter-spacing:
+      -0.02em;
+  }
+}
+
+
+.headingRight {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 12px;
+}
+
+
+.eventCount {
+  flex-shrink: 0;
+
+  color:
+    $admin-text-secondary;
+
+  font-size: 15px;
+
+  strong {
+    color:
+      $admin-primary-dark;
+
+    font-size: 15px;
+    font-weight: 700;
+  }
+}
+
+
+.managementButtons {
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+
+.winnerButton,
+.registerButton {
+  min-height: 32px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    11px;
+
+  border-radius:
+    $admin-radius-sm;
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+
+.winnerButton {
+  border:
+    1px solid
+    $admin-primary;
+
+  background:
+    $admin-surface;
+
+  color:
+    $admin-primary;
+
+  &:hover {
+    color:
+      $admin-surface;
+
+    background:
+      $admin-primary;
+  }
+}
+
+
+.registerButton {
+  border:
+    1px solid
+    $admin-primary;
+
+  background:
+    $admin-primary;
+
+  color:
+    $admin-surface;
+
+  &:hover {
+    background:
+      $admin-primary-dark;
+  }
+}
+
+
+// ========================================
+// EVENT LIST
+// ========================================
+
+.eventGridContainer {
   width: 100%;
-  display: block;
-  margin: 1rem 0 1.6rem;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+
+.eventCard {
+  min-width: 0;
+
+  padding: 14px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 11px;
+
+  border:
+    1px solid
+    $admin-border;
+
+  border-radius:
+    $admin-radius-md;
+
+  background:
+    $admin-surface;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+
+  &:hover {
+    border-color:
+      rgba(
+        86,
+        138,
+        128,
+        0.4
+      );
+
+    box-shadow:
+      0
+      4px
+      14px
+      rgba(
+        34,
+        37,
+        36,
+        0.05
+      );
+
+    transform:
+      translateY(-1px);
+  }
+}
+
+
+.selectedCard {
+  border-color:
+    $admin-primary;
+
+  background:
+    rgba(
+      86,
+      138,
+      128,
+      0.055
+    );
+
+  box-shadow:
+    0
+    0
+    0
+    1px
+    rgba(
+      86,
+      138,
+      128,
+      0.14
+    );
+}
+
+
+.cardHeaderRow {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+
+.badges {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 6px;
+}
+
+
+.dDayBadge {
+  min-height: 24px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    8px;
+
+  border-radius: 999px;
+
+  background:
+    $admin-danger-light;
+
+  color:
+    $admin-danger;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+.evId {
+  min-width: 0;
+
   overflow: hidden;
+
+  color:
+    $admin-text-muted;
+
+  font-size: 10px;
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.cardBodyRow {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+}
+
+
+.evThumbPlaceholder {
+  width: 82px;
+  height: 56px;
+
+  flex:
+    0
+    0
+    82px;
+
+  overflow: hidden;
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    #eceae4;
 
   img {
     width: 100%;
-    height: auto;
+    height: 100%;
+
     display: block;
+
+    object-fit: cover;
   }
 }
 
-// ==========================================
-// 상단 탭 필터 및 등록 버튼 바
-// ==========================================
-.topFilterBar {
+
+.evTextInfo {
+  min-width: 0;
+
+  flex: 1;
+
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+
+  gap: 4px;
+
+  h3 {
+    margin: 0;
+
+    overflow: hidden;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.35;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  p {
+    margin: 0;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 11px;
+  }
+
+  small {
+    color:
+      $admin-text-muted;
+
+    font-size: 10px;
+  }
+}
+
+
+.cardFooterRow {
+  display: flex;
   align-items: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
+
+  gap: 18px;
+
+  padding-top: 10px;
+
+  border-top:
+    1px solid
+    $admin-border;
+}
+
+
+.statPill {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  span {
+    color:
+      $admin-text-muted;
+
+    font-size: 10px;
+  }
+
+  strong {
+    color:
+      $admin-text-primary;
+
+    font-size: 11px;
+    font-weight: 700;
+  }
+}
+
+
+.cardActionRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+
+.manageBtn {
+  min-height: 30px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    11px;
+
+  border:
+    1px solid
+    $admin-border-dark;
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    $admin-surface;
+
+  color:
+    $admin-text-secondary;
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+
+  &:hover {
+    color:
+      $admin-primary-dark;
+
+    border-color:
+      rgba(
+        86,
+        138,
+        128,
+        0.5
+      );
+
+    background:
+      $admin-primary-light;
+  }
+}
+
+
+// ========================================
+// PAGINATION
+// ========================================
+
+.pagination {
+  min-height: 64px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  margin-top: 12px;
+
+  padding:
+    16px
+    12px
+    0;
+
+  border-top:
+    1px solid
+    $admin-border;
+
+  button {
+    width: 32px;
+    height: 32px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border:
+      1px solid
+      transparent;
+
+    border-radius:
+      $admin-radius-sm;
+
+    background:
+      transparent;
+
+    color:
+      $admin-text-secondary;
+
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+      background 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
+
+    &:hover:not(:disabled) {
+      color:
+        $admin-primary-dark;
+
+      background:
+        $admin-primary-light;
+    }
+
+    &:disabled {
+      opacity: 0.35;
+
+      cursor: default;
+    }
+  }
+}
+
+
+.activePage {
+  color:
+    $admin-surface !important;
+
+  border-color:
+    $admin-primary !important;
+
+  background:
+    $admin-primary !important;
+}
+
+
+// ========================================
+// RIGHT PANEL
+// ========================================
+
+.detailPanel {
+  min-width: 0;
+
+  @include admin-panel;
+
+  padding: 20px;
+
+  animation:
+    fadeIn
+    0.2s
+    ease-out;
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+.panelTopHeader {
+  min-height: 46px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding-bottom: 10px;
+
+  margin-bottom: 16px;
+
+  border-bottom:
+    1px solid
+    $admin-border;
+
+  h2 {
+    margin:
+      7px
+      0
+      0;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.35;
+
+    letter-spacing:
+      -0.02em;
+  }
+
+  > button {
+    width: 30px;
+    height: 30px;
+
+    flex:
+      0
+      0
+      30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 0;
+    border-radius: 50%;
+
+    background:
+      #f4f5f4;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 19px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+      color 0.18s ease,
+      background 0.18s ease;
+
+    &:hover {
+      color:
+        $admin-text-primary;
+
+      background:
+        #eceeed;
+    }
+  }
+}
+
+
+.selectedSummaryCard {
+  min-width: 0;
+
+  display: flex;
+
   gap: 12px;
+
+  padding-bottom: 16px;
+
+  margin-bottom: 16px;
+
+  border-bottom:
+    1px solid
+    $admin-border;
+}
+
+
+.scThumb {
+  width: 84px;
+  height: 60px;
+
+  flex:
+    0
+    0
+    84px;
+
+  overflow: hidden;
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    #eceae4;
+
+  img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+  }
+}
+
+
+.scInfo {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  h3 {
+    margin: 0;
+
+    overflow: hidden;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  dl {
+    margin: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+
+    div {
+      min-width: 0;
+
+      display: grid;
+
+      grid-template-columns:
+        56px
+        minmax(0, 1fr);
+
+      gap: 6px;
+    }
+
+    dt {
+      color:
+        $admin-text-muted;
+
+      font-size: 10px;
+    }
+
+    dd {
+      min-width: 0;
+
+      margin: 0;
+
+      overflow-wrap: anywhere;
+
+      color:
+        $admin-text-secondary;
+
+      font-size: 10px;
+      font-weight: 500;
+    }
+  }
+}
+
+
+// ========================================
+// DETAIL TABS
+// ========================================
+
+.detailTabNav {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 3px;
+
+  margin-bottom: 16px;
+
+  overflow-x: auto;
+
+  border-bottom:
+    1px solid
+    $admin-border;
+
+  button {
+    position: relative;
+
+    flex-shrink: 0;
+
+    min-height: 34px;
+
+    padding:
+      0
+      9px;
+
+    border: 0;
+
+    background:
+      transparent;
+
+    color:
+      $admin-text-muted;
+
+    font: inherit;
+    font-size: 10px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    &:hover {
+      color:
+        $admin-text-primary;
+    }
+  }
+}
+
+
+.activeDetailTab {
+  color:
+    $admin-primary-dark !important;
+
+  &::after {
+    position: absolute;
+
+    right: 0;
+    bottom: -1px;
+    left: 0;
+
+    height: 2px;
+
+    background:
+      $admin-primary;
+
+    content: '';
+  }
+}
+
+
+// ========================================
+// FORM
+// ========================================
+
+.detailFormBody {
+  display: flex;
+  flex-direction: column;
+
+  gap: 13px;
+}
+
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  label {
+    color:
+      $admin-text-secondary;
+
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+
+    padding:
+      8px
+      10px;
+
+    box-sizing: border-box;
+
+    border:
+      1px solid
+      $admin-border;
+
+    border-radius:
+      $admin-radius-sm;
+
+    outline: 0;
+
+    background:
+      #fbfaf8;
+
+    color:
+      $admin-text-primary;
+
+    font: inherit;
+    font-size: 11px;
+
+    &:focus {
+      border-color:
+        $admin-primary;
+
+      background:
+        $admin-surface;
+
+      box-shadow:
+        0
+        0
+        0
+        2px
+        rgba(
+          86,
+          138,
+          128,
+          0.08
+        );
+    }
+  }
+
+  input,
+  select {
+    min-height: 34px;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}
+
+
+.readOnlyText {
+  min-height: 30px;
+
+  display: flex;
+  align-items: center;
+
+  padding:
+    0
+    2px;
+
+  color:
+    $admin-text-secondary;
+
+  font-size: 11px;
+  font-weight: 500;
+}
+
+
+.dateFields {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 10px;
+}
+
+
+.bannerUpload {
+  width: 100%;
+
+  aspect-ratio:
+    16
+    /
+    7;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  border:
+    1px dashed
+    $admin-border-dark;
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    #f7f6f2;
+
+  color:
+    $admin-text-muted;
+
+  font-size: 11px;
+
+  cursor: pointer;
+
+  img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+  }
+
+  &:hover {
+    border-color:
+      $admin-primary;
+
+    background:
+      $admin-primary-light;
+  }
+}
+
+
+.createButton {
+  min-height: 36px;
+
+  margin-top: 4px;
+
+  border:
+    1px solid
+    $admin-primary;
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    $admin-primary;
+
+  color:
+    $admin-surface;
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  &:hover {
+    background:
+      $admin-primary-dark;
+  }
+}
+
+
+// ========================================
+// WINNER MANAGE
+// ========================================
+
+.winnerManageBody {
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+
+  > p {
+    margin:
+      0
+      0
+      5px;
+
+    color:
+      $admin-text-muted;
+
+    font-size: 11px;
+    line-height: 1.5;
+  }
+}
+
+
+.winnerEventRow {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  padding:
+    10px
+    11px;
+
+  border:
+    1px solid
+    $admin-border;
+
+  border-radius:
+    $admin-radius-sm;
+
+  background:
+    #fbfaf8;
+
+  span {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+  }
+
+  strong {
+    overflow: hidden;
+
+    color:
+      $admin-text-primary;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    color:
+      $admin-text-muted;
+
+    font-size: 10px;
+  }
+
+  button {
+    min-height: 28px;
+
+    flex-shrink: 0;
+
+    padding:
+      0
+      9px;
+
+    border:
+      1px solid
+      $admin-primary;
+
+    border-radius:
+      $admin-radius-sm;
+
+    background:
+      $admin-surface;
+
+    color:
+      $admin-primary;
+
+    font: inherit;
+    font-size: 10px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    &:hover {
+      color:
+        $admin-surface;
+
+      background:
+        $admin-primary;
+    }
+  }
+}
+
+
+// ========================================
+// DUMMY TAB
+// ========================================
+
+.dummyTabContent {
+  min-height: 180px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  padding:
+    28px
+    10px;
+
+  color:
+    $admin-text-muted;
+
+  font-size: 11px;
+
+  text-align: center;
+
+  p {
+    margin: 0;
+  }
+
+  strong {
+    color:
+      $admin-text-primary;
+  }
+}
+
+
+// ========================================
+// PANEL FOOTER
+// ========================================
+
+.panelFooterActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-top: 18px;
+
+  padding-top: 14px;
+
+  border-top:
+    1px solid
+    $admin-border;
+}
+
+
+.deleteBtn,
+.saveBtn {
+  min-height: 32px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    11px;
+
+  border-radius:
+    $admin-radius-sm;
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+
+.deleteBtn {
+  border:
+    1px solid
+    $admin-danger;
+
+  background:
+    $admin-surface;
+
+  color:
+    $admin-danger;
+
+  &:hover {
+    background:
+      $admin-danger-light;
+  }
+}
+
+
+.saveBtn {
+  border:
+    1px solid
+    $admin-primary;
+
+  background:
+    $admin-primary;
+
+  color:
+    $admin-surface;
+
+  &:hover {
+    background:
+      $admin-primary-dark;
+  }
+}
+
+
+// ========================================
+// GUIDE PANEL
+// ========================================
+
+.analyticsColumn {
+  position: sticky;
+
+  top: 24px;
+
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
+}
+
+
+.guideBox {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  color:
+    $admin-text-secondary;
+
+  font-size: 11px;
+  line-height: 1.65;
+
+  p {
+    margin: 0;
+  }
+
+  strong {
+    color:
+      $admin-primary-dark;
+
+    font-weight: 700;
+  }
+
+  ul {
+    margin: 0;
+
+    padding-left: 17px;
+
+    color:
+      $admin-text-muted;
+  }
+
+  li + li {
+    margin-top: 5px;
+  }
+}
+
+
+// ========================================
+// TOAST
+// ========================================
+
+.toast {
+  position: fixed;
+
+  right: 28px;
+  bottom: 28px;
+
+  z-index: 1000;
+
+  min-width: 260px;
+  max-width: 420px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding:
+    13px
+    15px;
+
+  border:
+    1px solid
+    rgba(
+      86,
+      138,
+      128,
+      0.25
+    );
+
+  border-radius:
+    $admin-radius-md;
+
+  background:
+    $admin-surface;
+
+  box-shadow:
+    0
+    10px
+    30px
+    rgba(
+      0,
+      0,
+      0,
+      0.1
+    );
+
+  span {
+    color:
+      $admin-text-primary;
+
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  button {
+    width: 25px;
+    height: 25px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 50%;
+
+    background:
+      #f3f4f3;
+
+    color:
+      $admin-text-secondary;
+
+    font-size: 16px;
+
+    cursor: pointer;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 1180
+// ========================================
+
+@media (max-width: 1180px) {
+  .managementGrid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .analyticsColumn,
+  .detailPanel {
+    position: static;
+  }
+
+  .detailPanel {
+    max-width: none;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 850
+// ========================================
+
+@media (max-width: 850px) {
+  .summaryArea {
+    margin-top:
+      -8px;
+  }
+
+  .summaryGrid {
+    width: 100%;
+  }
+
+  .mainSection {
+    padding: 16px;
+  }
+}
+
+
+// ========================================
+// RESPONSIVE - 767
+// ========================================
+
+@media (max-width: 767px) {
+  .page {
+    padding-bottom:
+      30px;
+  }
+
+  .summaryArea {
+    margin-top: 0;
+  }
+
+  .summaryGrid {
+    width: 100%;
+
+    margin-inline:
+      auto;
+  }
+
+  .mainSection {
+    padding: 14px;
+  }
+
+  .selectField {
+    width: 100%;
+    min-width: 0;
+
+    select {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
+  .topFilterBar {
+    margin-top: 12px;
+
+    padding:
+      0
+      2px
+      14px;
+  }
 
   .tabGroup {
-    display: flex;
-    gap: 8px;
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        4,
+        minmax(0, 1fr)
+      );
+
+    gap: 5px;
 
     button {
-      height: 38px;
-      padding: 0 16px;
-      background: $bg-surface;
-      border: 1px solid $border-color;
-      border-radius: $radius-control;
-      font-size: 13px;
-      font-weight: 500;
-      color: $text-body;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: $shadow-sm;
-      transition: all 0.15s ease;
+      min-width: 0;
+      min-height: 30px;
+
+      padding:
+        0
+        5px;
+
+      gap: 3px;
+
+      font-size: 9px;
 
       span {
-        font-size: 11px;
-        background: #f0eee8;
-        padding: 1px 6px;
-        border-radius: 10px;
-        color: $text-caption;
-      }
+        min-width: 16px;
 
-      &:hover {
-        background: #fdfcf9;
-        color: $text-title;
-      }
+        padding:
+          1px
+          4px;
 
-      &.activeTab {
-        background: $primary;
-        color: #fff;
-        border-color: $primary;
-
-        span {
-          background: rgba(255, 255, 255, 0.2);
-          color: #fff;
-        }
+        font-size: 8px;
       }
     }
   }
 
-  .registerButton {
-    height: 38px;
-    padding: 0 18px;
-    background: $primary;
-    color: #fff;
-    border: none;
-    border-radius: $radius-control;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: $shadow-sm;
-    transition: background-color 0.2s;
+  .sectionHeading {
+    min-height: auto;
 
-    &:hover { background: $primary-hover; }
-  }
-}
-
-.managementButtons { display: flex; gap: 8px; }
-.winnerButton {
-  height: 38px; padding: 0 18px; color: $primary; background: $bg-surface; border: 1px solid $primary; border-radius: $radius-control; font-size: 13px; font-weight: 600; cursor: pointer;
-  &:hover { color: #fff; background: $primary; }
-}
-
-// ==========================================
-// 상단 요약 카드 (4 Column)
-// ==========================================
-.summaryArea {
-  margin-bottom: 24px;
-}
-
-.summaryGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
-
-.summaryCard {
-  background: $bg-surface;
-  border: 1px solid $border-color;
-  border-radius: $radius-card;
-  padding: 18px 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  min-height: 94px;
-  box-sizing: border-box;
-  box-shadow: $shadow-sm;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  text-align: left;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: $shadow-md;
-    border-color: color.adjust($primary, $lightness: 20%);
-  }
-
-  &.activeCard {
-    border-color: $primary;
-    background: #fdfefd;
-    box-shadow: 0 0 0 1.5px $primary, $shadow-sm;
-  }
-}
-
-.summaryIcon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: $primary-subtle;
-  color: $primary;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  img { width: 25px; height: 25px; object-fit: contain; }
-
-  &.pendingWinner { background: $info-subtle; color: $info; }
-  &.unannounced { background: $danger-subtle; color: $danger; }
-  &.todayClosing { background: $warning-subtle; color: $warning; }
-}
-
-.summaryContent {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
-  flex: 1;
-
-  h3 { font-size: 13px; font-weight: 500; color: $text-caption; margin: 0; }
-  p {
-    margin: 0; font-size: 24px; color: $text-title; font-weight: 700; line-height: 1.2;
-    span { font-size: 14px; font-weight: 400; color: $text-caption; margin-left: 3px; }
-  }
-  small { font-size: 12px; color: $text-caption; margin-top: 2px; }
-}
-
-// ==========================================
-// 메인 그리드 (좌 1fr : 우 400px)
-// ==========================================
-.managementGrid {
-  display: grid;
-  grid-template-columns: 1fr 400px;
-  gap: 20px;
-  align-items: start;
-}
-
-.mainSection {
-  background: $bg-surface;
-  border: 1px solid $border-color;
-  border-radius: $radius-card;
-  padding: 24px;
-  box-shadow: $shadow-sm;
-}
-
-.filterBar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.searchField {
-  flex: 1;
-  min-width: 220px;
-  position: relative;
-  display: flex;
-  align-items: center;
-
-  svg { position: absolute; left: 12px; width: 16px; height: 16px; stroke: $text-caption; }
-  input {
-    width: 100%; height: 40px; padding: 0 14px 0 36px; background: #fbfaf8; border: 1px solid $border-color; border-radius: $radius-control; font-size: 13px; color: $text-title;
-    &:focus { outline: none; border-color: $primary; background: $bg-surface; }
-  }
-}
-
-.selectField select {
-  height: 40px; padding: 0 32px 0 12px; background: #fbfaf8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a827e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 10px center; border: 1px solid $border-color; border-radius: $radius-control; font-size: 13px; color: $text-body; appearance: none; cursor: pointer;
-}
-
-.resetButton {
-  height: 40px; padding: 0 14px; background: transparent; border: 1px solid $border-color; border-radius: $radius-control; font-size: 13px; color: $text-caption; cursor: pointer;
-  &:hover { background: #f5f4ef; color: $text-title; }
-}
-
-// ==========================================
-// 이벤트 카드 그리드 리스트
-// ==========================================
-.eventGridContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.emptyState {
-  padding: 60px 0; text-align: center; color: $text-caption; font-size: 14px;
-}
-
-.eventCard {
-  background: #fdfcf9;
-  border: 1px solid $border-color;
-  border-radius: 10px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-
-  &:hover {
-    border-color: color.adjust($primary, $lightness: 20%);
-    box-shadow: $shadow-sm;
-    transform: translateY(-1px);
-  }
-
-  &.selectedCard {
-    border-color: $primary;
-    background: $primary-subtle;
-    box-shadow: 0 0 0 1px $primary;
-  }
-
-  .cardHeaderRow {
-    display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
 
-    .badges {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
+    gap: 10px;
 
-    .evId { font-size: 11px; color: $text-caption; font-weight: 600; }
+    margin-top: 18px;
+    margin-bottom: 16px;
+
+    padding:
+      0
+      2px;
   }
 
-  .cardBodyRow {
-    display: flex;
-    gap: 12px;
-    align-items: center;
+  .titleWrap {
+    h2 {
+      font-size: 22px;
+      line-height: 1.3;
+    }
+  }
 
-    .evThumbPlaceholder {
-      width: 52px; height: 52px; background: #eae7df; border-radius: 8px; flex-shrink: 0;
-      overflow: hidden;
-      img { width: 100%; height: 100%; object-fit: cover; }
+  .headingRight {
+    gap: 6px;
+  }
+
+  .eventCount {
+    font-size: 13px;
+
+    strong {
+      font-size: 16px;
+    }
+  }
+
+  .managementButtons {
+    gap: 5px;
+  }
+
+  .winnerButton,
+  .registerButton {
+    min-height: 30px;
+
+    padding:
+      0
+      7px;
+
+    font-size: 9px;
+  }
+
+  .eventCard {
+    padding: 13px;
+  }
+
+  .evThumbPlaceholder {
+    width: 72px;
+    height: 50px;
+
+    flex-basis: 72px;
+  }
+
+  .evTextInfo {
+    h3 {
+      font-size: 13px;
     }
 
-    .evTextInfo {
-      display: flex; flex-direction: column; gap: 2px; overflow: hidden;
-      h3 { font-size: 14px; font-weight: 700; color: $text-title; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      p { font-size: 12px; color: $text-body; margin: 0; }
-      small { font-size: 11px; color: $text-caption; }
+    p {
+      font-size: 10px;
+    }
+
+    small {
+      font-size: 9px;
     }
   }
 
   .cardFooterRow {
-    display: flex;
-    gap: 12px;
-    padding-top: 10px;
-    border-top: 1px solid #f0eee8;
+    flex-wrap: wrap;
 
-    .statPill {
-      display: flex; gap: 6px; font-size: 12px;
-      span { color: $text-caption; }
-      strong { color: $text-title; font-weight: 600; }
+    gap:
+      7px
+      14px;
+  }
+
+  .pagination {
+    max-width: 100%;
+
+    gap: 4px;
+
+    overflow-x: auto;
+
+    justify-content: center;
+
+    button {
+      flex:
+        0
+        0
+        32px;
+
+      width: 32px;
+      height: 32px;
     }
   }
 
-  .cardActionRow {
-    display: flex; justify-content: flex-end;
+  .detailPanel {
+    padding: 16px;
 
-    .manageBtn {
-      padding: 4px 10px; background: #fff; border: 1px solid $border-color; border-radius: 6px; font-size: 11px; font-weight: 600; color: $text-body; cursor: pointer;
-      &:hover { background: $primary; color: #fff; border-color: $primary; }
+    scroll-margin-top:
+      92px;
+  }
+
+  .panelTopHeader {
+    h2 {
+      font-size: 20px;
     }
   }
-}
 
-.statusBadge {
-  display: inline-block; padding: 3px 7px; border-radius: 5px; font-size: 10px; font-weight: 700;
-  &.progress { background: $primary-subtle; color: $primary; }
-  &.upcoming { background: $info-subtle; color: $info; }
-  &.ended { background: #f0eee8; color: $text-caption; }
-}
+  .dateFields {
+    grid-template-columns:
+      1fr;
+  }
 
-.dDayBadge {
-  font-size: 10px; font-weight: 700; color: $danger; background: $danger-subtle; padding: 3px 6px; border-radius: 5px;
-}
+  .winnerEventRow {
+    align-items: flex-start;
 
-// ==========================================
-// 우측 패널 (상세 보기 / 탭형 수정)
-// ==========================================
-.detailPanel {
-  background: $bg-surface;
-  border: 1px solid $border-color;
-  border-radius: $radius-card;
-  padding: 20px;
-  box-shadow: $shadow-sm;
-  animation: fadeIn 0.2s ease-out;
-}
+    flex-direction: column;
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.panelTopHeader {
-  display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: 1px solid #f0eee8; margin-bottom: 14px;
-  h2 { font-size: 16px; font-weight: 700; color: $text-title; margin: 0; }
-  button { background: none; border: none; font-size: 20px; color: $text-caption; cursor: pointer; line-height: 1; &:hover { color: $text-title; } }
-}
-
-.selectedSummaryCard {
-  display: flex; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid #f2efe8; margin-bottom: 14px;
-  .scThumb { width: 76px; height: 56px; overflow: hidden; background: #eae7df; border-radius: 8px; flex-shrink: 0; img { width: 100%; height: 100%; object-fit: cover; } }
-  .scInfo {
-    display: flex; flex-direction: column; gap: 3px; flex: 1; overflow: hidden;
-    h3 { font-size: 13px; font-weight: 700; color: $text-title; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    dl {
-      margin: 0; display: flex; flex-direction: column; gap: 1px; font-size: 11px;
-      div { display: flex; gap: 6px; dt { color: $text-caption; width: 54px; } dd { margin: 0; color: $text-body; font-weight: 500; } }
+    button {
+      width: 100%;
     }
   }
-}
 
-// 상세 패널 내부 탭
-.detailTabNav {
-  display: flex; gap: 4px; border-bottom: 1px solid $border-color; margin-bottom: 16px; overflow-x: auto;
-  button {
-    background: none; border: none; padding: 8px 10px; font-size: 12px; font-weight: 500; color: $text-caption; cursor: pointer; white-space: nowrap; position: relative;
-    &:hover { color: $text-title; }
-    &.activeDetailTab {
-      color: $primary; font-weight: 700;
-      &::after {
-        content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: $primary;
-      }
+  .panelFooterActions {
+    .deleteBtn,
+    .saveBtn {
+      flex:
+        1
+        1
+        0;
     }
   }
-}
 
-.detailFormBody {
-  display: flex; flex-direction: column; gap: 12px;
-}
+  .toast {
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
 
-.dateFields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.bannerUpload { display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 16 / 7; overflow: hidden; color: $text-caption; background: #f2efe9; border: 1px dashed $border-color; border-radius: 8px; cursor: pointer; img { width: 100%; height: 100%; object-fit: cover; } }
-.createButton { height: 40px; margin-top: 8px; color: #fff; background: $primary; border: 0; border-radius: $radius-control; font-size: 13px; font-weight: 700; cursor: pointer; &:hover { background: $primary-hover; } }
-.winnerManageBody { display: flex; flex-direction: column; gap: 10px; > p { margin: 0 0 6px; color: $text-caption; font-size: 12px; } }
-.winnerEventRow { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px; background: #fbfaf8; border: 1px solid $border-color; border-radius: 8px; span { min-width: 0; display: flex; flex-direction: column; gap: 3px; } strong { overflow: hidden; color: $text-title; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; } small { color: $text-caption; font-size: 11px; } button { flex-shrink: 0; padding: 6px 9px; color: $primary; background: #fff; border: 1px solid $primary; border-radius: 6px; font-size: 11px; cursor: pointer; } }
-
-.inputGroup {
-  display: flex; flex-direction: column; gap: 4px; font-size: 12px;
-  label { color: $text-caption; font-weight: 500; }
-  input, select, textarea {
-    width: 100%; padding: 8px 10px; border: 1px solid $border-color; border-radius: 6px; font-size: 12px; background: #fbfaf8; color: $text-title; box-sizing: border-box;
-    &:focus { outline: none; border-color: $primary; background: #fff; }
+    min-width: 0;
+    max-width: none;
   }
-  textarea { resize: none; }
-  .readOnlyText { font-size: 12px; color: $text-body; font-weight: 500; padding: 4px 0; }
 }
 
-.dummyTabContent {
-  padding: 40px 0; text-align: center; color: $text-caption; font-size: 13px; display: flex; flex-direction: column; gap: 6px;
-  strong { color: $text-title; }
-}
 
-.panelFooterActions {
-  display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 14px; border-top: 1px solid #f0eee8;
-  .deleteBtn { padding: 6px 12px; background: #fff; border: 1px solid $danger; color: $danger; border-radius: 6px; font-size: 12px; cursor: pointer; }
-  .saveBtn { padding: 6px 18px; background: $primary; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; &:hover { background: $primary-hover; } }
-}
+// ========================================
+// RESPONSIVE - VERY SMALL
+// ========================================
 
-// 우측 가이드 패널
-.analyticsColumn {
-  display: flex; flex-direction: column; gap: 16px;
-}
-.analyticsCard {
-  background: $bg-surface; border: 1px solid $border-color; border-radius: $radius-card; padding: 20px; box-shadow: $shadow-sm;
-}
-.analyticsHeader {
-  display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;
-  h2 { font-size: 15px; font-weight: 700; color: $text-title; margin: 0; }
-  span { font-size: 11px; color: #a0a6a2; font-weight: 600; }
-}
-.guideBox {
-  font-size: 13px; color: $text-body; line-height: 1.5; display: flex; flex-direction: column; gap: 10px;
-  ul { padding-left: 16px; margin: 0; color: $text-caption; }
-}
+@media (max-width: 520px) {
+  .sectionHeading {
+    align-items: flex-start;
 
-// 토스트
-.toast {
-  position: fixed; bottom: 32px; right: 32px; background: #2b302d; color: #ffffff; padding: 12px 18px; border-radius: 8px; box-shadow: $shadow-md; display: flex; align-items: center; gap: 12px; font-size: 13px; z-index: 1000;
-  button { background: none; border: none; color: #9ea4a0; cursor: pointer; font-size: 16px; }
+    flex-wrap: wrap;
+  }
+
+  .headingRight {
+    width: 100%;
+
+    justify-content: space-between;
+  }
+
+  .managementButtons {
+    margin-left: auto;
+  }
+
+  .tabGroup {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+  .cardHeaderRow {
+    align-items: flex-start;
+  }
+
+  .evId {
+    max-width: 42%;
+  }
 }

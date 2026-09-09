@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { collection, getDocs, query, serverTimestamp, where } from 'firebase/firestore'
 import ProductCard from '../../components/ui/ProductCard/ProductCard'
+import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 import { products as productReferenceData } from '../../data/products'
 import { fetchProducts, getManagedProducts } from '../../services/productCatalog'
 import pairings from '../../data/pairings.json'
@@ -119,6 +120,7 @@ const MiniPairingCard = ({
 
 const ProductDetail = () => {
   const { productId } = useParams()
+  const pageRef = useRef(null)
   const noticeTimerRef = useRef(null)
 
   const [activeTab, setActiveTab] = useState('detail')
@@ -153,50 +155,6 @@ const ProductDetail = () => {
     window.clearTimeout(noticeTimerRef.current)
   }, [])
 
-  useEffect(() => {
-    const page = document.querySelector(`.${styles.page}`)
-
-    const header =
-      document.querySelector('body > #root header') ??
-      document.querySelector('header')
-
-    if (!page || !header) return undefined
-
-    const previousPosition = header.style.position
-    const previousTop = header.style.top
-    const previousWidth = header.style.width
-
-    const updateHeaderHeight = () =>
-      page.style.setProperty(
-        '--detail-header-height',
-        `${header.getBoundingClientRect().height}px`
-      )
-
-    header.style.position = 'sticky'
-    header.style.top = '0'
-    header.style.width = '100%'
-
-    updateHeaderHeight()
-
-    const resizeObserver = new ResizeObserver(
-      updateHeaderHeight
-    )
-
-    resizeObserver.observe(header)
-
-    return () => {
-      resizeObserver.disconnect()
-
-      page.style.removeProperty(
-        '--detail-header-height'
-      )
-
-      header.style.position = previousPosition
-      header.style.top = previousTop
-      header.style.width = previousWidth
-    }
-  }, [])
-
   const product = useMemo(() => {
     const exactProduct = products.find(
       (item) => item.productId === productId
@@ -214,6 +172,49 @@ const ProductDetail = () => {
       )
     )
   }, [productId, products])
+
+  useEffect(() => {
+    const page = document.querySelector(`.${styles.page}`)
+    const header = document.querySelector('body > #root header') ?? document.querySelector('header')
+
+    if (!page || !header || !product) return undefined
+
+    const isNewProduct = !productReferenceData.some(
+      (item) => item.productId === product.productId
+    )
+    const previousStyles = {
+      position: header.style.position,
+      top: header.style.top,
+      left: header.style.left,
+      width: header.style.width,
+      marginTop: page.style.marginTop,
+    }
+
+    const updateHeaderHeight = () => {
+      const headerHeight = header.getBoundingClientRect().height
+      page.style.setProperty('--detail-header-height', `${headerHeight}px`)
+      page.style.marginTop = isNewProduct ? `${headerHeight}px` : previousStyles.marginTop
+    }
+
+    header.style.position = isNewProduct ? 'fixed' : 'sticky'
+    header.style.top = '0'
+    header.style.left = isNewProduct ? '0' : previousStyles.left
+    header.style.width = '100%'
+    updateHeaderHeight()
+
+    const resizeObserver = new ResizeObserver(updateHeaderHeight)
+    resizeObserver.observe(header)
+
+    return () => {
+      resizeObserver.disconnect()
+      page.style.removeProperty('--detail-header-height')
+      page.style.marginTop = previousStyles.marginTop
+      header.style.position = previousStyles.position
+      header.style.top = previousStyles.top
+      header.style.left = previousStyles.left
+      header.style.width = previousStyles.width
+    }
+  }, [product])
 
   const productDetailImages = useMemo(
     () => {
@@ -730,7 +731,8 @@ const ProductDetail = () => {
 
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} ref={pageRef}>
+      <MobileTopButton contentRef={pageRef} />
       <div className={styles.layout}>
 
         <div className={styles.mainColumn}>

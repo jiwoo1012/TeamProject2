@@ -166,7 +166,7 @@ const Signup = () => {
 
       <div className={styles.container}>
         <div className={styles.formArea}>
-          <h1>반갑습니다, 나리</h1>
+          <h1>반갑습니다, 나으리</h1>
 
           <form onSubmit={handleSubmit}>
             <label htmlFor="email">이메일</label>
