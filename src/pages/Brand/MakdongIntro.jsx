@@ -29,7 +29,7 @@ const MAKDONG_GUIDE_IMAGES = {
 
 const profileItems = [
   { label: '이름의 뜻', text: '막걸리 + 동동주. 탁주처럼 털털하고 친근한 동반자' },
-  { label: '나이', text: '어림잡아 백 살. 사람으로 치면 10대 후반~20대 초반의 인상' },
+  { label: '나이', text: '어림잡아 1000살. 정확한 나이는 본인도 모름' },
   { label: '정체', text: '산골 너구리에서 인간의 말을 깨우친 요괴' },
   { label: '하는 일', text: '주막의 조력자, 마음 길잡이이자 주안상 안내꾼' },
 ]
@@ -37,13 +37,13 @@ const profileItems = [
 const propItems = [
   { title: '도자기 잔', position: '머리 위', text: '발바닥 자국 무늬가 새겨진 작은 잔입죠.', image: front, alt: '머리에 도자기 잔을 얹은 막동이', line: 'M23 14 H48 L54 46' },
   { title: '도자기 술병', position: '양 앞발', text: '두 앞발로 꼭 안고 손님을 맞이하지요.', image: sitting, alt: '양 앞발로 도자기 술병을 안은 막동이', line: 'M18 67 H48 L54 46' },
-  { title: '마법 복주머니', position: '허리춤', text: '안주가 끊임없이 나오는 주머니입죠. 지금은 꺼내 보여드리지요!', image: makdongPouch, alt: '허리춤의 마법 복주머니를 꺼내 보여주는 막동이', line: 'M23 76 H48 L54 46' },
+  { title: '요술 복주머니', position: '허리춤', text: '안주가 끊임없이 나오는 주머니입죠. 지금은 꺼내 보여드리지요!', image: makdongPouch, alt: '허리춤의 마법 복주머니를 꺼내 보여주는 막동이', line: 'M23 76 H48 L54 46' },
 ]
 
 const characterTraits = [
   { title: '마음은 누구보다 먼저', text: '말하지 못한 속내에도 귀를 기울이는 무한한 공감 능력.' },
   { title: '맛본 술이 백 독', text: '몰래 훔쳐 맛본 세월 덕에, 술과 안주를 보는 눈만큼은 탁월하지요.' },
-  { title: '꼬리는 거짓말을 못 해', text: '좋은 술과 안주 이야기만 나오면 귀와 꼬리가 불쑥! 사람 행세는 또 실패입죠.' },
+  { title: '꼬리는 거짓말을 못 해', text: '좋은 술과 안주 이야기만 나오면 귀가 쫑긋, 꼬리는 붕붕! 세월이 흘러도 제어가 안돼요.' },
   { title: '칭찬에는 속수무책', text: '“막동이가 최고야!” 한마디면 제 몫의 안주까지 몽땅 내어주는 무른 구석.' },
 ]
 
@@ -379,9 +379,9 @@ const MakdongIntro = () => {
 
             <div className={styles.tailSecret}>
               <span aria-hidden="true">↗</span>
-              <div><h3>쉿, 등 뒤에 요괴의 흔적!</h3>
-                <p>완벽하게 사람 행세를 하려 해도, BACK 뷰의 너구리 꼬리가 정체를 드러내지요.</p>
-                <strong>“이, 이것은… 옷자락입죠!”</strong>
+              <div><h3>술과 관련해서는 다재다능!</h3>
+                <p>영락없는 너구리의 몸이지만, 기나긴 수련 끝에 이족보행과 궁극의 요술을 깨우쳤지요.</p>
+                {/* <strong>“평범한 너구리로 봤다가는 큰코다칩니다!”</strong> */}
               </div>
             </div>
 
