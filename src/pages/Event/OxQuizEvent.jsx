@@ -4,11 +4,13 @@ import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
 import { saveEventParticipation } from '../../services/eventParticipation'
 import quizData from '../../data/quizs.json'
 import { PATHS } from '../../routes/paths'
+import knotPattern from '../../assets/images/eventPage/pattern.png'
 import styles from './OxQuizEvent.module.scss'
 
 const EVENT_ID = 'event-3'
 const EVENT_TITLE = '술술 풀리는 막동이 OX 퀴즈'
 const POINTS_PER_ANSWER = 500
+const REWARD_MILESTONE_COUNT = 5
 
 const quizImages = import.meta.glob('../../assets/images/products/explain/*.png', {
   eager: true,
@@ -38,14 +40,27 @@ const OxQuizEvent = () => {
   const [correctCount, setCorrectCount] = useState(0)
   const [nickname, setNickname] = useState('')
   const [isResultOpen, setIsResultOpen] = useState(false)
-  const [isQuitOpen, setIsQuitOpen] = useState(false)
   const [saveMessage, setSaveMessage] = useState('')
+  const [justCompletedMilestone, setJustCompletedMilestone] = useState(-1)
+  const [pointBurst, setPointBurst] = useState(null)
 
   const currentQuiz = quizzes[currentIndex]
   const isAnswered = Boolean(selectedAnswer)
   const isCorrect = isAnswered && selectedAnswer === currentQuiz.answer
   const isLastQuiz = currentIndex === quizzes.length - 1
   const earnedPoints = correctCount * POINTS_PER_ANSWER
+
+  // Checkpoints derived from the real per-answer reward (POINTS_PER_ANSWER),
+  // grouped into REWARD_MILESTONE_COUNT even steps so the bar stays compact
+  // regardless of how many questions the quiz has.
+  const rewardMilestones = useMemo(() => {
+    const count = Math.min(REWARD_MILESTONE_COUNT, quizzes.length)
+    const step = quizzes.length / count
+    return Array.from({ length: count }, (_, index) => {
+      const correctNeeded = Math.round(step * (index + 1))
+      return { correctNeeded, points: correctNeeded * POINTS_PER_ANSWER }
+    })
+  }, [quizzes.length])
 
   useEffect(() => {
     document.body.classList.add('jajak-ox-quiz')
@@ -69,6 +84,21 @@ const OxQuizEvent = () => {
       unsubscribe()
     }
   }, [])
+
+  const currentMilestoneIndex = rewardMilestones.findIndex((milestone) => correctCount < milestone.correctNeeded)
+
+  useEffect(() => {
+    if (correctCount === 0) return
+    setPointBurst({ id: correctCount, amount: POINTS_PER_ANSWER })
+    const reachedIndex = rewardMilestones.findIndex((milestone) => milestone.correctNeeded === correctCount)
+    if (reachedIndex !== -1) setJustCompletedMilestone(reachedIndex)
+    const burstTimer = setTimeout(() => setPointBurst(null), 900)
+    const pulseTimer = setTimeout(() => setJustCompletedMilestone(-1), 700)
+    return () => {
+      clearTimeout(burstTimer)
+      clearTimeout(pulseTimer)
+    }
+  }, [correctCount, rewardMilestones])
 
   const saveResult = useCallback(async (finalCorrectCount) => {
     if (hasSavedRef.current) return
@@ -116,26 +146,83 @@ const OxQuizEvent = () => {
     navigate(PATHS.events)
   }
 
+  const progressPercent = ((currentIndex + (isAnswered ? 1 : 0)) / quizzes.length) * 100
+
   return (
-    <main className={`${styles.page} ${isQuitOpen ? styles.isPaused : ''}`}>
+    <main className={styles.page}>
+      <button className={styles.quitButton} type="button" onClick={handleQuit}>← 그만두기</button>
+
       <div className={styles.quizShell}>
         <div className={styles.progressHeader}>
-          <strong>{currentIndex + 1}/{quizzes.length}</strong>
-          <strong>현재 맞춘 정답 {correctCount}개</strong>
+          <div className={styles.progressMeta}>
+            <strong>{currentIndex + 1} / {quizzes.length}</strong>
+            <strong>현재 맞춘 정답 {correctCount}개</strong>
+          </div>
+          <div
+            className={styles.progressBar}
+            role="progressbar"
+            aria-valuenow={currentIndex + 1}
+            aria-valuemin={1}
+            aria-valuemax={quizzes.length}
+          >
+            <span style={{ width: `${progressPercent}%` }} />
+            <span className={styles.progressKnob} style={{ left: `${progressPercent}%` }} />
+          </div>
+        </div>
+
+        <div className={styles.rewardTrack} aria-label="포인트 적립 현황">
+          <div className={styles.rewardSummary}>
+            <span>포인트 적립 현황</span>
+            <span className={styles.rewardTotal}>
+              {earnedPoints.toLocaleString('ko-KR')}P
+              {pointBurst && (
+                <span key={pointBurst.id} className={styles.pointBurst} aria-hidden="true">
+                  +{pointBurst.amount.toLocaleString('ko-KR')}P
+                </span>
+              )}
+            </span>
+          </div>
+          <div className={styles.rewardTrackRow}>
+            <div className={styles.rewardLine}>
+              <span style={{ width: `${Math.min(100, (correctCount / quizzes.length) * 100)}%` }} />
+            </div>
+            <ul className={styles.rewardMilestones}>
+              {rewardMilestones.map((milestone, index) => {
+                const isCompleted = correctCount >= milestone.correctNeeded
+                const isCurrent = index === currentMilestoneIndex
+                return (
+                  <li
+                    className={`${styles.rewardMilestone} ${isCompleted ? styles.isCompleted : ''} ${isCurrent ? styles.isCurrent : ''} ${index === justCompletedMilestone ? styles.isPulsing : ''}`}
+                    key={milestone.correctNeeded}
+                  >
+                    <span className={styles.rewardNode} aria-hidden="true">{isCompleted && 'P'}</span>
+                    <span className={styles.rewardLabel}>{milestone.points.toLocaleString('ko-KR')}P</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
         </div>
 
         <section className={`${styles.questionPanel} ${isAnswered ? styles.isAnswered : ''}`} aria-live="polite" key={currentQuiz.id}>
+          <img className={styles.cardMark} src={knotPattern} alt="" aria-hidden="true" />
           <div className={styles.visualArea}>
             <img src={currentQuiz.image} alt={`${currentIndex + 1}번 문제 관련 이미지`} />
           </div>
           <div className={styles.copyArea}>
             {isAnswered ? (
               <>
-                <p className={styles.answerTitle}>정답 : {currentQuiz.answer}</p>
-                <p className={`${styles.feedbackMessage} ${isCorrect ? styles.isCorrect : styles.isWrong}`}>
-                  {isCorrect ? '정답입니다!' : '아쉬워요, 오답입니다!'}
-                </p>
+                <div className={styles.feedbackHead}>
+                  <p className={styles.answerTitle}>정답 : {currentQuiz.answer}</p>
+                  <p className={`${styles.feedbackMessage} ${isCorrect ? styles.isCorrect : styles.isWrong}`}>
+                    {isCorrect ? '정답입니다!' : '아쉬워요, 오답입니다!'}
+                  </p>
+                </div>
                 <p className={styles.explanation}>{currentQuiz.explanation}</p>
+                <button className={styles.continueButton} type="button" onClick={handleContinue}>
+                  {isLastQuiz ? '결과 보기' : '다음 문제'}
+                  <span aria-hidden="true">→</span>
+                </button>
               </>
             ) : (
               <>
@@ -159,42 +246,20 @@ const OxQuizEvent = () => {
                 onClick={() => handleAnswer(answer)}
                 key={answer}
               >
-                <span aria-hidden="true">{answer}</span>
+                <span className={styles.answerGlyph} aria-hidden="true">{answer}</span>
                 <strong>{answer === 'O' ? '맞습니다!' : '아닙니다!'}</strong>
                 {isCorrectAnswerButton && <span className={styles.correctBadge} aria-hidden="true">✓</span>}
               </button>
             )
           })}
-
-          {isAnswered && (
-            <button className={styles.continueButton} type="button" onClick={handleContinue}>
-              {isLastQuiz ? '결과 보기' : '다음 문제'}
-              <span aria-hidden="true">›</span>
-            </button>
-          )}
         </section>
       </div>
-
-      <button className={styles.quitButton} type="button" onClick={() => setIsQuitOpen(true)}>← 그만두기</button>
-
-      {isQuitOpen && (
-        <div className={styles.modalBackdrop}>
-          <section className={styles.quitModal} role="dialog" aria-modal="true" aria-labelledby="quiz-quit-title">
-            <h2 id="quiz-quit-title">퀴즈를 그만두시겠습니까?</h2>
-            <p>그만 두게 될 시 오늘의 기회를 소진하게 됩니다. 괜찮으시겠습니까?</p>
-            <div>
-              <button type="button" onClick={() => setIsQuitOpen(false)}>계속하기</button>
-              <button type="button" onClick={handleQuit}>그만두기</button>
-            </div>
-          </section>
-        </div>
-      )}
 
       {isResultOpen && (
         <div className={styles.modalBackdrop}>
           <section className={styles.resultModal} role="dialog" aria-modal="true" aria-labelledby="quiz-result-title">
             <button className={styles.closeButton} type="button" aria-label="결과 닫기" onClick={() => navigate(PATHS.events)}>×</button>
-            <h2 id="quiz-result-title">{nickname ? `${nickname}나리가` : '나리가'} 맞춘 문제는<br />총 {correctCount}문제!</h2>
+            <h2 id="quiz-result-title">{nickname ? `${nickname}나으리가` : '나으리가'} 맞춘 문제는<br />총 {correctCount}문제!</h2>
             <div className={styles.resultPoint}><strong>{earnedPoints.toLocaleString('ko-KR')}P 증정</strong></div>
             <dl>
               <div><dt>응모 이벤트</dt><dd>{EVENT_TITLE}</dd></div>

@@ -169,7 +169,7 @@ const Login = () => {
         <div className={styles.formArea}>
 
           <h1>
-            어서오세요, 나리
+            어서오세요, 나으리
           </h1>
 
 

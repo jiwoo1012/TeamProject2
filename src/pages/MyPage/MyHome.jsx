@@ -363,8 +363,8 @@ const MyHome = () => {
       ? userData?.role ===
         'admin'
         ? '관리자'
-        : '나리님'
-      : '나리님'
+        : '나으리님'
+      : '나으리님'
 
 
   const points =
