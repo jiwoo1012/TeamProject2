@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { collection, doc, getDoc, onSnapshot } from 'firebase/firestore'
 
@@ -125,6 +125,15 @@ const shopSubcategories = {
 
 const DesktopHeader = () => {
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const isBrandIntroActive =
+    location.pathname === '/brand'
+
+  const isMakdongActive =
+    location.pathname.startsWith(
+      '/brand/makdong'
+    )
 
   const [openMenu, setOpenMenu] = useState(null)
   const [hoveredShopCategory, setHoveredShopCategory] = useState('liquor')
@@ -895,9 +904,6 @@ const DesktopHeader = () => {
             styles.allMenuIntro
           }
         >
-          <span>
-            ALL MENU
-          </span>
 
           <h2>
             자작 둘러보기
@@ -936,7 +942,6 @@ const DesktopHeader = () => {
               }
             >
               <span>
-                <small>BRAND</small>
                 <strong>브랜드</strong>
               </span>
 
@@ -979,7 +984,7 @@ const DesktopHeader = () => {
                   }
                   onClick={closeAllMenu}
                 >
-                  막둥이 소개
+                  막동이 소개
                 </Link>
               </div>
             </div>
@@ -1005,7 +1010,6 @@ const DesktopHeader = () => {
               }
             >
               <span>
-                <small>SHOP</small>
                 <strong>스토어</strong>
               </span>
 
@@ -1152,7 +1156,6 @@ const DesktopHeader = () => {
               }
             >
               <span>
-                <small>AI CURATOR</small>
                 <strong>AI 추천</strong>
               </span>
 
@@ -1231,7 +1234,6 @@ const DesktopHeader = () => {
               }
             >
               <span>
-                <small>EVENT</small>
                 <strong>이벤트</strong>
               </span>
 
@@ -1290,7 +1292,6 @@ const DesktopHeader = () => {
               }
             >
               <span>
-                <small>MY JAJAK</small>
                 <strong>마이 자작</strong>
               </span>
 
@@ -1399,90 +1400,94 @@ const DesktopHeader = () => {
       ======================================== */}
 
       <div
-        className={`${styles.megaMenu} ${
+        className={`${styles.megaMenu} ${styles.brandMegaMenu} ${
           openMenu === 'brand'
             ? styles.megaMenuOpen
             : ''
         }`}
       >
         <div
-          className={
-            styles.megaContainer
-          }
+          className={`${styles.megaContainer} ${styles.brandMegaContainer}`}
         >
+          <div className={styles.megaSectionTitle}>
+            <h2>
+              브랜드 소개
+            </h2>
+          </div>
 
-          {/* 브랜드 SNB */}
-
-          <div
-            className={
-              styles.brandSnb
-            }
+          <nav
+            className={styles.brandSnb}
+            aria-label="브랜드 메뉴"
           >
-
             <Link
               to="/brand"
-              className={
-                styles.snbLink
-              }
-              onClick={
-                closeMegaMenu
+              className={`${styles.snbNavLink} ${
+                isBrandIntroActive
+                  ? styles.snbNavLinkActive
+                  : ''
+              }`}
+              onClick={closeMegaMenu}
+              aria-current={
+                isBrandIntroActive
+                  ? 'page'
+                  : undefined
               }
             >
-              브랜드 소개
+              <span>
+                브랜드 소개
+              </span>
+              <i aria-hidden="true">
+                →
+              </i>
             </Link>
 
             <Link
               to="/brand/makdong"
-              className={
-                styles.snbLink
-              }
-              onClick={
-                closeMegaMenu
+              className={`${styles.snbNavLink} ${
+                isMakdongActive
+                  ? styles.snbNavLinkActive
+                  : ''
+              }`}
+              onClick={closeMegaMenu}
+              aria-current={
+                isMakdongActive
+                  ? 'page'
+                  : undefined
               }
             >
-              막둥이 소개
+              <span>
+                막둥이 소개
+              </span>
+              <i aria-hidden="true">
+                →
+              </i>
             </Link>
+          </nav>
 
-          </div>
-
-
-          {/* 브랜드 오른쪽 영역 */}
-
-          <div
-            className={
-              styles.brandVisual
-            }
+          <Link
+            to="/brand"
+            className={styles.brandVisual}
+            onClick={closeMegaMenu}
           >
-
-            <div
-              className={
-                styles.brandImage
-              }
-            >
+            <div className={styles.brandImage}>
               <img
                 src={brandSnbImage}
                 alt="자작 브랜드 소개"
               />
-</div>
-
-            <div
-              className={
-                styles.brandText
-              }
-            >
-              <h2>
-                자작이 걸어온 길
-              </h2>
-
-              <p>
-                전통주의 가치를 담아온
-                <br />
-                자작의 브랜드 스토리를 만나보세요.
-              </p>
             </div>
 
-          </div>
+            <div className={styles.brandText}>
+              <h3>
+                술 한 잔에 담긴
+                <br />
+                자작의 이야기를 만나보세요.
+              </h3>
 
+              <p>
+                전통주의 가치를 오늘의 감각으로 풀어낸<br/> 자작의 브랜드 이야기를 소개합니다.
+              </p>
+            </div>
+          </Link>
         </div>
       </div>
 
@@ -1492,66 +1497,82 @@ const DesktopHeader = () => {
       ======================================== */}
 
       <div
-        className={`${styles.megaMenu} ${
+        className={`${styles.megaMenu} ${styles.aiMegaMenu} ${
           openMenu === 'ai'
             ? styles.megaMenuOpen
             : ''
         }`}
       >
         <div
-          className={
-            styles.megaContainer
-          }
+          className={`${styles.megaContainer} ${styles.aiMegaContainer}`}
         >
+          <div className={styles.megaSectionTitle}>
+            <h2>
+              AI 추천
+            </h2>
+          </div>
 
-          <div
-            className={
-              styles.aiSnb
-            }
+          <nav
+            className={styles.aiSnb}
+            aria-label="AI 추천 메뉴"
           >
-
             <Link
               to="/ai"
-              className={
-                styles.snbLink
-              }
-              onClick={
-                closeMegaMenu
-              }
+              className={styles.snbNavLink}
+              onClick={closeMegaMenu}
             >
-              추천 받기
+              <span>
+                주안상 추천 받기
+              </span>
+              <i aria-hidden="true">
+                →
+              </i>
             </Link>
-
-
-            {/* 내 취향 분석 */}
 
             <Link
               to="/mypage/preference"
-              className={
-                styles.snbLink
-              }
-              onClick={
-                closeMegaMenu
-              }
+              className={styles.snbNavLink}
+              onClick={closeMegaMenu}
             >
-              내 취향 분석
+              <span>
+                내 취향 분석
+              </span>
+              <i aria-hidden="true">
+                →
+              </i>
             </Link>
-
 
             <Link
               to="/mypage/ai-history"
-              className={
-                styles.snbLink
-              }
-              onClick={
-                closeMegaMenu
-              }
+              className={styles.snbNavLink}
+              onClick={closeMegaMenu}
             >
-              이전 추천 결과 보기
+              <span>
+                이전 추천 결과
+              </span>
+              <i aria-hidden="true">
+                →
+              </i>
             </Link>
+          </nav>
 
+          <div className={styles.aiFeature}>
+            <h3>
+              내 취향에 맞는
+              <br />
+              한 상을 찾아보세요.
+            </h3>
+
+            <Link
+              to="/ai"
+              onClick={closeMegaMenu}
+            >
+              추천 시작하기
+              <span aria-hidden="true">
+                →
+              </span>
+            </Link>
           </div>
-
         </div>
       </div>
 
@@ -1561,7 +1582,7 @@ const DesktopHeader = () => {
       ======================================== */}
 
       <div
-        className={`${styles.megaMenu} ${
+        className={`${styles.megaMenu} ${styles.shopMegaMenu} ${
           openMenu === 'shop'
             ? styles.megaMenuOpen
             : ''
@@ -1570,174 +1591,143 @@ const DesktopHeader = () => {
         <div
           className={`${styles.megaContainer} ${styles.shopContainer}`}
         >
-
-          {/* ========================================
-              카테고리
-          ======================================== */}
-
-          <div
-            className={
-              styles.shopColumn
-            }
-          >
-
-            <span
-              className={
-                styles.columnTitle
-              }
-            >
-              카테고리
-            </span>
+          <div className={styles.megaSectionTitle}>
+            <h2>
+              스토어
+            </h2>
 
             <Link
+              to="/shop"
+              className={styles.sectionAllLink}
+              onClick={closeMegaMenu}
+            >
+              전체 상품
+              <span aria-hidden="true">
+                →
+              </span>
+            </Link>
+          </div>
+
+          <nav
+            className={styles.shopCategoryColumn}
+            aria-label="상품 카테고리"
+          >
+            <Link
               to="/shop?category=liquor"
-              className={
-                styles.snbLink
-              }
+              className={`${styles.shopCategoryLink} ${
+                hoveredShopCategory === 'liquor'
+                  ? styles.shopCategoryLinkActive
+                  : ''
+              }`}
               onMouseEnter={() =>
                 setHoveredShopCategory('liquor')
               }
-              onClick={
-                closeMegaMenu
-              }
+              onClick={closeMegaMenu}
             >
-              전통주
+              <span>전통주</span>
+              <i aria-hidden="true">→</i>
             </Link>
 
             <Link
               to="/shop?category=food"
-              className={
-                styles.snbLink
-              }
+              className={`${styles.shopCategoryLink} ${
+                hoveredShopCategory === 'food'
+                  ? styles.shopCategoryLinkActive
+                  : ''
+              }`}
               onMouseEnter={() =>
                 setHoveredShopCategory('food')
               }
-              onClick={
-                closeMegaMenu
-              }
+              onClick={closeMegaMenu}
             >
-              안주
+              <span>안주</span>
+              <i aria-hidden="true">→</i>
             </Link>
 
             <Link
               to="/shop?category=glass"
-              className={
-                styles.snbLink
-              }
+              className={`${styles.shopCategoryLink} ${
+                hoveredShopCategory === 'glass'
+                  ? styles.shopCategoryLinkActive
+                  : ''
+              }`}
               onMouseEnter={() =>
                 setHoveredShopCategory('glass')
               }
-              onClick={
-                closeMegaMenu
-              }
+              onClick={closeMegaMenu}
             >
-              잔
+              <span>잔</span>
+              <i aria-hidden="true">→</i>
             </Link>
 
             <Link
               to="/shop?category=gift"
-              className={
-                styles.snbLink
-              }
+              className={`${styles.shopCategoryLink} ${
+                hoveredShopCategory === 'gift'
+                  ? styles.shopCategoryLinkActive
+                  : ''
+              }`}
               onMouseEnter={() =>
                 setHoveredShopCategory('gift')
               }
-              onClick={
-                closeMegaMenu
-              }
+              onClick={closeMegaMenu}
             >
-              선물 세트
+              <span>선물 세트</span>
+              <i aria-hidden="true">→</i>
             </Link>
+          </nav>
 
-          </div>
+          <div className={styles.shopDetailColumn}>
+            <h3>
+              {shopSubcategories[hoveredShopCategory].title}
+            </h3>
 
-
-          {/* ========================================
-              카테고리 세부 종류
-
-              왼쪽 카테고리를 호버하면 그에 맞는
-              세부 종류로 바뀐다. 세부 종류가 없으면
-              빈 상태로 둔다.
-          ======================================== */}
-
-          <div
-            className={
-              styles.shopColumn
-            }
-          >
-
-            {shopSubcategories[hoveredShopCategory].items.length > 0 && (
-              <>
-                <span
-                  className={
-                    styles.columnTitle
-                  }
-                >
-                  {shopSubcategories[hoveredShopCategory].title}
-                </span>
-
-                {shopSubcategories[hoveredShopCategory].items.map(({ label, to }) => (
-                  <Link
-                    to={to}
-                    className={
-                      styles.snbLink
-                    }
-                    onClick={
-                      closeMegaMenu
-                    }
-                    key={label}
-                  >
-                    {label}
-                  </Link>
-                ))}
-              </>
-            )}
-
-          </div>
-
-
-          {/* ========================================
-              인기 상품
-          ======================================== */}
-
-          <div
-            className={
-              styles.popularProducts
-            }
-          >
-
-            <div
-              className={
-                styles.popularTitle
-              }
-            >
-
-              <h2>
-                인기 상품
-              </h2>
-
+            {shopSubcategories[hoveredShopCategory].items.length > 0 ? (
+              <div className={styles.shopDetailLinks}>
+                {shopSubcategories[hoveredShopCategory].items.map(
+                  ({ label, to }) => (
+                    <Link
+                      to={to}
+                      onClick={closeMegaMenu}
+                      key={label}
+                    >
+                      {label}
+                    </Link>
+                  )
+                )}
+              </div>
+            ) : (
               <Link
-                to="/shop?category=liquor"
-                onClick={
-                  closeMegaMenu
-                }
+                to={`/shop?category=${hoveredShopCategory}`}
+                className={styles.shopDetailAll}
+                onClick={closeMegaMenu}
               >
-                전체보기
-
-                <span>
+                전체 보기
+                <span aria-hidden="true">
                   →
                 </span>
               </Link>
+            )}
+          </div>
 
+          <div className={styles.popularProducts}>
+            <div className={styles.popularTitle}>
+              <h3>
+                인기 상품
+              </h3>
+
+              <Link
+                to="/shop?category=liquor"
+                onClick={closeMegaMenu}
+              >
+                전체보기
+                <span aria-hidden="true">
+                  →
+                </span>
+              </Link>
             </div>
 
-
-            <div
-              className={
-                styles.productList
-              }
-            >
-
+            <div className={styles.productList}>
               {popularProducts.map(
                 (product) => {
                   const imageSrc =
@@ -1763,9 +1753,6 @@ const DesktopHeader = () => {
                         closeMegaMenu
                       }
                     >
-
-                      {/* 상품 이미지 */}
-
                       <div
                         className={
                           styles.productImage
@@ -1773,62 +1760,31 @@ const DesktopHeader = () => {
                       >
                         {imageSrc && (
                           <img
-                            src={
-                              imageSrc
-                            }
-                            alt={
-                              productName
-                            }
-                            style={{
-                              width:
-                                '100%',
-
-                              height:
-                                '100%',
-
-                              display:
-                                'block',
-
-                              objectFit:
-                                'cover',
-                            }}
+                            src={imageSrc}
+                            alt={productName}
                           />
                         )}
                       </div>
-
-
-                      {/* 상품명 */}
 
                       <span
                         className={
                           styles.productName
                         }
                       >
-                        {
-                          productName
-                        }
+                        {productName}
                       </span>
 
-
-                      {/* 가격 */}
-
                       <strong>
-                        {
-                          formatPrice(
-                            product.price
-                          )
-                        }
+                        {formatPrice(
+                          product.price
+                        )}
                       </strong>
-
                     </Link>
                   )
                 }
               )}
-
             </div>
-
           </div>
-
         </div>
       </div>
 
