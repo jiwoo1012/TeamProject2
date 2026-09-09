@@ -1356,6 +1356,7 @@
 
 .featureCopy h2 {
   margin: 0 0 $space-6;
+  font-family: $font-family-display;
   font-size: clamp(52px, 5vw, 76px);
   font-weight: $font-weight-semibold;
   line-height: 1.28;

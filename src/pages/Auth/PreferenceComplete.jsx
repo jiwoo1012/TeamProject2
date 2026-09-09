@@ -3,7 +3,19 @@ import { useNavigate } from 'react-router-dom'
 
 import makdongImg from '../../assets/characters/M007_Poses01.png'
 
-import styles from './PreferenceComplete.module.scss'
+import aiStyles from '../AiCurator/AiSurvey.module.scss'
+import preferenceStyles from './PreferenceComplete.module.scss'
+
+const styles = {
+  ...preferenceStyles,
+  preferenceComplete: [aiStyles.surveyPage, preferenceStyles.preferenceComplete].filter(Boolean).join(' '),
+  content: [aiStyles.surveyContainer, preferenceStyles.content].filter(Boolean).join(' '),
+  title: [aiStyles.questionTitle, preferenceStyles.title].filter(Boolean).join(' '),
+  description: [aiStyles.questionDescription, preferenceStyles.description].filter(Boolean).join(' '),
+  character: [aiStyles.guideCharacter, preferenceStyles.character].filter(Boolean).join(' '),
+  aiButton: [aiStyles.nextButton, preferenceStyles.aiButton].filter(Boolean).join(' '),
+  shopButton: [aiStyles.prevButton, preferenceStyles.shopButton].filter(Boolean).join(' '),
+}
 
 
 const PreferenceComplete = () => {

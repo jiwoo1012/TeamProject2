@@ -102,6 +102,9 @@ const JourneySection = ({ onSkip }) => {
   const finaleTransitionRef = useRef(null)
   const skipButtonRef = useRef(null)
   const finishJourneyRef = useRef(null)
+  const progressRef = useRef(null)
+  const progressFillRef = useRef(null)
+  const progressValueRef = useRef(null)
 
   useLayoutEffect(() => {
     let scrollTween
@@ -122,6 +125,8 @@ const JourneySection = ({ onSkip }) => {
     const section = sectionRef.current
     const sceneCursor = sceneCursorRef.current
     const stage = section?.querySelector(`.${styles.stage}`)
+    const progressElement = progressRef.current
+    const progressValue = progressValueRef.current
 
     root.classList.add(scrollbarClass)
     root.classList.remove('main-header-visible')
@@ -170,9 +175,22 @@ const JourneySection = ({ onSkip }) => {
       removeCursorPointerHandler = () => window.removeEventListener('pointermove', followCursor)
 
       let isFinishing = false
+      const setProgressFill = gsap.quickSetter(progressFillRef.current, 'scaleX')
+      let lastProgressPercent = -1
+      const updateProgress = (progress) => {
+        const value = Math.min(1, Math.max(0, progress))
+        setProgressFill(value)
+        const percent = value === 1 ? 100 : Math.floor(value * 100)
+        if (percent === lastProgressPercent) return
+        lastProgressPercent = percent
+        progressElement.setAttribute('aria-valuenow', String(percent))
+        progressValue.textContent = `${percent}%`
+      }
+      updateProgress(0)
       const finishJourney = () => {
         if (isFinishing) return
         isFinishing = true
+        updateProgress(1)
         autoScrollTween?.kill()
         isAutoPlaying = false
         sceneCursor?.classList.remove(styles.autoScrolling)
@@ -190,9 +208,10 @@ const JourneySection = ({ onSkip }) => {
       // 마지막 메시지에서는 멈추며 기존 버튼으로 메인에 진입합니다.
       const timeline = gsap.timeline({
         paused: isMobilePlayback,
-        onUpdate: () => {
+        onUpdate: function () {
+          if (!isFinishing) updateProgress(this.progress())
           if (!isMobilePlayback) return
-          const isOpening = timeline.progress() <= 0.04
+          const isOpening = this.progress() <= 0.04
           stage?.classList.toggle(styles.openingScene, isOpening)
           gsap.set(bellRef.current, { autoAlpha: isOpening ? 1 : 0 })
         },
@@ -732,6 +751,20 @@ const JourneySection = ({ onSkip }) => {
         <span ref={bellRef} className={styles.doorBell} aria-hidden="true" />
         <div className={styles.shade} aria-hidden="true" />
         <div ref={finaleTransitionRef} className={styles.finaleTransition} aria-hidden="true" />
+        <div
+          ref={progressRef}
+          className={styles.introProgress}
+          role="progressbar"
+          aria-label="인트로 재생 진행률"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={0}
+        >
+          <div className={styles.progressTrack} aria-hidden="true">
+            <span ref={progressFillRef} className={styles.progressFill} />
+          </div>
+          <span ref={progressValueRef} className={styles.progressValue} aria-hidden="true">0%</span>
+        </div>
 
         {/* [자주 수정하는 곳 4] 인트로 건너뛰기 버튼 문구 */}
         <button ref={skipButtonRef} className={styles.skipButton} type="button" onClick={onSkip}>

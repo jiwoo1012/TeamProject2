@@ -31,7 +31,6 @@ import {
 
 import pairings from '../../data/pairings.json'
 
-import cartTopOrnament from '../../assets/images/mypage/cartTopOrnament.svg'
 import cartStepOrnament from '../../assets/images/mypage/cartStepOrnament.svg'
 
 import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
@@ -958,7 +957,6 @@ const Cart = () => {
   if (isAuthReady && (!currentUser || currentUser.isAnonymous)) {
     return (
       <section className={styles.page} aria-labelledby="cart-title">
-        <img className={styles.topOrnament} src={cartTopOrnament} alt="" />
 
         <header className={styles.pageHeader}>
           <h1 id="cart-title">장바구니</h1>
@@ -991,15 +989,6 @@ const Cart = () => {
       aria-labelledby="cart-title"
     >
       <MobileTopButton contentRef={pageRef} />
-      <img
-        className={
-          styles.topOrnament
-        }
-        src={
-          cartTopOrnament
-        }
-        alt=""
-      />
 
       <header
         className={

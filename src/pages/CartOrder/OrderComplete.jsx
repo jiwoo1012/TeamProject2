@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { PATHS } from '../../routes/paths'
-import cartTopOrnament from '../../assets/images/mypage/cartTopOrnament.svg'
 import cartStepOrnament from '../../assets/images/mypage/cartStepOrnament.svg'
 import orderCompleteSeal from '../../assets/images/mypage/orderCompleteSeal.png'
 import styles from './OrderComplete.module.scss'
@@ -116,7 +115,6 @@ const OrderComplete = () => {
 
   return (
   <section className={styles.page} aria-labelledby="complete-title">
-    <img className={styles.topOrnament} src={cartTopOrnament} alt="" />
 
     <nav className={styles.purchaseSteps} aria-label="주문 진행 단계">
       <span>장바구니</span><img className={styles.stepFlower} src={cartStepOrnament} alt="" />

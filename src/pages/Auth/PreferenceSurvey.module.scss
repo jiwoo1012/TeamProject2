@@ -1,490 +1,211 @@
+﻿@use '../../styles/variables' as *;
+
 .preferenceSurvey {
-  width: 100%;
-  min-height: 100vh;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  min-height: 100svh;
+  padding: $space-24 $side-margin-tablet;
+  overflow: clip;
+  background:
+    radial-gradient(ellipse at 24% 48%, rgba($color-surface, .6), transparent 62%),
+    radial-gradient(ellipse at 80% 35%, rgba($color-white, .85), transparent 65%),
+    #F9F7F4;
+  color: $color-text-primary;
+  font-family: $font-family-base;
 
-  padding: 20px;
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 8% -10%;
+    background: url('../../assets/images/common/header-hanji2.webp') center / 100% 100% no-repeat;
+    opacity: .65;
+    pointer-events: none;
+  }
+}
 
-  background: #faf8f4;
-
-  box-sizing: border-box;
+.surveyBox {
+  display: grid;
+  align-items: center;
+  width: min(100%, $container-max);
+  margin: 0 auto;
 }
 
 .backButton {
-  position: absolute;
-  top: 24px;
-  left: 28px;
-
-  display: flex;
+  position: fixed;
+  z-index: 2;
+  top: max($space-6, env(safe-area-inset-top));
+  left: max($side-margin-tablet, env(safe-area-inset-left));
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-
-  padding: 6px 4px;
-
-  border: none;
-  background: transparent;
-
-  color: #75685f;
-
-  font-family: inherit;
-  font-size: 20px;
-  font-weight: 500;
-
+  gap: $space-2;
+  min-height: 40px;
+  padding: $space-2 $space-3;
+  border: 1px solid rgba($color-text-primary, .1);
+  border-radius: $radius-pill;
+  background: rgba($color-bg, .94);
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
   cursor: pointer;
-
-  transition:
-    color 0.2s ease,
-    transform 0.2s ease;
-
-  &:hover {
-    color: #568b86;
-    transform: translateX(-2px);
-  }
 }
-
-.backArrow {
-  font-size: 20px;
-  line-height: 1;
-}
-
-/* ========================================
-   전체 설문 박스
-======================================== */
-
-.surveyBox {
-  position: relative;
-
-  width: 100%;
-  min-height: calc(100vh - 40px);
-
-  border: 1px solid #d9c2a0;
-
-  background:
-    radial-gradient(
-      circle at 50% 45%,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(252, 249, 244, 0.92) 60%,
-      rgba(248, 244, 237, 0.95) 100%
-    );
-
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-
-/* ========================================
-   콘텐츠 영역
-======================================== */
 
 .content {
-  width: min(1080px, 84%);
-  min-height: calc(100vh - 40px);
-
-  margin: 0 auto;
-
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
   align-items: center;
-  justify-content: space-between;
-
-  gap: 80px;
+  gap: clamp(32px, 5vw, 80px);
+  width: 100%;
 }
-
-
-/* ========================================
-   왼쪽 텍스트
-======================================== */
-
-.textArea {
-  flex: 1;
-  max-width: 540px;
-}
-
-
-.infoBadge {
-  width: fit-content;
-
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  margin-bottom: 30px;
-  padding: 8px 16px;
-
-  border-radius: 999px;
-
-  background: #dce8e5;
-  color: #527d78;
-
-  font-size: 14px;
-  font-weight: 500;
-}
-
-
-.clockIcon {
-  font-size: 13px;
-  line-height: 1;
-}
-
-
-.title {
-  margin: 0;
-
-  color: #34291f;
-
-  font-size: clamp(34px, 3.2vw, 50px);
-  font-weight: 700;
-  line-height: 1.35;
-  letter-spacing: -1.6px;
-}
-
-
-.description {
-  margin: 30px 0 0;
-
-  color: #544a42;
-
-  font-size: 17px;
-  font-weight: 400;
-  line-height: 1.7;
-  letter-spacing: -0.4px;
-}
-
-
-/* ========================================
-   시작 버튼
-======================================== */
-
-.startButton {
-  min-width: 220px;
-  height: 52px;
-
-  margin-top: 34px;
-  padding: 0 24px;
-
-  border: none;
-  border-radius: 7px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 25px;
-
-  background: #568b86;
-  color: #ffffff;
-
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
-
-  &:hover {
-    background: #477a76;
-  }
-
-  &:active {
-    transform: translateY(1px);
-  }
-}
-
-
-.arrow {
-  font-size: 25px;
-  font-weight: 300;
-  line-height: 1;
-}
-
-
-/* ========================================
-   하단 안내 문구
-======================================== */
-
-.notice {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  margin: 25px 0 0;
-
-  color: #ae9e8f;
-
-  font-size: 13px;
-  font-weight: 400;
-}
-
-
-.noticeIcon {
-  color: #d2b99a;
-  font-size: 12px;
-}
-
-
-/* ========================================
-   막둥이 이미지
-======================================== */
 
 .characterArea {
-  flex: 1;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding-top: 15px;
+  grid-column: 1;
+  grid-row: 1;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  animation: characterEnter .8s cubic-bezier(.22, 1, .36, 1) both;
 }
-
 
 .character {
   display: block;
-
-  width: min(100%, 360px);
-  height: auto;
-
+  width: auto;
+  height: clamp(360px, 55svh, 660px);
+  max-width: 100%;
   object-fit: contain;
-
-  user-select: none;
-  pointer-events: none;
+  filter: drop-shadow(0 16px 20px rgba($color-text-primary, .08));
 }
 
-
-/* ========================================
-   모서리 장식
-======================================== */
-
-.corner {
-  position: absolute;
-
-  width: 36px;
-  height: 36px;
-
-  z-index: 2;
-
-  &::before,
-  &::after {
-    content: '';
-
-    position: absolute;
-
-    background: #d4bc98;
-  }
+.textArea {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  animation: contentEnter .7s .1s ease both;
 }
 
-
-/* 좌측 상단 */
-
-.topLeft {
-  top: 9px;
-  left: 9px;
-
-  border-top: 2px solid #d4bc98;
-  border-left: 2px solid #d4bc98;
-
-  &::before {
-    width: 20px;
-    height: 1px;
-
-    top: 7px;
-    left: -5px;
-  }
-
-  &::after {
-    width: 1px;
-    height: 20px;
-
-    top: -5px;
-    left: 7px;
-  }
+.infoBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  margin-bottom: $space-5;
+  padding: $space-2 $space-4;
+  border: 1px solid rgba($color-text-secondary, .15);
+  border-radius: $radius-pill;
+  background: rgba($color-white, .6);
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
 }
 
-
-/* 우측 상단 */
-
-.topRight {
-  top: 9px;
-  right: 9px;
-
-  border-top: 2px solid #d4bc98;
-  border-right: 2px solid #d4bc98;
-
-  &::before {
-    width: 20px;
-    height: 1px;
-
-    top: 7px;
-    right: -5px;
-  }
-
-  &::after {
-    width: 1px;
-    height: 20px;
-
-    top: -5px;
-    right: 7px;
-  }
+.clockIcon { font-size: $font-size-xl; line-height: 1; }
+.title {
+  margin: 0;
+  font-family: 'Batang', 'Noto Serif KR', serif;
+  font-size: clamp(32px, 3.1vw, 48px);
+  font-weight: $font-weight-bold;
+  line-height: 1.4;
+  letter-spacing: -.04em;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 
-
-/* 좌측 하단 */
-
-.bottomLeft {
-  bottom: 9px;
-  left: 9px;
-
-  border-bottom: 2px solid #d4bc98;
-  border-left: 2px solid #d4bc98;
-
-  &::before {
-    width: 20px;
-    height: 1px;
-
-    bottom: 7px;
-    left: -5px;
-  }
-
-  &::after {
-    width: 1px;
-    height: 20px;
-
-    bottom: -5px;
-    left: 7px;
-  }
+.description {
+  margin: $space-5 0 0;
+  color: $color-text-secondary;
+  font-size: $font-size-md;
+  line-height: $line-height-relaxed;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
-
-/* 우측 하단 */
-
-.bottomRight {
-  right: 9px;
-  bottom: 9px;
-
-  border-right: 2px solid #d4bc98;
-  border-bottom: 2px solid #d4bc98;
-
-  &::before {
-    width: 20px;
-    height: 1px;
-
-    right: -5px;
-    bottom: 7px;
-  }
-
-  &::after {
-    width: 1px;
-    height: 20px;
-
-    right: 7px;
-    bottom: -5px;
-  }
+.startButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-6;
+  width: min(100%, 360px);
+  min-height: 60px;
+  margin-top: $space-8;
+  padding: $space-4 $space-6;
+  border: 1px solid $color-text-primary;
+  border-radius: $radius-lg;
+  background: $color-text-primary;
+  color: $color-white;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: background $transition-fast ease, transform $transition-fast ease;
 }
 
-
-/* ========================================
-   태블릿
-======================================== */
-
-@media (max-width: 1024px) {
-  .content {
-    width: 82%;
-    gap: 40px;
-  }
-
-  .textArea {
-    max-width: 480px;
-  }
-
-  .character {
-    width: min(100%, 300px);
-  }
+.skipButton {
+  width: min(100%, 360px);
+  min-height: 44px;
+  margin-top: $space-2;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
 }
 
+.notice {
+  margin: $space-4 0 0;
+  color: $color-text-muted;
+  font-size: $font-size-xs;
+  line-height: $line-height-relaxed;
+  word-break: keep-all;
+}
+.noticeIcon { margin-right: $space-2; }
+.arrow, .backArrow { font-size: $font-size-2xl; line-height: 1; }
+.backButton, .startButton, .skipButton {
+  &:focus-visible { outline: 2px solid $color-text-secondary; outline-offset: $space-1; }
+}
 
-/* ========================================
-   모바일
-======================================== */
+@media (hover: hover) {
+  .startButton:hover { background: $color-text-secondary; transform: translateY(-2px); }
+  .backButton:hover, .skipButton:hover { color: $color-text-primary; }
+}
 
-@media (max-width: 768px) {
-  .preferenceSurvey {
-    min-height: 100vh;
+@media (min-width: $breakpoint-tablet-min) and (max-width: $breakpoint-tablet-max) {
+  .content { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: $space-6; }
+  .character { height: clamp(320px, 48svh, 480px); }
+  .title { font-size: clamp(30px, 3.5vw, 40px); }
+}
 
-    padding: 12px;
-  }
+@media (max-width: $breakpoint-mobile-max) {
+  .preferenceSurvey { padding: $space-20 $side-margin-mobile $space-8; }
+  .preferenceSurvey::before { inset: 0 -35%; opacity: .5; }
+  .backButton { top: max($space-4, env(safe-area-inset-top)); left: max($side-margin-mobile, env(safe-area-inset-left)); font-size: $font-size-xs; }
+  .content { grid-template-columns: minmax(0, 1fr); gap: $space-5; }
+  .characterArea { grid-column: 1; grid-row: 1; }
+  .character { height: clamp(180px, 30svh, 320px); }
+  .textArea { grid-column: 1; grid-row: 2; align-items: center; text-align: center; }
+  .infoBadge { margin-bottom: $space-3; font-size: $font-size-xs; }
+  .title { font-size: clamp(26px, 6.5vw, 32px); }
+  .description { margin-top: $space-3; font-size: $font-size-sm; }
+  .startButton { min-height: 56px; margin-top: $space-6; font-size: $font-size-md; }
+  .notice { margin-top: $space-2; }
+}
 
+@media (max-height: 650px) and (min-width: $breakpoint-tablet-min) {
+  .preferenceSurvey { padding-block: $space-20 $space-8; }
+  .character { height: clamp(280px, 55svh, 360px); }
+}
 
-  .surveyBox {
-    min-height: calc(100vh - 24px);
-  }
-
-
-  .content {
-    width: 82%;
-    min-height: calc(100vh - 24px);
-
-    padding: 70px 0 60px;
-
-    flex-direction: column;
-    justify-content: center;
-
-    gap: 35px;
-
-    box-sizing: border-box;
-  }
-
-
-  .textArea {
-    width: 100%;
-    max-width: none;
-  }
-
-
-  .infoBadge {
-    margin-bottom: 22px;
-
-    font-size: 12px;
-  }
-
-
-  .title {
-    font-size: 32px;
-    line-height: 1.35;
-  }
-
-
-  .description {
-    margin-top: 20px;
-
-    font-size: 15px;
-  }
-
-
-  .startButton {
-    width: 100%;
-
-    margin-top: 28px;
-  }
-
-
-  .notice {
-    font-size: 12px;
-  }
-
-
-  .characterArea {
-    width: 100%;
-
-    padding: 0;
-  }
-
-
-  .character {
-    width: 230px;
-  }
-
-
-  .corner {
-    width: 26px;
-    height: 26px;
-  }
+@keyframes characterEnter {
+  from { opacity: 0; transform: translateY(18px) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes contentEnter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .characterArea, .textArea { animation: none; }
+  .startButton { transition: none; }
+  .startButton:hover { transform: none; }
 }

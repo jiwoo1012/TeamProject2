@@ -3,7 +3,22 @@ import { useNavigate } from 'react-router-dom'
 
 import makdongImg from '../../assets/characters/M007_Poses01.png'
 
-import styles from './PreferenceSafetyIntro.module.scss'
+import aiStyles from '../AiCurator/AiSurvey.module.scss'
+import preferenceStyles from './PreferenceSafetyIntro.module.scss'
+
+const styles = {
+  ...preferenceStyles,
+  preferenceSafetyIntro: [aiStyles.surveyPage, preferenceStyles.preferenceSafetyIntro].filter(Boolean).join(' '),
+  screen: [aiStyles.surveyContainer, preferenceStyles.screen].filter(Boolean).join(' '),
+  completeTitle: [aiStyles.questionTitle, preferenceStyles.completeTitle].filter(Boolean).join(' '),
+  safetyTitle: [aiStyles.questionTitle, preferenceStyles.safetyTitle].filter(Boolean).join(' '),
+  completeDescription: [aiStyles.questionDescription, preferenceStyles.completeDescription].filter(Boolean).join(' '),
+  safetyDescription: [aiStyles.questionDescription, preferenceStyles.safetyDescription].filter(Boolean).join(' '),
+  makdong: [aiStyles.guideCharacter, preferenceStyles.makdong].filter(Boolean).join(' '),
+  buttonArea: [aiStyles.buttonArea, preferenceStyles.buttonArea].filter(Boolean).join(' '),
+  prevButton: [aiStyles.prevButton, preferenceStyles.prevButton].filter(Boolean).join(' '),
+  nextButton: [aiStyles.nextButton, preferenceStyles.nextButton].filter(Boolean).join(' '),
+}
 
 
 const PreferenceSafetyIntro = () => {

@@ -8,7 +8,30 @@ import {
 
 import { auth, db } from '../../firebase/firebase'
 
-import styles from './PreferenceSafety.module.scss'
+import aiStyles from '../AiCurator/AiSurvey.module.scss'
+import preferenceStyles from './PreferenceSafety.module.scss'
+
+const styles = {
+  ...preferenceStyles,
+  preferenceSafety: [aiStyles.surveyPage, preferenceStyles.preferenceSafety].filter(Boolean).join(' '),
+  inner: [aiStyles.surveyContainer, preferenceStyles.inner].filter(Boolean).join(' '),
+  headerArea: [aiStyles.questionHeader, preferenceStyles.headerArea].filter(Boolean).join(' '),
+  categoryBadge: [aiStyles.questionNumber, preferenceStyles.categoryBadge].filter(Boolean).join(' '),
+  title: [aiStyles.questionTitle, preferenceStyles.title].filter(Boolean).join(' '),
+  description: [aiStyles.questionDescription, preferenceStyles.description].filter(Boolean).join(' '),
+  optionButton: [aiStyles.safetyOption, preferenceStyles.optionButton].filter(Boolean).join(' '),
+  selected: [aiStyles.safetySelected, preferenceStyles.selected].filter(Boolean).join(' '),
+  plantButton: [aiStyles.safetyOption, preferenceStyles.plantButton].filter(Boolean).join(' '),
+  plantSelected: [aiStyles.safetySelected, preferenceStyles.plantSelected].filter(Boolean).join(' '),
+  noneButton: [aiStyles.safetyOption, preferenceStyles.noneButton].filter(Boolean).join(' '),
+  noneSelected: [aiStyles.safetySelected, preferenceStyles.noneSelected].filter(Boolean).join(' '),
+  plantOptions: [aiStyles.safetyOptionGrid, preferenceStyles.plantOptions].filter(Boolean).join(' '),
+  customBox: [aiStyles.otherInputArea, preferenceStyles.customBox].filter(Boolean).join(' '),
+  notice: [aiStyles.helperText, preferenceStyles.notice].filter(Boolean).join(' '),
+  buttonArea: [aiStyles.buttonArea, preferenceStyles.buttonArea].filter(Boolean).join(' '),
+  prevButton: [aiStyles.prevButton, preferenceStyles.prevButton].filter(Boolean).join(' '),
+  saveButton: [aiStyles.nextButton, preferenceStyles.saveButton].filter(Boolean).join(' '),
+}
 
 
 // ========================================
