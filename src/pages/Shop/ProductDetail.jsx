@@ -1337,7 +1337,9 @@ const ProductDetail = () => {
                   aria-label="이전 추천 조합"
                   onClick={() => setPairPage((current) => (current - 1 + pairPageCount) % pairPageCount)}
                 >
-                  &lt;
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="m14 6-6 6 6 6" />
+                  </svg>
                 </button>
 
                 <div className={styles.pairingViewport}>
@@ -1358,7 +1360,9 @@ const ProductDetail = () => {
                   aria-label="다음 추천 조합"
                   onClick={() => setPairPage((current) => (current + 1) % pairPageCount)}
                 >
-                  &gt;
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="m10 6 6 6-6 6" />
+                  </svg>
                 </button>
               </div>
             </section>

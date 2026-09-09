@@ -50,8 +50,8 @@
 // ---------------------------------------------------------------------
 .storySequence {
   position: relative;
-  // 300svh 동안 sticky 장면이 유지되며 GSAP 애니메이션이 진행된다.
-  height: 350svh;
+  // 스크롤 약 120svh 안에 병과 배경의 GSAP 애니메이션이 완료된다.
+  height: 220svh;
   background: rgba($color-surface, 0.85);
 }
 
@@ -711,7 +711,12 @@
 .closingIllustration { margin-top: $space-8; }
 
 @include mobile {
+  :global(main):has(> .page) {
+    padding-bottom: 0;
+  }
+
   .page {
+    padding-bottom: 0;
     word-break: keep-all;
     overflow-wrap: break-word;
   }
@@ -821,7 +826,7 @@
 
   .values { padding-block: $space-16; }
   .values h2 { margin-bottom: $space-8; font-size: $font-size-2xl; text-wrap: balance; }
-  .closing { padding-block: 0 $space-20; }
+  .closing { padding-block: 0 $space-12; }
   .closingInner { grid-template-columns: 1fr; gap: $space-6; padding-top: $space-8; text-align: center; }
   .closingIntro h2 { font-size: $font-size-2xl; }
   .makdongVisual { width: 140px; margin-inline: auto; }

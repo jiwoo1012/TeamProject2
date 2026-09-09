@@ -5,6 +5,7 @@ import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { serverTimestamp } from 'firebase/firestore'
 
 import gsap from 'gsap'
+import allCategoryImage from '../../assets/images/main/hero/main-hero-table.webp'
 
 import ProductActionBar from '../../components/shop/ProductActionBar'
 
@@ -177,6 +178,43 @@ const seededStylingImages = [...stylingImages]
 const ProductList = () => {
 
   const pageRef = useRef(null)
+
+  const marqueeDragRef = useRef(null)
+
+  const handleMarqueePointerDown = (event) => {
+    if (!event.isPrimary || event.button !== 0) return
+    const track = event.currentTarget
+    const animation = track.getAnimations().find(item => item.effect?.target === track)
+    if (!animation) return
+    const duration = Number(animation.effect.getTiming().duration)
+    const distance = track.getBoundingClientRect().width / 2 + Number.parseFloat(getComputedStyle(track).columnGap) / 2
+    if (duration <= 1 || !distance) return
+    marqueeDragRef.current = {
+      pointerId: event.pointerId, startX: event.clientX,
+      time: Number(animation.currentTime ?? 0), animation, duration, distance,
+    }
+    animation.pause()
+    track.setPointerCapture(event.pointerId)
+    track.dataset.dragging = 'true'
+  }
+
+  const handleMarqueePointerMove = (event) => {
+    const drag = marqueeDragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+    const time = drag.time - (event.clientX - drag.startX) / drag.distance * drag.duration
+    drag.animation.currentTime = ((time % drag.duration) + drag.duration) % drag.duration
+  }
+
+  const handleMarqueePointerEnd = (event) => {
+    const drag = marqueeDragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+    marqueeDragRef.current = null
+    delete event.currentTarget.dataset.dragging
+    drag.animation.play()
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+  }
 
   const stageRef = useRef(null)
 
@@ -2061,7 +2099,7 @@ const ProductList = () => {
 
     <div className={styles.page} ref={pageRef}>
 
-      <MobileTopButton contentRef={pageRef} />
+      <MobileTopButton contentRef={pageRef} className={styles.productTopButton} />
 
       <ProductGuide
         enabled={
@@ -2211,15 +2249,7 @@ const ProductList = () => {
 
                     {category.id === 'all' ? (
 
-                      <span className={styles.allCategoryGrid}>
-
-                        {mainCategories.slice(1).map((item) => (
-
-                          <img key={item.id} src={resolveImage(item.data[0]?.imageUrl)} alt="" />
-
-                        ))}
-
-                      </span>
+                      <img src={allCategoryImage} alt="" />
 
                     ) : (
 
@@ -2706,6 +2736,13 @@ const ProductList = () => {
               styles.marqueeTrack
 
             }
+
+            onPointerDown={handleMarqueePointerDown}
+            onPointerMove={handleMarqueePointerMove}
+            onPointerUp={handleMarqueePointerEnd}
+            onPointerCancel={handleMarqueePointerEnd}
+            onLostPointerCapture={handleMarqueePointerEnd}
+            onDragStart={(event) => event.preventDefault()}
 
           >
 

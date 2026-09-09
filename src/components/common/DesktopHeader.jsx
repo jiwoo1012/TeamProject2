@@ -1436,9 +1436,6 @@ const DesktopHeader = () => {
               <span>
                 브랜드 소개
               </span>
-              <i aria-hidden="true">
-                →
-              </i>
             </Link>
 
             <Link
@@ -1458,9 +1455,6 @@ const DesktopHeader = () => {
               <span>
                 막둥이 소개
               </span>
-              <i aria-hidden="true">
-                →
-              </i>
             </Link>
           </nav>
 
@@ -1524,9 +1518,6 @@ const DesktopHeader = () => {
               <span>
                 주안상 추천 받기
               </span>
-              <i aria-hidden="true">
-                →
-              </i>
             </Link>
 
             <Link
@@ -1537,9 +1528,6 @@ const DesktopHeader = () => {
               <span>
                 내 취향 분석
               </span>
-              <i aria-hidden="true">
-                →
-              </i>
             </Link>
 
             <Link
@@ -1550,9 +1538,6 @@ const DesktopHeader = () => {
               <span>
                 이전 추천 결과
               </span>
-              <i aria-hidden="true">
-                →
-              </i>
             </Link>
           </nav>
 
@@ -1568,9 +1553,6 @@ const DesktopHeader = () => {
               onClick={closeMegaMenu}
             >
               추천 시작하기
-              <span aria-hidden="true">
-                →
-              </span>
             </Link>
           </div>
         </div>
@@ -1602,9 +1584,6 @@ const DesktopHeader = () => {
               onClick={closeMegaMenu}
             >
               전체 상품
-              <span aria-hidden="true">
-                →
-              </span>
             </Link>
           </div>
 
@@ -1625,7 +1604,6 @@ const DesktopHeader = () => {
               onClick={closeMegaMenu}
             >
               <span>전통주</span>
-              <i aria-hidden="true">→</i>
             </Link>
 
             <Link
@@ -1641,7 +1619,6 @@ const DesktopHeader = () => {
               onClick={closeMegaMenu}
             >
               <span>안주</span>
-              <i aria-hidden="true">→</i>
             </Link>
 
             <Link
@@ -1657,7 +1634,6 @@ const DesktopHeader = () => {
               onClick={closeMegaMenu}
             >
               <span>잔</span>
-              <i aria-hidden="true">→</i>
             </Link>
 
             <Link
@@ -1673,7 +1649,6 @@ const DesktopHeader = () => {
               onClick={closeMegaMenu}
             >
               <span>선물 세트</span>
-              <i aria-hidden="true">→</i>
             </Link>
           </nav>
 
@@ -1703,9 +1678,6 @@ const DesktopHeader = () => {
                 onClick={closeMegaMenu}
               >
                 전체 보기
-                <span aria-hidden="true">
-                  →
-                </span>
               </Link>
             )}
           </div>
@@ -1721,9 +1693,6 @@ const DesktopHeader = () => {
                 onClick={closeMegaMenu}
               >
                 전체보기
-                <span aria-hidden="true">
-                  →
-                </span>
               </Link>
             </div>
 

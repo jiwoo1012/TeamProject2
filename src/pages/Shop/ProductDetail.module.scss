@@ -155,11 +155,16 @@
 .accordionContent > p { min-height: 0; overflow: hidden; color: $color-text-muted; font-size: $font-size-xs; line-height: $line-height-relaxed; }
 .accordionContent.open { grid-template-rows: 1fr; }
 .accordionContent.open > p { padding-bottom: $space-4; }
-.pairings { margin-top: auto; padding-top: $space-6; }
-.pairings h2 { margin-bottom: $space-3; font-size: $font-size-lg; font-weight: $font-weight-semibold; }
-.pairingSlider { display: grid; grid-template-columns: 24px minmax(0, 1fr) 24px; gap: $space-1; align-items: stretch; width: 100%; }
+.pairings { --pairing-control-size: #{$space-8}; --pairing-control-gap: #{$space-2}; margin-top: $space-8; }
+.pairings h2 { margin: 0 0 $space-2; padding-inline: calc(var(--pairing-control-size) + var(--pairing-control-gap)); text-align: left; font-size: $font-size-lg; font-weight: $font-weight-semibold; }
+.pairingSlider { display: grid; grid-template-columns: var(--pairing-control-size) minmax(0, 1fr) var(--pairing-control-size); gap: var(--pairing-control-gap); align-items: center; width: 100%; }
 .pairingViewport { width: 100%; min-width: 0; overflow: hidden; }
-.pairingArrow { @include mixins.flex-center; align-self: center; width: 20px; height:20px; color: $color-text-primary; font-size: $font-size-md; background: rgba($color-bg, .5); border-radius: $radius-pill; transition: color $transition-fast ease, transform $transition-fast ease; }
+.pairingArrow { @include mixins.flex-center; width: var(--pairing-control-size); height: var(--pairing-control-size); padding: 0; color: $color-primary; background: $color-bg; border: 1px solid rgba($color-primary, .2); border-radius: $radius-pill; transition: color $transition-fast ease, transform $transition-fast ease; }
+.pairingArrow svg { width: $space-4; height: $space-4; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.pairingArrow:focus-visible { outline: 2px solid $color-primary; outline-offset: $space-1; }
+@include mixins.mobile {
+  .pairings { --pairing-control-size: #{$space-6}; --pairing-control-gap: #{$space-1}; margin-top: $space-6; }
+}
 .pairingArrow:hover { color: $color-primary; transform: scale(1.12); }
 .miniGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-2; animation: pairingPage .45s cubic-bezier(.22, 1, .36, 1) both; }
 .miniCard { display: flex; overflow: hidden; flex-direction: column; min-width: 0; background: $color-white; border: 1px solid $color-border; border-radius: $radius-md; }

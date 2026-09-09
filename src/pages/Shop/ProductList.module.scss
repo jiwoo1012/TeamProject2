@@ -26,8 +26,6 @@
 .categoryButton { display: flex; flex-direction: column; align-items: center; gap: $space-3; width: $space-24; padding: 0 0 $space-3; color: $color-text-muted; background: transparent; border: 0; border-bottom: 2px solid transparent; transition: color $transition-fast ease, border-color $transition-fast ease; }
 .categoryImage { display: block; width: $space-24; height: $space-24; overflow: hidden; background: $color-surface; border-radius: $radius-lg; }
 .categoryImage > img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform $transition-base ease; }
-.allCategoryGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; width: 100%; height: 100%; }
-.allCategoryGrid img { display: block; width: 100%; height: 100%; min-height: 0; object-fit: cover; }
 .categoryLabel { font-size: $font-size-sm; font-weight: $font-weight-medium; white-space: nowrap; }
 .categoryButton:hover { color: $color-text-primary; }
 .categoryButton:hover .categoryImage > img { transform: scale(1.04); }
@@ -49,7 +47,7 @@
 .detailFilterItem:hover .alcoholInfoButton, .detailFilterItem:focus-within .alcoholInfoButton { opacity: 1; pointer-events: auto; }
 .selects { display: flex; flex-shrink: 0; gap: $space-4; margin-left: auto; }
 .selects label { position: relative; min-width: 0; }
-.selects label::after { position: absolute; top: 50%; right: 0; content: '⌄'; pointer-events: none; transform: translateY(-60%); color: $color-text-muted; }
+.selects label::after { position: absolute; top: 50%; right: $space-1; width: $space-2; height: $space-2; box-sizing: border-box; content: ''; pointer-events: none; border-right: 1.5px solid $color-text-muted; border-bottom: 1.5px solid $color-text-muted; transform: translateY(-75%) rotate(45deg); }
 .selects span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .selects select { width: 100%; padding: $space-2 $space-6 $space-2 0; color: $color-text-primary; font-size: $font-size-sm; font-weight: $font-weight-medium; background: transparent; border: 0; border-radius: 0; }
 .productGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: $space-12 $space-10; }
@@ -111,6 +109,8 @@
 .stylingMarquee { overflow: hidden; background: $color-bg; border-top: 1px solid $color-border; }
 .marqueeTrack { display: flex; align-items: stretch; width: max-content; gap: $grid-gutter; line-height: 0; animation: marquee 90s linear infinite; padding: 72px 0 ;}
 .marqueeTrack img { display: block; width: clamp(260px, 24vw, 420px); aspect-ratio: 1.15; object-fit: cover; border-radius: $radius-lg; }
+.marqueeTrack { cursor: grab; touch-action: pan-y pinch-zoom; user-select: none; -webkit-user-select: none; }
+.marqueeTrack[data-dragging='true'] { cursor: grabbing; }
 @keyframes marquee { to { transform: translateX(calc(-50% - (#{$grid-gutter} / 2))); } }
 
 @include mixins.tablet {
@@ -138,7 +138,13 @@
   .tasteContent p { font-size: $font-size-sm; }
   .tasteContent p br { display: none; }
   .tasteContent a { margin-top: $space-6; }
-  .productGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-10 $space-3; }
+  .productGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-10 $space-5; }
+  .productTopButton.productTopButton {
+    right: $space-2;
+    bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+    width: $space-10; min-width: $space-10; height: 44px; padding: 0;
+    span { display: none; }
+  }
   .productSection { width: calc(100% - (#{$side-margin-mobile} * 2)); }
   .marqueeTrack img { width: 240px; }
   .alcoholModal { grid-template-columns: 1fr; gap: $space-5; max-height: calc(100dvh - (#{$space-5} * 2)); padding: $space-6; overflow-y: auto; }
@@ -170,9 +176,11 @@
   .sectionHeader h2 { font-size: $font-size-2xl; }
   .sectionHeader p { font-size: $font-size-xs; }
   .filterBar { align-items: stretch; flex-direction: column; gap: $space-4; padding-bottom: $space-4; }
-  .detailFilters { gap: $space-2; }
-  .detailFilters button { padding: $space-2 $space-3; font-size: $font-size-xs; }
-  .detailFilters .alcoholInfoButton { position: static; order: 1; width: $space-5; height: $space-5; margin-left: $space-1; padding: 0; opacity: 1; transform: none; pointer-events: auto; }
+  .detailFilters { min-width: 0; max-width: 100%; flex-wrap: nowrap; gap: $space-3; overflow-x: auto; scrollbar-width: none; }
+  .detailFilters::-webkit-scrollbar { display: none; }
+  .detailFilterItem { flex: 0 0 auto; gap: $space-2; }
+  .detailFilters button { min-height: $space-10; flex-shrink: 0; padding: $space-2 $space-3; font-size: $font-size-xs; }
+  .detailFilters .alcoholInfoButton { position: static; order: 1; width: $space-10; height: $space-10; margin-left: 0; padding: 0; opacity: 1; transform: none; pointer-events: auto; }
   .detailFilterItem::before { display: none; }
   .selects { width: 100%; justify-content: flex-end; padding-top: $space-3; border-top: 1px solid $color-border; }
   .selects label { min-width: $space-24; }

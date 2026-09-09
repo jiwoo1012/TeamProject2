@@ -1,20 +1,31 @@
 @use '../../styles/variables' as *;
 
+@media (max-width: 767px) {
+  :global(main:has(> [data-main-page])) {
+    padding-bottom: 0;
+  }
+}
+
 :global(body:has([data-main-page]) header) {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  visibility: hidden;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity $transition-base ease;
 }
 
-:global(html.main-header-visible body:has([data-main-page]) header) {
-  visibility: visible;
-  opacity: 1;
-  pointer-events: auto;
+@media (min-width: 768px) {
+  :global(body:has([data-main-page]) header) {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity $transition-base ease;
+  }
+
+  :global(html.main-header-visible body:has([data-main-page]) header) {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 :global(body:has([data-main-page]) header > div) {
@@ -2242,8 +2253,7 @@
   grid-row: 2;
 
   @media (max-width: 767px) {
-    grid-column: 1 / -1;
-    grid-row: 3;
+    display: none;
   }
 }
 
@@ -3055,10 +3065,34 @@
 
   .bestSellerStage {
     padding-top: 80px;
-    padding-bottom: 64px;
+    padding-bottom: $space-10;
+  }
+
+  .eventsGrid {
+    padding-top: $space-12 + $space-2;
+    background: linear-gradient(rgba($color-primary, 0.04), rgba($color-primary, 0.04)), $color-bg;
+    border-top: 1px solid rgba($color-primary, 0.12);
+  }
+
+  @media (hover: none), (pointer: coarse) {
+    .bestSeller {
+      min-height: 0;
+    }
+
+    .bestSellerStage {
+      height: auto;
+      min-height: 0;
+      grid-template-rows: auto auto;
+    }
   }
 
   .bestSellerContent {
-    margin-top: 12px;
+    align-self: start;
+    // 카드 스택의 상단 padding 12px을 포함해 이벤트와 같은 48px 간격.
+    margin-top: $space-12 - $space-3;
+  }
+
+  .cardStack {
+    align-items: flex-start;
   }
 }

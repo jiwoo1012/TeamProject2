@@ -990,19 +990,55 @@
 }
 
 @include mobile {
+  :global(main):has(> .page) {
+    padding-bottom: 0;
+  }
+
   .page {
+    padding-bottom: 0;
     // 공통 메뉴 높이 68px + 화면 하단 간격 12px.
     --makdong-tabbar-space: 80px;
     --makdong-header-height: 80px;
   }
   .blankIntro {
-    min-height: calc(100svh - 60px);
+    min-height: calc(100svh - var(--makdong-header-height) - var(--makdong-tabbar-space));
+    box-sizing: border-box;
+    grid-template-rows: auto auto;
+    align-content: center;
+    gap: $space-4;
+    padding: $space-6 $side-margin-mobile;
+  }
+
+  .blankIntroLink {
+    isolation: isolate;
+    transform: none;
+  }
+
+  .blankIntroLink::before {
+    position: absolute;
+    inset: -7.5%;
+    z-index: 0;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba($color-primary, 0.12), rgba($color-primary, 0.04) 48%, transparent 72%);
+    content: '';
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .blankIntroLink::before {
+      animation: introHaloBreathing 4.8s ease-in-out infinite;
+    }
+
+    .blankIntroLink img {
+      animation: introCharacterWaiting 4s ease-in-out infinite;
+    }
   }
 
   .introClickGuide {
-    top: calc(#{$space-24} + 20px);
+    position: relative;
+    top: auto;
     left: auto;
-    right: $space-5;
+    right: auto;
     width: min(210px, calc(100% - #{$space-10}));
     padding: $space-5 $space-6;
     font-size: 0.85rem;
@@ -1054,7 +1090,7 @@
   .blankCharacterSection {
     min-height: calc(100svh - var(--makdong-header-height) - var(--makdong-tabbar-space));
     box-sizing: border-box;
-    padding: $space-6 $space-5;
+    padding: $space-16 $space-5 $space-6;
     scroll-margin-top: var(--makdong-header-height);
     background: $color-primary;
   }
@@ -1067,10 +1103,19 @@
 
   .transitionTagline {
     margin-top: $space-5;
+    margin-inline: -$space-2;
     font-size: $font-size-lg;
     line-height: $line-height-relaxed;
     color: $color-bg;
+    text-align: center;
     word-break: keep-all;
+    text-wrap: balance;
+  }
+
+  .transitionSubcopy {
+    line-height: $line-height-relaxed;
+    word-break: keep-all;
+    text-wrap: balance;
   }
 
   .transitionPawTrail {
@@ -1149,10 +1194,15 @@
     border-radius: $radius-xl;
   }
 
+  .guideBoard::after {
+    border-radius: $radius-xl - $space-3;
+  }
+
   .guideBoardHeader {
     align-items: flex-start;
     flex-direction: column;
     gap: $space-2;
+    border-bottom-color: transparent;
   }
 
   .guideBoardHeader h2 {
@@ -1213,14 +1263,14 @@
   }
 
   .blankIntro img {
-    width: min(58vw, 320px);
-    max-height: 68vh;
+    width: min(62vw, 320px);
+    max-height: clamp(180px, 42svh, 320px);
   }
 
   .outro h2 { font-size: clamp($font-size-2xl, 7vw, $font-size-3xl); }
   .outro {
     grid-template-columns: 1fr;
-    padding: $space-16 $space-5 $space-20;
+    padding: $space-16 $space-5 $space-10;
   }
 
   .outro::before {
@@ -1334,4 +1384,14 @@
 @keyframes makdongIdle {
   0%, 100% { transform: translateY(0) rotate(-0.7deg); }
   50% { transform: translateY(-14px) rotate(0.7deg); }
+}
+
+@keyframes introHaloBreathing {
+  0%, 100% { transform: scale(0.96); opacity: 0.7; }
+  50% { transform: scale(1.04); opacity: 1; }
+}
+
+@keyframes introCharacterWaiting {
+  0%, 100% { transform: translateY(2px); }
+  50% { transform: translateY(-2px); }
 }
