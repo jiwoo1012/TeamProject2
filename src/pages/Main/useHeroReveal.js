@@ -225,8 +225,12 @@ const useHeroReveal = ({
       onReverseComplete: () => { canMovePastHeroRef.current = false },
       scrollTrigger: isMobile ? undefined : {
         trigger: mainContentRef.current,
-        start: () => `top top-=${window.innerHeight + 100}`,
+        start: () => `top top-=${window.innerHeight * 0.25 + 100}`,
         toggleActions: 'play none none reverse',
+        onEnter: () => {
+          // Finish fitting the cover before moving the image underneath it.
+          if (coverTimeline.progress() < 1) timeline.pause(0)
+        },
         invalidateOnRefresh: true,
         onRefresh: () => {
           updateSunPathMetrics()
@@ -273,6 +277,12 @@ const useHeroReveal = ({
       )
 
     let releaseMobileScroll = () => {}
+
+    if (!isMobile) {
+      coverTimeline.eventCallback('onComplete', () => {
+        if (window.scrollY >= timeline.scrollTrigger.start) timeline.play()
+      })
+    }
 
     if (isMobile) {
       timeline.fromTo(heroSunsetPhotoRef.current, { autoAlpha: 0 }, {

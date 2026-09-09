@@ -841,7 +841,7 @@
 .dialogueChoices {
   display: flex; flex-wrap: wrap; gap: $space-2; margin-top: $space-5;
   button { min-height: $space-12; padding: $space-3 $space-4; border: 1px solid $color-primary; border-radius: $radius-pill; background: $color-white; color: $color-primary; font: inherit; cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; }
-  button:hover { background: rgba($color-primary, 0.1); transform: translateY(-2px); box-shadow: 0 4px 10px rgba($color-primary, 0.18); }
+  button:hover { background: $color-primary; color: $color-white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba($color-primary, 0.18); }
   button[aria-pressed='true'] { background: $color-primary; color: $color-white; }
   button[aria-pressed='true']:hover { background: $color-primary; color: $color-white; }
   button:focus-visible { outline: 2px solid $color-primary; outline-offset: 3px; }

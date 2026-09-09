@@ -2,6 +2,7 @@
 
 
 
+.confettiLayer { position: fixed; z-index: 1200; inset: 0; overflow: hidden; pointer-events: none; }
 .screen { padding-top: $space-8; text-align: center; }
 .completeContent,.safetyContent { display: flex; flex-direction: column; align-items: center; }
 .completeTitle,.safetyTitle { max-width: 760px; }
