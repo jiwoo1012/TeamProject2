@@ -7,6 +7,8 @@
 ======================================== */
 
 .desktopHeader {
+  --desktop-header-height: 76px;
+
   position: relative;
   z-index: $z-header;
 
@@ -27,6 +29,7 @@
   z-index: $z-dropdown + 2;
 
   width: 100%;
+  height: var(--desktop-header-height);
 
   background: transparent;
 
@@ -41,23 +44,17 @@
 
     position: absolute;
 
-    // 한지 이미지 위치
-    top: calc(50% - 22px);
+    top: 0;
     left: 0;
     z-index: 0;
 
     width: 100%;
-
-    // 이거 다시 살려야 함
-    aspect-ratio: 2103 / 748;
+    height: calc(var(--desktop-header-height) + 18px);
 
     background:
       url('../../assets/images/common/header-hanji.webp')
-      center top / 100% auto
+      center 56% / max(100%, 1660px) auto
       no-repeat;
-
-    transform:
-      translateY(-50%);
 
     pointer-events: none;
   }
@@ -74,7 +71,7 @@
   align-items: center;
   justify-content: space-between;
 
-  height: 76px;
+  height: var(--desktop-header-height);
 }
 
 
@@ -101,7 +98,18 @@
     display: block;
 
     width: auto;
-    height: 77px;
+    height:
+      clamp(
+        50px,
+        5vw,
+        77px
+      );
+
+    max-height:
+      calc(
+        var(--desktop-header-height)
+        - 2px
+      );
 
     object-fit: contain;
   }
@@ -259,7 +267,7 @@
 .allMenuBackdrop {
   position: fixed;
 
-  top: 72px;
+  top: var(--desktop-header-height);
   right: 0;
   bottom: 0;
   left: 0;
@@ -295,7 +303,7 @@
 .allMenuDrawer {
   position: fixed;
 
-  top: 72px;
+  top: var(--desktop-header-height);
   bottom: 0;
   left: 0;
   z-index: $z-dropdown + 1;
@@ -742,7 +750,7 @@
   display: flex;
   align-items: center;
 
-  height: 72px;
+  height: var(--desktop-header-height);
 }
 
 
@@ -1063,7 +1071,7 @@
 .searchPanel {
   position: absolute;
 
-  top: 72px;
+  top: var(--desktop-header-height);
   left: 0;
 
   z-index: $z-dropdown + 1;
@@ -1266,7 +1274,7 @@
 
 .megaMenu {
   position: absolute;
-  top: 72px;
+  top: var(--desktop-header-height);
   left: 0;
   z-index: $z-dropdown;
 
@@ -2143,29 +2151,8 @@
      오른쪽 아이콘이 서로 겹치지 않도록 조정
   ---------------------------------------- */
 
-   .headerInner {
-    &::before {
-      top: calc(50% - 30px);
-
-      left: -5%;
-
-      width: 210%;
-
-      aspect-ratio: 2103 / 748;
-
-      background:
-        url('../../assets/images/common/header-hanji.webp')
-        center top / 100% auto
-        no-repeat;
-
-      transform:
-        translateY(-50%);
-    }
-  }
-
-
   .headerContainer {
-    height: 76px;
+    height: var(--desktop-header-height);
 
     box-sizing: border-box;
 
@@ -2207,7 +2194,7 @@
 
 
   .gnbItem {
-    height: 68px;
+    height: var(--desktop-header-height);
   }
 
 
@@ -2223,14 +2210,7 @@
 
 
     &::after {
-      bottom: 15px;
-    }
-  }
-
-
-  .logo {
-    img {
-      height: 34px;
+      bottom: 17px;
     }
   }
 
@@ -2274,7 +2254,7 @@
 
   .allMenuDrawer,
   .allMenuBackdrop {
-    top: 68px;
+    top: var(--desktop-header-height);
   }
 
 
@@ -2298,7 +2278,7 @@
 
   .megaMenu,
   .searchPanel {
-    top: 68px;
+    top: var(--desktop-header-height);
   }
 
 
@@ -2614,7 +2594,12 @@
 
     .logo {
       img {
-        height: 31px;
+        height:
+          clamp(
+            46px,
+            5.4vw,
+            52px
+          );
       }
     }
 
