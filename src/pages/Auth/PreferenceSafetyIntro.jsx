@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { gsap } from 'gsap'
 
 import makdongImg from '../../assets/characters/M007_Poses01.png'
 
@@ -26,6 +27,62 @@ const PreferenceSafetyIntro = () => {
 
   const [phase, setPhase] = useState('complete')
   const [isLeaving, setIsLeaving] = useState(false)
+  const confettiLayerRef = useRef(null)
+
+
+  // ========================================
+  // 취향 질문 완료 축하 컨페티
+  // '완료' 단계가 항상 최초 마운트 시점이므로 한 번만 실행된다.
+  // ========================================
+
+  useEffect(() => {
+    const container = confettiLayerRef.current
+    if (!container) return undefined
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined
+
+    const colors = ['#4D7E7B', '#56BEB7', '#E59C35', '#C65D4B', '#E1D9CE']
+    const pieces = Array.from({ length: 26 }, () => {
+      const piece = document.createElement('span')
+      const size = 6 + Math.random() * 6
+      Object.assign(piece.style, {
+        position: 'absolute',
+        top: '-24px',
+        left: `${Math.random() * 100}%`,
+        width: `${size}px`,
+        height: `${size * 0.42}px`,
+        borderRadius: '2px',
+        background: colors[Math.floor(Math.random() * colors.length)],
+        opacity: '0',
+      })
+      container.appendChild(piece)
+      return piece
+    })
+
+    // Timed to fully resolve within ~1.5s, comfortably inside the 1.7s the
+    // '완료' card stays on screen before it starts fading (see isLeaving below) —
+    // keeps the burst from overlapping the card's own exit transition.
+    const timelines = pieces.map((piece) => {
+      const fallDistance = window.innerHeight * (0.5 + Math.random() * 0.35)
+      const drift = (Math.random() - 0.5) * 240
+      const rotation = (Math.random() - 0.5) * 520
+
+      return gsap.timeline({ delay: Math.random() * 0.2 })
+        .set(piece, { opacity: 1 })
+        .to(piece, {
+          y: fallDistance,
+          x: drift,
+          rotation,
+          duration: 0.9 + Math.random() * 0.4,
+          ease: 'power1.in',
+        })
+        .to(piece, { opacity: 0, duration: 0.25 }, '-=0.25')
+    })
+
+    return () => {
+      timelines.forEach((timeline) => timeline.kill())
+      pieces.forEach((piece) => piece.remove())
+    }
+  }, [])
 
 
   // ========================================
@@ -86,6 +143,10 @@ const PreferenceSafetyIntro = () => {
 
   return (
     <main className={styles.preferenceSafetyIntro}>
+
+      {phase === 'complete' && (
+        <div className={styles.confettiLayer} ref={confettiLayerRef} aria-hidden="true" />
+      )}
 
       <section
         className={`
