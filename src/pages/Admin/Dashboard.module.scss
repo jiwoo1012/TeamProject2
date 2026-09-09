@@ -200,7 +200,7 @@
     color:
       $admin-text-primary;
 
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
   }
 }
@@ -215,7 +215,7 @@
     color:
       $admin-text-primary;
 
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 700;
   }
 
@@ -231,7 +231,7 @@
       $admin-primary-dark;
 
     font: inherit;
-    font-size: 9px;
+    font-size: 15px;
     font-weight: 600;
 
     cursor: pointer;
@@ -268,7 +268,7 @@
     color:
       $admin-primary-dark;
 
-    font-size: 10px;
+    font-size: 15px;
     font-weight: 600;
   }
 
@@ -324,6 +324,8 @@
 // ========================================
 
 .orderStatusContent {
+  width: 88%;
+  margin-inline: auto;
   min-height: 190px;
 
   display: grid;
@@ -408,7 +410,7 @@
       color:
         $admin-text-secondary;
 
-      font-size: 9px;
+      font-size: 15px;
       font-weight: 600;
     }
   }
@@ -447,7 +449,7 @@
     color:
       $admin-text-primary;
 
-    font-size: 10px;
+    font-size: 15px;
     font-weight: 700;
 
     white-space: nowrap;
@@ -503,7 +505,7 @@
   color:
     $admin-text-secondary;
 
-  font-size: 10px;
+  font-size: 15px;
 
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -515,12 +517,14 @@
 // ========================================
 
 .productRanking {
+  width: 88%;
+  margin: 0 auto;
+
   display: flex;
   flex-direction: column;
 
   gap: 13px;
 
-  margin: 0;
   padding: 0;
 
   list-style: none;
@@ -543,7 +547,7 @@
     color:
       $admin-text-muted;
 
-    font-size: 8px;
+    font-size: 13px;
     font-weight: 500;
 
     text-align: right;
@@ -568,18 +572,19 @@
   color:
     $admin-surface;
 
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
 }
 
 
 .productName {
   overflow: hidden;
+  padding-left: 5px;
 
   color:
     $admin-text-secondary;
 
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 600;
 
   text-overflow: ellipsis;
@@ -588,7 +593,7 @@
 
 
 .productTrack {
-  height: 12px;
+  height: 15px;
 
   overflow: hidden;
 
@@ -665,7 +670,7 @@
     color:
       $admin-text-primary;
 
-    font-size: 9px;
+    font-size: 12px;
 
     text-align: center;
     vertical-align: middle;
@@ -680,7 +685,7 @@
     color:
       $admin-text-secondary;
 
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 700;
   }
 
@@ -723,7 +728,7 @@
       $admin-primary-dark;
 
     font: inherit;
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 600;
 
     cursor: pointer;
@@ -752,7 +757,7 @@
   border-radius:
     999px;
 
-  font-size: 8px;
+  font-size: 10px;
   font-weight: 600;
 }
 
@@ -813,7 +818,7 @@
     color:
       $admin-text-primary;
 
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 700;
   }
 }
@@ -842,7 +847,7 @@
     color:
       $admin-text-muted;
 
-    font-size: 7px;
+    font-size: 13px;
   }
 
   i {
@@ -969,13 +974,13 @@
 
   small {
     display: block;
-
+    margin-top: 5px;
     margin-bottom: 3px;
 
     color:
       $admin-text-secondary;
 
-    font-size: 8px;
+    font-size: 13px;
   }
 
   strong {
@@ -1017,7 +1022,7 @@
     color:
       $admin-text-secondary;
 
-    font-size: 8px;
+    font-size: 13px;
   }
 
   strong {
@@ -1058,7 +1063,7 @@
     color:
       $admin-text-primary;
 
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 700;
   }
 }
@@ -1122,7 +1127,7 @@
     color:
       $admin-text-secondary;
 
-    font-size: 8px;
+    font-size: 12px;
 
     i {
       width: 6px;
@@ -1162,7 +1167,7 @@
     color:
       $admin-danger;
 
-    font-size: 7px;
+    font-size: 12px;
     font-weight: 600;
   }
 }
@@ -1206,7 +1211,7 @@
     color:
       $admin-text-secondary;
 
-    font-size: 8px;
+    font-size: 12px;
 
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1216,7 +1221,7 @@
     color:
       $admin-text-muted;
 
-    font-size: 7px;
+    font-size: 12px;
 
     white-space: nowrap;
   }
@@ -1259,7 +1264,7 @@
       $admin-text-secondary;
 
     font: inherit;
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 600;
 
     cursor: pointer;
