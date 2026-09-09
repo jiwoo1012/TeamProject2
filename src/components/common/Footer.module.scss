@@ -644,17 +644,17 @@
 
 
   .footerContainer {
-    width:
-      calc(
-        100% -
-        (#{$side-margin-mobile} * 2)
-      );
+  width:
+    calc(
+      100% -
+      (#{$side-margin-mobile} * 2)
+    );
 
-    padding:
-      $space-8
-      0
-      $space-6;
-  }
+  padding:
+    $space-8
+    0
+    110px;
+}
 
 
   /* =====================================
@@ -889,81 +889,79 @@
   /* 모바일은 input + button 세로 배치 */
 
   .subscribeForm {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-    width: 100%;
-    max-width: none;
-    height: auto;
+  width: 100%;
+  max-width: none;
+  height: auto;
 
-    padding: 0;
+  padding: 0;
 
-    background: transparent;
+  background: transparent;
 
+  border: 0;
+  border-radius: 0;
+
+  gap: $space-2;
+
+  &:focus-within {
     border: 0;
-    border-radius: 0;
+    box-shadow: none;
+  }
 
-    gap: $space-2;
+  input {
+    width: 100%;
+    height: 44px;
 
-    &:focus-within {
-      border: 0;
+    padding:
+      0
+      $space-4;
 
-      box-shadow: none;
-    }
+    background: $color-white;
 
-    input {
-      width: 100%;
-      height: 38px;
+    border:
+      1px
+      solid
+      rgba($color-text-secondary, 0.52);
 
-      padding:
-        0
-        $space-4;
+    border-radius: $radius-pill;
 
-      background: $color-white;
+    font-size: 11px;
+    padding: 5px;
+    padding-left: 13px;
 
-      border:
-        1px
-        solid
-        rgba($color-text-secondary, 0.52);
+    transition:
+      border-color $transition-fast ease;
 
-      border-radius: $radius-pill;
-
-      font-size: 10px;
-
-      transition:
-        border-color $transition-fast ease;
-
-      &:focus {
-        border-color: $color-primary;
-      }
-    }
-
-    button {
-      width: 100%;
-      height: 32px;
-
-      margin: 0;
-
-      padding: 0;
-
-      color: $color-text-primary;
-
-      font-size: 10px;
-      font-weight: $font-weight-bold;
-
-      background: $color-primary-light;
-
-      border-radius: $radius-pill;
-
-      &:active {
-        background: $color-primary;
-
-        color: $color-white;
-
-        transform: none;
-      }
+    &:focus {
+      border-color: $color-primary;
     }
   }
+
+  button {
+    width: 100%;
+    height: 30px;
+
+    margin: 0;
+    padding: 0;
+
+    color: $color-text-primary;
+
+    font-size: 11px;
+    font-weight: $font-weight-bold;
+
+    background: $color-primary-light;
+
+    border-radius: $radius-pill;
+
+    &:active {
+      background: $color-primary;
+      color: $color-white;
+      transform: none;
+    }
+  }
+}
 
 
   /* =====================================
