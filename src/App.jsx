@@ -82,6 +82,7 @@ const AddressBook = lazy(() => import('./pages/MyPage/AddressBook'))
 const ClaimHistory = lazy(() => import('./pages/MyPage/ClaimHistory'))
 const InquiryHistory = lazy(() => import('./pages/MyPage/InquiryHistory'))
 const AiHistory = lazy(() => import('./pages/MyPage/AiHistory'))
+const AiHistoryDetail = lazy(() => import('./pages/MyPage/AiHistoryDetail'))
 const EventHistory = lazy(() => import('./pages/MyPage/EventHistory'))
 const EventWinningHistory = lazy(() => import('./pages/MyPage/EventWinningHistory'))
 const MyPageErrorContent = lazy(() => import('./pages/MyPage/MyPageErrorContent'))
@@ -676,6 +677,16 @@ const App = () => {
                 path="ai-history"
                 element={
                   <AiHistory />
+                }
+              />
+
+
+              {/* AI 추천 기록 상세 */}
+
+              <Route
+                path="ai-history/:recommendationId"
+                element={
+                  <AiHistoryDetail />
                 }
               />
 

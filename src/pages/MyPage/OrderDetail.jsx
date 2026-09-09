@@ -11,6 +11,9 @@ import { subscribeToAuthState } from '../../firebase/auth'
 import { db } from '../../firebase/firebase'
 import { updateDocument } from '../../firebase/firestore'
 
+import MyPageHeader from '../../components/mypage/MyPageHeader'
+import StatusBadge from '../../components/mypage/StatusBadge'
+
 import styles from './OrderDetail.module.scss'
 
 
@@ -110,6 +113,29 @@ const getProductType = (
 }
 
 
+const getStatusTone = (status) => {
+  if (
+    status === ORDER_STATUS.SHIPPED
+  ) {
+    return 'shipping'
+  }
+
+  if (
+    status === ORDER_STATUS.DELIVERED
+  ) {
+    return 'completed'
+  }
+
+  if (
+    status === ORDER_STATUS.CANCELLED
+  ) {
+    return 'cancelled'
+  }
+
+  return 'preparing'
+}
+
+
 const ProductPlaceholder = ({
   type,
 }) => (
@@ -148,9 +174,12 @@ const OrderDetail = () => {
     useState('')
 
 
+  /* =========================
+     ORDER LOAD
+  ========================= */
+
   useEffect(() => {
     let isActive = true
-
 
     const unsubscribe =
       subscribeToAuthState(
@@ -226,14 +255,18 @@ const OrderDetail = () => {
                         item.name ||
                         '상품',
 
-                      price: Number(
-                        item.price || 0
-                      ),
+                      price:
+                        Number(
+                          item.price ||
+                          item.salePrice ||
+                          item.productPrice ||
+                          0
+                        ),
 
                       quantity:
                         Number(
                           item.quantity ||
-                            1
+                          1
                         ),
 
                       imageUrl:
@@ -266,6 +299,16 @@ const OrderDetail = () => {
 
                 status:
                   data.status,
+
+                statusLabel:
+                  getOrderStatusLabel(
+                    data.status
+                  ),
+
+                statusTone:
+                  getStatusTone(
+                    data.status
+                  ),
 
                 products,
 
@@ -301,29 +344,29 @@ const OrderDetail = () => {
                   productAmount:
                     Number(
                       data.productAmount ||
-                        0
+                      0
                     ),
 
                   shippingFee:
                     Number(
                       data.shippingFee ||
-                        0
+                      0
                     ),
 
                   discount:
                     Number(
                       data.discountAmount ||
-                        0
+                      0
                     ) +
                     Number(
                       data.usedPoints ||
-                        0
+                      0
                     ),
 
                   total:
                     Number(
                       data.totalAmount ||
-                        0
+                      0
                     ),
                 },
 
@@ -379,6 +422,10 @@ const OrderDetail = () => {
   ])
 
 
+  /* =========================
+     CANCEL
+  ========================= */
+
   const canCancel =
     order?.status ===
       ORDER_STATUS.PAID ||
@@ -428,6 +475,14 @@ const OrderDetail = () => {
             status:
               ORDER_STATUS.CANCELLED,
 
+            statusLabel:
+              getOrderStatusLabel(
+                ORDER_STATUS.CANCELLED
+              ),
+
+            statusTone:
+              'cancelled',
+
             shipping: {
               ...current.shipping,
 
@@ -453,6 +508,10 @@ const OrderDetail = () => {
     }
 
 
+  /* =========================
+     LOADING / ERROR
+  ========================= */
+
   if (
     isLoading ||
     loadError ||
@@ -461,27 +520,15 @@ const OrderDetail = () => {
     return (
       <section
         className={styles.page}
-        aria-labelledby="order-detail-title"
       >
         <div
           className={
             styles.detailCard
           }
         >
-          <h2
-            id="order-detail-title"
-            className={
-              styles.title
-            }
-          >
-            주문 내역 상세
-          </h2>
-
-
-          <div
-            className={
-              styles.titleDivider
-            }
+          <MyPageHeader
+            title="주문 내역 상세"
+            description="주문 상품과 배송·결제 정보를 확인해보세요."
           />
 
 
@@ -565,18 +612,24 @@ const OrderDetail = () => {
   }
 
 
+  /* =========================
+     STEP
+  ========================= */
+
   const isCancelled =
     order.status ===
     ORDER_STATUS.CANCELLED
 
 
   const stepIndexByStatus = {
-    [ORDER_STATUS.PAID]: 1,
+    [ORDER_STATUS.PAID]:
+      1,
 
     [ORDER_STATUS.PREPARING]:
       2,
 
-    [ORDER_STATUS.SHIPPED]: 3,
+    [ORDER_STATUS.SHIPPED]:
+      3,
 
     [ORDER_STATUS.DELIVERED]:
       4,
@@ -619,45 +672,36 @@ const OrderDetail = () => {
   return (
     <section
       className={styles.page}
-      aria-labelledby="order-detail-title"
     >
-
       <div
         className={
           styles.detailCard
         }
       >
 
-        {/* =====================
-            TITLE
-        ===================== */}
+        {/* =========================
+            HEADER
+        ========================= */}
 
-        <header
-          className={
-            styles.pageHeader
-          }
+        <MyPageHeader
+          title="주문 내역 상세"
+          description="주문 상품과 배송·결제 정보를 확인해보세요."
         >
-          <h2
-            id="order-detail-title"
-            className={
-              styles.title
+          <StatusBadge
+            tone={
+              order.statusTone
             }
           >
-            주문 내역 상세
-          </h2>
-        </header>
+            {
+              order.statusLabel
+            }
+          </StatusBadge>
+        </MyPageHeader>
 
 
-        <div
-          className={
-            styles.titleDivider
-          }
-        />
-
-
-        {/* =====================
+        {/* =========================
             STEP
-        ===================== */}
+        ========================= */}
 
         {isCancelled ? (
           <div
@@ -674,6 +718,7 @@ const OrderDetail = () => {
             >
               !
             </span>
+
 
             <div>
               <strong>
@@ -700,7 +745,10 @@ const OrderDetail = () => {
               aria-label="주문 진행 상태"
             >
               {orderSteps.map(
-                (step, index) => (
+                (
+                  step,
+                  index
+                ) => (
                   <div
                     key={
                       step.key
@@ -766,9 +814,9 @@ const OrderDetail = () => {
         )}
 
 
-        {/* =====================
+        {/* =========================
             ORDER META
-        ===================== */}
+        ========================= */}
 
         <dl
           className={
@@ -776,7 +824,9 @@ const OrderDetail = () => {
           }
         >
           <div>
-            <dt>주문 번호</dt>
+            <dt>
+              주문 번호
+            </dt>
 
             <dd
               title={order.id}
@@ -789,7 +839,10 @@ const OrderDetail = () => {
 
 
           <div>
-            <dt>주문일</dt>
+            <dt>
+              주문일
+            </dt>
+
             <dd>
               {order.orderedAt}
             </dd>
@@ -797,26 +850,36 @@ const OrderDetail = () => {
 
 
           <div>
-            <dt>주문자</dt>
+            <dt>
+              주문자
+            </dt>
+
             <dd>
-              {order.customerName}
+              {
+                order.customerName
+              }
             </dd>
           </div>
 
 
           <div>
-            <dt>배송 주소</dt>
+            <dt>
+              배송 주소
+            </dt>
 
             <dd>
-              {order.address.address}
+              {
+                order.address
+                  .address
+              }
             </dd>
           </div>
         </dl>
 
 
-        {/* =====================
+        {/* =========================
             PRODUCT
-        ===================== */}
+        ========================= */}
 
         <section
           className={
@@ -834,6 +897,14 @@ const OrderDetail = () => {
             >
               주문 상품 정보
             </h3>
+
+            <span
+              className={
+                styles.sectionCount
+              }
+            >
+              총 {order.products.length}개 상품
+            </span>
           </div>
 
 
@@ -852,7 +923,9 @@ const OrderDetail = () => {
                 상품 정보
               </span>
 
-              <span>수량</span>
+              <span>
+                수량
+              </span>
 
               <span>
                 상품 금액
@@ -951,9 +1024,9 @@ const OrderDetail = () => {
         </section>
 
 
-        {/* =====================
+        {/* =========================
             ADDRESS
-        ===================== */}
+        ========================= */}
 
         <section
           className={
@@ -972,9 +1045,12 @@ const OrderDetail = () => {
               배송지 정보
             </h3>
 
+
             <button
               type="button"
-              className={styles.addressButton}
+              className={
+                styles.addressButton
+              }
               onClick={() =>
                 setAddressNotice(
                   '주문 완료 후 배송지 변경은 고객센터를 통해 확인해 주세요. 배송지 관리에서는 다음 주문의 주소를 변경할 수 있습니다.'
@@ -997,7 +1073,9 @@ const OrderDetail = () => {
               }
             >
               <div>
-                <dt>받는 분</dt>
+                <dt>
+                  받는 분
+                </dt>
 
                 <dd>
                   {
@@ -1009,7 +1087,9 @@ const OrderDetail = () => {
 
 
               <div>
-                <dt>연락처</dt>
+                <dt>
+                  연락처
+                </dt>
 
                 <dd>
                   {
@@ -1021,7 +1101,9 @@ const OrderDetail = () => {
 
 
               <div>
-                <dt>주소</dt>
+                <dt>
+                  주소
+                </dt>
 
                 <dd>
                   {
@@ -1046,22 +1128,24 @@ const OrderDetail = () => {
               </div>
             </dl>
 
+
             {addressNotice && (
               <p
-                className={styles.addressNotice}
+                className={
+                  styles.addressNotice
+                }
                 role="status"
               >
                 {addressNotice}
               </p>
             )}
-
           </div>
         </section>
 
 
-        {/* =====================
+        {/* =========================
             PAYMENT
-        ===================== */}
+        ========================= */}
 
         <section
           className={
@@ -1114,7 +1198,9 @@ const OrderDetail = () => {
 
 
             <div>
-              <dt>배송비</dt>
+              <dt>
+                배송비
+              </dt>
 
               <dd>
                 {formatPrice(
@@ -1171,9 +1257,9 @@ const OrderDetail = () => {
         )}
 
 
-        {/* =====================
-            BOTTOM BUTTON
-        ===================== */}
+        {/* =========================
+            BOTTOM
+        ========================= */}
 
         <div
           className={
@@ -1216,7 +1302,6 @@ const OrderDetail = () => {
         </div>
 
       </div>
-
     </section>
   )
 }

@@ -575,77 +575,67 @@
 // ========================================
 
 .statusDonut {
-  --active-rate: 0%;
-
   position: relative;
 
-  width: 148px;
-  height: 148px;
+  width: 160px;
+  height: 160px;
+
+  flex:
+    0
+    0
+    160px;
+
+  canvas {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+
+.statusDonutCenter {
+  position: absolute;
+
+  inset: 0;
+  z-index: 1;
 
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  border-radius: 50%;
+  gap: 1px;
 
-  background:
-    conic-gradient(
-      $admin-primary
-        0
-        var(--active-rate),
-      #ead9d6
-        var(--active-rate)
-        100%
-    );
+  pointer-events: none;
 
-  &::after {
-    position: absolute;
+  span {
+    color:
+      $admin-text-muted;
 
-    width: 104px;
-    height: 104px;
-
-    border-radius: 50%;
-
-    background:
-      $admin-surface;
-
-    content: '';
+    font-size: 9px;
+    font-weight: 600;
   }
 
-  > div {
-    position: relative;
-    z-index: 1;
+  strong {
+    color:
+      $admin-text-primary;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    font-size: 27px;
+    font-weight: 700;
 
-    gap: 1px;
+    line-height: 1.15;
+  }
 
-    span {
-      color:
-        $admin-text-muted;
+  small {
+    margin-left: 2px;
 
-      font-size: 10px;
-      font-weight: 600;
-    }
+    color:
+      $admin-text-secondary;
 
-    strong {
-      color:
-        $admin-text-primary;
-
-      font-size: 25px;
-      font-weight: 700;
-
-      line-height: 1.15;
-    }
-
-    small {
-      color:
-        $admin-text-secondary;
-
-      font-size: 10px;
-    }
+    font-size: 11px;
   }
 }
 

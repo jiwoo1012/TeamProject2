@@ -1916,85 +1916,15 @@ $shadow-md:
 }
 
 
-.statusDonut {
+.statusScatter {
   position: relative;
 
-  width: 148px;
-  height: 148px;
+  width: 100%;
+  height: 210px;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-
-  background:
-    conic-gradient(
-      $admin-primary
-        0
-        var(--selling-rate, 0%),
-      #d9a05d
-        var(--selling-rate, 0%)
-        var(--low-rate, 0%),
-      #ead9d6
-        var(--low-rate, 0%)
-        100%
-    );
-
-  &::after {
-    position: absolute;
-
-    width: 104px;
-    height: 104px;
-
-    border-radius: 50%;
-
-    background:
-      $admin-surface;
-
-    content: '';
-  }
-
-  span,
-  strong {
-    position: relative;
-    z-index: 1;
-  }
-
-  span {
-    color:
-      $admin-text-muted;
-
-    font-size: 10px;
-    font-weight: 600;
-  }
-
-  strong {
-    position: relative;
-    z-index: 1;
-
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-
-    gap: 3px;
-
-    color:
-      $admin-text-primary;
-
-    font-size: 25px;
-    font-weight: 700;
-    line-height: 1.15;
-
-    small {
-      color:
-        $admin-text-secondary;
-
-      font-size: 10px;
-      font-weight: 600;
-      line-height: 1;
-    }
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
   }
 }
 
@@ -2444,18 +2374,8 @@ $shadow-md:
     align-items: start;
   }
 
-  .statusDonut {
-    width: 118px;
-    height: 118px;
-
-    &::after {
-      width: 82px;
-      height: 82px;
-    }
-
-    strong {
-      font-size: 22px;
-    }
+  .statusScatter {
+    height: 180px;
   }
 
   .statusOverview {

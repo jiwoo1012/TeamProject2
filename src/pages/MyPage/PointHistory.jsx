@@ -9,7 +9,12 @@ import {
   getCollection,
 } from '../../firebase/firestore'
 
+import MyPageHeader from '../../components/mypage/MyPageHeader'
+
 import styles from './PointHistory.module.scss'
+
+
+const ITEMS_PER_PAGE = 5
 
 
 const filterItems = [
@@ -117,6 +122,11 @@ const PointHistory = () => {
     setLoadError,
   ] = useState('')
 
+  const [
+    currentPage,
+    setCurrentPage,
+  ] = useState(1)
+
 
   /* =========================
      로그인 상태
@@ -177,7 +187,10 @@ const PointHistory = () => {
           ])
 
 
-          if (userResult.status === 'rejected') {
+          if (
+            userResult.status ===
+            'rejected'
+          ) {
             throw userResult.reason
           }
 
@@ -187,9 +200,12 @@ const PointHistory = () => {
           }
 
 
-          const userData = userResult.value
+          const userData =
+            userResult.value
+
           const historyDocs =
-            historyResult.status === 'fulfilled'
+            historyResult.status ===
+            'fulfilled'
               ? historyResult.value
               : []
 
@@ -262,8 +278,13 @@ const PointHistory = () => {
             normalized
           )
 
+          setCurrentPage(1)
 
-          if (historyResult.status === 'rejected') {
+
+          if (
+            historyResult.status ===
+            'rejected'
+          ) {
             console.error(
               '포인트 상세 내역 조회 실패:',
               historyResult.reason
@@ -329,6 +350,43 @@ const PointHistory = () => {
 
 
   /* =========================
+     페이지네이션
+  ========================= */
+
+  const totalPages =
+    Math.ceil(
+      filteredHistory.length /
+        ITEMS_PER_PAGE
+    )
+
+
+  const startIndex =
+    (currentPage - 1) *
+    ITEMS_PER_PAGE
+
+
+  const visibleHistory =
+    filteredHistory.slice(
+      startIndex,
+      startIndex +
+        ITEMS_PER_PAGE
+    )
+
+
+  const handleFilterChange =
+    (value) => {
+      setActiveFilter(value)
+      setCurrentPage(1)
+    }
+
+
+  const handlePageChange =
+    (page) => {
+      setCurrentPage(page)
+    }
+
+
+  /* =========================
      요약
   ========================= */
 
@@ -361,42 +419,25 @@ const PointHistory = () => {
   return (
     <section
       className={styles.page}
-      aria-labelledby="point-history-title"
     >
-
       <div
         className={
           styles.pointCard
         }
       >
 
-        {/* =====================
+        {/* =========================
             HEADER
-        ===================== */}
+        ========================= */}
 
-        <header
-          className={
-            styles.pageHeader
-          }
-        >
-          <h2
-            id="point-history-title"
-          >
-            포인트
-          </h2>
-        </header>
-
-
-        <div
-          className={
-            styles.titleDivider
-          }
+        <MyPageHeader
+          title="포인트"
         />
 
 
-        {/* =====================
-            CURRENT POINT
-        ===================== */}
+        {/* =========================
+            POINT SUMMARY
+        ========================= */}
 
         <section
           className={
@@ -417,8 +458,9 @@ const PointHistory = () => {
               {formatNumber(
                 points
               )}
+
               <em>
-                POINT
+                P
               </em>
             </strong>
           </div>
@@ -434,10 +476,16 @@ const PointHistory = () => {
                 누적 적립
               </span>
 
-              <strong>
+              <strong
+                className={
+                  styles.earnedSummary
+                }
+              >
                 {loadError
                   ? '-'
-                  : `+${formatNumber(earnedPoints)}P`}
+                  : `+${formatNumber(
+                      earnedPoints
+                    )}P`}
               </strong>
             </div>
 
@@ -447,10 +495,16 @@ const PointHistory = () => {
                 누적 사용
               </span>
 
-              <strong>
+              <strong
+                className={
+                  styles.usedSummary
+                }
+              >
                 {loadError
                   ? '-'
-                  : `-${formatNumber(usedPoints)}P`}
+                  : `-${formatNumber(
+                      usedPoints
+                    )}P`}
               </strong>
             </div>
 
@@ -468,9 +522,9 @@ const PointHistory = () => {
         </section>
 
 
-        {/* =====================
-            HISTORY HEADER
-        ===================== */}
+        {/* =========================
+            HISTORY
+        ========================= */}
 
         <section
           className={
@@ -492,64 +546,74 @@ const PointHistory = () => {
 
 
             <div
-              className={
-                styles.filters
-              }
-              role="tablist"
-              aria-label="포인트 내역 필터"
-            >
-              {filterItems.map(
-                (filter) => (
-                  <button
-                    key={
-                      filter.value
-                    }
-                    type="button"
-                    role="tab"
-                    aria-selected={
-                      activeFilter ===
-                      filter.value
-                    }
-                    className={`${styles.filterButton} ${
-                      activeFilter ===
-                      filter.value
-                        ? styles.activeFilter
-                        : ''
-                    }`}
-                    onClick={() =>
-                      setActiveFilter(
-                        filter.value
-                      )
-                    }
-                  >
-                    {
-                      filter.label
-                    }
-                  </button>
-                )
-              )}
-            </div>
+  className={styles.filters}
+  role="tablist"
+  aria-label="포인트 내역 필터"
+>
+  <span
+    className={`${styles.filterSlider} ${
+      activeFilter === 'all'
+        ? styles.sliderAll
+        : activeFilter === 'earn'
+          ? styles.sliderEarn
+          : styles.sliderUse
+    }`}
+    aria-hidden="true"
+  />
+
+  {filterItems.map(
+    (filter) => (
+      <button
+        key={filter.value}
+        type="button"
+        role="tab"
+        aria-selected={
+          activeFilter ===
+          filter.value
+        }
+        className={`${styles.filterButton} ${
+          activeFilter ===
+          filter.value
+            ? styles.activeFilter
+            : ''
+        }`}
+        onClick={() =>
+          handleFilterChange(
+            filter.value
+          )
+        }
+      >
+        {filter.label}
+      </button>
+    )
+  )}
+</div>
           </div>
 
 
-          {/* =====================
+          {/* =========================
               CONTENT
-          ===================== */}
+          ========================= */}
 
           {isLoading ? (
-
             <div
               className={
                 styles.stateBox
               }
               role="status"
             >
-              포인트 내역을
-              불러오는 중입니다.
+              <span
+                className={
+                  styles.loadingSpinner
+                }
+                aria-hidden="true"
+              />
+
+              <strong>
+                포인트 내역을 불러오는 중입니다.
+              </strong>
             </div>
-
           ) : loadError ? (
-
             <div
               className={
                 styles.stateBox
@@ -558,93 +622,187 @@ const PointHistory = () => {
             >
               {loadError}
             </div>
-
-          ) : filteredHistory.length >
+          ) : visibleHistory.length >
             0 ? (
-
-            <div
-              className={
-                styles.historyList
-              }
-            >
-              {filteredHistory.map(
-                (item) => (
-
-                  <article
-                    key={
-                      item.id
-                    }
-                    className={
-                      styles.historyItem
-                    }
-                  >
-
-                    <div
-                      className={`${styles.pointAmount} ${
-                        item.type ===
-                        'earn'
-                          ? styles.earn
-                          : styles.use
-                      }`}
-                    >
-                      <strong>
-                        {item.type ===
-                        'earn'
-                          ? '+'
-                          : '-'}
-                        {formatNumber(
-                          item.amount
-                        )}
-                      </strong>
-
-                      <span>
-                        P
-                      </span>
-                    </div>
-
-
-                    <div
+            <>
+              <div
+                className={
+                  styles.historyList
+                }
+              >
+                {visibleHistory.map(
+                  (item) => (
+                    <article
+                      key={
+                        item.id
+                      }
                       className={
-                        styles.historyInfo
+                        styles.historyItem
                       }
                     >
-                      <strong>
-                        {
-                          item.reason
-                        }
-                      </strong>
+
+                      <div
+                        className={`${styles.pointAmount} ${
+                          item.type ===
+                          'earn'
+                            ? styles.earn
+                            : styles.use
+                        }`}
+                      >
+                        <strong>
+                          {item.type ===
+                          'earn'
+                            ? '+'
+                            : '-'}
+                          {formatNumber(
+                            item.amount
+                          )}
+                        </strong>
+
+                        <span>
+                          P
+                        </span>
+                      </div>
+
 
                       <div
                         className={
-                          styles.historyMeta
+                          styles.historyInfo
                         }
                       >
-                        <time>
-                          {formatDate(
-                            item.createdAt
-                          )}
-                        </time>
+                        <strong>
+                          {
+                            item.reason
+                          }
+                        </strong>
 
-                        {item.orderId && (
-                          <span>
-                            주문번호{' '}
-                            {item.orderId.slice(
-                              0,
-                              12
+
+                        <div
+                          className={
+                            styles.historyMeta
+                          }
+                        >
+                          <time>
+                            {formatDate(
+                              item.createdAt
                             )}
-                          </span>
-                        )}
+                          </time>
+
+
+                          {item.orderId && (
+                            <>
+                              <span
+                                className={
+                                  styles.metaDivider
+                                }
+                                aria-hidden="true"
+                              />
+
+                              <span>
+                                주문번호{' '}
+                                {item.orderId.slice(
+                                  0,
+                                  12
+                                )}
+                              </span>
+                            </>
+                          )}
+                        </div>
                       </div>
-                    </div>
 
-                  </article>
+                    </article>
+                  )
+                )}
+              </div>
 
-                )
+
+              {totalPages > 1 && (
+                <nav
+                  className={
+                    styles.pagination
+                  }
+                  aria-label="포인트 내역 페이지"
+                >
+                  <button
+                    type="button"
+                    disabled={
+                      currentPage === 1
+                    }
+                    onClick={() =>
+                      handlePageChange(
+                        Math.max(
+                          1,
+                          currentPage -
+                            1
+                        )
+                      )
+                    }
+                    aria-label="이전 페이지"
+                  >
+                    ‹
+                  </button>
+
+
+                  {Array.from(
+                    {
+                      length:
+                        totalPages,
+                    },
+                    (_, index) => {
+                      const pageNumber =
+                        index + 1
+
+
+                      return (
+                        <button
+                          key={
+                            pageNumber
+                          }
+                          type="button"
+                          className={
+                            currentPage ===
+                            pageNumber
+                              ? styles.activePage
+                              : ''
+                          }
+                          onClick={() =>
+                            handlePageChange(
+                              pageNumber
+                            )
+                          }
+                        >
+                          {
+                            pageNumber
+                          }
+                        </button>
+                      )
+                    }
+                  )}
+
+
+                  <button
+                    type="button"
+                    disabled={
+                      currentPage ===
+                      totalPages
+                    }
+                    onClick={() =>
+                      handlePageChange(
+                        Math.min(
+                          totalPages,
+                          currentPage +
+                            1
+                        )
+                      )
+                    }
+                    aria-label="다음 페이지"
+                  >
+                    ›
+                  </button>
+                </nav>
               )}
-            </div>
-
+            </>
           ) : (
-
             <div
               className={
                 styles.emptyState
@@ -659,24 +817,16 @@ const PointHistory = () => {
                 P
               </span>
 
+
               <strong>
-                포인트 내역이
-                없습니다.
+                포인트 내역이 없습니다.
               </strong>
-
-              <p>
-                포인트를 적립하거나
-                사용하면 이곳에서
-                확인할 수 있어요.
-              </p>
             </div>
-
           )}
 
         </section>
 
       </div>
-
     </section>
   )
 }

@@ -12,44 +12,12 @@
   width: 100%;
   min-height: 780px;
 
-  padding: 30px 30px 24px;
+  padding: 34px 32px 40px;
 
   background: #fff;
 
+  border: 1px solid #eeeae3;
   border-radius: 18px;
-}
-
-
-/* =========================
-   TITLE
-========================= */
-
-.pageHeader {
-  display: flex;
-  align-items: center;
-
-  min-height: 38px;
-}
-
-
-.title {
-  margin: 0;
-
-  color: #44382d;
-
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-
-.titleDivider {
-  width: 100%;
-  height: 1px;
-
-  margin: 4px 0 20px;
-
-  background: #5f5a54;
 }
 
 
@@ -62,31 +30,30 @@
 
   padding: 26px 26px 22px;
 
-  border: 1px solid #ddd8d0;
-
+  border: 1px solid #d9e3df;
   border-radius: 12px;
 
-  background: #fff;
+  background: #f8fbfa;
 }
 
 
 .stepper {
+  width: 100%;
+
   display: grid;
   grid-template-columns:
     repeat(5, 1fr);
-
-  width: 100%;
 }
 
 
 .step {
   position: relative;
 
+  min-width: 0;
+
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  min-width: 0;
 }
 
 
@@ -95,42 +62,42 @@
 
   z-index: 0;
 
-  top: 8px;
+  top: 9px;
   left: 50%;
 
   width: 100%;
   height: 1px;
 
-  background: #dedbd5;
+  background: #dddeda;
 }
 
 
 .stepDot {
   position: relative;
+
   z-index: 1;
 
-  width: 17px;
-  height: 17px;
+  width: 19px;
+  height: 19px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border: 1px solid #d8d5d0;
-
+  border: 1px solid #d4d7d3;
   border-radius: 50%;
 
   background: #fff;
 
   color: #fff;
 
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
 }
 
 
 .stepLabel {
-  margin-top: 8px;
+  margin-top: 9px;
 
   color: #99938c;
 
@@ -142,13 +109,13 @@
 
 
 .stepDate {
-  min-height: 12px;
+  min-height: 14px;
 
-  margin-top: 3px;
+  margin-top: 4px;
 
-  color: #bbb5ad;
+  color: #b3ada5;
 
-  font-size: 11px;
+  font-size: 10px;
 
   white-space: nowrap;
 }
@@ -156,34 +123,34 @@
 
 .complete {
   .stepDot {
-    border-color: #5f9488;
+    border-color: #519888;
 
-    background: #5f9488;
+    background: #519888;
   }
 
   .stepLine {
-    background: #5f9488;
+    background: #519888;
   }
 
   .stepLabel {
-    color: #5f665f;
+    color: #58756d;
   }
 }
 
 
 .current {
   .stepDot {
-    border-color: #b4925e;
+    border-color: #4d7e7b;
 
-    background: #b4925e;
+    background: #4d7e7b;
 
     box-shadow:
-      0 0 0 3px
+      0 0 0 4px
       rgba(
-        180,
-        146,
-        94,
-        0.12
+        77,
+        126,
+        123,
+        0.1
       );
   }
 
@@ -191,15 +158,15 @@
     background:
       linear-gradient(
         to right,
-        #b4925e 0%,
-        #b4925e 50%,
-        #dedbd5 50%,
-        #dedbd5 100%
+        #4d7e7b 0%,
+        #4d7e7b 50%,
+        #dddeda 50%,
+        #dddeda 100%
       );
   }
 
   .stepLabel {
-    color: #6e5636;
+    color: #3f756d;
 
     font-weight: 700;
   }
@@ -216,19 +183,32 @@
     1fr 1.25fr;
 
   column-gap: 38px;
-  row-gap: 10px;
+  row-gap: 12px;
 
-  margin: 22px 10px 0;
+  margin:
+    24px
+    10px
+    0;
+
+  padding:
+    18px
+    18px;
+
+  border: 1px solid #eee9e2;
+  border-radius: 12px;
+
+  background: #fdfcf9;
 
   > div {
     display: grid;
+
     grid-template-columns:
-      66px
+      72px
       minmax(0, 1fr);
 
     align-items: start;
 
-    gap: 8px;
+    gap: 10px;
   }
 
   dt {
@@ -266,22 +246,34 @@
 
 
 .sectionHeading {
+  min-height: 36px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  padding-bottom: 8px;
+  gap: 16px;
 
-  border-bottom: 1px solid #6c6760;
+  padding-bottom: 10px;
+
+  border-bottom: 1px solid #ddd8d0;
 
   h3 {
     margin: 0;
 
-    color: #37322c;
+    color: #332e28;
 
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 700;
   }
+}
+
+
+.sectionCount {
+  color: #9b958d;
+
+  font-size: 12px;
+  font-weight: 500;
 }
 
 
@@ -290,26 +282,28 @@
 ========================= */
 
 .productTable {
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 
 .productColumns {
+  min-height: 32px;
+
   display: grid;
+
   grid-template-columns:
     minmax(0, 1fr)
     70px
-    88px;
+    100px;
 
   align-items: center;
 
-  min-height: 26px;
+  padding: 0 14px;
 
-  padding: 0 12px;
-
-  color: #8f8981;
+  color: #918b83;
 
   font-size: 11px;
+  font-weight: 500;
 
   span {
     &:nth-child(2),
@@ -323,29 +317,30 @@
 .productList {
   overflow: hidden;
 
-  border: 1px solid #ece8e1;
+  border: 1px solid #e3ddd4;
+  border-radius: 12px;
 
-  border-radius: 3px;
+  background: #fff;
 }
 
 
 .productRow {
+  min-height: 74px;
+
   display: grid;
+
   grid-template-columns:
     minmax(0, 1fr)
     70px
-    88px;
+    100px;
 
   align-items: center;
 
-  min-height: 58px;
-
-  padding: 7px 12px;
+  padding: 9px 14px;
 
   & + & {
     border-top:
-      1px solid
-      #eeeae4;
+      1px solid #eeeae4;
   }
 }
 
@@ -356,22 +351,22 @@
   display: flex;
   align-items: center;
 
-  gap: 11px;
+  gap: 13px;
 }
 
 
 .productImage,
 .productPlaceholder {
-  width: 42px;
-  height: 42px;
+  width: 54px;
+  height: 54px;
 
   flex-shrink: 0;
 
   overflow: hidden;
 
-  border-radius: 4px;
+  border-radius: 10px;
 
-  background: #eee9de;
+  background: #eee8dc;
 }
 
 
@@ -399,8 +394,8 @@
 
 .bottle {
   span {
-    width: 9px;
-    height: 27px;
+    width: 10px;
+    height: 30px;
 
     border-radius:
       4px
@@ -413,8 +408,8 @@
 
 .food {
   span {
-    width: 26px;
-    height: 15px;
+    width: 28px;
+    height: 16px;
 
     border-radius: 50%;
 
@@ -425,8 +420,8 @@
 
 .glass {
   span {
-    width: 18px;
-    height: 21px;
+    width: 19px;
+    height: 23px;
 
     border-radius:
       2px
@@ -445,14 +440,14 @@
   display: flex;
   flex-direction: column;
 
-  gap: 4px;
+  gap: 5px;
 
   strong {
     overflow: hidden;
 
-    color: #49443d;
+    color: #38342e;
 
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 700;
 
     text-overflow: ellipsis;
@@ -462,7 +457,7 @@
   span {
     color: #aaa49c;
 
-    font-size: 11px;
+    font-size: 12px;
   }
 }
 
@@ -472,8 +467,14 @@
   color: #5f5952;
 
   font-size: 12px;
+  font-weight: 500;
 
   text-align: center;
+}
+
+
+.linePrice {
+  font-weight: 600;
 }
 
 
@@ -484,7 +485,10 @@
 .addressContent {
   position: relative;
 
-  padding: 18px 12px 0;
+  padding:
+    18px
+    14px
+    0;
 }
 
 
@@ -492,19 +496,20 @@
   display: flex;
   flex-direction: column;
 
-  gap: 10px;
+  gap: 12px;
 
   margin: 0;
 
   > div {
     display: grid;
+
     grid-template-columns:
-      88px
+      90px
       minmax(0, 1fr);
 
     align-items: baseline;
 
-    gap: 12px;
+    gap: 14px;
   }
 
   dt {
@@ -521,24 +526,23 @@
 
     font-size: 12px;
     font-weight: 400;
-    line-height: 1.5;
+    line-height: 1.6;
   }
 }
 
 
 .addressButton {
-  min-width: 73px;
-  height: 28px;
+  min-width: 86px;
+  height: 34px;
 
-  padding: 0 12px;
+  padding: 0 13px;
 
-  border: 1px solid #d8cbbb;
-
-  border-radius: 5px;
+  border: 1px solid #d9d3ca;
+  border-radius: 8px;
 
   background: #fff;
 
-  color: #71685f;
+  color: #665f57;
 
   font-size: 12px;
   font-weight: 600;
@@ -547,53 +551,66 @@
 
   transition:
     background 0.2s ease,
-    border-color 0.2s ease;
+    border-color 0.2s ease,
+    color 0.2s ease;
 
   &:hover {
-    border-color: #bca991;
+    border-color: #85a9a0;
 
-    background: #faf8f4;
-    color: #4d7e7b;
+    background: #f3f8f6;
+
+    color: #3f756d;
   }
 }
 
 
 .addressNotice {
-  margin: 14px 0 0;
-  padding: 10px 12px;
+  margin:
+    16px
+    0
+    0;
 
-  border-radius: 6px;
+  padding:
+    12px
+    14px;
 
-  background: #f5f3ef;
+  border: 1px solid #e5e0d8;
+  border-radius: 8px;
+
+  background: #f8f6f2;
 
   color: #776e64;
 
   font-size: 12px;
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
 
 .paymentList {
-  padding:
-    16px
-    12px
-    0;
+  max-width: 340px;
 
-  max-width: 280px;
+  padding:
+    18px
+    14px
+    0;
 }
 
 
 .totalRow {
-  margin-top: 2px;
+  margin-top: 6px;
+
+  padding-top: 12px;
+
+  border-top: 1px solid #eee9e2;
 
   dt {
     color: #444039;
   }
 
   dd {
-    color: #51877d;
+    color: #3f756d;
 
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 800;
   }
 }
@@ -607,25 +624,25 @@
   display: flex;
   align-items: center;
 
-  gap: 12px;
+  gap: 14px;
 
-  padding: 18px;
+  padding:
+    18px
+    20px;
 
   border: 1px solid #ead9d5;
+  border-radius: 12px;
 
-  border-radius: 10px;
-
-  background: #fbf5f3;
-
+  background: #fdf7f6;
 
   strong {
     display: block;
 
-    margin-bottom: 4px;
+    margin-bottom: 5px;
 
     color: #8b5f57;
 
-    font-size: 13px;
+    font-size: 14px;
   }
 
   p {
@@ -634,13 +651,14 @@
     color: #a48079;
 
     font-size: 12px;
+    line-height: 1.5;
   }
 }
 
 
 .cancelIcon {
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
 
   flex-shrink: 0;
 
@@ -670,7 +688,11 @@
 
   gap: 8px;
 
-  margin-top: 34px;
+  margin-top: 36px;
+
+  padding-top: 20px;
+
+  border-top: 1px solid #eee9e2;
 }
 
 
@@ -678,29 +700,36 @@
 .cancelButton,
 .retryButton,
 .backOutlineButton {
-  min-width: 82px;
-  height: 30px;
+  min-width: 96px;
+  height: 36px;
 
-  padding: 0 15px;
+  padding: 0 16px;
 
-  border-radius: 5px;
+  border-radius: 8px;
 
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
 
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 
 .backButton {
-  border: 1px solid #568a80;
+  border: 1px solid #4d7e7b;
 
-  background: #568a80;
+  background: #4d7e7b;
 
   color: #fff;
 
   &:hover {
-    background: #49796f;
+    border-color: #3c6763;
+
+    background: #3c6763;
   }
 }
 
@@ -715,13 +744,27 @@
   color: #706a63;
 
   &:hover {
-    background: #f8f6f2;
+    border-color: #85a9a0;
+
+    background: #f3f8f6;
+
+    color: #3f756d;
   }
 }
 
 
 .cancelButton {
-  color: #8c655d;
+  border-color: #dfc7c2;
+
+  color: #96665e;
+
+  &:hover {
+    border-color: #d2aaa3;
+
+    background: #fdf7f6;
+
+    color: #8d5b53;
+  }
 
   &:disabled {
     opacity: 0.5;
@@ -732,7 +775,10 @@
 
 
 .actionError {
-  margin: 20px 0 0;
+  margin:
+    20px
+    0
+    0;
 
   color: #a95c51;
 
@@ -763,7 +809,7 @@
 
     color: #554f48;
 
-    font-size: 12px;
+    font-size: 13px;
   }
 
   p {
@@ -780,17 +826,17 @@
 .feedbackActions {
   display: flex;
 
-  gap: 7px;
+  gap: 8px;
 }
 
 
 .loadingSpinner {
-  width: 25px;
-  height: 25px;
+  width: 26px;
+  height: 26px;
 
   border: 2px solid #eae6df;
 
-  border-top-color: #659388;
+  border-top-color: #519888;
 
   border-radius: 50%;
 
@@ -816,9 +862,9 @@
 @media (max-width: 1024px) {
   .detailCard {
     padding:
-      26px
+      28px
       24px
-      24px;
+      34px;
   }
 
 
@@ -845,34 +891,40 @@
     min-height: auto;
 
     padding:
-      22px
-      16px
-      26px;
+      24px
+      18px
+      30px;
 
-    border-radius: 14px;
-  }
-
-
-  .title {
-    font-size: 19px;
+    border-radius: 15px;
   }
 
 
   .stepperBox {
     padding:
       20px
-      12px;
+      10px;
   }
 
 
   .stepper {
     min-width: 0;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+
+    grid-template-columns:
+      repeat(
+        5,
+        minmax(0, 1fr)
+      );
+  }
+
+
+  .stepLabel {
+    font-size: 10px;
   }
 
 
   .stepDate {
     white-space: normal;
+
     text-align: center;
   }
 
@@ -882,8 +934,12 @@
 
     margin:
       20px
-      4px
+      0
       0;
+
+    padding:
+      16px
+      14px;
   }
 
 
@@ -892,38 +948,59 @@
   }
 
 
+  .sectionHeading {
+    h3 {
+      font-size: 16px;
+    }
+  }
+
+
   .productColumns,
   .productRow {
     grid-template-columns:
       minmax(0, 1fr)
       42px
-      68px;
+      72px;
   }
 
 
   .productColumns {
-    padding: 0 7px;
+    padding:
+      0
+      8px;
   }
 
 
   .productRow {
     padding:
-      7px
-      7px;
+      8px
+      8px;
   }
 
 
   .productImage,
   .productPlaceholder {
-    width: 38px;
-    height: 38px;
+    width: 44px;
+    height: 44px;
+  }
+
+
+  .productInfo {
+    gap: 9px;
+  }
+
+
+  .productCopy {
+    strong {
+      font-size: 13px;
+    }
   }
 
 
   .infoList {
     > div {
       grid-template-columns:
-        72px
+        74px
         minmax(0, 1fr);
     }
   }
@@ -931,30 +1008,28 @@
 
   .addressContent {
     padding:
-      14px
+      16px
       6px
       0;
   }
 
 
   .addressButton {
-    position: static;
-
     flex-shrink: 0;
-
-    margin: 0;
   }
 
 
   .paymentList {
+    max-width: none;
+
     padding:
-      14px
+      16px
       6px
       0;
   }
 
 
   .bottomActions {
-    margin-top: 28px;
+    margin-top: 30px;
   }
 }

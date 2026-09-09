@@ -1,4 +1,9 @@
-import { useEffect, useState } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+
 import {
   addDoc,
   collection,
@@ -10,10 +15,20 @@ import {
   writeBatch,
 } from 'firebase/firestore'
 
-import { subscribeToAuthState } from '../../firebase/auth'
-import { db } from '../../firebase/firebase'
+import {
+  subscribeToAuthState,
+} from '../../firebase/auth'
+
+import {
+  db,
+} from '../../firebase/firebase'
+
+import MyPageHeader from '../../components/mypage/MyPageHeader'
 
 import styles from './AddressBook.module.scss'
+
+
+const ADDRESSES_PER_PAGE = 4
 
 
 const EMPTY_FORM = {
@@ -25,23 +40,305 @@ const EMPTY_FORM = {
 }
 
 
+const EMPTY_FIELD_ERRORS = {
+  label: '',
+  recipient: '',
+  address: '',
+  phone: '',
+}
+
+
+/* =========================
+   PHONE
+========================= */
+
+const normalizePhone = (
+  value
+) =>
+  String(value || '')
+    .replace(/\D/g, '')
+    .slice(0, 11)
+
+
+const formatPhone = (
+  value
+) => {
+  const numbers =
+    normalizePhone(value)
+
+
+  if (
+    numbers.length <= 3
+  ) {
+    return numbers
+  }
+
+
+  if (
+    numbers.length <= 7
+  ) {
+    return `${numbers.slice(
+      0,
+      3
+    )}-${numbers.slice(3)}`
+  }
+
+
+  return `${numbers.slice(
+    0,
+    3
+  )}-${numbers.slice(
+    3,
+    7
+  )}-${numbers.slice(7)}`
+}
+
+
+const isValidPhone = (
+  value
+) =>
+  /^010\d{8}$/.test(
+    normalizePhone(value)
+  )
+
+
+const isPossiblePhonePrefix = (
+  value
+) => {
+  const numbers =
+    normalizePhone(value)
+
+
+  if (!numbers) {
+    return true
+  }
+
+
+  if (
+    numbers.length <= 3
+  ) {
+    return '010'.startsWith(
+      numbers
+    )
+  }
+
+
+  return numbers.startsWith(
+    '010'
+  )
+}
+
+
+/* =========================
+   RECIPIENT
+========================= */
+
+const isValidRecipient = (
+  value
+) =>
+  /^[\p{L}\s·.'-]+$/u.test(
+    value
+  )
+
+
+/* =========================
+   ICON
+========================= */
+
+const LocationIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.6"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+
+    <circle
+      cx="12"
+      cy="10"
+      r="2.5"
+    />
+  </svg>
+)
+
+
+const PlusIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.7"
+    strokeLinecap="round"
+  >
+    <path d="M12 5v14" />
+    <path d="M5 12h14" />
+  </svg>
+)
+
+
+/* =========================
+   SORT
+========================= */
+
+const getCreatedAtMs = (
+  value
+) => {
+  if (!value) {
+    return 0
+  }
+
+
+  if (
+    typeof value.toDate ===
+    'function'
+  ) {
+    return value
+      .toDate()
+      .getTime()
+  }
+
+
+  if (
+    value instanceof Date
+  ) {
+    return value.getTime()
+  }
+
+
+  if (value.seconds) {
+    return (
+      Number(
+        value.seconds
+      ) * 1000
+    )
+  }
+
+
+  const date =
+    new Date(value)
+
+
+  return Number.isNaN(
+    date.getTime()
+  )
+    ? 0
+    : date.getTime()
+}
+
+
+const sortAddresses = (
+  items
+) =>
+  [...items].sort(
+    (a, b) => {
+      if (
+        a.isDefault !==
+        b.isDefault
+      ) {
+        return a.isDefault
+          ? -1
+          : 1
+      }
+
+
+      return (
+        getCreatedAtMs(
+          b.createdAt
+        ) -
+        getCreatedAtMs(
+          a.createdAt
+        )
+      )
+    }
+  )
+
+
 const AddressBook = () => {
-  const [currentUser, setCurrentUser] = useState(undefined)
+  const [
+    currentUser,
+    setCurrentUser,
+  ] = useState(undefined)
 
-  const [addresses, setAddresses] = useState([])
-  const [selectedAddressId, setSelectedAddressId] = useState(null)
 
-  const [mode, setMode] = useState('list')
-  const [editingId, setEditingId] = useState(null)
+  const [
+    addresses,
+    setAddresses,
+  ] = useState([])
 
-  const [form, setForm] = useState(EMPTY_FORM)
 
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
+  const [
+    selectedAddressId,
+    setSelectedAddressId,
+  ] = useState(null)
 
-  const [loadError, setLoadError] = useState('')
-  const [formError, setFormError] = useState('')
-  const [notice, setNotice] = useState('')
+
+  const [
+    mode,
+    setMode,
+  ] = useState('list')
+
+
+  const [
+    editingId,
+    setEditingId,
+  ] = useState(null)
+
+
+  const [
+    form,
+    setForm,
+  ] = useState(
+    EMPTY_FORM
+  )
+
+
+  const [
+    fieldErrors,
+    setFieldErrors,
+  ] = useState(
+    EMPTY_FIELD_ERRORS
+  )
+
+
+  const [
+    isLoading,
+    setIsLoading,
+  ] = useState(true)
+
+
+  const [
+    isSaving,
+    setIsSaving,
+  ] = useState(false)
+
+
+  const [
+    loadError,
+    setLoadError,
+  ] = useState('')
+
+
+  const [
+    formError,
+    setFormError,
+  ] = useState('')
+
+
+  const [
+    notice,
+    setNotice,
+  ] = useState('')
+
+
+  const [
+    currentPage,
+    setCurrentPage,
+  ] = useState(1)
 
 
   /* =========================
@@ -50,7 +347,10 @@ const AddressBook = () => {
 
   useEffect(() => {
     const unsubscribe =
-      subscribeToAuthState(setCurrentUser)
+      subscribeToAuthState(
+        setCurrentUser
+      )
+
 
     return unsubscribe
   }, [])
@@ -61,9 +361,12 @@ const AddressBook = () => {
   ========================= */
 
   useEffect(() => {
-    if (currentUser === undefined) {
+    if (
+      currentUser === undefined
+    ) {
       return undefined
     }
+
 
     if (!currentUser) {
       setAddresses([])
@@ -72,116 +375,122 @@ const AddressBook = () => {
       return undefined
     }
 
+
     let isMounted = true
 
 
-    const loadAddresses = async () => {
-      setIsLoading(true)
-      setLoadError('')
-
-      try {
-        const snapshot = await getDocs(
-          collection(
-            db,
-            'users',
-            currentUser.uid,
-            'addresses'
-          )
-        )
-
-        if (!isMounted) {
-          return
-        }
-
-        const nextAddresses = snapshot.docs.map(
-          (addressDocument) => {
-            const data = addressDocument.data()
-
-            return {
-              id: addressDocument.id,
-
-              label:
-                data.label ||
-                data.name ||
-                '배송지',
-
-              recipient:
-                data.recipient ||
-                data.receiver ||
-                '',
-
-              address:
-                [
-                  data.address,
-                  data.detailAddress,
-                ]
-                  .filter(Boolean)
-                  .join(' '),
-
-              phone:
-                data.phone ||
-                '',
-
-              isDefault:
-                Boolean(
-                  data.isDefault
-                ),
-
-              createdAt:
-                data.createdAt,
-            }
-          }
-        )
+    const loadAddresses =
+      async () => {
+        setIsLoading(true)
+        setLoadError('')
 
 
-        nextAddresses.sort((a, b) => {
-          if (
-            a.isDefault !==
-            b.isDefault
-          ) {
-            return a.isDefault
-              ? -1
-              : 1
-          }
-
-          return (
-            Number(
-              b.createdAt?.seconds ||
-                0
-            ) -
-            Number(
-              a.createdAt?.seconds ||
-                0
+        try {
+          const snapshot =
+            await getDocs(
+              collection(
+                db,
+                'users',
+                currentUser.uid,
+                'addresses'
+              )
             )
+
+
+          if (!isMounted) {
+            return
+          }
+
+
+          const nextAddresses =
+            snapshot.docs.map(
+              (
+                addressDocument
+              ) => {
+                const data =
+                  addressDocument.data()
+
+
+                return {
+                  id:
+                    addressDocument.id,
+
+                  label:
+                    data.label ||
+                    data.name ||
+                    '배송지',
+
+                  recipient:
+                    data.recipient ||
+                    data.receiver ||
+                    '',
+
+                  address:
+                    [
+                      data.address,
+                      data.detailAddress,
+                    ]
+                      .filter(Boolean)
+                      .join(' '),
+
+                  phone:
+                    normalizePhone(
+                      data.phone
+                    ),
+
+                  isDefault:
+                    Boolean(
+                      data.isDefault
+                    ),
+
+                  createdAt:
+                    data.createdAt,
+                }
+              }
+            )
+
+
+          const sortedAddresses =
+            sortAddresses(
+              nextAddresses
+            )
+
+
+          setAddresses(
+            sortedAddresses
           )
-        })
 
 
-        setAddresses(nextAddresses)
-
-        setSelectedAddressId(
-          nextAddresses[0]?.id ||
-          null
-        )
-      } catch (error) {
-        console.error(
-          '배송지 조회 실패:',
-          error
-        )
-
-        if (isMounted) {
-          setAddresses([])
-
-          setLoadError(
-            '배송지 정보를 불러오지 못했습니다.'
+          setSelectedAddressId(
+            sortedAddresses[0]
+              ?.id ||
+              null
           )
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false)
+
+
+          setCurrentPage(1)
+        } catch (error) {
+          console.error(
+            '배송지 조회 실패:',
+            error
+          )
+
+
+          if (isMounted) {
+            setAddresses([])
+
+            setLoadError(
+              '배송지 정보를 불러오지 못했습니다.'
+            )
+          }
+        } finally {
+          if (isMounted) {
+            setIsLoading(
+              false
+            )
+          }
         }
       }
-    }
 
 
     loadAddresses()
@@ -194,11 +503,14 @@ const AddressBook = () => {
 
 
   /* =========================
-     공통
+     NOTICE
   ========================= */
 
-  const showNotice = (message) => {
+  const showNotice = (
+    message
+  ) => {
     setNotice(message)
+
 
     window.setTimeout(
       () => {
@@ -209,6 +521,10 @@ const AddressBook = () => {
   }
 
 
+  /* =========================
+     DEFAULT
+  ========================= */
+
   const defaultAddress =
     addresses.find(
       (address) =>
@@ -216,12 +532,79 @@ const AddressBook = () => {
     )
 
 
+  const otherAddresses =
+    useMemo(
+      () =>
+        addresses.filter(
+          (address) =>
+            !address.isDefault
+        ),
+      [addresses]
+    )
+
+
   /* =========================
-     추가 화면
+     PAGINATION
+  ========================= */
+
+  const totalPages =
+    Math.max(
+      1,
+      Math.ceil(
+        otherAddresses.length /
+          ADDRESSES_PER_PAGE
+      )
+    )
+
+
+  const startIndex =
+    (currentPage - 1) *
+    ADDRESSES_PER_PAGE
+
+
+  const visibleAddresses =
+    otherAddresses.slice(
+      startIndex,
+      startIndex +
+        ADDRESSES_PER_PAGE
+    )
+
+
+  useEffect(() => {
+    if (
+      currentPage >
+      totalPages
+    ) {
+      setCurrentPage(
+        totalPages
+      )
+    }
+  }, [
+    currentPage,
+    totalPages,
+  ])
+
+
+  /* =========================
+     FORM RESET
+  ========================= */
+
+  const resetFormErrors = () => {
+    setFieldErrors(
+      EMPTY_FIELD_ERRORS
+    )
+
+    setFormError('')
+  }
+
+
+  /* =========================
+     추가
   ========================= */
 
   const handleOpenAdd = () => {
     setEditingId(null)
+
 
     setForm({
       ...EMPTY_FORM,
@@ -230,19 +613,24 @@ const AddressBook = () => {
         addresses.length === 0,
     })
 
-    setFormError('')
+
+    resetFormErrors()
+
     setMode('form')
   }
 
 
   /* =========================
-     수정 화면
+     수정
   ========================= */
 
   const handleOpenEdit = (
     address
   ) => {
-    setEditingId(address.id)
+    setEditingId(
+      address.id
+    )
+
 
     setForm({
       label:
@@ -255,27 +643,54 @@ const AddressBook = () => {
         address.address,
 
       phone:
-        address.phone,
+        normalizePhone(
+          address.phone
+        ),
 
       isDefault:
         address.isDefault,
     })
 
-    setFormError('')
+
+    resetFormErrors()
+
     setMode('form')
   }
 
 
-  const handleCancelForm = () => {
-    setMode('list')
-    setEditingId(null)
-    setForm(EMPTY_FORM)
-    setFormError('')
+  const handleCancelForm =
+    () => {
+      setMode('list')
+
+      setEditingId(null)
+
+      setForm(
+        EMPTY_FORM
+      )
+
+      resetFormErrors()
+    }
+
+
+  /* =========================
+     FIELD ERROR
+  ========================= */
+
+  const setFieldError = (
+    name,
+    message
+  ) => {
+    setFieldErrors(
+      (current) => ({
+        ...current,
+        [name]: message,
+      })
+    )
   }
 
 
   /* =========================
-     입력 변경
+     INPUT CHANGE
   ========================= */
 
   const handleChange = (
@@ -288,21 +703,272 @@ const AddressBook = () => {
       checked,
     } = event.target
 
+
+    setFormError('')
+
+
+    /* =========================
+       PHONE
+    ========================= */
+
+    if (
+      name === 'phone'
+    ) {
+      const numbers =
+        normalizePhone(value)
+
+
+      setForm(
+        (current) => ({
+          ...current,
+          phone: numbers,
+        })
+      )
+
+
+      if (
+        numbers &&
+        !isPossiblePhonePrefix(
+          numbers
+        )
+      ) {
+        setFieldError(
+          'phone',
+          '휴대폰 번호는 010으로 시작해야 합니다.'
+        )
+      } else if (
+        numbers.length === 11 &&
+        !isValidPhone(
+          numbers
+        )
+      ) {
+        setFieldError(
+          'phone',
+          '올바른 휴대폰 번호를 입력해주세요.'
+        )
+      } else {
+        setFieldError(
+          'phone',
+          ''
+        )
+      }
+
+
+      return
+    }
+
+
+    /* =========================
+       RECIPIENT
+    ========================= */
+
+    if (
+      name === 'recipient'
+    ) {
+      setForm(
+        (current) => ({
+          ...current,
+          recipient: value,
+        })
+      )
+
+
+      const trimmedValue =
+        value.trim()
+
+
+      if (
+        trimmedValue &&
+        !isValidRecipient(
+          trimmedValue
+        )
+      ) {
+        setFieldError(
+          'recipient',
+          '받는 분은 한글 또는 영문으로 입력해주세요.'
+        )
+      } else {
+        setFieldError(
+          'recipient',
+          ''
+        )
+      }
+
+
+      return
+    }
+
+
+    /* =========================
+       COMMON
+    ========================= */
+
     setForm(
       (current) => ({
         ...current,
 
         [name]:
-          type === 'checkbox'
+          type ===
+          'checkbox'
             ? checked
             : value,
       })
     )
+
+
+    if (
+      name in fieldErrors
+    ) {
+      setFieldError(
+        name,
+        ''
+      )
+    }
   }
 
 
   /* =========================
-     기본 배송지 일괄 해제
+     BLUR VALIDATION
+  ========================= */
+
+  const handleBlur = (
+    event
+  ) => {
+    const {
+      name,
+      value,
+    } = event.target
+
+
+    if (
+      name === 'label'
+    ) {
+      if (!value.trim()) {
+        setFieldError(
+          'label',
+          '배송지 이름을 입력해주세요.'
+        )
+      }
+
+      return
+    }
+
+
+    if (
+      name === 'recipient'
+    ) {
+      const recipient =
+        value.trim()
+
+
+      if (!recipient) {
+        setFieldError(
+          'recipient',
+          '받는 분을 입력해주세요.'
+        )
+
+        return
+      }
+
+
+      if (
+        !isValidRecipient(
+          recipient
+        )
+      ) {
+        setFieldError(
+          'recipient',
+          '받는 분은 한글 또는 영문으로 입력해주세요.'
+        )
+      }
+
+      return
+    }
+
+
+    if (
+      name === 'address'
+    ) {
+      if (!value.trim()) {
+        setFieldError(
+          'address',
+          '배송지 주소를 입력해주세요.'
+        )
+      }
+
+      return
+    }
+
+
+    if (
+      name === 'phone'
+    ) {
+      const numbers =
+        normalizePhone(
+          value
+        )
+
+
+      if (!numbers) {
+        setFieldError(
+          'phone',
+          '휴대폰 번호를 입력해주세요.'
+        )
+
+        return
+      }
+
+
+      if (
+        !isPossiblePhonePrefix(
+          numbers
+        )
+      ) {
+        setFieldError(
+          'phone',
+          '휴대폰 번호는 010으로 시작해야 합니다.'
+        )
+
+        return
+      }
+
+
+      if (
+        numbers.length !== 11
+      ) {
+        setFieldError(
+          'phone',
+          '010으로 시작하는 휴대폰 번호 11자리를 입력해주세요.'
+        )
+
+        return
+      }
+
+
+      if (
+        !isValidPhone(
+          numbers
+        )
+      ) {
+        setFieldError(
+          'phone',
+          '올바른 휴대폰 번호를 입력해주세요.'
+        )
+
+        return
+      }
+
+
+      setFieldError(
+        'phone',
+        ''
+      )
+    }
+  }
+
+
+  /* =========================
+     기본 배송지 해제
   ========================= */
 
   const clearDefaultAddresses =
@@ -311,8 +977,10 @@ const AddressBook = () => {
         return
       }
 
+
       const batch =
         writeBatch(db)
+
 
       addresses.forEach(
         (address) => {
@@ -328,218 +996,349 @@ const AddressBook = () => {
                 address.id
               ),
               {
-                isDefault: false,
+                isDefault:
+                  false,
               }
             )
           }
         }
       )
 
+
       await batch.commit()
     }
 
 
   /* =========================
-     배송지 저장
+     SUBMIT
   ========================= */
 
-  const handleSubmit = async (
-    event
-  ) => {
-    event.preventDefault()
-
-    if (!currentUser) {
-      setFormError(
-        '로그인 후 배송지를 등록할 수 있습니다.'
-      )
-
-      return
-    }
+  const handleSubmit =
+    async (event) => {
+      event.preventDefault()
 
 
-    const label =
-      form.label.trim()
+      if (!currentUser) {
+        setFormError(
+          '로그인 후 배송지를 등록할 수 있습니다.'
+        )
 
-    const recipient =
-      form.recipient.trim()
-
-    const address =
-      form.address.trim()
-
-    const phone =
-      form.phone.trim()
-
-
-    if (!label) {
-      setFormError(
-        '배송지 이름을 입력해주세요.'
-      )
-
-      return
-    }
-
-
-    if (!recipient) {
-      setFormError(
-        '받는 분을 입력해주세요.'
-      )
-
-      return
-    }
-
-
-    if (!address) {
-      setFormError(
-        '배송지 주소를 입력해주세요.'
-      )
-
-      return
-    }
-
-
-    if (!phone) {
-      setFormError(
-        '휴대폰 번호를 입력해주세요.'
-      )
-
-      return
-    }
-
-
-    try {
-      setIsSaving(true)
-      setFormError('')
-
-
-      if (form.isDefault) {
-        await clearDefaultAddresses()
+        return
       }
 
 
-      const payload = {
-        label,
-        recipient,
-        address,
-        detailAddress: '',
-        phone,
+      const label =
+        form.label.trim()
 
-        isDefault:
-          form.isDefault ||
-          addresses.length === 0,
 
-        updatedAt:
-          serverTimestamp(),
+      const recipient =
+        form.recipient
+          .trim()
+          .replace(
+            /\s+/g,
+            ' '
+          )
+
+
+      const address =
+        form.address.trim()
+
+
+      const phone =
+        normalizePhone(
+          form.phone
+        )
+
+
+      const nextErrors = {
+        ...EMPTY_FIELD_ERRORS,
       }
 
 
-      if (editingId) {
-        await updateDoc(
-          doc(
-            db,
-            'users',
-            currentUser.uid,
-            'addresses',
-            editingId
-          ),
-          payload
+      /* =========================
+         LABEL
+      ========================= */
+
+      if (!label) {
+        nextErrors.label =
+          '배송지 이름을 입력해주세요.'
+      } else if (
+        label.length > 20
+      ) {
+        nextErrors.label =
+          '배송지 이름은 20자 이하로 입력해주세요.'
+      }
+
+
+      /* =========================
+         RECIPIENT
+      ========================= */
+
+      if (!recipient) {
+        nextErrors.recipient =
+          '받는 분을 입력해주세요.'
+      } else if (
+        !isValidRecipient(
+          recipient
         )
+      ) {
+        nextErrors.recipient =
+          '받는 분은 한글 또는 영문으로 입력해주세요.'
+      } else if (
+        recipient.length > 30
+      ) {
+        nextErrors.recipient =
+          '받는 분은 30자 이하로 입력해주세요.'
+      }
 
 
-        setAddresses(
-          (current) =>
-            current.map(
-              (item) => ({
-                ...item,
+      /* =========================
+         ADDRESS
+      ========================= */
 
-                ...(item.id ===
-                editingId
-                  ? {
-                      ...payload,
+      if (!address) {
+        nextErrors.address =
+          '배송지 주소를 입력해주세요.'
+      }
 
-                      updatedAt:
-                        new Date(),
-                    }
-                  : form.isDefault
-                    ? {
-                        isDefault:
-                          false,
-                      }
-                    : {}),
-              })
-            )
+
+      /* =========================
+         PHONE
+      ========================= */
+
+      if (!phone) {
+        nextErrors.phone =
+          '휴대폰 번호를 입력해주세요.'
+      } else if (
+        !isPossiblePhonePrefix(
+          phone
         )
-
-        showNotice(
-          '배송지가 수정되었습니다.'
+      ) {
+        nextErrors.phone =
+          '휴대폰 번호는 010으로 시작해야 합니다.'
+      } else if (
+        phone.length !== 11
+      ) {
+        nextErrors.phone =
+          '010으로 시작하는 휴대폰 번호 11자리를 입력해주세요.'
+      } else if (
+        !isValidPhone(
+          phone
         )
-      } else {
-        const documentRef =
-          await addDoc(
-            collection(
+      ) {
+        nextErrors.phone =
+          '올바른 휴대폰 번호를 입력해주세요.'
+      }
+
+
+      setFieldErrors(
+        nextErrors
+      )
+
+
+      const hasError =
+        Object.values(
+          nextErrors
+        ).some(Boolean)
+
+
+      if (hasError) {
+        return
+      }
+
+
+      try {
+        setIsSaving(true)
+        setFormError('')
+
+
+        if (
+          form.isDefault
+        ) {
+          await clearDefaultAddresses()
+        }
+
+
+        const payload = {
+          label,
+          recipient,
+          address,
+
+          detailAddress: '',
+
+          /*
+           * DB에는 숫자만 저장
+           * ex) 01012345678
+           */
+          phone,
+
+          isDefault:
+            form.isDefault ||
+            addresses.length === 0,
+
+          updatedAt:
+            serverTimestamp(),
+        }
+
+
+        /* =========================
+           EDIT
+        ========================= */
+
+        if (editingId) {
+          await updateDoc(
+            doc(
               db,
               'users',
               currentUser.uid,
-              'addresses'
+              'addresses',
+              editingId
             ),
-            {
-              ...payload,
+            payload
+          )
 
-              createdAt:
-                serverTimestamp(),
+
+          setAddresses(
+            (current) => {
+              const next =
+                current.map(
+                  (item) => ({
+                    ...item,
+
+                    ...(item.id ===
+                    editingId
+                      ? {
+                          ...payload,
+                        }
+
+                      : form.isDefault
+                        ? {
+                            isDefault:
+                              false,
+                          }
+
+                        : {}),
+                  })
+                )
+
+
+              return sortAddresses(
+                next
+              )
             }
           )
 
 
-        setAddresses(
-          (current) => [
-            ...(
-              form.isDefault ||
-              current.length === 0
-                ? current.map(
-                    (item) => ({
-                      ...item,
+          setSelectedAddressId(
+            editingId
+          )
 
-                      isDefault:
-                        false,
-                    })
-                  )
-                : current
-            ),
 
-            {
-              id:
-                documentRef.id,
+          setCurrentPage(1)
 
-              ...payload,
 
-              createdAt:
-                new Date(),
-            },
-          ]
+          showNotice(
+            '배송지가 수정되었습니다.'
+          )
+        } else {
+
+          /* =========================
+             ADD
+          ========================= */
+
+          const documentRef =
+            await addDoc(
+              collection(
+                db,
+                'users',
+                currentUser.uid,
+                'addresses'
+              ),
+              {
+                ...payload,
+
+                createdAt:
+                  serverTimestamp(),
+              }
+            )
+
+
+          const newAddress = {
+            id:
+              documentRef.id,
+
+            ...payload,
+
+            createdAt:
+              new Date(),
+          }
+
+
+          setAddresses(
+            (current) => {
+              const normalizedCurrent =
+                form.isDefault ||
+                current.length === 0
+                  ? current.map(
+                      (item) => ({
+                        ...item,
+
+                        isDefault:
+                          false,
+                      })
+                    )
+                  : current
+
+
+              return sortAddresses(
+                [
+                  ...normalizedCurrent,
+                  newAddress,
+                ]
+              )
+            }
+          )
+
+
+          setSelectedAddressId(
+            documentRef.id
+          )
+
+
+          setCurrentPage(1)
+
+
+          showNotice(
+            '새 배송지가 등록되었습니다.'
+          )
+        }
+
+
+        setMode('list')
+
+        setEditingId(null)
+
+        setForm(
+          EMPTY_FORM
         )
 
-        showNotice(
-          '새 배송지가 등록되었습니다.'
+        setFieldErrors(
+          EMPTY_FIELD_ERRORS
         )
+      } catch (error) {
+        console.error(
+          '배송지 저장 실패:',
+          error
+        )
+
+
+        setFormError(
+          '배송지 저장 중 오류가 발생했습니다.'
+        )
+      } finally {
+        setIsSaving(false)
       }
-
-
-      setMode('list')
-      setEditingId(null)
-      setForm(EMPTY_FORM)
-    } catch (error) {
-      console.error(
-        '배송지 저장 실패:',
-        error
-      )
-
-      setFormError(
-        '배송지 저장 중 오류가 발생했습니다.'
-      )
-    } finally {
-      setIsSaving(false)
     }
-  }
 
 
   /* =========================
@@ -586,8 +1385,8 @@ const AddressBook = () => {
 
         setAddresses(
           (current) =>
-            current
-              .map(
+            sortAddresses(
+              current.map(
                 (address) => ({
                   ...address,
 
@@ -596,21 +1395,17 @@ const AddressBook = () => {
                     addressId,
                 })
               )
-              .sort(
-                (a, b) =>
-                  Number(
-                    b.isDefault
-                  ) -
-                  Number(
-                    a.isDefault
-                  )
-              )
+            )
         )
 
 
         setSelectedAddressId(
           addressId
         )
+
+
+        setCurrentPage(1)
+
 
         showNotice(
           '기본 배송지가 변경되었습니다.'
@@ -621,6 +1416,7 @@ const AddressBook = () => {
           error
         )
 
+
         showNotice(
           '기본 배송지를 변경하지 못했습니다.'
         )
@@ -629,7 +1425,7 @@ const AddressBook = () => {
 
 
   /* =========================
-     배송지 삭제
+     DELETE
   ========================= */
 
   const handleDelete =
@@ -665,7 +1461,7 @@ const AddressBook = () => {
         )
 
 
-        const remaining =
+        let remaining =
           addresses.filter(
             (item) =>
               item.id !==
@@ -675,8 +1471,8 @@ const AddressBook = () => {
 
         /*
          * 기본 배송지를 삭제했는데
-         * 다른 배송지가 남아 있으면
-         * 첫 번째 배송지를 기본으로 설정
+         * 다른 배송지가 있으면
+         * 첫 배송지를 새 기본 배송지로
          */
         if (
           address.isDefault &&
@@ -684,6 +1480,7 @@ const AddressBook = () => {
         ) {
           const nextDefault =
             remaining[0]
+
 
           await updateDoc(
             doc(
@@ -694,20 +1491,40 @@ const AddressBook = () => {
               nextDefault.id
             ),
             {
-              isDefault: true,
+              isDefault:
+                true,
             }
           )
 
-          nextDefault.isDefault =
-            true
+
+          remaining =
+            remaining.map(
+              (item) => ({
+                ...item,
+
+                isDefault:
+                  item.id ===
+                  nextDefault.id,
+              })
+            )
         }
 
 
-        setAddresses(remaining)
+        const sortedRemaining =
+          sortAddresses(
+            remaining
+          )
+
+
+        setAddresses(
+          sortedRemaining
+        )
+
 
         setSelectedAddressId(
-          remaining[0]?.id ||
-          null
+          sortedRemaining[0]
+            ?.id ||
+            null
         )
 
 
@@ -720,6 +1537,7 @@ const AddressBook = () => {
           error
         )
 
+
         showNotice(
           '배송지 삭제 중 오류가 발생했습니다.'
         )
@@ -728,27 +1546,44 @@ const AddressBook = () => {
 
 
   /* =========================
-     로딩
+     LOADING
   ========================= */
 
   if (isLoading) {
     return (
       <section
-        className={styles.page}
+        className={
+          styles.page
+        }
       >
         <div
           className={
             styles.addressCard
           }
         >
-          <p
+          <MyPageHeader
+            title="배송지 관리"
+          />
+
+
+          <div
             className={
-              styles.loading
+              styles.stateBox
             }
+            role="status"
           >
-            배송지 정보를
-            불러오는 중입니다...
-          </p>
+            <span
+              className={
+                styles.loadingSpinner
+              }
+              aria-hidden="true"
+            />
+
+
+            <strong>
+              배송지 정보를 불러오는 중입니다.
+            </strong>
+          </div>
         </div>
       </section>
     )
@@ -757,51 +1592,24 @@ const AddressBook = () => {
 
   return (
     <section
-      className={styles.page}
-      aria-labelledby="address-title"
+      className={
+        styles.page
+      }
     >
-
       <div
         className={
           styles.addressCard
         }
       >
 
-        {/* =====================
+        {/* =========================
             LIST
-        ===================== */}
+        ========================= */}
 
         {mode === 'list' ? (
           <>
-            <header
-              className={
-                styles.pageHeader
-              }
-            >
-              <div
-                className={
-                  styles.titleArea
-                }
-              >
-                <h2
-                  id="address-title"
-                >
-                  배송지 관리
-                </h2>
-
-                <p>
-                  배송지와 기본 배송지를
-                  자유롭게 관리할 수
-                  있어요.
-                </p>
-              </div>
-            </header>
-
-
-            <div
-              className={
-                styles.titleDivider
-              }
+            <MyPageHeader
+              title="배송지 관리"
             />
 
 
@@ -817,7 +1625,10 @@ const AddressBook = () => {
             ) : addresses.length >
               0 ? (
               <>
-                {/* 기본 배송지 */}
+
+                {/* =========================
+                    DEFAULT
+                ========================= */}
 
                 <section
                   className={
@@ -830,278 +1641,426 @@ const AddressBook = () => {
 
 
                   {defaultAddress ? (
-                    <button
-                      type="button"
+                    <div
                       className={
                         styles.defaultAddress
-                      }
-                      onClick={() =>
-                        setSelectedAddressId(
-                          defaultAddress.id
-                        )
                       }
                     >
                       <span
                         className={
-                          styles.checkIcon
+                          styles.defaultIcon
                         }
                         aria-hidden="true"
                       >
-                        ✓
+                        <LocationIcon />
                       </span>
 
 
                       <div
                         className={
-                          styles.addressInfo
+                          styles.defaultInfo
                         }
                       >
-                        <strong>
-                          {
-                            defaultAddress.address
+                        <div
+                          className={
+                            styles.defaultTitleRow
                           }
-                        </strong>
+                        >
+                          <span
+                            className={
+                              styles.addressLabel
+                            }
+                          >
+                            {
+                              defaultAddress.label
+                            }
+                          </span>
+
+
+                          <strong>
+                            {
+                              defaultAddress.address
+                            }
+                          </strong>
+                        </div>
+
 
                         <p>
                           {
                             defaultAddress.recipient
                           }
 
+
                           <span>
-                            {
+                            {formatPhone(
                               defaultAddress.phone
-                            }
+                            )}
                           </span>
                         </p>
                       </div>
-                    </button>
-                  ) : (
-                    <p
-                      className={
-                        styles.noDefault
-                      }
-                    >
-                      기본 배송지가
-                      설정되어 있지
-                      않습니다.
-                    </p>
-                  )}
-                </section>
 
 
-                {/* 배송지 이름 탭 */}
-
-                <div
-                  className={
-                    styles.addressTabs
-                  }
-                >
-                  {addresses.map(
-                    (address) => (
-                      <button
-                        key={
-                          address.id
-                        }
-                        type="button"
-                        className={`${styles.addressTab} ${
-                          selectedAddressId ===
-                          address.id
-                            ? styles.activeTab
-                            : ''
-                        }`}
-                        onClick={() =>
-                          setSelectedAddressId(
-                            address.id
-                          )
+                      <div
+                        className={
+                          styles.defaultRight
                         }
                       >
                         <span
                           className={
-                            styles.tabDot
+                            styles.defaultBadge
                           }
-                          aria-hidden="true"
-                        />
+                        >
+                          기본
+                        </span>
 
-                        {
-                          address.label
-                        }
-                      </button>
-                    )
+
+                        <button
+                          type="button"
+                          className={
+                            styles.defaultEditButton
+                          }
+                          onClick={() =>
+                            handleOpenEdit(
+                              defaultAddress
+                            )
+                          }
+                        >
+                          수정
+                        </button>
+
+
+                        <button
+                          type="button"
+                          className={
+                            styles.defaultDeleteButton
+                          }
+                          onClick={() =>
+                            handleDelete(
+                              defaultAddress
+                            )
+                          }
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className={
+                        styles.noDefault
+                      }
+                    >
+                      기본 배송지가 없습니다.
+                    </div>
                   )}
+                </section>
+
+
+                {/* =========================
+                    LIST HEADER
+                ========================= */}
+
+                <div
+                  className={
+                    styles.listHeader
+                  }
+                >
+                  <div
+                    className={
+                      styles.listTitle
+                    }
+                  >
+                    <h3>
+                      배송지 목록
+                    </h3>
+
+
+                    <span>
+                      총{' '}
+
+                      <strong>
+                        {
+                          addresses.length
+                        }
+                      </strong>
+
+                      개
+                    </span>
+                  </div>
 
 
                   <button
                     type="button"
                     className={
-                      styles.addCircleButton
+                      styles.addButton
                     }
-                    aria-label="새 배송지 추가"
                     onClick={
                       handleOpenAdd
                     }
                   >
-                    +
+                    <PlusIcon />
+
+                    새 배송지
                   </button>
                 </div>
 
 
-                {/* 배송지 목록 */}
+                {/* =========================
+                    OTHER ADDRESSES
+                ========================= */}
 
-                <div
-                  className={
-                    styles.addressList
-                  }
-                >
-                  {addresses.map(
-                    (address) => (
-                      <article
-                        key={
-                          address.id
-                        }
-                        className={`${styles.addressItem} ${
-                          selectedAddressId ===
-                          address.id
-                            ? styles.selectedItem
-                            : ''
-                        }`}
-                      >
-                        <button
-                          type="button"
-                          className={
-                            styles.addressSelect
-                          }
-                          onClick={() =>
-                            setSelectedAddressId(
+                {otherAddresses.length >
+                  0 ? (
+                  <>
+                    <div
+                      className={
+                        styles.addressList
+                      }
+                    >
+                      {visibleAddresses.map(
+                        (
+                          address
+                        ) => (
+                          <article
+                            key={
                               address.id
-                            )
-                          }
-                        >
-                          <span
-                            className={
-                              styles.itemCheck
                             }
-                            aria-hidden="true"
+                            className={`${styles.addressItem} ${
+                              selectedAddressId ===
+                              address.id
+                                ? styles.selectedItem
+                                : ''
+                            }`}
                           >
-                            ✓
-                          </span>
-
-
-                          <div
-                            className={
-                              styles.addressInfo
-                            }
-                          >
-                            <div
-                              className={
-                                styles.itemTitle
-                              }
-                            >
-                              <span
-                                className={
-                                  styles.addressLabel
-                                }
-                              >
-                                {
-                                  address.label ||
-                                  '배송지'
-                                }
-                              </span>
-
-                              <strong>
-                                {
-                                  address.address
-                                }
-                              </strong>
-
-                              {address.isDefault && (
-                                <span
-                                  className={
-                                    styles.defaultBadge
-                                  }
-                                >
-                                  기본
-                                </span>
-                              )}
-                            </div>
-
-
-                            <p>
-                              {
-                                address.recipient
-                              }
-
-                              <span>
-                                {
-                                  address.phone
-                                }
-                              </span>
-                            </p>
-                          </div>
-                        </button>
-
-
-                        <div
-                          className={
-                            styles.itemActions
-                          }
-                        >
-                          {!address.isDefault && (
                             <button
                               type="button"
                               className={
-                                styles.setDefaultButton
+                                styles.addressSelect
                               }
                               onClick={() =>
-                                handleSetDefault(
+                                setSelectedAddressId(
                                   address.id
                                 )
                               }
                             >
-                              기본 설정
+                              <span
+                                className={`${styles.itemCheck} ${
+                                  selectedAddressId ===
+                                  address.id
+                                    ? styles.checked
+                                    : ''
+                                }`}
+                                aria-hidden="true"
+                              >
+                                ✓
+                              </span>
+
+
+                              <div
+                                className={
+                                  styles.addressInfo
+                                }
+                              >
+                                <div
+                                  className={
+                                    styles.itemTitle
+                                  }
+                                >
+                                  <span
+                                    className={
+                                      styles.addressLabel
+                                    }
+                                  >
+                                    {
+                                      address.label ||
+                                      '배송지'
+                                    }
+                                  </span>
+
+
+                                  <strong>
+                                    {
+                                      address.address
+                                    }
+                                  </strong>
+                                </div>
+
+
+                                <p>
+                                  {
+                                    address.recipient
+                                  }
+
+
+                                  <span>
+                                    {formatPhone(
+                                      address.phone
+                                    )}
+                                  </span>
+                                </p>
+                              </div>
                             </button>
-                          )}
 
 
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleOpenEdit(
-                                address
+                            <div
+                              className={
+                                styles.itemActions
+                              }
+                            >
+                              <button
+                                type="button"
+                                className={
+                                  styles.setDefaultButton
+                                }
+                                onClick={() =>
+                                  handleSetDefault(
+                                    address.id
+                                  )
+                                }
+                              >
+                                기본 설정
+                              </button>
+
+
+                              <button
+                                type="button"
+                                className={
+                                  styles.editButton
+                                }
+                                onClick={() =>
+                                  handleOpenEdit(
+                                    address
+                                  )
+                                }
+                              >
+                                수정
+                              </button>
+
+
+                              <button
+                                type="button"
+                                className={
+                                  styles.deleteButton
+                                }
+                                onClick={() =>
+                                  handleDelete(
+                                    address
+                                  )
+                                }
+                              >
+                                삭제
+                              </button>
+                            </div>
+                          </article>
+                        )
+                      )}
+                    </div>
+
+
+                    {/* =========================
+                        PAGINATION
+                    ========================= */}
+
+                    {totalPages > 1 && (
+                      <nav
+                        className={
+                          styles.pagination
+                        }
+                        aria-label="배송지 목록 페이지"
+                      >
+                        <button
+                          type="button"
+                          disabled={
+                            currentPage ===
+                            1
+                          }
+                          onClick={() =>
+                            setCurrentPage(
+                              Math.max(
+                                1,
+                                currentPage -
+                                  1
                               )
-                            }
-                          >
-                            수정
-                          </button>
+                            )
+                          }
+                          aria-label="이전 페이지"
+                        >
+                          ‹
+                        </button>
 
 
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleDelete(
-                                address
+                        {Array.from(
+                          {
+                            length:
+                              totalPages,
+                          },
+                          (
+                            _,
+                            index
+                          ) => {
+                            const pageNumber =
+                              index + 1
+
+
+                            return (
+                              <button
+                                key={
+                                  pageNumber
+                                }
+                                type="button"
+                                className={
+                                  currentPage ===
+                                  pageNumber
+                                    ? styles.activePage
+                                    : ''
+                                }
+                                onClick={() =>
+                                  setCurrentPage(
+                                    pageNumber
+                                  )
+                                }
+                              >
+                                {
+                                  pageNumber
+                                }
+                              </button>
+                            )
+                          }
+                        )}
+
+
+                        <button
+                          type="button"
+                          disabled={
+                            currentPage ===
+                            totalPages
+                          }
+                          onClick={() =>
+                            setCurrentPage(
+                              Math.min(
+                                totalPages,
+                                currentPage +
+                                  1
                               )
-                            }
-                          >
-                            삭제
-                          </button>
-                        </div>
-                      </article>
-                    )
-                  )}
-                </div>
+                            )
+                          }
+                          aria-label="다음 페이지"
+                        >
+                          ›
+                        </button>
+                      </nav>
+                    )}
+                  </>
+                ) : (
+                  <div
+                    className={
+                      styles.onlyDefaultState
+                    }
+                  >
+                    추가로 등록된 배송지가 없습니다.
+                  </div>
+                )}
 
-
-                <button
-                  type="button"
-                  className={
-                    styles.addAddressButton
-                  }
-                  onClick={
-                    handleOpenAdd
-                  }
-                >
-                  + 새 배송지 추가
-                </button>
               </>
             ) : (
               <div
@@ -1115,21 +2074,20 @@ const AddressBook = () => {
                   }
                   aria-hidden="true"
                 >
-                  ⌂
+                  <LocationIcon />
                 </span>
 
+
                 <strong>
-                  등록된 배송지가
-                  없습니다.
+                  등록된 배송지가 없습니다.
                 </strong>
 
-                <p>
-                  자주 사용하는
-                  배송지를 등록해보세요.
-                </p>
 
                 <button
                   type="button"
+                  className={
+                    styles.emptyButton
+                  }
                   onClick={
                     handleOpenAdd
                   }
@@ -1141,37 +2099,37 @@ const AddressBook = () => {
           </>
         ) : (
 
-          /* =====================
+          /* =========================
               ADD / EDIT FORM
-          ===================== */
+          ========================= */
 
           <>
-            <header
-              className={
-                styles.pageHeader
-              }
-            >
-              <div
-                className={
-                  styles.titleArea
-                }
-              >
-                <h2
-                  id="address-title"
-                >
-                  {editingId
-                    ? '배송지 수정'
-                    : '배송지 추가'}
-                </h2>
-              </div>
-            </header>
-
-
             <div
               className={
-                styles.titleDivider
+                styles.formHeader
               }
-            />
+            >
+              <MyPageHeader
+                title={
+                  editingId
+                    ? '배송지 수정'
+                    : '배송지 추가'
+                }
+              />
+
+
+              <button
+                type="button"
+                className={
+                  styles.backButton
+                }
+                onClick={
+                  handleCancelForm
+                }
+              >
+                ‹ 목록으로
+              </button>
+            </div>
 
 
             <form
@@ -1181,99 +2139,270 @@ const AddressBook = () => {
               onSubmit={
                 handleSubmit
               }
+              noValidate
             >
 
-              <label
+              {/* =========================
+                  LABEL
+              ========================= */}
+
+              <div
                 className={
-                  styles.formRow
+                  styles.formField
                 }
               >
-                <span>
+                <label
+                  htmlFor="address-label"
+                  className={
+                    styles.fieldLabel
+                  }
+                >
                   배송지 이름
-                </span>
+                </label>
 
-                <input
-                  type="text"
-                  name="label"
-                  value={
-                    form.label
+
+                <div
+                  className={
+                    styles.inputArea
                   }
-                  placeholder="이름을 입력해주세요"
-                  onChange={
-                    handleChange
-                  }
-                />
-              </label>
+                >
+                  <input
+                    id="address-label"
+                    type="text"
+                    name="label"
+                    value={
+                      form.label
+                    }
+                    maxLength={20}
+                    placeholder="예: 집, 회사"
+                    autoComplete="off"
+                    className={
+                      fieldErrors.label
+                        ? styles.inputError
+                        : ''
+                    }
+                    onChange={
+                      handleChange
+                    }
+                    onBlur={
+                      handleBlur
+                    }
+                  />
 
 
-              <label
+                  {fieldErrors.label && (
+                    <p
+                      className={
+                        styles.fieldError
+                      }
+                      role="alert"
+                    >
+                      {
+                        fieldErrors.label
+                      }
+                    </p>
+                  )}
+                </div>
+              </div>
+
+
+              {/* =========================
+                  RECIPIENT
+              ========================= */}
+
+              <div
                 className={
-                  styles.formRow
+                  styles.formField
                 }
               >
-                <span>
+                <label
+                  htmlFor="address-recipient"
+                  className={
+                    styles.fieldLabel
+                  }
+                >
                   받는 분
-                </span>
+                </label>
 
-                <input
-                  type="text"
-                  name="recipient"
-                  value={
-                    form.recipient
+
+                <div
+                  className={
+                    styles.inputArea
                   }
-                  placeholder="받는 분을 입력해주세요"
-                  onChange={
-                    handleChange
-                  }
-                />
-              </label>
+                >
+                  <input
+                    id="address-recipient"
+                    type="text"
+                    name="recipient"
+                    value={
+                      form.recipient
+                    }
+                    maxLength={30}
+                    placeholder="받는 분을 입력해주세요"
+                    autoComplete="name"
+                    className={
+                      fieldErrors.recipient
+                        ? styles.inputError
+                        : ''
+                    }
+                    onChange={
+                      handleChange
+                    }
+                    onBlur={
+                      handleBlur
+                    }
+                  />
 
 
-              <label
+                  {fieldErrors.recipient && (
+                    <p
+                      className={
+                        styles.fieldError
+                      }
+                      role="alert"
+                    >
+                      {
+                        fieldErrors.recipient
+                      }
+                    </p>
+                  )}
+                </div>
+              </div>
+
+
+              {/* =========================
+                  ADDRESS
+              ========================= */}
+
+              <div
                 className={
-                  styles.formRow
+                  styles.formField
                 }
               >
-                <span>
+                <label
+                  htmlFor="address-address"
+                  className={
+                    styles.fieldLabel
+                  }
+                >
                   받으실 곳
-                </span>
+                </label>
 
-                <input
-                  type="text"
-                  name="address"
-                  value={
-                    form.address
+
+                <div
+                  className={
+                    styles.inputArea
                   }
-                  placeholder="상세 주소를 입력해주세요"
-                  onChange={
-                    handleChange
-                  }
-                />
-              </label>
+                >
+                  <input
+                    id="address-address"
+                    type="text"
+                    name="address"
+                    value={
+                      form.address
+                    }
+                    placeholder="주소를 입력해주세요"
+                    autoComplete="street-address"
+                    className={
+                      fieldErrors.address
+                        ? styles.inputError
+                        : ''
+                    }
+                    onChange={
+                      handleChange
+                    }
+                    onBlur={
+                      handleBlur
+                    }
+                  />
 
 
-              <label
+                  {fieldErrors.address && (
+                    <p
+                      className={
+                        styles.fieldError
+                      }
+                      role="alert"
+                    >
+                      {
+                        fieldErrors.address
+                      }
+                    </p>
+                  )}
+                </div>
+              </div>
+
+
+              {/* =========================
+                  PHONE
+              ========================= */}
+
+              <div
                 className={
-                  styles.formRow
+                  styles.formField
                 }
               >
-                <span>
+                <label
+                  htmlFor="address-phone"
+                  className={
+                    styles.fieldLabel
+                  }
+                >
                   휴대폰
-                </span>
+                </label>
 
-                <input
-                  type="tel"
-                  name="phone"
-                  value={
-                    form.phone
-                  }
-                  placeholder="휴대폰 번호를 입력해주세요"
-                  onChange={
-                    handleChange
-                  }
-                />
-              </label>
 
+                <div
+                  className={
+                    styles.inputArea
+                  }
+                >
+                  <input
+                    id="address-phone"
+                    type="tel"
+                    name="phone"
+                    value={
+                      formatPhone(
+                        form.phone
+                      )
+                    }
+                    maxLength={13}
+                    inputMode="numeric"
+                    autoComplete="tel"
+                    placeholder="010-0000-0000"
+                    className={
+                      fieldErrors.phone
+                        ? styles.inputError
+                        : ''
+                    }
+                    onChange={
+                      handleChange
+                    }
+                    onBlur={
+                      handleBlur
+                    }
+                  />
+
+
+                  {fieldErrors.phone && (
+                    <p
+                      className={
+                        styles.fieldError
+                      }
+                      role="alert"
+                    >
+                      {
+                        fieldErrors.phone
+                      }
+                    </p>
+                  )}
+                </div>
+              </div>
+
+
+              {/* =========================
+                  DEFAULT CHECK
+              ========================= */}
 
               <label
                 className={
@@ -1291,6 +2420,7 @@ const AddressBook = () => {
                   }
                 />
 
+
                 <span
                   className={
                     styles.customCheck
@@ -1298,12 +2428,16 @@ const AddressBook = () => {
                   aria-hidden="true"
                 />
 
+
                 <span>
-                  기본 배송지로
-                  설정합니다.
+                  기본 배송지로 설정
                 </span>
               </label>
 
+
+              {/* =========================
+                  SERVER ERROR
+              ========================= */}
 
               {formError && (
                 <p
@@ -1316,6 +2450,10 @@ const AddressBook = () => {
                 </p>
               )}
 
+
+              {/* =========================
+                  ACTIONS
+              ========================= */}
 
               <div
                 className={
@@ -1356,6 +2494,10 @@ const AddressBook = () => {
         )}
 
 
+        {/* =========================
+            NOTICE
+        ========================= */}
+
         {notice && (
           <p
             className={
@@ -1368,7 +2510,6 @@ const AddressBook = () => {
         )}
 
       </div>
-
     </section>
   )
 }

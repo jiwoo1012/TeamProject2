@@ -1,16 +1,35 @@
-import { useEffect, useMemo, useState } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+
 import {
   collection,
   getDocs,
   query,
   where,
 } from 'firebase/firestore'
-import { Link } from 'react-router-dom'
 
-import { subscribeToAuthState } from '../../firebase/auth'
-import { db } from '../../firebase/firebase'
+import {
+  Link,
+} from 'react-router-dom'
+
+import {
+  subscribeToAuthState,
+} from '../../firebase/auth'
+
+import {
+  db,
+} from '../../firebase/firebase'
+
+import MyPageHeader from '../../components/mypage/MyPageHeader'
+import StatusBadge from '../../components/mypage/StatusBadge'
 
 import styles from './InquiryHistory.module.scss'
+
+
+const ITEMS_PER_PAGE = 5
 
 
 const filterItems = [
@@ -29,12 +48,22 @@ const filterItems = [
 ]
 
 
-const formatDate = (value) => {
-  if (!value) return '-'
+/* =========================
+   FORMAT DATE
+========================= */
+
+const formatDate = (
+  value
+) => {
+  if (!value) {
+    return '-'
+  }
+
 
   const date =
     value?.toDate?.() ||
     new Date(value)
+
 
   if (
     Number.isNaN(
@@ -43,6 +72,7 @@ const formatDate = (value) => {
   ) {
     return '-'
   }
+
 
   return new Intl.DateTimeFormat(
     'ko-KR',
@@ -56,6 +86,10 @@ const formatDate = (value) => {
     .replaceAll(' ', '')
 }
 
+
+/* =========================
+   STATUS
+========================= */
 
 const getInquiryStatus = (
   inquiry
@@ -89,6 +123,18 @@ const getStatusLabel = (
     : '답변 대기'
 
 
+const getStatusTone = (
+  status
+) =>
+  status === 'answered'
+    ? 'complete'
+    : 'pending'
+
+
+/* =========================
+   ARROW ICON
+========================= */
+
 const ArrowIcon = () => (
   <svg
     viewBox="0 0 24 24"
@@ -104,31 +150,58 @@ const ArrowIcon = () => (
 )
 
 
+/* =========================
+   EMPTY ICON
+========================= */
+
+const EmptyIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.6"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M6 3h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-5l-4 3v-3H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" />
+
+    <path d="M8 8h8" />
+    <path d="M8 12h5" />
+  </svg>
+)
+
+
 const InquiryHistory = () => {
   const [
     currentUser,
     setCurrentUser,
   ] = useState(undefined)
 
+
   const [
     inquiries,
     setInquiries,
   ] = useState([])
+
 
   const [
     selectedInquiry,
     setSelectedInquiry,
   ] = useState(null)
 
+
   const [
     activeFilter,
     setActiveFilter,
   ] = useState('all')
 
+
   const [
     isLoading,
     setIsLoading,
   ] = useState(true)
+
 
   const [
     loadError,
@@ -136,8 +209,14 @@ const InquiryHistory = () => {
   ] = useState('')
 
 
+  const [
+    currentPage,
+    setCurrentPage,
+  ] = useState(1)
+
+
   /* =========================
-     로그인 상태
+     LOGIN
   ========================= */
 
   useEffect(() => {
@@ -146,12 +225,13 @@ const InquiryHistory = () => {
         setCurrentUser
       )
 
+
     return unsubscribe
   }, [])
 
 
   /* =========================
-     문의 내역 조회
+     LOAD INQUIRIES
   ========================= */
 
   useEffect(() => {
@@ -320,13 +400,14 @@ const InquiryHistory = () => {
 
 
   /* =========================
-     필터
+     FILTER
   ========================= */
 
   const filteredInquiries =
     useMemo(() => {
       if (
-        activeFilter === 'all'
+        activeFilter ===
+        'all'
       ) {
         return inquiries
       }
@@ -344,7 +425,64 @@ const InquiryHistory = () => {
 
 
   /* =========================
-     상세 → 목록
+     PAGINATION
+  ========================= */
+
+  const totalPages =
+    Math.max(
+      1,
+      Math.ceil(
+        filteredInquiries.length /
+        ITEMS_PER_PAGE
+      )
+    )
+
+
+  const startIndex =
+    (currentPage - 1) *
+    ITEMS_PER_PAGE
+
+
+  const visibleInquiries =
+    filteredInquiries.slice(
+      startIndex,
+      startIndex +
+        ITEMS_PER_PAGE
+    )
+
+
+  useEffect(() => {
+    if (
+      currentPage >
+      totalPages
+    ) {
+      setCurrentPage(
+        totalPages
+      )
+    }
+  }, [
+    currentPage,
+    totalPages,
+  ])
+
+
+  /* =========================
+     FILTER CHANGE
+  ========================= */
+
+  const handleFilterChange = (
+    value
+  ) => {
+    setActiveFilter(
+      value
+    )
+
+    setCurrentPage(1)
+  }
+
+
+  /* =========================
+     DETAIL → LIST
   ========================= */
 
   const handleBackToList = () => {
@@ -354,10 +492,10 @@ const InquiryHistory = () => {
 
   return (
     <section
-      className={styles.page}
-      aria-labelledby="inquiry-title"
+      className={
+        styles.page
+      }
     >
-
       <div
         className={
           styles.inquiryCard
@@ -366,32 +504,19 @@ const InquiryHistory = () => {
 
         {selectedInquiry ? (
 
-          /* ===================================
-             문의 상세
-          =================================== */
+          /* =========================
+              DETAIL
+          ========================= */
 
           <>
-            <header
-              className={
-                styles.pageHeader
-              }
-            >
-              <h2
-                id="inquiry-title"
-              >
-                문의 상세 보기
-              </h2>
-            </header>
-
-
-            <div
-              className={
-                styles.titleDivider
-              }
+            <MyPageHeader
+              title="문의 상세"
             />
 
 
-            {/* 문의 상단 정보 */}
+            {/* =========================
+                DETAIL HEAD
+            ========================= */}
 
             <div
               className={
@@ -422,18 +547,17 @@ const InquiryHistory = () => {
               </div>
 
 
-              <span
-                className={`${styles.statusBadge} ${
-                  selectedInquiry.status ===
-                  'answered'
-                    ? styles.answered
-                    : styles.pending
-                }`}
+              <StatusBadge
+                tone={
+                  getStatusTone(
+                    selectedInquiry.status
+                  )
+                }
               >
                 {getStatusLabel(
                   selectedInquiry.status
                 )}
-              </span>
+              </StatusBadge>
             </div>
 
 
@@ -448,6 +572,15 @@ const InquiryHistory = () => {
                 }
               </span>
 
+
+              <span
+                className={
+                  styles.metaDivider
+                }
+                aria-hidden="true"
+              />
+
+
               <time>
                 {formatDate(
                   selectedInquiry.createdAt
@@ -456,7 +589,9 @@ const InquiryHistory = () => {
             </div>
 
 
-            {/* 문의 내용 */}
+            {/* =========================
+                QUESTION
+            ========================= */}
 
             <section
               className={
@@ -466,6 +601,7 @@ const InquiryHistory = () => {
               <h3>
                 문의 내용
               </h3>
+
 
               <div
                 className={
@@ -478,7 +614,9 @@ const InquiryHistory = () => {
             </section>
 
 
-            {/* 답변 */}
+            {/* =========================
+                ANSWER
+            ========================= */}
 
             <section
               className={
@@ -493,6 +631,7 @@ const InquiryHistory = () => {
                 <h3>
                   답변
                 </h3>
+
 
                 {selectedInquiry.status ===
                   'answered' &&
@@ -514,8 +653,9 @@ const InquiryHistory = () => {
                   }
                 >
                   <strong>
-                    자작 고객센터입니다.
+                    자작 고객센터
                   </strong>
+
 
                   <p>
                     {selectedInquiry.answer ||
@@ -534,26 +674,18 @@ const InquiryHistory = () => {
                     !
                   </span>
 
+
                   <p>
-                    현재 답변을 준비하고
-                    있습니다.
-                    <br />
-                    조금만 기다려주세요.
+                    현재 답변을 준비하고 있습니다.
                   </p>
                 </div>
               )}
             </section>
 
 
-            <div
-              className={
-                styles.detailGuide
-              }
-            >
-              문의에 대한 추가 문의가
-              있다면 새 문의를 등록해주세요.
-            </div>
-
+            {/* =========================
+                DETAIL ACTION
+            ========================= */}
 
             <div
               className={
@@ -586,90 +718,98 @@ const InquiryHistory = () => {
 
         ) : (
 
-          /* ===================================
-             문의 목록
-          =================================== */
+          /* =========================
+              LIST
+          ========================= */
 
           <>
-            <header
-              className={
-                styles.pageHeader
-              }
+            <MyPageHeader
+              title="문의 내역"
             >
-              <h2
-                id="inquiry-title"
-              >
-                문의 내역
-              </h2>
-            </header>
-
-
-            <div
-              className={
-                styles.titleDivider
-              }
-            />
-
-
-            {/* 상단 필터 */}
-
-            <div
-              className={
-                styles.listControls
-              }
-            >
-              <div
-                className={
-                  styles.filters
-                }
-                role="tablist"
-                aria-label="문의 상태 필터"
-              >
-                {filterItems.map(
-                  (filter) => (
-                    <button
-                      key={
-                        filter.value
-                      }
-                      type="button"
-                      role="tab"
-                      aria-selected={
-                        activeFilter ===
-                        filter.value
-                      }
-                      className={`${styles.filterButton} ${
-                        activeFilter ===
-                        filter.value
-                          ? styles.activeFilter
-                          : ''
-                      }`}
-                      onClick={() =>
-                        setActiveFilter(
-                          filter.value
-                        )
-                      }
-                    >
-                      {
-                        filter.label
-                      }
-                    </button>
-                  )
-                )}
-              </div>
-
-
               <Link
                 to="/inquiry"
                 className={
-                  styles.writeButton
+                  styles.headerWriteButton
                 }
               >
                 문의하기
               </Link>
+            </MyPageHeader>
+
+
+            {/* =========================
+                FILTER
+            ========================= */}
+
+            <div
+              className={
+                styles.filterBar
+              }
+              role="tablist"
+              aria-label="문의 상태 필터"
+            >
+              {filterItems.map(
+                (filter) => (
+                  <button
+                    key={
+                      filter.value
+                    }
+                    type="button"
+                    role="tab"
+                    aria-selected={
+                      activeFilter ===
+                      filter.value
+                    }
+                    className={`${styles.filterButton} ${
+                      activeFilter ===
+                      filter.value
+                        ? styles.activeFilter
+                        : ''
+                    }`}
+                    onClick={() =>
+                      handleFilterChange(
+                        filter.value
+                      )
+                    }
+                  >
+                    {
+                      filter.label
+                    }
+                  </button>
+                )
+              )}
             </div>
 
 
-            {/* 목록 */}
+            {/* =========================
+                COUNT
+            ========================= */}
+
+            {!isLoading &&
+              !loadError &&
+              filteredInquiries.length >
+                0 && (
+                <div
+                  className={
+                    styles.listHeader
+                  }
+                >
+                  총{' '}
+
+                  <strong>
+                    {
+                      filteredInquiries.length
+                    }
+                  </strong>
+
+                  건
+                </div>
+              )}
+
+
+            {/* =========================
+                CONTENT
+            ========================= */}
 
             {isLoading ? (
               <div
@@ -678,8 +818,17 @@ const InquiryHistory = () => {
                 }
                 role="status"
               >
-                문의 내역을
-                불러오는 중입니다.
+                <span
+                  className={
+                    styles.loadingSpinner
+                  }
+                  aria-hidden="true"
+                />
+
+
+                <strong>
+                  문의 내역을 불러오는 중입니다.
+                </strong>
               </div>
             ) : loadError ? (
               <div
@@ -692,96 +841,206 @@ const InquiryHistory = () => {
               </div>
             ) : filteredInquiries.length >
               0 ? (
-              <div
-                className={
-                  styles.inquiryList
-                }
-              >
-                {filteredInquiries.map(
-                  (inquiry) => (
-                    <button
-                      key={
-                        inquiry.id
-                      }
-                      type="button"
-                      className={
-                        styles.inquiryItem
-                      }
-                      onClick={() =>
-                        setSelectedInquiry(
-                          inquiry
-                        )
-                      }
-                    >
-                      <div
+              <>
+
+                {/* =========================
+                    LIST
+                ========================= */}
+
+                <div
+                  className={
+                    styles.inquiryList
+                  }
+                >
+                  {visibleInquiries.map(
+                    (
+                      inquiry
+                    ) => (
+                      <button
+                        key={
+                          inquiry.id
+                        }
+                        type="button"
                         className={
-                          styles.itemStatusArea
+                          styles.inquiryItem
+                        }
+                        onClick={() =>
+                          setSelectedInquiry(
+                            inquiry
+                          )
                         }
                       >
-                        <span
-                          className={`${styles.statusBadge} ${
-                            inquiry.status ===
-                            'answered'
-                              ? styles.answered
-                              : styles.pending
-                          }`}
-                        >
-                          {getStatusLabel(
-                            inquiry.status
-                          )}
-                        </span>
-                      </div>
 
-
-                      <div
-                        className={
-                          styles.itemInfo
-                        }
-                      >
                         <div
                           className={
-                            styles.itemTitleRow
+                            styles.itemStatusArea
                           }
                         >
-                          <span
-                            className={
-                              styles.categoryText
+                          <StatusBadge
+                            tone={
+                              getStatusTone(
+                                inquiry.status
+                              )
                             }
                           >
-                            {
-                              inquiry.category
-                            }
-                          </span>
-
-                          <strong>
-                            {
-                              inquiry.title
-                            }
-                          </strong>
+                            {getStatusLabel(
+                              inquiry.status
+                            )}
+                          </StatusBadge>
                         </div>
 
 
-                        <time>
-                          {formatDate(
-                            inquiry.createdAt
-                          )}
-                        </time>
-                      </div>
+                        <div
+                          className={
+                            styles.itemInfo
+                          }
+                        >
+                          <div
+                            className={
+                              styles.itemTitleRow
+                            }
+                          >
+                            <span
+                              className={
+                                styles.categoryText
+                              }
+                            >
+                              {
+                                inquiry.category
+                              }
+                            </span>
 
 
-                      <span
-                        className={
-                          styles.itemArrow
-                        }
-                        aria-hidden="true"
-                      >
-                        <ArrowIcon />
-                      </span>
+                            <strong>
+                              {
+                                inquiry.title
+                              }
+                            </strong>
+                          </div>
+
+
+                          <time>
+                            {formatDate(
+                              inquiry.createdAt
+                            )}
+                          </time>
+                        </div>
+
+
+                        <span
+                          className={
+                            styles.itemArrow
+                          }
+                          aria-hidden="true"
+                        >
+                          <ArrowIcon />
+                        </span>
+                      </button>
+                    )
+                  )}
+                </div>
+
+
+                {/* =========================
+                    PAGINATION
+                ========================= */}
+
+                {totalPages > 1 && (
+                  <nav
+                    className={
+                      styles.pagination
+                    }
+                    aria-label="문의 내역 페이지"
+                  >
+                    <button
+                      type="button"
+                      disabled={
+                        currentPage ===
+                        1
+                      }
+                      onClick={() =>
+                        setCurrentPage(
+                          Math.max(
+                            1,
+                            currentPage -
+                              1
+                          )
+                        )
+                      }
+                      aria-label="이전 페이지"
+                    >
+                      ‹
                     </button>
-                  )
+
+
+                    {Array.from(
+                      {
+                        length:
+                          totalPages,
+                      },
+                      (
+                        _,
+                        index
+                      ) => {
+                        const pageNumber =
+                          index + 1
+
+
+                        return (
+                          <button
+                            key={
+                              pageNumber
+                            }
+                            type="button"
+                            className={
+                              currentPage ===
+                              pageNumber
+                                ? styles.activePage
+                                : ''
+                            }
+                            onClick={() =>
+                              setCurrentPage(
+                                pageNumber
+                              )
+                            }
+                          >
+                            {
+                              pageNumber
+                            }
+                          </button>
+                        )
+                      }
+                    )}
+
+
+                    <button
+                      type="button"
+                      disabled={
+                        currentPage ===
+                        totalPages
+                      }
+                      onClick={() =>
+                        setCurrentPage(
+                          Math.min(
+                            totalPages,
+                            currentPage +
+                              1
+                          )
+                        )
+                      }
+                      aria-label="다음 페이지"
+                    >
+                      ›
+                    </button>
+                  </nav>
                 )}
-              </div>
+              </>
             ) : (
+
+              /* =========================
+                  EMPTY
+              ========================= */
+
               <div
                 className={
                   styles.emptyState
@@ -793,21 +1052,20 @@ const InquiryHistory = () => {
                   }
                   aria-hidden="true"
                 >
-                  ?
+                  <EmptyIcon />
                 </span>
 
+
                 <strong>
-                  문의 내역이
-                  없습니다.
+                  문의 내역이 없습니다.
                 </strong>
 
-                <p>
-                  궁금한 점이 있다면
-                  언제든 문의해주세요.
-                </p>
 
                 <Link
                   to="/inquiry"
+                  className={
+                    styles.emptyButton
+                  }
                 >
                   문의하기
                 </Link>
@@ -817,7 +1075,6 @@ const InquiryHistory = () => {
         )}
 
       </div>
-
     </section>
   )
 }

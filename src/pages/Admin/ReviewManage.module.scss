@@ -741,6 +741,32 @@
 }
 
 
+.topProductChart {
+  position: relative;
+
+  width: 100%;
+  height: 190px;
+
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+
+.ratingChart {
+  position: relative;
+
+  width: 100%;
+  height: 220px;
+
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+
 // ========================================
 // TOP PRODUCTS
 // ========================================
