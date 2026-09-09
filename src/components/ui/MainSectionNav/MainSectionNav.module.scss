@@ -110,7 +110,7 @@
   .container {
     display: flex;
     right: $side-margin-mobile;
-    bottom: calc(92px + env(safe-area-inset-bottom, 0px) + 44px + #{$space-6});
+    bottom: calc(92px + env(safe-area-inset-bottom, 0px) + 44px + #{$space-3});
   }
   .button {
     width: 44px;
