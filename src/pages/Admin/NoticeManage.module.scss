@@ -1143,6 +1143,32 @@
 }
 
 
+.statusChart {
+  position: relative;
+
+  width: 100%;
+  height: 72px;
+
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+
+.categoryPolarChart {
+  position: relative;
+
+  width: 100%;
+  height: 235px;
+
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+
 .statusOverview {
   display: flex;
   flex-direction: column;

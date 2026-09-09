@@ -2,6 +2,15 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { collection, collectionGroup, onSnapshot, query, where } from 'firebase/firestore'
 
+import {
+  Chart as ChartJS,
+  LinearScale,
+  PointElement,
+  Tooltip,
+} from 'chart.js'
+import { Scatter } from 'react-chartjs-2'
+
+
 import AdminEmptyState from '../../components/admin/AdminEmptyState'
 import AdminFilterBar from '../../components/admin/AdminFilterBar'
 import AdminPageHeader from '../../components/admin/AdminPageHeader'
@@ -29,6 +38,14 @@ import { deleteDocument, setDocument, updateDocument } from '../../firebase/fire
 import { fetchProducts } from '../../services/productCatalog'
 
 import styles from './ProductManage.module.scss'
+
+ChartJS.register(
+  LinearScale,
+  PointElement,
+  Tooltip
+)
+
+
 
 // ========================================
 
@@ -376,11 +393,187 @@ const ProductManage = () => {
 
   const sellingCount = products.filter((p) => p.status === 'selling' && !isSoldOut(p)).length
 
-  const lowStockCount = products.filter((p) => p.status !== 'hidden' && p.stock > 0 && p.stock <= 5).length
+  const lowStockCount = products.filter((p) => p.status !== 'hidden' && p.stock > 0 && p.stock <= 30).length
 
   const regularSellingCount = Math.max(0, sellingCount - lowStockCount)
 
   const hiddenCount = products.filter((p) => p.status === 'hidden' || isSoldOut(p)).length
+
+  // ========================================
+  // 상품 상태 분포 차트
+  // X축: 가격 / Y축: 재고
+  // ========================================
+
+  const productStatusChartData = useMemo(() => {
+    const sellingProducts = []
+    const lowStockProducts = []
+    const hiddenProducts = []
+
+    products.forEach((product) => {
+      const point = {
+        x: Number(product.price) || 0,
+        y: Number(product.stock) || 0,
+        productName: product.name,
+      }
+
+      const lowStock =
+        product.status !== 'hidden'
+        && product.stock > 0
+        && product.stock <= 30
+
+      const hiddenOrSoldOut =
+        product.status === 'hidden'
+        || product.status === 'soldout'
+        || product.stock <= 0
+
+      if (lowStock) {
+        lowStockProducts.push(point)
+        return
+      }
+
+      if (hiddenOrSoldOut) {
+        hiddenProducts.push(point)
+        return
+      }
+
+      if (product.status === 'selling') {
+        sellingProducts.push(point)
+      }
+    })
+
+    return {
+      datasets: [
+        {
+          label: '판매 중',
+          data: sellingProducts,
+          backgroundColor: 'rgba(86, 138, 128, 0.72)',
+          borderColor: '#568a80',
+          borderWidth: 1,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+        },
+        {
+          label: '품절 임박',
+          data: lowStockProducts,
+          backgroundColor: 'rgba(217, 160, 93, 0.75)',
+          borderColor: '#d9a05d',
+          borderWidth: 1,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+        },
+        {
+          label: '품절·숨김',
+          data: hiddenProducts,
+          backgroundColor: 'rgba(214, 170, 165, 0.75)',
+          borderColor: '#d6aaa5',
+          borderWidth: 1,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+        },
+      ],
+    }
+  }, [products])
+
+
+  const productStatusChartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+
+      animation: {
+        duration: 900,
+        easing: 'easeOutQuart',
+      },
+
+      plugins: {
+        legend: {
+          display: false,
+        },
+
+        tooltip: {
+          displayColors: false,
+          padding: 10,
+
+          callbacks: {
+            title: (items) =>
+              items[0]?.raw?.productName ?? '',
+
+            label: (context) => [
+              context.dataset.label,
+              `가격: ${Number(context.raw.x).toLocaleString('ko-KR')}원`,
+              `재고: ${Number(context.raw.y).toLocaleString('ko-KR')}개`,
+            ],
+          },
+        },
+      },
+
+      scales: {
+        x: {
+          type: 'linear',
+
+          beginAtZero: true,
+
+          title: {
+            display: true,
+            text: '가격',
+            color: '#8c9490',
+
+            font: {
+              size: 10,
+              weight: '600',
+            },
+          },
+
+          grid: {
+            color: 'rgba(223, 226, 224, 0.7)',
+          },
+
+          ticks: {
+            color: '#8c9490',
+
+            font: {
+              size: 9,
+            },
+
+            callback: (value) =>
+              `${(Number(value) / 10000).toFixed(
+                Number(value) % 10000 === 0 ? 0 : 1
+              )}만`,
+          },
+        },
+
+        y: {
+          beginAtZero: true,
+
+          title: {
+            display: true,
+            text: '재고',
+            color: '#8c9490',
+
+            font: {
+              size: 10,
+              weight: '600',
+            },
+          },
+
+          grid: {
+            color: 'rgba(223, 226, 224, 0.7)',
+          },
+
+          ticks: {
+            precision: 0,
+
+            color: '#8c9490',
+
+            font: {
+              size: 9,
+            },
+          },
+        },
+      },
+    }),
+    []
+  )
 
   const categoryCounts = useMemo(() => {
 
@@ -462,7 +655,7 @@ const ProductManage = () => {
 
       else if (statusFilter === 'hidden') matchesStatus = p.status === 'hidden'
 
-      else if (statusFilter === 'lowStock') matchesStatus = p.stock > 0 && p.stock <= 5
+      else if (statusFilter === 'lowStock') matchesStatus = p.stock > 0 && p.stock <= 30
 
       else if (statusFilter === 'hiddenOrSoldout') matchesStatus = p.status === 'hidden' || isSoldOut(p)
 
@@ -1419,9 +1612,9 @@ const ProductManage = () => {
 
                         <td>
 
-                          <span className={p.stock <= 5 ? styles.lowStockText : ''}>
+                          <span className={p.stock <= 30 ? styles.lowStockText : ''}>
 
-                            {p.stock}개 {p.stock <= 5 && p.stock > 0 && <small>(임박)</small>}
+                            {p.stock}개 {p.stock <= 30 && p.stock > 0 && <small>(임박)</small>}
 
                           </span>
 
@@ -2135,30 +2328,15 @@ const ProductManage = () => {
             aria-label="상품 분석"
           >
             <AdminPanel
-              title="상품 상태 분포"
+              title="상품 가격·재고 분포"
               padding="compact"
             >
               <div className={styles.statusOverview}>
-                <div
-                  className={styles.statusDonut}
-                  style={{
-                    '--selling-rate':
-                      `${(regularSellingCount / Math.max(totalCount, 1)) * 100}%`,
-                    '--low-rate':
-                      `${((regularSellingCount + lowStockCount) / Math.max(totalCount, 1)) * 100}%`,
-                  }}
-                >
-                  <span>
-                    전체
-                  </span>
-
-                  <strong>
-                    {totalCount}
-
-                    <small>
-                      개
-                    </small>
-                  </strong>
+                <div className={styles.statusScatter}>
+                  <Scatter
+                    data={productStatusChartData}
+                    options={productStatusChartOptions}
+                  />
                 </div>
 
                 <ul>

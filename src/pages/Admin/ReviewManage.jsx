@@ -6,6 +6,15 @@ import {
   useState,
 } from 'react'
 
+import {
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  LinearScale,
+  Tooltip,
+} from 'chart.js'
+import { Bar } from 'react-chartjs-2'
+
 import { Link } from 'react-router-dom'
 
 import {
@@ -29,6 +38,14 @@ import { subscribeToAuthState } from '../../firebase/auth'
 import { db } from '../../firebase/firebase'
 
 import styles from './ReviewManage.module.scss'
+
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Tooltip
+)
 
 
 // ========================================
@@ -973,6 +990,404 @@ const ReviewManage = () => {
           percentage,
         }
       }
+    )
+
+
+  // ========================================
+  // 상품별 리뷰 TOP 5 - Horizontal Bar
+  // ========================================
+
+  const topProductChartData =
+    useMemo(
+      () => ({
+        labels:
+          topProducts.map(
+            (_, index) =>
+              String(index + 1)
+          ),
+
+        datasets: [
+          {
+            label: '리뷰 수',
+
+            data:
+              topProducts.map(
+                (item) =>
+                  item.count
+              ),
+
+            backgroundColor:
+              'rgba(86, 138, 128, 0.86)',
+
+            borderColor:
+              '#568a80',
+
+            borderWidth: 1,
+
+            borderRadius: 999,
+
+            barThickness: 9,
+          },
+        ],
+      }),
+      [topProducts]
+    )
+
+
+  const topProductLabelPlugin =
+    useMemo(
+      () => ({
+        id: 'reviewTopProductLabels',
+
+        afterDatasetsDraw: (chart) => {
+          const {
+            ctx,
+            chartArea,
+          } = chart
+
+          const meta =
+            chart.getDatasetMeta(0)
+
+          if (
+            !chartArea
+            || !meta?.data
+          ) {
+            return
+          }
+
+          ctx.save()
+
+          meta.data.forEach(
+            (bar, index) => {
+              const product =
+                topProducts[index]
+
+              if (!product) {
+                return
+              }
+
+              const y = bar.y
+
+              const badgeSize = 18
+              const badgeX =
+                chartArea.left - 116
+              const badgeY =
+                y - badgeSize / 2
+
+              ctx.beginPath()
+              ctx.roundRect(
+                badgeX,
+                badgeY,
+                badgeSize,
+                badgeSize,
+                4
+              )
+
+              ctx.fillStyle =
+                '#568a80'
+              ctx.fill()
+
+              ctx.fillStyle =
+                '#ffffff'
+
+              ctx.font =
+                '700 9px sans-serif'
+
+              ctx.textAlign =
+                'center'
+
+              ctx.textBaseline =
+                'middle'
+
+              ctx.fillText(
+                String(index + 1),
+                badgeX
+                  + badgeSize / 2,
+                y
+              )
+
+              ctx.fillStyle =
+                '#303533'
+
+              ctx.font =
+                '600 9px sans-serif'
+
+              ctx.textAlign =
+                'left'
+
+              const productName =
+                product.name.length > 10
+                  ? `${product.name.slice(0, 10)}…`
+                  : product.name
+
+              ctx.fillText(
+                productName,
+                badgeX
+                  + badgeSize
+                  + 8,
+                y
+              )
+
+              ctx.fillStyle =
+                '#505754'
+
+              ctx.font =
+                '700 9px sans-serif'
+
+              ctx.textAlign =
+                'left'
+
+              ctx.fillText(
+                `${product.count}건`,
+                chartArea.right + 6,
+                y
+              )
+            }
+          )
+
+          ctx.restore()
+        },
+      }),
+      [topProducts]
+    )
+
+
+  const topProductChartOptions =
+    useMemo(
+      () => ({
+        responsive: true,
+        maintainAspectRatio: false,
+
+        indexAxis: 'y',
+
+        layout: {
+          padding: {
+            left: 116,
+            right: 30,
+            top: 4,
+            bottom: 4,
+          },
+        },
+
+        animation: {
+          duration: 900,
+          easing: 'easeOutQuart',
+        },
+
+        plugins: {
+          legend: {
+            display: false,
+          },
+
+          tooltip: {
+            enabled: true,
+
+            displayColors: false,
+
+            padding: 10,
+
+            callbacks: {
+              title: (items) => {
+                const index =
+                  items[0]?.dataIndex
+
+                return (
+                  topProducts[index]
+                    ?.name
+                  || ''
+                )
+              },
+
+              label: (context) =>
+                `리뷰 ${context.raw}건`,
+            },
+          },
+        },
+
+        scales: {
+          x: {
+            beginAtZero: true,
+
+            suggestedMax:
+              Math.max(
+                maxProductCount,
+                1
+              ),
+
+            display: false,
+
+            grid: {
+              display: false,
+            },
+
+            border: {
+              display: false,
+            },
+          },
+
+          y: {
+            display: false,
+
+            grid: {
+              display: false,
+            },
+
+            border: {
+              display: false,
+            },
+          },
+        },
+      }),
+      [
+        maxProductCount,
+        topProducts,
+      ]
+    )
+
+
+  // ========================================
+  // 전체 리뷰 별점 분포 - Vertical Bar
+  // ========================================
+
+  const ratingChartItems =
+    useMemo(
+      () =>
+        [...ratingDistribution]
+          .reverse(),
+      [reviews]
+    )
+
+
+  const ratingChartData =
+    useMemo(
+      () => ({
+        labels:
+          ratingChartItems.map(
+            (item) =>
+              `${item.rating}★`
+          ),
+
+        datasets: [
+          {
+            label: '리뷰 수',
+
+            data:
+              ratingChartItems.map(
+                (item) =>
+                  item.count
+              ),
+
+            backgroundColor:
+              'rgba(86, 138, 128, 0.84)',
+
+            borderColor:
+              '#568a80',
+
+            borderWidth: 1,
+
+            borderRadius: 5,
+
+            maxBarThickness: 28,
+          },
+        ],
+      }),
+      [ratingChartItems]
+    )
+
+
+  const ratingChartOptions =
+    useMemo(
+      () => ({
+        responsive: true,
+        maintainAspectRatio: false,
+
+        animation: {
+          duration: 900,
+          easing: 'easeOutQuart',
+        },
+
+        plugins: {
+          legend: {
+            display: false,
+          },
+
+          tooltip: {
+            enabled: true,
+
+            displayColors: false,
+
+            padding: 10,
+
+            callbacks: {
+              label: (context) => {
+                const item =
+                  ratingChartItems[
+                    context.dataIndex
+                  ]
+
+                return [
+                  `리뷰 ${item?.count || 0}건`,
+                  `전체의 ${item?.percentage || 0}%`,
+                ]
+              },
+            },
+          },
+        },
+
+        scales: {
+          x: {
+            grid: {
+              display: false,
+            },
+
+            border: {
+              display: false,
+            },
+
+            ticks: {
+              color: '#747b78',
+
+              font: {
+                size: 10,
+                weight: '600',
+              },
+            },
+          },
+
+          y: {
+            beginAtZero: true,
+
+            suggestedMax:
+              Math.max(
+                ...ratingChartItems.map(
+                  (item) =>
+                    item.count
+                ),
+                1
+              ),
+
+            border: {
+              display: false,
+            },
+
+            grid: {
+              color:
+                'rgba(223, 226, 224, 0.72)',
+            },
+
+            ticks: {
+              precision: 0,
+
+              color: '#8c9490',
+
+              font: {
+                size: 9,
+              },
+            },
+          },
+        },
+      }),
+      [ratingChartItems]
     )
 
 
@@ -1990,47 +2405,21 @@ const ReviewManage = () => {
               title="상품별 리뷰 TOP 5"
               padding="compact"
             >
-              <div className={styles.topProductList}>
-                {topProducts.length > 0 ? (
-                  topProducts.map(
-                    (item) => (
-                      <div
-                        key={item.productId}
-                        className={styles.topProductRow}
-                      >
-                        <span
-                          title={item.name}
-                        >
-                          {item.name}
-                        </span>
-
-                        <i>
-                          <b
-                            style={{
-                              width:
-                                `${
-                                  (
-                                    item.count
-                                    / maxProductCount
-                                  )
-                                  * 100
-                                }%`,
-                            }}
-                          />
-                        </i>
-
-                        <strong>
-                          {item.count}건
-                        </strong>
-                      </div>
-                    )
-                  )
-                ) : (
-                  <p className={styles.analyticsEmpty}>
-                    리뷰 데이터가 없습니다.
-                  </p>
-                )}
-              </div>
+              {topProducts.length > 0 ? (
+                <div className={styles.topProductChart}>
+                  <Bar
+                    data={topProductChartData}
+                    options={topProductChartOptions}
+                    plugins={[
+                      topProductLabelPlugin,
+                    ]}
+                  />
+                </div>
+              ) : (
+                <p className={styles.analyticsEmpty}>
+                  리뷰 데이터가 없습니다.
+                </p>
+              )}
             </AdminPanel>
 
 
@@ -2038,36 +2427,11 @@ const ReviewManage = () => {
               title="전체 리뷰 별점 분포"
               padding="compact"
             >
-              <div className={styles.ratingDistribution}>
-                {ratingDistribution.map(
-                  (item) => (
-                    <div
-                      key={item.rating}
-                      className={styles.ratingBarRow}
-                    >
-                      <span className={styles.ratingLabel}>
-                        {item.rating}점
-                      </span>
-
-                      <span className={styles.ratingTrack}>
-                        <b
-                          style={{
-                            width:
-                              `${item.percentage}%`,
-                          }}
-                        />
-                      </span>
-
-                      <strong>
-                        {item.count}건
-                      </strong>
-
-                      <small>
-                        {item.percentage}%
-                      </small>
-                    </div>
-                  )
-                )}
+              <div className={styles.ratingChart}>
+                <Bar
+                  data={ratingChartData}
+                  options={ratingChartOptions}
+                />
               </div>
 
               <p className={styles.analyticsCaption}>

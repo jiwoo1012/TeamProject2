@@ -12,12 +12,26 @@ import {
   where,
 } from 'firebase/firestore'
 
+import {
+  ArcElement,
+  Chart as ChartJS,
+  Tooltip,
+} from 'chart.js'
+import { Doughnut } from 'react-chartjs-2'
+
+
 import AdminEmptyState from '../../components/admin/AdminEmptyState'
 import AdminFilterBar from '../../components/admin/AdminFilterBar'
 import AdminPageHeader from '../../components/admin/AdminPageHeader'
 import AdminPanel from '../../components/admin/AdminPanel'
 import AdminStatusBadge from '../../components/admin/AdminStatusBadge'
 import AdminSummaryCard from '../../components/admin/AdminSummaryCard'
+
+ChartJS.register(
+  ArcElement,
+  Tooltip
+)
+
 
 import { subscribeToAuthState } from '../../firebase/auth'
 import { db } from '../../firebase/firebase'
@@ -705,6 +719,86 @@ useEffect(() => {
           7
         )
     ).length
+
+
+  // ========================================
+  // 회원 상태 차트
+  // ========================================
+
+  const statusChartData = useMemo(
+    () => ({
+      labels: [
+        '정상',
+        '이용 정지',
+      ],
+
+      datasets: [
+        {
+          data: [
+            activeCount,
+            suspendedCount,
+          ],
+
+          backgroundColor: [
+            '#568a80',
+            '#d6aaa5',
+          ],
+
+          borderColor: '#ffffff',
+          borderWidth: 3,
+
+          hoverOffset: 3,
+        },
+      ],
+    }),
+    [
+      activeCount,
+      suspendedCount,
+    ]
+  )
+
+
+  const statusChartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+
+      cutout: '63%',
+
+      animation: {
+        duration: 900,
+        easing: 'easeOutQuart',
+        animateRotate: true,
+        animateScale: false,
+      },
+
+      plugins: {
+        legend: {
+          display: false,
+        },
+
+        tooltip: {
+          enabled: true,
+
+          position: 'nearest',
+
+          xAlign: 'center',
+          yAlign: 'bottom',
+
+          caretPadding: 8,
+          padding: 10,
+
+          displayColors: false,
+
+          callbacks: {
+            label: (context) =>
+              `${context.label}: ${context.raw}명`,
+          },
+        },
+      },
+    }),
+    []
+  )
 
 
   // ========================================
@@ -1756,12 +1850,17 @@ useEffect(() => {
               <div className={styles.statusOverview}>
                 <div
                   className={styles.statusDonut}
-                  style={{
-                    '--active-rate':
-                      `${activeRate}%`,
-                  }}
                 >
-                  <div>
+                  <Doughnut
+                    data={statusChartData}
+                    options={statusChartOptions}
+                  />
+
+                  <div
+                    className={
+                      styles.statusDonutCenter
+                    }
+                  >
                     <span>
                       전체 회원
                     </span>

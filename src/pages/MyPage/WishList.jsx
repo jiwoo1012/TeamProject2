@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import Pagination from '../../components/ui/Pagination/Pagination'
+import MyPageHeader from '../../components/mypage/MyPageHeader'
 
 import { products } from '../../data/products'
 
@@ -117,9 +117,9 @@ const getCategoryLabel = (
     getProductCategory(product)
 
   const labels = {
-    alcohol: '술',
+    alcohol: '전통주',
     food: '안주',
-    glass: '잔',
+    glass: '술잔',
     gift: '선물',
   }
 
@@ -213,6 +213,10 @@ const WishList = () => {
   ] = useState(1)
 
 
+  /* =========================
+     AUTH
+  ========================= */
+
   useEffect(() => {
     const unsubscribe =
       subscribeToAuthState(
@@ -232,6 +236,10 @@ const WishList = () => {
     return unsubscribe
   }, [])
 
+
+  /* =========================
+     WISHLIST LOAD
+  ========================= */
 
   useEffect(() => {
     if (!isAuthReady) {
@@ -294,6 +302,10 @@ const WishList = () => {
   ])
 
 
+  /* =========================
+     WISHLIST PRODUCT
+  ========================= */
+
   const wishlistProducts =
     useMemo(() => {
       return wishlistDocs
@@ -345,6 +357,10 @@ const WishList = () => {
     }, [wishlistDocs])
 
 
+  /* =========================
+     FILTER
+  ========================= */
+
   const filteredProducts =
     useMemo(() => {
       if (
@@ -369,6 +385,10 @@ const WishList = () => {
     filteredProducts.length
 
 
+  /* =========================
+     PAGINATION
+  ========================= */
+
   const totalPages =
     Math.max(
       1,
@@ -379,12 +399,15 @@ const WishList = () => {
     )
 
 
+  const startIndex =
+    (currentPage - 1) *
+    PAGE_SIZE
+
+
   const visibleProducts =
     filteredProducts.slice(
-      (currentPage - 1) *
-        PAGE_SIZE,
-
-      currentPage *
+      startIndex,
+      startIndex +
         PAGE_SIZE
     )
 
@@ -393,6 +416,31 @@ const WishList = () => {
     setCurrentPage(1)
   }, [activeFilter])
 
+
+  useEffect(() => {
+    if (
+      currentPage >
+      totalPages
+    ) {
+      setCurrentPage(
+        totalPages
+      )
+    }
+  }, [
+    currentPage,
+    totalPages,
+  ])
+
+
+  const handlePageChange =
+    (page) => {
+      setCurrentPage(page)
+    }
+
+
+  /* =========================
+     NOTICE
+  ========================= */
 
   const handleNotice = (
     message
@@ -406,6 +454,10 @@ const WishList = () => {
     )
   }
 
+
+  /* =========================
+     REMOVE WISH
+  ========================= */
 
   const handleRemoveWish =
     async (product) => {
@@ -449,6 +501,10 @@ const WishList = () => {
       }
     }
 
+
+  /* =========================
+     ADD CART
+  ========================= */
 
   const handleAddToCart =
     (product) => {
@@ -501,6 +557,10 @@ const WishList = () => {
     }
 
 
+  /* =========================
+     LOADING
+  ========================= */
+
   if (isLoading) {
     return (
       <section
@@ -511,14 +571,27 @@ const WishList = () => {
             styles.wishlistCard
           }
         >
-          <p
+          <MyPageHeader
+            title="찜"
+          />
+
+
+          <div
             className={
               styles.status
             }
           >
-            찜 목록을 불러오는
-            중입니다...
-          </p>
+            <span
+              className={
+                styles.loadingSpinner
+              }
+              aria-hidden="true"
+            />
+
+            <strong>
+              찜 목록을 불러오는 중입니다.
+            </strong>
+          </div>
         </div>
       </section>
     )
@@ -528,93 +601,76 @@ const WishList = () => {
   return (
     <section
       className={styles.page}
-      aria-labelledby="wishlist-title"
     >
-
       <div
         className={
           styles.wishlistCard
         }
       >
 
-        {/* =====================
-            TITLE
-        ===================== */}
+        {/* =========================
+            HEADER
+        ========================= */}
 
-        <header
-          className={
-            styles.pageHeader
-          }
-        >
-          <h2
-            id="wishlist-title"
-          >
-            찜
-          </h2>
-        </header>
-
-
-        <div
-          className={
-            styles.titleDivider
-          }
+        <MyPageHeader
+          title="찜"
         />
 
 
-        {/* =====================
-            FILTER
-        ===================== */}
+        {/* =========================
+            FILTER / COUNT
+        ========================= */}
 
         <div
           className={
-            styles.filterList
+            styles.toolbar
           }
-          role="tablist"
-          aria-label="찜 상품 카테고리"
         >
-          {filters.map(
-            (filter) => (
-              <button
-                key={
-                  filter.value
-                }
-                type="button"
-                role="tab"
-                aria-selected={
-                  activeFilter ===
-                  filter.value
-                }
-                className={`${styles.filterButton} ${
-                  activeFilter ===
-                  filter.value
-                    ? styles.activeFilter
-                    : ''
-                }`}
-                onClick={() => {
-                  setActiveFilter(
+          <div
+            className={
+              styles.filterList
+            }
+            role="tablist"
+            aria-label="찜 상품 카테고리"
+          >
+            {filters.map(
+              (filter) => (
+                <button
+                  key={
                     filter.value
-                  )
-                }}
-              >
-                {
-                  filter.label
-                }
-              </button>
-            )
-          )}
-        </div>
+                  }
+                  type="button"
+                  role="tab"
+                  aria-selected={
+                    activeFilter ===
+                    filter.value
+                  }
+                  className={`${styles.filterButton} ${
+                    activeFilter ===
+                    filter.value
+                      ? styles.activeFilter
+                      : ''
+                  }`}
+                  onClick={() =>
+                    setActiveFilter(
+                      filter.value
+                    )
+                  }
+                >
+                  {
+                    filter.label
+                  }
+                </button>
+              )
+            )}
+          </div>
 
 
-        {/* =====================
-            COUNT
-        ===================== */}
-
-        <div
-          className={
-            styles.listHeader
-          }
-        >
-          <p>
+          <p
+            className={
+              styles.count
+            }
+          >
             총{' '}
             <strong>
               {totalCount}
@@ -623,6 +679,10 @@ const WishList = () => {
           </p>
         </div>
 
+
+        {/* =========================
+            NOTICE
+        ========================= */}
 
         {notice && (
           <p
@@ -636,12 +696,11 @@ const WishList = () => {
         )}
 
 
-        {/* =====================
+        {/* =========================
             EMPTY
-        ===================== */}
+        ========================= */}
 
         {totalCount === 0 ? (
-
           <div
             className={
               styles.empty
@@ -656,16 +715,11 @@ const WishList = () => {
               ♡
             </span>
 
+
             <h3>
-              찜한 상품이
-              없습니다.
+              찜한 상품이 없습니다.
             </h3>
 
-            <p>
-              마음에 드는 상품을
-              찜해두고 나중에
-              확인해보세요.
-            </p>
 
             <Link
               to="/shop"
@@ -676,13 +730,12 @@ const WishList = () => {
               상품 둘러보기
             </Link>
           </div>
-
         ) : (
-
           <>
-            {/* =====================
+
+            {/* =========================
                 PRODUCT GRID
-            ===================== */}
+            ========================= */}
 
             <div
               className={
@@ -691,7 +744,6 @@ const WishList = () => {
             >
               {visibleProducts.map(
                 (product) => (
-
                   <article
                     key={
                       product.productId
@@ -815,65 +867,105 @@ const WishList = () => {
                     </div>
 
                   </article>
-
                 )
               )}
             </div>
 
 
+            {/* =========================
+                PAGINATION
+            ========================= */}
+
             {totalPages > 1 && (
-              <div
+              <nav
                 className={
-                  styles.paginationArea
+                  styles.pagination
                 }
+                aria-label="찜 목록 페이지"
               >
-                <Pagination
-                  currentPage={
-                    currentPage
+                <button
+                  type="button"
+                  disabled={
+                    currentPage === 1
                   }
-                  totalPages={
+                  onClick={() =>
+                    handlePageChange(
+                      Math.max(
+                        1,
+                        currentPage -
+                          1
+                      )
+                    )
+                  }
+                  aria-label="이전 페이지"
+                >
+                  ‹
+                </button>
+
+
+                {Array.from(
+                  {
+                    length:
+                      totalPages,
+                  },
+                  (_, index) => {
+                    const pageNumber =
+                      index + 1
+
+
+                    return (
+                      <button
+                        key={
+                          pageNumber
+                        }
+                        type="button"
+                        className={
+                          currentPage ===
+                          pageNumber
+                            ? styles.activePage
+                            : ''
+                        }
+                        onClick={() =>
+                          handlePageChange(
+                            pageNumber
+                          )
+                        }
+                      >
+                        {
+                          pageNumber
+                        }
+                      </button>
+                    )
+                  }
+                )}
+
+
+                <button
+                  type="button"
+                  disabled={
+                    currentPage ===
                     totalPages
                   }
-                  onChange={
-                    setCurrentPage
+                  onClick={() =>
+                    handlePageChange(
+                      Math.min(
+                        totalPages,
+                        currentPage +
+                          1
+                      )
+                    )
                   }
-                />
-              </div>
+                  aria-label="다음 페이지"
+                >
+                  ›
+                </button>
+              </nav>
             )}
-          </>
 
+          </>
         )}
 
-
-        {/* =====================
-            INFO
-        ===================== */}
-
-        <div
-          className={
-            styles.wishlistNotice
-          }
-        >
-          <p>
-            - 품절 또는 판매 종료된
-            상품은 찜 목록에서
-            제외될 수 있습니다.
-          </p>
-
-          <p>
-            - 상품의 가격 및 할인
-            정보는 변경될 수
-            있습니다.
-          </p>
-
-          <p>
-            - 찜한 상품은 회원님의
-            계정에 저장됩니다.
-          </p>
-        </div>
-
       </div>
-
     </section>
   )
 }

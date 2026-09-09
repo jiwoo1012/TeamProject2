@@ -13,48 +13,14 @@
   min-height: 610px;
 
   padding:
-    30px
-    30px
-    32px;
+    34px
+    32px
+    40px;
 
   background: #fff;
 
+  border: 1px solid #eeeae3;
   border-radius: 18px;
-}
-
-
-/* =========================
-   HEADER
-========================= */
-
-.pageHeader {
-  min-height: 38px;
-
-  display: flex;
-  align-items: center;
-
-  h2 {
-    margin: 0;
-
-    color: #42372e;
-
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 1.3;
-  }
-}
-
-
-.titleDivider {
-  width: 100%;
-  height: 1px;
-
-  margin:
-    4px
-    0
-    17px;
-
-  background: #625d56;
 }
 
 
@@ -66,135 +32,143 @@
   display: grid;
 
   grid-template-columns:
-    repeat(3, 1fr);
+    repeat(
+      3,
+      minmax(0, 1fr)
+    );
+
+  gap: 10px;
 
   width: 100%;
 
-  min-height: 74px;
-
-  padding:
-    12px
-    10px;
-
-  border:
-    1px solid
-    #e0ddd7;
-
-  border-radius: 10px;
-
-  background: #fff;
+  margin-bottom: 32px;
 }
 
 
 .summaryItem {
-  position: relative;
+  min-height: 76px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  gap: 3px;
+  gap: 6px;
 
-  & + &::before {
-    content: '';
+  padding:
+    13px
+    12px;
 
-    position: absolute;
+  border: 1px solid #dbe7e2;
+  border-radius: 12px;
 
-    left: 0;
-    top: 10px;
+  background: #f2f7f4;
 
-    width: 1px;
-    height: 38px;
-
-    background: #eeeae5;
-  }
-}
-
-
-.summaryDot {
-  width: 25px;
-  height: 25px;
-
-  margin-bottom: 2px;
-
-  border-radius: 50%;
-
-  background: #d9d9d9;
+  text-align: center;
 }
 
 
 .summaryLabel {
-  color: #8d877f;
+  color: #777f7b;
 
-  font-size: 8px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 
 .summaryCount {
-  color: #49433d;
+  color: #3f756d;
 
-  font-size: 13px;
+  font-size: 21px;
   font-weight: 700;
+  line-height: 1;
 }
 
 
 /* =========================
-   SECTION COMMON
+   SECTIONS
 ========================= */
 
 .activeSection,
 .participationSection {
-  margin-top: 26px;
+  margin-top: 30px;
 }
 
 
 .sectionHeading {
+  min-height: 34px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  gap: 14px;
+  gap: 16px;
 
-  margin-bottom: 11px;
+  margin-bottom: 13px;
 
   h3 {
     margin: 0;
 
-    color: #4b443d;
+    color: #292620;
 
-    font-size: 11px;
+    font-size: 17px;
     font-weight: 700;
   }
 }
 
 
+/* =========================
+   MORE LINK
+========================= */
+
 .moreLink {
+  min-width: 76px;
+  height: 30px;
+
   display: inline-flex;
   align-items: center;
+  justify-content: center;
 
   gap: 3px;
 
-  color: #8e8880;
+  padding:
+    0
+    9px;
 
-  font-size: 7px;
-  font-weight: 500;
+  border: 1px solid #ddd8d0;
+  border-radius: 7px;
+
+  background: #fff;
+
+  color: #777169;
+
+  font-size: 11px;
+  font-weight: 600;
 
   text-decoration: none;
 
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+
   span {
-    font-size: 11px;
+    font-size: 14px;
   }
 
+
   &:hover {
-    color: #54877c;
+    border-color: #a8c1b9;
+
+    background: #edf5f1;
+
+    color: #3f756d;
   }
 }
 
 
 /* =========================
-   ACTIVE EVENT
+   ACTIVE LIST
 ========================= */
 
 .activeList {
@@ -211,37 +185,49 @@
 
 
 .activeCard {
+  min-width: 0;
+  min-height: 126px;
+
   display: grid;
 
   grid-template-columns:
-    78px
+    126px
     minmax(0, 1fr);
-
-  min-height: 82px;
 
   overflow: hidden;
 
-  border:
-    1px solid
-    #e2ded8;
-
-  border-radius: 5px;
+  border: 1px solid #e3ddd4;
+  border-radius: 12px;
 
   background: #fff;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+
+  &:hover {
+    border-color: #a8c1b9;
+
+    background: #fffefa;
+  }
 }
 
 
-.activeImage {
-  display: block;
+/* =========================
+   ACTIVE IMAGE
+========================= */
 
-  width: 100%;
+.activeImage {
+  width: 126px;
   height: 100%;
 
-  min-height: 82px;
+  min-height: 126px;
+
+  display: block;
 
   overflow: hidden;
 
-  background: #d8d8d8;
+  background: #f2f0eb;
 
   text-decoration: none;
 
@@ -252,54 +238,69 @@
     display: block;
 
     object-fit: cover;
+
+    transition:
+      transform
+      0.25s ease;
   }
 
-  span {
+
+  > span {
     display: block;
 
     width: 100%;
     height: 100%;
 
-    background: #d8d8d8;
+    background: #e4e1dc;
+  }
+
+
+  &:hover {
+    img {
+      transform:
+        scale(1.03);
+    }
   }
 }
 
 
+/* =========================
+   ACTIVE INFO
+========================= */
+
 .activeInfo {
-  position: relative;
-
   min-width: 0;
-
-  padding:
-    10px
-    9px
-    9px;
 
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+
+  padding:
+    13px
+    14px;
 }
 
 
 .eventTag {
+  min-height: 21px;
+
   display: inline-flex;
   align-items: center;
-
-  min-height: 14px;
+  justify-content: center;
 
   padding:
     0
-    5px;
+    8px;
 
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 
-  border-radius: 10px;
+  border-radius: 999px;
 
-  background: #eef3f0;
+  background: #edf5f1;
 
-  color: #6c8c83;
+  color: #4d7e73;
 
-  font-size: 6px;
+  font-size: 9px;
   font-weight: 700;
 }
 
@@ -309,9 +310,9 @@
 
   overflow: hidden;
 
-  color: #4c463f;
+  color: #403b35;
 
-  font-size: 8px;
+  font-size: 13px;
   font-weight: 700;
   line-height: 1.45;
 
@@ -322,25 +323,30 @@
   -webkit-box-orient: vertical;
 
   &:hover {
-    color: #58867c;
+    color: #3f756d;
   }
 }
 
 
 .activeInfo {
   time {
-    margin-top: 3px;
+    margin-top: 5px;
 
-    color: #aaa49d;
+    color: #aaa49c;
 
-    font-size: 6px;
+    font-size: 10px;
+    font-weight: 500;
   }
 }
 
 
+/* =========================
+   APPLY BUTTON
+========================= */
+
 .applyButton {
-  min-width: 42px;
-  height: 17px;
+  min-width: 78px;
+  height: 32px;
 
   display: inline-flex;
   align-items: center;
@@ -350,71 +356,109 @@
 
   padding:
     0
-    7px;
+    12px;
 
-  border-radius: 10px;
+  border: 1px solid #4d7e7b;
+  border-radius: 8px;
 
-  background: #588c81;
+  background: #4d7e7b;
 
   color: #fff;
 
-  font-size: 6px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
 
   text-decoration: none;
 
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+
   &:hover {
-    background: #49786e;
+    border-color: #3d6965;
+
+    background: #3d6965;
   }
 }
 
 
 /* =========================
-   PARTICIPATION HISTORY
+   HISTORY COUNT
+========================= */
+
+.historyCount {
+  color: #99938b;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  strong {
+    margin:
+      0
+      2px;
+
+    color: #3f756d;
+
+    font-size: 13px;
+    font-weight: 700;
+  }
+}
+
+
+/* =========================
+   HISTORY LIST
 ========================= */
 
 .historyList {
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 
-  border:
-    1px solid
-    #e2ded8;
-
-  border-radius: 10px;
-
-  background: #fff;
+  gap: 10px;
 }
 
 
 .historyItem {
+  min-height: 78px;
+
   display: grid;
 
   grid-template-columns:
-    48px
+    64px
     minmax(0, 1fr)
     auto;
 
   align-items: center;
 
-  gap: 11px;
-
-  min-height: 63px;
+  gap: 13px;
 
   padding:
-    9px
+    11px
     13px;
 
-  & + & {
-    border-top:
-      1px solid
-      #eeeae4;
+  border: 1px solid #e3ddd4;
+  border-radius: 12px;
+
+  background: #fff;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+
+  &:hover {
+    border-color: #c9d5d0;
+
+    background: #fffefa;
   }
 }
 
 
+/* =========================
+   HISTORY IMAGE
+========================= */
+
 .historyImage {
-  width: 48px;
-  height: 42px;
+  width: 64px;
+  height: 56px;
 
   overflow: hidden;
 
@@ -422,9 +466,12 @@
   align-items: center;
   justify-content: center;
 
-  border-radius: 3px;
+  border: 1px solid #eee9e2;
+  border-radius: 9px;
 
-  background: #d7d7d7;
+  background: #f2f0eb;
+
+  text-decoration: none;
 
   img {
     width: 100%;
@@ -435,98 +482,197 @@
     object-fit: cover;
   }
 
+
   span {
+    display: block;
+
     width: 100%;
     height: 100%;
 
-    display: block;
-
-    background: #d7d7d7;
+    background: #e4e1dc;
   }
-}
-
-
-.historyInfo {
-  min-width: 0;
-
-  strong {
-    display: block;
-
-    overflow: hidden;
-
-    margin-bottom: 4px;
-
-    color: #4b453f;
-
-    font-size: 8px;
-    font-weight: 700;
-
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  time {
-    display: block;
-
-    color: #aaa49c;
-
-    font-size: 6px;
-  }
-
-  p {
-    margin:
-      3px
-      0
-      0;
-
-    color: #7f7972;
-
-    font-size: 6px;
-  }
-}
-
-
-.statusBadge {
-  min-width: 54px;
-  height: 21px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  padding:
-    0
-    9px;
-
-  border:
-    1px solid
-    #72a195;
-
-  border-radius: 20px;
-
-  background: #fff;
-
-  color: #659286;
-
-  font-size: 7px;
-  font-weight: 600;
-}
-
-
-.winner {
-  border-color: #568b80;
-
-  background: #568b80;
-
-  color: #fff;
 }
 
 
 /* =========================
-   EMPTY / LOADING
+   HISTORY INFO
 ========================= */
 
-.stateBox,
+.historyInfo {
+  min-width: 0;
+
+  time {
+    display: block;
+
+    margin-top: 5px;
+
+    color: #aaa49c;
+
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+
+  p {
+    margin:
+      5px
+      0
+      0;
+
+    color: #777169;
+
+    font-size: 11px;
+    font-weight: 500;
+  }
+}
+
+
+.historyTitle {
+  display: block;
+
+  overflow: hidden;
+
+  color: #403b35;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  text-decoration: none;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover {
+    color: #3f756d;
+  }
+}
+
+
+/* =========================
+   PAGINATION
+========================= */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  margin-top: 28px;
+
+  button {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: transparent;
+
+    color: #8f8981;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: #edf5f1;
+
+      color: #3f756d;
+    }
+
+
+    &:disabled {
+      opacity: 0.3;
+
+      cursor: default;
+    }
+  }
+}
+
+
+.activePage {
+  background: #4d7e7b !important;
+
+  color: #fff !important;
+
+  font-weight: 700 !important;
+}
+
+
+/* =========================
+   LOADING
+========================= */
+
+.stateBox {
+  min-height: 260px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  color: #99938b;
+
+  font-size: 12px;
+
+  text-align: center;
+
+  strong {
+    color: #554f48;
+
+    font-size: 13px;
+    font-weight: 600;
+  }
+}
+
+
+.loadingSpinner {
+  width: 26px;
+  height: 26px;
+
+  border:
+    2px solid
+    #eae6df;
+
+  border-top-color: #519888;
+
+  border-radius: 50%;
+
+  animation:
+    spin
+    0.8s
+    linear
+    infinite;
+}
+
+
+@keyframes spin {
+  to {
+    transform:
+      rotate(360deg);
+  }
+}
+
+
+/* =========================
+   SMALL EMPTY
+========================= */
+
 .smallEmpty {
   min-height: 100px;
 
@@ -535,19 +681,25 @@
   justify-content: center;
 
   border:
-    1px solid
-    #ebe7e1;
+    1px dashed
+    #ddd8d0;
 
-  border-radius: 8px;
+  border-radius: 12px;
+
+  background: #faf9f7;
 
   color: #aaa49c;
 
-  font-size: 8px;
+  font-size: 12px;
 }
 
 
+/* =========================
+   EMPTY
+========================= */
+
 .emptyState {
-  min-height: 180px;
+  min-height: 240px;
 
   display: flex;
   flex-direction: column;
@@ -555,73 +707,82 @@
   justify-content: center;
 
   border:
-    1px solid
-    #e6e1db;
+    1px dashed
+    #ddd8d0;
 
-  border-radius: 10px;
+  border-radius: 12px;
+
+  background: #faf9f7;
 
   text-align: center;
 
   strong {
     margin:
-      8px
+      13px
       0
-      5px;
+      18px;
 
-    color: #4f4942;
+    color: #49433c;
 
-    font-size: 10px;
-  }
-
-  p {
-    margin:
-      0
-      0
-      14px;
-
-    color: #aaa49c;
-
-    font-size: 7px;
-  }
-
-  a {
-    min-width: 80px;
-    height: 26px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 20px;
-
-    background: #588c81;
-
-    color: #fff;
-
-    font-size: 7px;
-    font-weight: 600;
-
-    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
   }
 }
 
 
 .emptyIcon {
-  width: 24px;
-  height: 24px;
+  width: 44px;
+  height: 44px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
+  border: 1px solid #d8e3de;
   border-radius: 50%;
 
-  background: #e7efec;
+  background: #f0f6f3;
 
-  color: #678c83;
+  color: #648d82;
 
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 700;
+}
+
+
+.emptyButton {
+  min-width: 110px;
+  height: 36px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    14px;
+
+  border: 1px solid #4d7e7b;
+  border-radius: 8px;
+
+  background: #4d7e7b;
+
+  color: #fff;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-decoration: none;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+
+  &:hover {
+    border-color: #3d6965;
+
+    background: #3d6965;
+  }
 }
 
 
@@ -632,16 +793,21 @@
 @media (max-width: 1024px) {
   .historyCard {
     padding:
-      26px
+      28px
       24px
-      30px;
+      34px;
   }
 
 
   .activeCard {
     grid-template-columns:
-      68px
+      105px
       minmax(0, 1fr);
+  }
+
+
+  .activeImage {
+    width: 105px;
   }
 }
 
@@ -655,36 +821,44 @@
     min-height: auto;
 
     padding:
-      22px
-      16px
-      26px;
+      24px
+      18px
+      30px;
 
-    border-radius: 14px;
-  }
-
-
-  .pageHeader {
-    h2 {
-      font-size: 19px;
-    }
+    border-radius: 15px;
   }
 
 
   .summaryPanel {
+    grid-template-columns:
+      1fr;
+
+    gap: 8px;
+  }
+
+
+  .summaryItem {
+    min-height: 58px;
+
+    flex-direction: row;
+    justify-content: space-between;
+
     padding:
-      10px
-      4px;
+      0
+      16px;
   }
 
 
-  .summaryDot {
-    width: 22px;
-    height: 22px;
+  .activeSection,
+  .participationSection {
+    margin-top: 26px;
   }
 
 
-  .summaryLabel {
-    font-size: 7px;
+  .sectionHeading {
+    h3 {
+      font-size: 16px;
+    }
   }
 
 
@@ -696,31 +870,44 @@
 
   .activeCard {
     grid-template-columns:
-      82px
+      110px
       minmax(0, 1fr);
+  }
+
+
+  .activeImage {
+    width: 110px;
   }
 
 
   .historyItem {
     grid-template-columns:
-      44px
+      52px
       minmax(0, 1fr);
 
-    gap: 9px;
+    gap: 10px;
+
+    padding:
+      10px;
   }
 
 
   .historyImage {
-    width: 44px;
-    height: 40px;
+    width: 52px;
+    height: 48px;
   }
 
 
-  .statusBadge {
-    grid-column: 2;
+  .historyItem {
+    > :last-child {
+      grid-column: 2;
 
-    justify-self: flex-end;
+      justify-self: flex-start;
+    }
+  }
 
-    margin-top: -4px;
+
+  .pagination {
+    margin-top: 24px;
   }
 }

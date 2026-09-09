@@ -1,44 +1,91 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 
-import { subscribeToAuthState } from '../../firebase/auth'
-import { getCollection } from '../../firebase/firestore'
-import { getUserEventParticipations } from '../../services/eventParticipation'
+import {
+  Link,
+} from 'react-router-dom'
+
+import {
+  subscribeToAuthState,
+} from '../../firebase/auth'
+
+import {
+  getCollection,
+} from '../../firebase/firestore'
+
+import {
+  getUserEventParticipations,
+} from '../../services/eventParticipation'
 
 import eventsData from '../../data/events.json'
-import { PATHS } from '../../routes/paths'
+
+import {
+  PATHS,
+} from '../../routes/paths'
+
+import MyPageHeader from '../../components/mypage/MyPageHeader'
 
 import styles from './EventWinningHistory.module.scss'
 
 
-const bannerImages = import.meta.glob(
-  '../../assets/images/banner/eventBanner*.png',
-  {
-    eager: true,
-    import: 'default',
-  }
-)
+const ITEMS_PER_PAGE = 4
 
 
-const resolveBanner = (bannerUrl) => {
+/* =========================
+   BANNER
+========================= */
+
+const bannerImages =
+  import.meta.glob(
+    '../../assets/images/banner/eventBanner*.png',
+    {
+      eager: true,
+      import: 'default',
+    }
+  )
+
+
+const resolveBanner = (
+  bannerUrl
+) => {
   const fileName =
-    bannerUrl?.split('/').pop()
+    bannerUrl
+      ?.split('/')
+      .pop()
+
 
   return Object.entries(
     bannerImages
-  ).find(([path]) =>
-    path.endsWith(`/${fileName}`)
+  ).find(
+    ([path]) =>
+      path.endsWith(
+        `/${fileName}`
+      )
   )?.[1]
 }
 
 
-const formatDate = (value) => {
-  if (!value) return '-'
+/* =========================
+   DATE
+========================= */
+
+const formatDate = (
+  value
+) => {
+  if (!value) {
+    return '-'
+  }
+
 
   const date =
-    typeof value?.toDate === 'function'
+    typeof value?.toDate ===
+    'function'
       ? value.toDate()
       : new Date(value)
+
 
   if (
     Number.isNaN(
@@ -47,6 +94,7 @@ const formatDate = (value) => {
   ) {
     return '-'
   }
+
 
   return new Intl.DateTimeFormat(
     'ko-KR',
@@ -61,45 +109,76 @@ const formatDate = (value) => {
 }
 
 
-const getEventPath = (event) => {
+/* =========================
+   EVENT PATH
+========================= */
+
+const getEventPath = (
+  event
+) => {
   if (
-    event.title.includes('룰렛')
+    event.title.includes(
+      '룰렛'
+    )
   ) {
     return '/events/roulette'
   }
 
+
   if (
-    event.title.includes('카드')
+    event.title.includes(
+      '카드'
+    )
   ) {
     return `${PATHS.eventReady}/card-game`
   }
 
+
   if (
-    event.title.includes('OX')
+    event.title.includes(
+      'OX'
+    )
   ) {
     return `${PATHS.eventReady}/ox-quiz`
   }
+
 
   return PATHS.events
 }
 
 
-const fallbackEvents = eventsData.map(
-  ({ event }, index) => ({
-    ...event,
+/* =========================
+   FALLBACK EVENTS
+========================= */
 
-    id: `event-${index + 1}`,
+const fallbackEvents =
+  eventsData.map(
+    (
+      { event },
+      index
+    ) => ({
+      ...event,
 
-    bannerSrc:
-      resolveBanner(
-        event.image?.bannerUrl
-      ),
+      id:
+        `event-${index + 1}`,
 
-    path:
-      getEventPath(event),
-  })
-)
+      bannerSrc:
+        resolveBanner(
+          event.image
+            ?.bannerUrl
+        ),
 
+      path:
+        getEventPath(
+          event
+        ),
+    })
+  )
+
+
+/* =========================
+   FILTER
+========================= */
 
 const filterItems = [
   {
@@ -117,37 +196,102 @@ const filterItems = [
 ]
 
 
-const getRewardLabel = (participation) => {
-  const points = Number(participation.rewardPoints || 0)
+/* =========================
+   REWARD LABEL
+========================= */
 
-  if (participation.eventId === 'event-2') {
-    const matchedCount = participation.rewardName?.match(/\d+/)?.[0] ?? '0'
-    return `${matchedCount}쌍 성공 - ${points.toLocaleString('ko-KR')}POINT`
+const getRewardLabel = (
+  participation
+) => {
+  const points =
+    Number(
+      participation.rewardPoints ||
+      0
+    )
+
+
+  if (
+    participation.eventId ===
+    'event-2'
+  ) {
+    const matchedCount =
+      participation.rewardName
+        ?.match(/\d+/)
+        ?.[0] ??
+      '0'
+
+
+    return `${matchedCount}쌍 성공 · ${points.toLocaleString(
+      'ko-KR'
+    )} POINT`
   }
 
-  if (participation.eventId === 'event-3') {
-    const correctCount = participation.rewardName?.match(/\d+/)?.[0] ?? '0'
-    return `${correctCount}문제 정답 - ${points.toLocaleString('ko-KR')}POINT`
+
+  if (
+    participation.eventId ===
+    'event-3'
+  ) {
+    const correctCount =
+      participation.rewardName
+        ?.match(/\d+/)
+        ?.[0] ??
+      '0'
+
+
+    return `${correctCount}문제 정답 · ${points.toLocaleString(
+      'ko-KR'
+    )} POINT`
   }
 
-  if (participation.eventId === 'event-1' && participation.rewardType === 'point') {
-    const rank = Number(participation.rewardRank || 0)
-    return `${rank}등 - ${points.toLocaleString('ko-KR')}POINT`
+
+  if (
+    participation.eventId ===
+      'event-1' &&
+    participation.rewardType ===
+      'point'
+  ) {
+    const rank =
+      Number(
+        participation.rewardRank ||
+        0
+      )
+
+
+    return `${rank}등 · ${points.toLocaleString(
+      'ko-KR'
+    )} POINT`
   }
 
-  return participation.rewardName || '이벤트 경품'
+
+  return (
+    participation.rewardName ||
+    '이벤트 경품'
+  )
 }
 
 
-const getDeliveryGroup = (
+/* =========================
+   DELIVERY LABEL
+========================= */
+
+const getDeliveryLabel = (
   participation
 ) => {
-  const status = String(
-    participation.deliveryStatus ||
+  if (
+    participation.rewardType !==
+    'product'
+  ) {
+    return null
+  }
+
+
+  const status =
+    String(
+      participation.deliveryStatus ||
       participation.rewardStatus ||
       participation.shippingStatus ||
       ''
-  ).toLowerCase()
+    ).toLowerCase()
 
 
   if (
@@ -159,35 +303,7 @@ const getDeliveryGroup = (
       'done',
     ].includes(status)
   ) {
-    return 'completed'
-  }
-
-
-  return 'pending'
-}
-
-
-const getActionLabel = (
-  participation
-) => {
-  const status = String(
-    participation.deliveryStatus ||
-      participation.rewardStatus ||
-      participation.shippingStatus ||
-      ''
-  ).toLowerCase()
-
-
-  if (
-    [
-      'completed',
-      'complete',
-      'delivered',
-      'received',
-      'done',
-    ].includes(status)
-  ) {
-    return '경품 지급 완료'
+    return '지급 완료'
   }
 
 
@@ -198,42 +314,62 @@ const getActionLabel = (
       'delivery',
     ].includes(status)
   ) {
-    return '경품 배송 중'
+    return '배송 중'
   }
 
 
   if (
-    status === 'address_required'
+    status ===
+    'address_required'
   ) {
-    return '배송지 입력'
+    return '배송지 입력 필요'
   }
 
 
-  return '당첨 내역 확인'
+  return '지급 준비'
 }
 
 
+/* =========================
+   COMPONENT
+========================= */
+
 const EventWinningHistory = () => {
-  const [events, setEvents] = useState(fallbackEvents)
+  const [
+    events,
+    setEvents,
+  ] = useState(
+    fallbackEvents
+  )
+
+
   const [
     currentUser,
     setCurrentUser,
-  ] = useState(undefined)
+  ] = useState(
+    undefined
+  )
+
 
   const [
     participations,
     setParticipations,
   ] = useState([])
 
+
   const [
     activeFilter,
     setActiveFilter,
-  ] = useState('all')
+  ] = useState(
+    'all'
+  )
+
 
   const [
     isLoading,
     setIsLoading,
   ] = useState(true)
+
 
   const [
     loadError,
@@ -241,8 +377,14 @@ const EventWinningHistory = () => {
   ] = useState('')
 
 
+  const [
+    currentPage,
+    setCurrentPage,
+  ] = useState(1)
+
+
   /* =========================
-     로그인
+     AUTH
   ========================= */
 
   useEffect(() => {
@@ -251,25 +393,68 @@ const EventWinningHistory = () => {
         setCurrentUser
       )
 
+
     return unsubscribe
   }, [])
+
+
+  /* =========================
+     EVENTS
+  ========================= */
 
   useEffect(() => {
     let isMounted = true
 
-    getCollection('events')
-      .then((documents) => {
-        if (!isMounted || documents.length === 0) return
 
-        setEvents(documents.map((document) => ({
-          ...document,
-          bannerSrc: resolveBanner(document.image?.bannerUrl),
-          path: getEventPath(document),
-        })))
-      })
-      .catch((error) => {
-        console.error('이벤트 목록 조회 실패:', error)
-      })
+    getCollection(
+      'events'
+    )
+      .then(
+        (
+          documents
+        ) => {
+          if (
+            !isMounted ||
+            documents.length === 0
+          ) {
+            return
+          }
+
+
+          setEvents(
+            documents.map(
+              (
+                document
+              ) => ({
+                ...document,
+
+                bannerSrc:
+                  resolveBanner(
+                    document.image
+                      ?.bannerUrl
+                  ),
+
+                path:
+                  getEventPath(
+                    document
+                  ),
+              })
+            )
+          )
+        }
+      )
+
+      .catch(
+        (
+          error
+        ) => {
+          console.error(
+            '이벤트 목록 조회 실패:',
+            error
+          )
+        }
+      )
+
 
     return () => {
       isMounted = false
@@ -278,7 +463,7 @@ const EventWinningHistory = () => {
 
 
   /* =========================
-     이벤트 참여 기록 조회
+     PARTICIPATIONS
   ========================= */
 
   useEffect(() => {
@@ -286,74 +471,114 @@ const EventWinningHistory = () => {
 
 
     if (
-      currentUser === undefined
+      currentUser ===
+      undefined
     ) {
       return undefined
     }
 
 
     if (!currentUser) {
-      setParticipations([])
-      setIsLoading(false)
+      setParticipations(
+        []
+      )
+
+      setIsLoading(
+        false
+      )
 
       return undefined
     }
 
 
-    setIsLoading(true)
+    setIsLoading(
+      true
+    )
+
     setLoadError('')
 
 
-    getUserEventParticipations(currentUser.uid)
-      .then((documents) => {
-        if (!isMounted) {
-          return
-        }
-
-        setParticipations(
+    getUserEventParticipations(
+      currentUser.uid
+    )
+      .then(
+        (
           documents
-        )
-      })
+        ) => {
+          if (
+            !isMounted
+          ) {
+            return
+          }
 
-      .catch((error) => {
-        console.error(
-          '이벤트 당첨 내역 조회 실패:',
-          error
-        )
 
-        if (isMounted) {
-          setParticipations([])
-
-          setLoadError(
-            '이벤트 당첨 내역을 불러오지 못했습니다.'
+          setParticipations(
+            documents
           )
         }
-      })
+      )
 
-      .finally(() => {
-        if (isMounted) {
-          setIsLoading(false)
+      .catch(
+        (
+          error
+        ) => {
+          console.error(
+            '이벤트 당첨 내역 조회 실패:',
+            error
+          )
+
+
+          if (
+            isMounted
+          ) {
+            setParticipations(
+              []
+            )
+
+            setLoadError(
+              '이벤트 당첨 내역을 불러오지 못했습니다.'
+            )
+          }
         }
-      })
+      )
+
+      .finally(
+        () => {
+          if (
+            isMounted
+          ) {
+            setIsLoading(
+              false
+            )
+          }
+        }
+      )
 
 
     return () => {
       isMounted = false
     }
-  }, [currentUser, events])
+  }, [
+    currentUser,
+    events,
+  ])
 
 
   /* =========================
-     당첨 내역 가공
+     WINNING HISTORY
   ========================= */
 
   const winningHistory =
     useMemo(() => {
       return participations
         .filter(
-          (participation) =>
+          (
+            participation
+          ) =>
             participation.rewardType ===
               'product' ||
+            participation.rewardType ===
+              'point' ||
             participation.isWinner ===
               true ||
             participation.winner ===
@@ -369,7 +594,11 @@ const EventWinningHistory = () => {
           ) => {
             const event =
               events.find(
-                ({ id }) =>
+                (
+                  {
+                    id,
+                  }
+                ) =>
                   id ===
                   participation.eventId
               )
@@ -383,10 +612,6 @@ const EventWinningHistory = () => {
                 event?.title ||
                 '이벤트',
 
-              rewardName:
-                participation.rewardName ||
-                '이벤트 경품',
-
               bannerSrc:
                 event?.bannerSrc,
 
@@ -395,15 +620,18 @@ const EventWinningHistory = () => {
                 PATHS.events,
 
               rewardGroup:
-                participation.rewardType === 'product'
+                participation.rewardType ===
+                'product'
                   ? 'product'
                   : 'point',
 
               rewardLabel:
-                getRewardLabel(participation),
+                getRewardLabel(
+                  participation
+                ),
 
-              actionLabel:
-                getActionLabel(
+              deliveryLabel:
+                getDeliveryLabel(
                   participation
                 ),
 
@@ -415,35 +643,51 @@ const EventWinningHistory = () => {
           }
         )
 
-        .sort((a, b) => {
-          const aTime =
-            a.wonAt?.seconds ||
-            0
+        .sort(
+          (
+            a,
+            b
+          ) => {
+            const aTime =
+              a.wonAt?.seconds ||
+              0
 
-          const bTime =
-            b.wonAt?.seconds ||
-            0
 
-          return bTime - aTime
-        })
-    }, [participations, events])
+            const bTime =
+              b.wonAt?.seconds ||
+              0
+
+
+            return (
+              bTime -
+              aTime
+            )
+          }
+        )
+    }, [
+      participations,
+      events,
+    ])
 
 
   /* =========================
-     필터
+     FILTER
   ========================= */
 
   const filteredHistory =
     useMemo(() => {
       if (
-        activeFilter === 'all'
+        activeFilter ===
+        'all'
       ) {
         return winningHistory
       }
 
 
       return winningHistory.filter(
-        (item) =>
+        (
+          item
+        ) =>
           item.rewardGroup ===
           activeFilter
       )
@@ -453,45 +697,99 @@ const EventWinningHistory = () => {
     ])
 
 
+  /* =========================
+     PAGINATION
+  ========================= */
+
+  const totalPages =
+    Math.max(
+      1,
+      Math.ceil(
+        filteredHistory.length /
+        ITEMS_PER_PAGE
+      )
+    )
+
+
+  const startIndex =
+    (
+      currentPage -
+      1
+    ) *
+    ITEMS_PER_PAGE
+
+
+  const visibleHistory =
+    filteredHistory.slice(
+      startIndex,
+      startIndex +
+        ITEMS_PER_PAGE
+    )
+
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [
+    activeFilter,
+  ])
+
+
+  useEffect(() => {
+    if (
+      currentPage >
+      totalPages
+    ) {
+      setCurrentPage(
+        totalPages
+      )
+    }
+  }, [
+    currentPage,
+    totalPages,
+  ])
+
+
+  const handleFilterChange = (
+    value
+  ) => {
+    setActiveFilter(
+      value
+    )
+
+    setCurrentPage(
+      1
+    )
+  }
+
+
+  /* =========================
+     RENDER
+  ========================= */
+
   return (
     <section
-      className={styles.page}
-      aria-labelledby="event-winning-title"
+      className={
+        styles.page
+      }
     >
-
       <div
         className={
           styles.winningCard
         }
       >
 
-        {/* =====================
+        {/* =========================
             HEADER
-        ===================== */}
+        ========================= */}
 
-        <header
-          className={
-            styles.pageHeader
-          }
-        >
-          <h2
-            id="event-winning-title"
-          >
-            이벤트 당첨 내역
-          </h2>
-        </header>
-
-
-        <div
-          className={
-            styles.titleDivider
-          }
+        <MyPageHeader
+          title="이벤트 당첨 내역"
         />
 
 
-        {/* =====================
+        {/* =========================
             FILTER
-        ===================== */}
+        ========================= */}
 
         <div
           className={
@@ -506,7 +804,9 @@ const EventWinningHistory = () => {
             aria-label="이벤트 당첨 내역 필터"
           >
             {filterItems.map(
-              (filter) => (
+              (
+                filter
+              ) => (
                 <button
                   key={
                     filter.value
@@ -524,7 +824,7 @@ const EventWinningHistory = () => {
                       : ''
                   }`}
                   onClick={() =>
-                    setActiveFilter(
+                    handleFilterChange(
                       filter.value
                     )
                   }
@@ -538,41 +838,53 @@ const EventWinningHistory = () => {
           </div>
 
 
-          <p
-            className={
-              styles.guide
-            }
-          >
-            <span
-              aria-hidden="true"
-            >
-              □
-            </span>
+          {!isLoading &&
+            !loadError &&
+            filteredHistory.length >
+              0 && (
+              <span
+                className={
+                  styles.resultCount
+                }
+              >
+                총{' '}
 
-            이벤트 정보는 공지를
-            통해 확인
-          </p>
+                <strong>
+                  {
+                    filteredHistory.length
+                  }
+                </strong>
+
+                건
+              </span>
+            )}
         </div>
 
 
-        {/* =====================
+        {/* =========================
             CONTENT
-        ===================== */}
+        ========================= */}
 
         {isLoading ? (
-
           <div
             className={
               styles.stateBox
             }
             role="status"
           >
-            당첨 내역을
-            불러오는 중입니다.
+            <span
+              className={
+                styles.loadingSpinner
+              }
+              aria-hidden="true"
+            />
+
+
+            <strong>
+              당첨 내역을 불러오는 중입니다.
+            </strong>
           </div>
-
         ) : loadError ? (
-
           <div
             className={
               styles.stateBox
@@ -581,109 +893,240 @@ const EventWinningHistory = () => {
           >
             {loadError}
           </div>
-
         ) : filteredHistory.length >
           0 ? (
+          <>
 
-          <div
-            className={
-              styles.winningList
-            }
-          >
-            {filteredHistory.map(
-              (item) => (
+            {/* =========================
+                LIST
+            ========================= */}
 
-                <article
-                  key={
-                    item.id ||
-                    `${item.eventId}-${item.rewardName}`
-                  }
-                  className={
-                    styles.winningItem
-                  }
-                >
-
-                  {/* 이미지 */}
-
-                  <Link
-                    to={
-                      item.path
+            <div
+              className={
+                styles.winningList
+              }
+            >
+              {visibleHistory.map(
+                (
+                  item
+                ) => (
+                  <article
+                    key={
+                      item.id ||
+                      `${item.eventId}-${item.rewardLabel}`
                     }
                     className={
-                      styles.eventImage
+                      styles.winningItem
                     }
                   >
-                    {item.bannerSrc ? (
-                      <img
-                        src={
-                          item.bannerSrc
-                        }
-                        alt=""
-                      />
-                    ) : (
-                      <span
-                        aria-hidden="true"
-                      />
-                    )}
-                  </Link>
 
-
-                  {/* 내용 */}
-
-                  <div
-                    className={
-                      styles.eventInfo
-                    }
-                  >
                     <Link
                       to={
                         item.path
                       }
                       className={
-                        styles.eventTitle
+                        styles.eventImage
                       }
                     >
-                      {
-                        item.title
-                      }
+                      {item.bannerSrc ? (
+                        <img
+                          src={
+                            item.bannerSrc
+                          }
+                          alt=""
+                        />
+                      ) : (
+                        <span
+                          aria-hidden="true"
+                        />
+                      )}
                     </Link>
 
 
-                    <time>
-                      당첨일{' '}
-                      {formatDate(
-                        item.wonAt
-                      )}
-                    </time>
-                  </div>
+                    <div
+                      className={
+                        styles.eventInfo
+                      }
+                    >
+                      <div
+                        className={
+                          styles.titleRow
+                        }
+                      >
+                        <span
+                          className={`${styles.rewardTypeBadge} ${
+                            item.rewardGroup ===
+                            'product'
+                              ? styles.productType
+                              : styles.pointType
+                          }`}
+                        >
+                          {item.rewardGroup ===
+                          'product'
+                            ? '경품'
+                            : '포인트'}
+                        </span>
 
 
-                  {/* 상태 */}
+                        <Link
+                          to={
+                            item.path
+                          }
+                          className={
+                            styles.eventTitle
+                          }
+                        >
+                          {
+                            item.title
+                          }
+                        </Link>
+                      </div>
 
-                  <span
-                    className={`${styles.deliveryBadge} ${
-                      item.rewardGroup === 'product'
-                        ? styles.completed
-                        : styles.pending
-                    }`}
-                  >
-                    {
-                      item.rewardLabel
-                    }
-                  </span>
 
-                </article>
+                      <strong
+                        className={
+                          styles.rewardName
+                        }
+                      >
+                        {
+                          item.rewardLabel
+                        }
+                      </strong>
 
-              )
+
+                      <time>
+                        당첨일{' '}
+
+                        {formatDate(
+                          item.wonAt
+                        )}
+                      </time>
+                    </div>
+
+
+                    {item.rewardGroup ===
+                    'product' ? (
+                      <span
+                        className={`${styles.deliveryBadge} ${
+                          item.deliveryLabel ===
+                          '지급 완료'
+                            ? styles.completed
+                            : styles.pending
+                        }`}
+                      >
+                        {
+                          item.deliveryLabel
+                        }
+                      </span>
+                    ) : (
+                      <span
+                        className={`${styles.deliveryBadge} ${styles.completed}`}
+                      >
+                        지급 완료
+                      </span>
+                    )}
+
+                  </article>
+                )
+              )}
+            </div>
+
+
+            {/* =========================
+                PAGINATION
+            ========================= */}
+
+            {totalPages > 1 && (
+              <nav
+                className={
+                  styles.pagination
+                }
+                aria-label="이벤트 당첨 내역 페이지"
+              >
+                <button
+                  type="button"
+                  disabled={
+                    currentPage ===
+                    1
+                  }
+                  onClick={() =>
+                    setCurrentPage(
+                      Math.max(
+                        1,
+                        currentPage -
+                          1
+                      )
+                    )
+                  }
+                  aria-label="이전 페이지"
+                >
+                  ‹
+                </button>
+
+
+                {Array.from(
+                  {
+                    length:
+                      totalPages,
+                  },
+                  (
+                    _,
+                    index
+                  ) => {
+                    const pageNumber =
+                      index + 1
+
+
+                    return (
+                      <button
+                        key={
+                          pageNumber
+                        }
+                        type="button"
+                        className={
+                          currentPage ===
+                          pageNumber
+                            ? styles.activePage
+                            : ''
+                        }
+                        onClick={() =>
+                          setCurrentPage(
+                            pageNumber
+                          )
+                        }
+                      >
+                        {
+                          pageNumber
+                        }
+                      </button>
+                    )
+                  }
+                )}
+
+
+                <button
+                  type="button"
+                  disabled={
+                    currentPage ===
+                    totalPages
+                  }
+                  onClick={() =>
+                    setCurrentPage(
+                      Math.min(
+                        totalPages,
+                        currentPage +
+                          1
+                      )
+                    )
+                  }
+                  aria-label="다음 페이지"
+                >
+                  ›
+                </button>
+              </nav>
             )}
-          </div>
-
+          </>
         ) : (
-
-          /* =====================
-              EMPTY
-          ===================== */
-
           <div
             className={
               styles.emptyState
@@ -698,30 +1141,26 @@ const EventWinningHistory = () => {
               ♡
             </span>
 
+
             <strong>
-              당첨 내역이
-              없습니다.
+              당첨 내역이 없습니다.
             </strong>
 
-            <p>
-              이벤트에 참여하고
-              다양한 경품을
-              만나보세요.
-            </p>
 
             <Link
               to={
                 PATHS.events
               }
+              className={
+                styles.emptyButton
+              }
             >
               이벤트 보러가기
             </Link>
           </div>
-
         )}
 
       </div>
-
     </section>
   )
 }

@@ -1572,6 +1572,19 @@
 }
 
 
+.eventChart {
+  position: relative;
+
+  width: 100%;
+  height: 230px;
+
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+
 .guideBox {
   display: flex;
   flex-direction: column;

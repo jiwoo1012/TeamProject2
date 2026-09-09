@@ -23,6 +23,7 @@ import {
 } from '../../firebase/firebase'
 
 import makdongImage from '../../assets/characters/M007_Poses03.png'
+import MyPageHeader from '../../components/mypage/MyPageHeader'
 
 import styles from './AiPreference.module.scss'
 
@@ -1686,21 +1687,9 @@ const AiPreference = () => {
   // ========================================
 
   const renderHeader = () => (
-    <header
-      className={
-        styles.pageHeader
-      }
-    >
-      <div>
-        <h1>
-          내 취향 분석
-        </h1>
-
-        <p>
-          막동이가 분석한 나의 전통주 취향이에요.
-        </p>
-      </div>
-    </header>
+    <MyPageHeader
+      title="내 취향 분석"
+    />
   )
 
 
@@ -1722,21 +1711,23 @@ const AiPreference = () => {
         >
           {renderHeader()}
 
-          <section
+          <div
             className={
-              styles.emptyState
+              styles.stateBox
             }
+            role="status"
           >
-            <div
+            <span
               className={
-                styles.emptyContent
+                styles.loadingSpinner
               }
-            >
-              <h2>
-                취향 정보를 불러오는 중이에요.
-              </h2>
-            </div>
-          </section>
+              aria-hidden="true"
+            />
+
+            <strong>
+              취향 정보를 불러오는 중입니다.
+            </strong>
+          </div>
         </div>
       </div>
     )
@@ -1930,22 +1921,9 @@ const AiPreference = () => {
 
         {/* 상단 */}
 
-        <header
-          className={
-            styles.pageHeader
-          }
+        <MyPageHeader
+          title="내 취향 분석"
         >
-          <div>
-            <h1>
-              내 취향 분석
-            </h1>
-
-            <p>
-              막동이가 분석한 나의 전통주 취향이에요.
-            </p>
-          </div>
-
-
           <div
             className={
               styles.analysisDate
@@ -1960,7 +1938,7 @@ const AiPreference = () => {
                 '-'}
             </strong>
           </div>
-        </header>
+        </MyPageHeader>
 
 
         {/* 대표 취향 */}

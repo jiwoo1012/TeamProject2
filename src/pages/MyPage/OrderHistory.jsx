@@ -18,10 +18,14 @@ import {
 
 import { db } from '../../firebase/firebase'
 
+import MyPageHeader from '../../components/mypage/MyPageHeader'
+import StatusBadge from '../../components/mypage/StatusBadge'
+
 import styles from './OrderHistory.module.scss'
 
 
-const ORDERS_PER_PAGE = 3
+const ORDERS_PER_PAGE = 2
+const PREVIEW_PRODUCTS = 3
 
 
 const summaryStats = [
@@ -32,7 +36,7 @@ const summaryStats = [
   },
   {
     type: 'shipping',
-    label: '배송 중',
+    label: '배송 진행',
     value: 'shipping',
   },
   {
@@ -47,6 +51,10 @@ const summaryStats = [
   },
 ]
 
+
+/* =========================
+   SUMMARY ICON
+========================= */
 
 const SummaryIcon = ({ type }) => {
   if (type === 'all') {
@@ -101,6 +109,10 @@ const SummaryIcon = ({ type }) => {
   )
 }
 
+
+/* =========================
+   ICON
+========================= */
 
 const ArrowIcon = () => (
   <svg
@@ -166,6 +178,10 @@ const OrderHistory = () => {
   const [currentPage, setCurrentPage] =
     useState(1)
 
+
+  /* =========================
+     ORDER LOAD
+  ========================= */
 
   useEffect(() => {
     let isActive = true
@@ -331,6 +347,8 @@ const OrderHistory = () => {
               setOrders(
                 nextOrders
               )
+
+              setCurrentPage(1)
             }
           } catch (error) {
             console.error(
@@ -362,23 +380,43 @@ const OrderHistory = () => {
   }, [loadAttempt])
 
 
+  /* =========================
+     FILTER
+  ========================= */
+
   const filteredOrders =
     useMemo(() => {
       return orders.filter(
         (order) => {
           const normalizedKeyword =
-            searchKeyword.trim().toLowerCase()
+            searchKeyword
+              .trim()
+              .toLowerCase()
+
 
           const matchesKeyword =
             !normalizedKeyword ||
-            order.id.toLowerCase().includes(normalizedKeyword) ||
-            order.items.some((item) =>
-              String(item.name || '').toLowerCase().includes(normalizedKeyword)
+            order.id
+              .toLowerCase()
+              .includes(
+                normalizedKeyword
+              ) ||
+            order.items.some(
+              (item) =>
+                String(
+                  item.name || ''
+                )
+                  .toLowerCase()
+                  .includes(
+                    normalizedKeyword
+                  )
             )
+
 
           if (!matchesKeyword) {
             return false
           }
+
 
           const matchesStatus =
             activeFilter ===
@@ -432,6 +470,10 @@ const OrderHistory = () => {
     ])
 
 
+  /* =========================
+     SORT
+  ========================= */
+
   const sortedOrders =
     useMemo(
       () =>
@@ -445,6 +487,10 @@ const OrderHistory = () => {
       [filteredOrders]
     )
 
+
+  /* =========================
+     PAGINATION
+  ========================= */
 
   const totalPages =
     Math.ceil(
@@ -466,6 +512,10 @@ const OrderHistory = () => {
     )
 
 
+  /* =========================
+     HANDLER
+  ========================= */
+
   const handleFilterChange =
     (value) => {
       setActiveFilter(value)
@@ -483,6 +533,26 @@ const OrderHistory = () => {
     }
 
 
+  const handleSearchChange =
+    (event) => {
+      setSearchKeyword(
+        event.target.value
+      )
+
+      setCurrentPage(1)
+    }
+
+
+  const handlePageChange =
+    (page) => {
+      setCurrentPage(page)
+    }
+
+
+  /* =========================
+     SUMMARY
+  ========================= */
+
   const displaySummaryStats =
     summaryStats.map(
       (stat) => ({
@@ -499,6 +569,10 @@ const OrderHistory = () => {
       })
     )
 
+
+  /* =========================
+     PRICE
+  ========================= */
 
   const getItemPrice = (
     item
@@ -521,9 +595,7 @@ const OrderHistory = () => {
   return (
     <section
       className={styles.page}
-      aria-labelledby="order-history-title"
     >
-
       <div
         className={
           styles.orderHistoryCard
@@ -531,26 +603,11 @@ const OrderHistory = () => {
       >
 
         {/* =========================
-            TITLE
+            HEADER
         ========================= */}
 
-        <header
-          className={
-            styles.pageHeader
-          }
-        >
-          <h2
-            id="order-history-title"
-          >
-            주문 내역
-          </h2>
-        </header>
-
-
-        <div
-          className={
-            styles.titleDivider
-          }
+        <MyPageHeader
+          title="주문 내역"
         />
 
 
@@ -564,7 +621,6 @@ const OrderHistory = () => {
           }
           aria-label="주문 상태 요약"
         >
-
           {displaySummaryStats.map(
             (stat) => (
               <button
@@ -582,7 +638,6 @@ const OrderHistory = () => {
                   )
                 }
               >
-
                 <span
                   className={
                     styles.summaryIcon
@@ -609,18 +664,19 @@ const OrderHistory = () => {
                   }
                 >
                   {stat.count}
-                  <span>건</span>
-                </strong>
 
+                  <span>
+                    건
+                  </span>
+                </strong>
               </button>
             )
           )}
-
         </div>
 
 
         {/* =========================
-            TOOL BAR
+            CONTROL BAR
         ========================= */}
 
         <div
@@ -628,21 +684,43 @@ const OrderHistory = () => {
             styles.controlBar
           }
         >
+          <label
+            className={
+              styles.searchField
+            }
+          >
+            <span
+              className={
+                styles.srOnly
+              }
+            >
+              주문번호 또는 상품명 검색
+            </span>
 
-          <label className={styles.searchField}>
-            <span className={styles.srOnly}>주문번호 또는 상품명 검색</span>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="11" cy="11" r="7" />
+
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <circle
+                cx="11"
+                cy="11"
+                r="7"
+              />
+
               <path d="m16 16 4 4" />
             </svg>
+
+
             <input
               type="search"
-              value={searchKeyword}
+              value={
+                searchKeyword
+              }
               placeholder="주문번호 · 상품명 검색"
-              onChange={(event) => {
-                setSearchKeyword(event.target.value)
-                setCurrentPage(1)
-              }}
+              onChange={
+                handleSearchChange
+              }
             />
           </label>
 
@@ -660,6 +738,7 @@ const OrderHistory = () => {
               주문 조회 기간
             </span>
 
+
             <select
               value={
                 periodMonths
@@ -669,7 +748,7 @@ const OrderHistory = () => {
               }
             >
               <option value="all">
-                전체
+                전체 기간
               </option>
 
               <option value="3">
@@ -685,15 +764,14 @@ const OrderHistory = () => {
               </option>
             </select>
 
+
             <span
               className={
                 styles.selectArrow
               }
               aria-hidden="true"
             />
-
           </label>
-
         </div>
 
 
@@ -702,7 +780,6 @@ const OrderHistory = () => {
         ========================= */}
 
         {isLoading ? (
-
           <div
             className={
               styles.feedbackState
@@ -721,9 +798,7 @@ const OrderHistory = () => {
               불러오고 있습니다.
             </strong>
           </div>
-
         ) : loadError ? (
-
           <div
             className={
               styles.feedbackState
@@ -733,6 +808,7 @@ const OrderHistory = () => {
             <strong>
               {loadError}
             </strong>
+
 
             {firebaseUser && (
               <button
@@ -751,254 +827,290 @@ const OrderHistory = () => {
               </button>
             )}
           </div>
-
         ) : visibleOrders.length >
           0 ? (
-
           <div
             className={
               styles.orderList
             }
           >
-
             {visibleOrders.map(
-              (order) => (
+              (order) => {
+                const previewItems =
+                  order.items.slice(
+                    0,
+                    PREVIEW_PRODUCTS
+                  )
 
-                <article
-                  key={order.id}
-                  className={
-                    styles.orderCard
-                  }
-                >
 
-                  {/* 주문 헤더 */}
+                const hiddenItemCount =
+                  Math.max(
+                    0,
+                    order.items.length -
+                      PREVIEW_PRODUCTS
+                  )
 
-                  <div
+
+                return (
+                  <article
+                    key={order.id}
                     className={
-                      styles.orderHeader
+                      styles.orderCard
                     }
                   >
 
-                    <div>
-                      <strong
-                        className={
-                          styles.orderDate
-                        }
-                      >
-                        {order.createdAt.replaceAll(
-                          '-',
-                          '.'
-                        )}
-                      </strong>
+                    {/* =========================
+                        ORDER HEADER
+                    ========================= */}
 
+                    <div
+                      className={
+                        styles.orderHeader
+                      }
+                    >
                       <div
                         className={
-                          styles.orderSubInfo
+                          styles.orderHeaderInfo
                         }
                       >
-                        <span>
-                          주문번호{' '}
-                          {order.id.slice(
-                            0,
-                            12
+                        <strong
+                          className={
+                            styles.orderDate
+                          }
+                        >
+                          {order.createdAt.replaceAll(
+                            '-',
+                            '.'
                           )}
+                        </strong>
+
+
+                        <div
+                          className={
+                            styles.orderSubInfo
+                          }
+                        >
+                          <span>
+                            주문번호{' '}
+                            {order.id.slice(
+                              0,
+                              12
+                            )}
+                          </span>
+
+
+                          <StatusBadge
+                            tone={
+                              order.statusTone
+                            }
+                          >
+                            {
+                              order.statusLabel
+                            }
+                          </StatusBadge>
+                        </div>
+                      </div>
+
+
+                      <Link
+                        to={order.id}
+                        className={
+                          styles.orderMore
+                        }
+                        aria-label="주문 상세 보기"
+                      >
+                        <span>
+                          주문 상세
                         </span>
 
-                        <span
-                          className={`${styles.orderStatus} ${
-                            styles[
-                              order
-                                .statusTone
-                            ] ||
-                            ''
-                          }`}
-                        >
-                          {
-                            order.statusLabel
-                          }
-                        </span>
-                      </div>
+                        <ArrowIcon />
+                      </Link>
                     </div>
 
 
-                    <Link
-                      to={order.id}
+                    {/* =========================
+                        PRODUCT PREVIEW
+                    ========================= */}
+
+                    <div
                       className={
-                        styles.orderMore
+                        styles.productList
                       }
-                      aria-label="주문 상세 보기"
                     >
-                      <span>주문 상세</span>
-                      <ArrowIcon />
-                    </Link>
-
-                  </div>
-
-
-                  {/* 상품 목록 */}
-
-                  <div
-                    className={
-                      styles.productList
-                    }
-                  >
-
-                    {order.items.map(
-                      (
-                        item,
-                        index
-                      ) => (
-
-                        <div
-                          key={`${order.id}-${index}`}
-                          className={
-                            styles.productRow
-                          }
-                        >
-
+                      {previewItems.map(
+                        (
+                          item,
+                          index
+                        ) => (
                           <div
+                            key={`${order.id}-${index}`}
                             className={
-                              styles.productImage
+                              styles.productRow
                             }
                           >
-                            {item.imageUrl ? (
-                              <img
-                                src={
-                                  item.imageUrl
+                            <div
+                              className={
+                                styles.productImage
+                              }
+                            >
+                              {item.imageUrl ? (
+                                <img
+                                  src={
+                                    item.imageUrl
+                                  }
+                                  alt={
+                                    item.name
+                                  }
+                                />
+                              ) : (
+                                <span>
+                                  IMG
+                                </span>
+                              )}
+                            </div>
+
+
+                            <div
+                              className={
+                                styles.productInfo
+                              }
+                            >
+                              <strong
+                                className={
+                                  styles.productName
                                 }
-                                alt={
+                              >
+                                {
                                   item.name
                                 }
-                              />
-                            ) : (
-                              <span>
-                                IMG
-                              </span>
-                            )}
-                          </div>
+                              </strong>
 
 
-                          <div
-                            className={
-                              styles.productInfo
-                            }
-                          >
+                              <p
+                                className={
+                                  styles.productMeta
+                                }
+                              >
+                                {formatPrice(
+                                  getItemPrice(
+                                    item
+                                  )
+                                )}
+                                원
 
-                            <strong
+
+                                {Number(
+                                  item.quantity ||
+                                    1
+                                ) >
+                                  1 && (
+                                  <>
+                                    {' · '}
+                                    {
+                                      item.quantity
+                                    }
+                                    개
+                                  </>
+                                )}
+                              </p>
+                            </div>
+
+
+                            <div
                               className={
-                                styles.productName
+                                styles.productActions
                               }
                             >
-                              {
-                                item.name
-                              }
-                            </strong>
-
-
-                            <p
-                              className={
-                                styles.productMeta
-                              }
-                            >
-                              {formatPrice(
-                                getItemPrice(
-                                  item
-                                )
-                              )}
-                              원
-
-                              {Number(
-                                item.quantity ||
-                                  1
-                              ) >
-                                1 && (
-                                <>
-                                  {' '}
-                                  ·{' '}
-                                  {
-                                    item.quantity
+                              {item.productId && (
+                                <Link
+                                  to={`/shop/${item.productId}`}
+                                  className={
+                                    styles.iconButton
                                   }
-                                  개
-                                </>
+                                  aria-label={`${item.name} 상품 보기`}
+                                >
+                                  <ProductArrowIcon />
+                                </Link>
                               )}
-                            </p>
-
-                          </div>
 
 
-                          <div
-                            className={
-                              styles.productActions
-                            }
-                          >
-
-                            {item.productId && (
                               <Link
-                                to={`/shop/${item.productId}`}
+                                to={
+                                  order.id
+                                }
                                 className={
                                   styles.iconButton
                                 }
-                                aria-label={`${item.name} 상품 보기`}
+                                aria-label="주문 상세 보기"
                               >
-                                <ProductArrowIcon />
+                                <OrderDetailIcon />
                               </Link>
-                            )}
-
-
-                            <Link
-                              to={
-                                order.id
-                              }
-                              className={
-                                styles.iconButton
-                              }
-                              aria-label="주문 상세 보기"
-                            >
-                              <OrderDetailIcon />
-                            </Link>
-
+                            </div>
                           </div>
+                        )
+                      )}
+                    </div>
 
-                        </div>
-                      )
+
+                    {/* =========================
+                        HIDDEN PRODUCTS
+                    ========================= */}
+
+                    {hiddenItemCount >
+                      0 && (
+                      <Link
+                        to={order.id}
+                        className={
+                          styles.moreProducts
+                        }
+                      >
+                        외{' '}
+
+                        <strong>
+                          {hiddenItemCount}개
+                        </strong>
+
+                        {' '}상품은 주문 상세에서
+                        확인할 수 있어요
+
+                        <ArrowIcon />
+                      </Link>
                     )}
 
-                  </div>
 
+                    {/* =========================
+                        TOTAL
+                    ========================= */}
 
-                  <div
-                    className={
-                      styles.orderFooter
-                    }
-                  >
-                    <span>
-                      총 결제 금액
-                    </span>
+                    <div
+                      className={
+                        styles.orderFooter
+                      }
+                    >
+                      <span>
+                        총 결제 금액
+                      </span>
 
-                    <strong>
-                      {formatPrice(
-                        order.totalPrice
-                      )}
-                      원
-                    </strong>
-                  </div>
+                      <strong>
+                        {formatPrice(
+                          order.totalPrice
+                        )}
+                        원
+                      </strong>
+                    </div>
 
-                </article>
-
-              )
+                  </article>
+                )
+              }
             )}
-
           </div>
-
         ) : (
-
           <section
             className={
               styles.emptyState
             }
             aria-label="빈 주문 내역"
           >
-
             <div
               className={
                 styles.emptyIcon
@@ -1029,7 +1141,8 @@ const OrderHistory = () => {
             </p>
 
 
-            {orders.length === 0 && (
+            {orders.length ===
+              0 && (
               <Link
                 className={
                   styles.shopButton
@@ -1039,9 +1152,7 @@ const OrderHistory = () => {
                 상품 보러가기
               </Link>
             )}
-
           </section>
-
         )}
 
 
@@ -1056,21 +1167,20 @@ const OrderHistory = () => {
             }
             aria-label="주문 내역 페이지"
           >
-
             <button
               type="button"
               disabled={
                 currentPage === 1
               }
               onClick={() =>
-                setCurrentPage(
-                  (page) =>
-                    Math.max(
-                      1,
-                      page - 1
-                    )
+                handlePageChange(
+                  Math.max(
+                    1,
+                    currentPage - 1
+                  )
                 )
               }
+              aria-label="이전 페이지"
             >
               ‹
             </button>
@@ -1098,7 +1208,7 @@ const OrderHistory = () => {
                         : ''
                     }
                     onClick={() =>
-                      setCurrentPage(
+                      handlePageChange(
                         pageNumber
                       )
                     }
@@ -1119,23 +1229,21 @@ const OrderHistory = () => {
                 totalPages
               }
               onClick={() =>
-                setCurrentPage(
-                  (page) =>
-                    Math.min(
-                      totalPages,
-                      page + 1
-                    )
+                handlePageChange(
+                  Math.min(
+                    totalPages,
+                    currentPage + 1
+                  )
                 )
               }
+              aria-label="다음 페이지"
             >
               ›
             </button>
-
           </nav>
         )}
 
       </div>
-
     </section>
   )
 }

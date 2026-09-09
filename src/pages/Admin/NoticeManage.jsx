@@ -1,4 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import {
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
+  RadialLinearScale,
+  Tooltip,
+} from 'chart.js'
+import {
+  Bar,
+  PolarArea,
+} from 'react-chartjs-2'
+
 import { auth } from '../../firebase/firebase'
 import { subscribeToAuthState } from '../../firebase/auth'
 import {
@@ -15,6 +30,16 @@ import AdminStatusBadge from '../../components/admin/AdminStatusBadge'
 import AdminSummaryCard from '../../components/admin/AdminSummaryCard'
 
 import styles from './NoticeManage.module.scss'
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  RadialLinearScale,
+  ArcElement,
+  Tooltip,
+  Legend
+)
 
 const statusLabels = {
   published: '게시 중',
@@ -225,6 +250,297 @@ const NoticeManage = () => {
     { key: 'draft', label: '숨김', value: draftCount, unit: '건', caption: '현재 비공개 공지' },
     { key: 'important', label: '중요 공지', value: importantCount, unit: '건', caption: '상단 고정 공지' },
   ]
+
+
+  // ========================================
+  // 공지 상태 분포 - Stacked Horizontal Bar
+  // ========================================
+
+  const statusChartData = useMemo(
+    () => ({
+      labels: [
+        '전체 공지',
+      ],
+
+      datasets: [
+        {
+          label: '게시 중',
+          data: [
+            donutPublishedCount,
+          ],
+          backgroundColor:
+            '#568a80',
+          borderColor:
+            '#ffffff',
+          borderWidth: 1,
+          borderRadius: 5,
+          barThickness: 24,
+          stack: 'status',
+        },
+        {
+          label: '숨김',
+          data: [
+            donutDraftCount,
+          ],
+          backgroundColor:
+            '#739eae',
+          borderColor:
+            '#ffffff',
+          borderWidth: 1,
+          borderRadius: 5,
+          barThickness: 24,
+          stack: 'status',
+        },
+        {
+          label: '중요 고정',
+          data: [
+            importantCount,
+          ],
+          backgroundColor:
+            '#dca451',
+          borderColor:
+            '#ffffff',
+          borderWidth: 1,
+          borderRadius: 5,
+          barThickness: 24,
+          stack: 'status',
+        },
+      ],
+    }),
+    [
+      donutPublishedCount,
+      donutDraftCount,
+      importantCount,
+    ]
+  )
+
+
+  const statusChartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+
+      indexAxis: 'y',
+
+      animation: {
+        duration: 900,
+        easing: 'easeOutQuart',
+      },
+
+      plugins: {
+        legend: {
+          display: false,
+        },
+
+        tooltip: {
+          enabled: true,
+          position: 'nearest',
+
+          xAlign: 'center',
+          yAlign: 'bottom',
+
+          caretPadding: 8,
+          padding: 10,
+
+          displayColors: true,
+          usePointStyle: true,
+          boxWidth: 7,
+          boxHeight: 7,
+
+          filter: (context) =>
+            Number(context.raw) > 0,
+
+          callbacks: {
+            title: () => '',
+
+            label: (context) => {
+              const count =
+                Number(context.raw) || 0
+
+              const rate =
+                totalCount > 0
+                  ? Math.round(
+                      (count / totalCount)
+                      * 100
+                    )
+                  : 0
+
+              return `${context.dataset.label} ${count}건 · ${rate}%`
+            },
+          },
+        },
+      },
+
+      scales: {
+        x: {
+          stacked: true,
+          display: false,
+
+          beginAtZero: true,
+          max:
+            Math.max(
+              totalCount,
+              1
+            ),
+        },
+
+        y: {
+          stacked: true,
+          display: false,
+        },
+      },
+    }),
+    [totalCount]
+  )
+
+
+  // ========================================
+  // 분류별 공지 현황 - Polar Area
+  // 기존 화면의 집계값 그대로 사용
+  // ========================================
+
+  const categoryChartData = useMemo(
+    () => {
+      const categoryCountMap =
+        notices.reduce(
+          (acc, notice) => {
+            const category =
+              notice.category || '기타'
+
+            acc[category] =
+              (acc[category] || 0) + 1
+
+            return acc
+          },
+          {}
+        )
+
+      const categoryEntries =
+        Object.entries(
+          categoryCountMap
+        )
+
+      const chartColors = [
+        'rgba(86, 138, 128, 0.82)',
+        'rgba(115, 158, 174, 0.82)',
+        'rgba(220, 164, 81, 0.82)',
+        'rgba(214, 154, 149, 0.82)',
+        'rgba(150, 172, 145, 0.82)',
+        'rgba(178, 151, 125, 0.82)',
+        'rgba(128, 143, 160, 0.82)',
+        'rgba(190, 170, 145, 0.82)',
+      ]
+
+      return {
+        labels:
+          categoryEntries.map(
+            ([category]) =>
+              category
+          ),
+
+        datasets: [
+          {
+            data:
+              categoryEntries.map(
+                ([, count]) =>
+                  count
+              ),
+
+            backgroundColor:
+              categoryEntries.map(
+                (_, index) =>
+                  chartColors[
+                    index %
+                    chartColors.length
+                  ]
+              ),
+
+            borderColor:
+              '#ffffff',
+
+            borderWidth: 2,
+          },
+        ],
+      }
+    },
+    [notices]
+  )
+
+
+  const categoryChartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+
+      animation: {
+        duration: 900,
+        easing: 'easeOutQuart',
+        animateRotate: true,
+        animateScale: true,
+      },
+
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+
+          labels: {
+            usePointStyle: true,
+            pointStyle: 'circle',
+
+            boxWidth: 7,
+            boxHeight: 7,
+
+            padding: 12,
+
+            color: '#747b78',
+
+            font: {
+              size: 9,
+              weight: '600',
+            },
+          },
+        },
+
+        tooltip: {
+          displayColors: true,
+          usePointStyle: true,
+          padding: 10,
+
+          callbacks: {
+            label: (context) =>
+              `${context.label}: ${context.raw}건`,
+          },
+        },
+      },
+
+      scales: {
+        r: {
+          beginAtZero: true,
+
+          ticks: {
+            display: false,
+            stepSize: 1,
+          },
+
+          grid: {
+            color:
+              'rgba(140, 148, 144, 0.18)',
+          },
+
+          angleLines: {
+            color:
+              'rgba(140, 148, 144, 0.16)',
+          },
+
+          pointLabels: {
+            display: false,
+          },
+        },
+      },
+    }),
+    []
+  )
 
   // 카드 클릭 필터 연동
   const handleCardClick = (key) => {
@@ -1099,34 +1415,11 @@ const NoticeManage = () => {
             >
               <div className={styles.statusOverview}>
 
-                <div
-                  className={styles.statusDonut}
-                  style={{
-                    '--published-end':
-                      `${publishedEndRate}%`,
-                    '--draft-end':
-                      `${draftEndRate}%`,
-                  }}
-                  data-empty={
-                    totalCount === 0
-                  }
-                  role="img"
-                  aria-label={
-                    `전체 ${totalCount}건 중 게시 중 ${donutPublishedCount}건, 숨김 ${donutDraftCount}건, 중요 고정 ${importantCount}건`
-                  }
-                >
-                  <div>
-                    <span>
-                      전체
-                    </span>
-
-                    <strong>
-                      {totalCount}
-                      <small>
-                        건
-                      </small>
-                    </strong>
-                  </div>
+                <div className={styles.statusChart}>
+                  <Bar
+                    data={statusChartData}
+                    options={statusChartOptions}
+                  />
                 </div>
 
                 <ul>
@@ -1175,80 +1468,11 @@ const NoticeManage = () => {
               eyebrow="CATEGORY"
               padding="compact"
             >
-              <div className={styles.activityBars}>
-
-                <div>
-                  <span>
-                    배송
-                  </span>
-
-                  <i>
-                    <b
-                      style={{
-                        width: '35%',
-                      }}
-                    />
-                  </i>
-
-                  <strong>
-                    1건
-                  </strong>
-                </div>
-
-                <div>
-                  <span>
-                    이벤트
-                  </span>
-
-                  <i>
-                    <b
-                      style={{
-                        width: '70%',
-                      }}
-                    />
-                  </i>
-
-                  <strong>
-                    2건
-                  </strong>
-                </div>
-
-                <div>
-                  <span>
-                    정책
-                  </span>
-
-                  <i>
-                    <b
-                      style={{
-                        width: '35%',
-                      }}
-                    />
-                  </i>
-
-                  <strong>
-                    1건
-                  </strong>
-                </div>
-
-                <div>
-                  <span>
-                    시스템
-                  </span>
-
-                  <i>
-                    <b
-                      style={{
-                        width: '35%',
-                      }}
-                    />
-                  </i>
-
-                  <strong>
-                    1건
-                  </strong>
-                </div>
-
+              <div className={styles.categoryPolarChart}>
+                <PolarArea
+                  data={categoryChartData}
+                  options={categoryChartOptions}
+                />
               </div>
 
               <p className={styles.analyticsCaption}>

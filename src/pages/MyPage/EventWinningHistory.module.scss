@@ -10,56 +10,22 @@
 
 .winningCard {
   width: 100%;
-  min-height: 430px;
+  min-height: 610px;
 
   padding:
-    30px
-    30px
-    32px;
+    34px
+    32px
+    40px;
 
   background: #fff;
 
+  border: 1px solid #eeeae3;
   border-radius: 18px;
 }
 
 
 /* =========================
-   HEADER
-========================= */
-
-.pageHeader {
-  min-height: 38px;
-
-  display: flex;
-  align-items: center;
-
-  h2 {
-    margin: 0;
-
-    color: #493d33;
-
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 1.3;
-  }
-}
-
-
-.titleDivider {
-  width: 100%;
-  height: 1px;
-
-  margin:
-    4px
-    0
-    16px;
-
-  background: #625d56;
-}
-
-
-/* =========================
-   CONTROLS
+   CONTROL
 ========================= */
 
 .controlArea {
@@ -67,81 +33,102 @@
   align-items: center;
   justify-content: space-between;
 
-  gap: 12px;
+  gap: 16px;
 
   margin-bottom: 18px;
 }
 
 
+/* =========================
+   FILTER
+========================= */
+
 .filters {
-  display: grid;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 
-  grid-template-columns:
-    58px
-    135px
-    135px;
-
-  overflow: hidden;
-
-  border-radius: 20px;
-
-  background: #edf3ee;
+  gap: 8px;
 }
 
 
 .filterButton {
-  height: 26px;
+  min-width: 58px;
+  height: 34px;
 
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
 
   padding:
     0
-    12px;
+    15px;
 
-  border: 0;
+  border: 1px solid #ddd8d0;
+  border-radius: 999px;
 
-  border-radius: 20px;
+  background: #fff;
 
-  background: transparent;
+  color: #756f68;
 
-  color: #7c817a;
-
-  font-size: 7px;
+  font-size: 12px;
   font-weight: 600;
 
   cursor: pointer;
 
   transition:
+    border-color 0.2s ease,
     background 0.2s ease,
     color 0.2s ease;
+
+  &:hover {
+    border-color: #9fb9b1;
+
+    background: #f5faf7;
+
+    color: #3f756d;
+  }
 }
 
 
 .activeFilter {
-  background: #558d82;
+  border-color: #4d7e7b;
+
+  background: #4d7e7b;
 
   color: #fff;
+
+  &:hover {
+    border-color: #4d7e7b;
+
+    background: #4d7e7b;
+
+    color: #fff;
+  }
 }
 
 
-.guide {
+/* =========================
+   COUNT
+========================= */
+
+.resultCount {
   flex-shrink: 0;
 
-  display: flex;
-  align-items: center;
+  color: #99938b;
 
-  gap: 5px;
+  font-size: 12px;
+  font-weight: 500;
 
-  margin: 0;
+  strong {
+    margin:
+      0
+      2px;
 
-  color: #699086;
+    color: #3f756d;
 
-  font-size: 7px;
-
-  span {
-    font-size: 8px;
+    font-size: 13px;
+    font-weight: 700;
   }
 }
 
@@ -159,30 +146,37 @@
 
 
 .winningItem {
+  min-height: 86px;
+
   display: grid;
 
   grid-template-columns:
-    58px
+    72px
     minmax(0, 1fr)
     auto;
 
   align-items: center;
 
-  gap: 13px;
-
-  min-height: 69px;
+  gap: 14px;
 
   padding:
-    10px
+    12px
     14px;
 
-  border:
-    1px solid
-    #e1ddd7;
-
-  border-radius: 8px;
+  border: 1px solid #e3ddd4;
+  border-radius: 12px;
 
   background: #fff;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+
+  &:hover {
+    border-color: #c9d5d0;
+
+    background: #fffefa;
+  }
 }
 
 
@@ -191,16 +185,19 @@
 ========================= */
 
 .eventImage {
-  width: 58px;
-  height: 50px;
+  width: 72px;
+  height: 62px;
 
   overflow: hidden;
 
   display: block;
 
-  border-radius: 4px;
+  border: 1px solid #eee9e2;
+  border-radius: 9px;
 
-  background: #d8d8d8;
+  background: #f2f0eb;
+
+  text-decoration: none;
 
   img {
     width: 100%;
@@ -209,15 +206,27 @@
     display: block;
 
     object-fit: cover;
+
+    transition:
+      transform 0.25s ease;
   }
 
-  span {
+
+  > span {
     display: block;
 
     width: 100%;
     height: 100%;
 
-    background: #d8d8d8;
+    background: #e4e1dc;
+  }
+
+
+  &:hover {
+    img {
+      transform:
+        scale(1.03);
+    }
   }
 }
 
@@ -229,32 +238,28 @@
 .eventInfo {
   min-width: 0;
 
-  p {
-    margin:
-      4px
-      0
-      0;
-
-    color: #99938b;
-
-    font-size: 7px;
-
-    strong {
-      color: #716b63;
-
-      font-weight: 600;
-    }
-  }
-
   time {
     display: block;
 
-    margin-top: 3px;
+    margin-top: 5px;
 
     color: #aaa49c;
 
-    font-size: 6px;
+    font-size: 10px;
+    font-weight: 500;
   }
+}
+
+
+.titleRow {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin-bottom: 6px;
 }
 
 
@@ -263,9 +268,9 @@
 
   overflow: hidden;
 
-  color: #4c463f;
+  color: #403b35;
 
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 700;
 
   text-decoration: none;
@@ -274,18 +279,71 @@
   white-space: nowrap;
 
   &:hover {
-    color: #5b897f;
+    color: #3f756d;
   }
 }
 
 
+.rewardName {
+  display: block;
+
+  overflow: hidden;
+
+  color: #716b63;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
 /* =========================
-   STATUS
+   TYPE BADGE
+========================= */
+
+.rewardTypeBadge {
+  min-height: 21px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  padding:
+    0
+    8px;
+
+  border-radius: 999px;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+
+.productType {
+  background: #edf5f1;
+
+  color: #4d7e73;
+}
+
+
+.pointType {
+  background: #f5f1e9;
+
+  color: #836f50;
+}
+
+
+/* =========================
+   DELIVERY BADGE
 ========================= */
 
 .deliveryBadge {
-  min-width: 88px;
-  height: 23px;
+  min-width: 78px;
+  height: 28px;
 
   display: inline-flex;
   align-items: center;
@@ -293,11 +351,11 @@
 
   padding:
     0
-    11px;
+    10px;
 
-  border-radius: 20px;
+  border-radius: 999px;
 
-  font-size: 7px;
+  font-size: 10px;
   font-weight: 700;
 
   white-space: nowrap;
@@ -305,46 +363,150 @@
 
 
 .pending {
-  border:
-    1px solid
-    #76a59a;
+  border: 1px solid #bfd3cc;
 
   background: #fff;
 
-  color: #628f85;
+  color: #5f877d;
 }
 
 
 .completed {
-  border:
-    1px solid
-    #5d9589;
+  border: 1px solid #4d7e7b;
 
-  background: #5d9589;
+  background: #4d7e7b;
 
   color: #fff;
 }
 
 
 /* =========================
-   EMPTY / LOADING
+   PAGINATION
 ========================= */
 
-.stateBox {
-  min-height: 250px;
-
+.pagination {
   display: flex;
   align-items: center;
   justify-content: center;
 
-  color: #99938b;
+  gap: 6px;
 
-  font-size: 9px;
+  margin-top: 28px;
+
+  button {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: transparent;
+
+    color: #8f8981;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: #edf5f1;
+
+      color: #3f756d;
+    }
+
+
+    &:disabled {
+      opacity: 0.3;
+
+      cursor: default;
+    }
+  }
 }
 
 
+.activePage {
+  background: #4d7e7b !important;
+
+  color: #fff !important;
+
+  font-weight: 700 !important;
+}
+
+
+/* =========================
+   LOADING / ERROR
+========================= */
+
+.stateBox {
+  min-height: 300px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  color: #99938b;
+
+  font-size: 12px;
+
+  text-align: center;
+
+  strong {
+    color: #554f48;
+
+    font-size: 13px;
+    font-weight: 600;
+  }
+}
+
+
+.loadingSpinner {
+  width: 26px;
+  height: 26px;
+
+  border:
+    2px solid
+    #eae6df;
+
+  border-top-color: #519888;
+
+  border-radius: 50%;
+
+  animation:
+    spin
+    0.8s
+    linear
+    infinite;
+}
+
+
+@keyframes spin {
+  to {
+    transform:
+      rotate(360deg);
+  }
+}
+
+
+/* =========================
+   EMPTY
+========================= */
+
 .emptyState {
-  min-height: 260px;
+  min-height: 300px;
 
   display: flex;
   flex-direction: column;
@@ -355,68 +517,70 @@
 
   strong {
     margin:
-      9px
+      13px
       0
-      5px;
+      20px;
 
-    color: #514b44;
+    color: #49433c;
 
-    font-size: 11px;
-  }
-
-  p {
-    margin:
-      0
-      0
-      15px;
-
-    color: #aaa49c;
-
-    font-size: 8px;
-    line-height: 1.6;
-  }
-
-  a {
-    min-width: 92px;
-    height: 29px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    padding:
-      0
-      13px;
-
-    border-radius: 20px;
-
-    background: #5e9085;
-
-    color: #fff;
-
-    font-size: 8px;
-    font-weight: 600;
-
-    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
   }
 }
 
 
 .emptyIcon {
-  width: 34px;
-  height: 34px;
+  width: 46px;
+  height: 46px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
+  border: 1px solid #d8e3de;
   border-radius: 50%;
 
-  background: #e7f0ed;
+  background: #f0f6f3;
 
-  color: #618c82;
+  color: #648d82;
 
   font-size: 18px;
+}
+
+
+.emptyButton {
+  min-width: 110px;
+  height: 36px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    14px;
+
+  border: 1px solid #4d7e7b;
+  border-radius: 8px;
+
+  background: #4d7e7b;
+
+  color: #fff;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-decoration: none;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+
+  &:hover {
+    border-color: #3d6965;
+
+    background: #3d6965;
+  }
 }
 
 
@@ -425,20 +589,11 @@
 ========================= */
 
 @media (max-width: 1024px) {
-
   .winningCard {
     padding:
-      26px
+      28px
       24px
-      30px;
-  }
-
-
-  .filters {
-    grid-template-columns:
-      50px
-      115px
-      115px;
+      34px;
   }
 }
 
@@ -448,23 +603,15 @@
 ========================= */
 
 @media (max-width: 767px) {
-
   .winningCard {
     min-height: auto;
 
     padding:
-      22px
-      16px
-      26px;
+      24px
+      18px
+      30px;
 
-    border-radius: 14px;
-  }
-
-
-  .pageHeader {
-    h2 {
-      font-size: 19px;
-    }
+    border-radius: 15px;
   }
 
 
@@ -475,33 +622,54 @@
 
 
   .filters {
-    width: 100%;
+    gap: 6px;
+  }
 
-    grid-template-columns:
-      0.7fr
-      1.5fr
-      1.5fr;
+
+  .filterButton {
+    height: 32px;
+
+    padding:
+      0
+      12px;
+
+    font-size: 11px;
+  }
+
+
+  .resultCount {
+    align-self: flex-end;
   }
 
 
   .winningItem {
     grid-template-columns:
-      50px
+      56px
       minmax(0, 1fr);
 
     gap: 10px;
+
+    padding:
+      10px;
   }
 
 
   .eventImage {
-    width: 50px;
-    height: 46px;
+    width: 56px;
+    height: 52px;
   }
 
 
   .deliveryBadge {
     grid-column: 2;
 
-    justify-self: flex-end;
+    justify-self: flex-start;
+
+    margin-top: 2px;
+  }
+
+
+  .pagination {
+    margin-top: 24px;
   }
 }
