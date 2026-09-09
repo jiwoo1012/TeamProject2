@@ -9,38 +9,96 @@
   overflow: hidden;
 
   font-family: inherit;
+
   opacity: 1;
 
   transition: opacity 0.22s ease;
 }
 
+
 .guideRoot.closing {
   opacity: 0;
 }
 
+
+// ========================================
+// BACKDROP
+// ========================================
+
 .backdrop {
   position: absolute;
   inset: 0;
+  z-index: 1;
 
-  background: rgba(17, 17, 17, 0.78);
+  background:
+    rgba(17, 17, 17, 0.78);
 }
 
 
 // ========================================
-// TOP RIGHT
+// SPOTLIGHT
+// ========================================
+
+.spotlight {
+  position: fixed;
+  z-index: 4;
+
+  box-sizing: border-box;
+
+  background: transparent;
+
+  border:
+    2px solid
+    rgba(255, 255, 255, 0.94);
+
+  box-shadow:
+    0 0 0 9999px
+      rgba(17, 17, 17, 0.78),
+    0 0 0 4px
+      rgba(255, 255, 255, 0.06);
+
+  pointer-events: none;
+}
+
+
+.spotlight.cart {
+  border-radius: 7px;
+
+  border-color: #72c8be;
+}
+
+
+.spotlight.wish {
+  border-radius: 50%;
+
+  border-color: #ec6b61;
+}
+
+
+// ========================================
+// TOP ACTIONS
 // ========================================
 
 .topActions {
-  position: absolute;
-  top: max(24px, env(safe-area-inset-top));
+  position: fixed;
+
+  top:
+    max(
+      24px,
+      env(safe-area-inset-top)
+    );
+
   right: 28px;
-  z-index: 12;
+
+  z-index: 20;
 
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+
   gap: 15px;
 }
+
 
 .closeButton,
 .hideToday,
@@ -48,9 +106,12 @@
 .nextButton,
 .mockShortcut {
   border: 0;
+
   font: inherit;
+
   cursor: pointer;
 }
+
 
 .closeButton {
   width: 38px;
@@ -61,26 +122,33 @@
   justify-content: center;
 
   padding: 0;
+
   background: transparent;
 
   color: #fff;
+
   font-size: 38px;
   font-weight: 200;
   line-height: 1;
 }
 
+
 .hideToday {
   display: inline-flex;
   align-items: center;
+
   gap: 8px;
 
   padding: 0;
+
   background: transparent;
 
   color: #fff;
+
   font-size: 13px;
   font-weight: 700;
   line-height: 1;
+
 
   span {
     width: 22px;
@@ -90,7 +158,10 @@
     align-items: center;
     justify-content: center;
 
-    border: 1px solid rgba(255, 255, 255, 0.9);
+    border:
+      1px solid
+      rgba(255, 255, 255, 0.9);
+
     border-radius: 50%;
 
     font-size: 11px;
@@ -99,81 +170,66 @@
 
 
 // ========================================
-// REAL TARGET COPY
-// 어두운 배경 위에서 실제 기능 위치만 선명하게 보여줌
-// ========================================
-
-.targetGhost {
-  position: fixed;
-  z-index: 8;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  box-sizing: border-box;
-  pointer-events: none;
-}
-
-.targetGhost.cart {
-  color: #fff;
-
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1;
-  white-space: nowrap;
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.95);
-
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.38);
-}
-
-.targetGhost.wish {
-  color: #fff;
-
-  font-size: 38px;
-  font-weight: 300;
-  line-height: 1;
-
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-}
-
-
-// ========================================
-// GUIDE CALLOUT
+// CALLOUT
 // ========================================
 
 .callout {
   position: fixed;
-  z-index: 10;
-
-  width: 255px;
+  z-index: 14;
 
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+
+  gap: 9px;
+
+  box-sizing: border-box;
+
+  padding: 9px 11px;
+
+  overflow: visible;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.15);
+
+  border-radius: 12px;
+
+  background:
+    rgba(18, 18, 18, 0.74);
 
   color: #fff;
+
+  backdrop-filter: blur(5px);
+
   pointer-events: none;
+
 
   strong {
     display: block;
+
     padding-top: 1px;
 
-    font-size: 16px;
-    font-weight: 800;
+    font-size: 15px;
+    font-weight: 700;
     line-height: 1.48;
+
     letter-spacing: -0.025em;
+
     word-break: keep-all;
 
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+
+    b {
+      font-weight: 900;
+    }
   }
 }
 
+
 .numberBadge {
-  width: 26px;
-  height: 26px;
-  flex: 0 0 26px;
+  width: 25px;
+  height: 25px;
+
+  flex: 0 0 25px;
 
   display: inline-flex;
   align-items: center;
@@ -182,78 +238,243 @@
   border-radius: 50%;
 
   color: #fff;
+
   font-size: 11px;
   font-weight: 800;
+
 
   &.cart {
     background: #5f9a92;
   }
 
+
   &.wish {
     background: #e16056;
   }
 }
 
-.arrowLayer {
-  position: fixed;
-  inset: 0;
-  z-index: 9;
 
-  width: 100vw;
-  height: 100dvh;
+// ========================================
+// CART CALLOUT POINTER
+// 실제 장바구니 버튼으로 내려감
+// ========================================
 
-  overflow: visible;
-  pointer-events: none;
+.cartCallout {
+  &::before {
+    content: '';
 
-  path {
-    fill: none;
-    stroke: rgba(255, 255, 255, 0.94);
-    stroke-width: 1.6;
-    stroke-linecap: round;
+    position: absolute;
+
+    left: 50%;
+    bottom: -14px;
+
+    width: 2px;
+    height: 11px;
+
+    border-radius: 999px;
+
+    background: #fff;
+
+    transform:
+      translateX(-50%);
+  }
+
+
+  &::after {
+    content: '';
+
+    position: absolute;
+
+    left: 50%;
+    bottom: -20px;
+
+    width: 0;
+    height: 0;
+
+    border-left:
+      5px solid transparent;
+
+    border-right:
+      5px solid transparent;
+
+    border-top:
+      7px solid #fff;
+
+    transform:
+      translateX(-50%);
   }
 }
 
 
 // ========================================
-// BOTTOM CTA BAR
-// 상품 카드 아래에 독립적으로 배치
+// WISH CALLOUT POINTER
+// ========================================
+
+.wishCallout {
+  &::before {
+    content: '';
+
+    position: absolute;
+
+    right: -14px;
+    top: 50%;
+
+    width: 11px;
+    height: 2px;
+
+    background: #fff;
+
+    transform:
+      translateY(-50%);
+  }
+
+
+  &::after {
+    content: '';
+
+    position: absolute;
+
+    right: -20px;
+    top: 50%;
+
+    width: 0;
+    height: 0;
+
+    border-top:
+      5px solid transparent;
+
+    border-bottom:
+      5px solid transparent;
+
+    border-left:
+      7px solid #fff;
+
+    transform:
+      translateY(-50%);
+  }
+}
+
+
+// ========================================
+// SHORTCUT CALLOUT POINTER
+//
+// 문구 안을 절대 가로지르지 않음.
+// 박스 바깥 아래쪽에서만 표시.
+// ========================================
+
+.shortcutCallout {
+  &::before {
+    content: '';
+
+    position: absolute;
+
+    left: 50%;
+    bottom: -14px;
+
+    width: 2px;
+    height: 11px;
+
+    border-radius: 999px;
+
+    background: #fff;
+
+    transform:
+      translateX(-50%);
+  }
+
+
+  &::after {
+    content: '';
+
+    position: absolute;
+
+    left: 50%;
+    bottom: -20px;
+
+    width: 0;
+    height: 0;
+
+    border-left:
+      5px solid transparent;
+
+    border-right:
+      5px solid transparent;
+
+    border-top:
+      7px solid #fff;
+
+    transform:
+      translateX(-50%);
+  }
+}
+
+
+// ========================================
+// BOTTOM FEATURE BAR
 // ========================================
 
 .featureBar {
   position: fixed;
-  left: 50%;
-  bottom: 105px;
-  z-index: 10;
 
-  width: min(760px, calc(100vw - 180px));
-  min-height: 90px;
+  left: 50%;
+  bottom: 94px;
+
+  z-index: 11;
+
+  width:
+    min(
+      760px,
+      calc(100vw - 180px)
+    );
+
+  min-height: 88px;
 
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 220px;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    220px;
+
   align-items: center;
+
   gap: 18px;
 
   box-sizing: border-box;
 
-  padding: 12px 20px 12px 154px;
+  padding:
+    12px
+    20px
+    12px
+    154px;
 
   border-radius: 999px;
 
-  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 16px 38px
+    rgba(0, 0, 0, 0.2);
 
-  transform: translateX(-50%);
+  transform:
+    translateX(-50%);
+
 
   &.cart {
     background: #649b93;
   }
 
+
   &.wish {
     background: #e16056;
   }
 }
 
+
+// ========================================
+// CHARACTER
+// ========================================
+
 .characterWrap {
   position: absolute;
+
   left: 20px;
   bottom: -1px;
 
@@ -266,6 +487,7 @@
 
   pointer-events: none;
 
+
   img {
     width: 100%;
     height: 100%;
@@ -273,35 +495,49 @@
     display: block;
 
     object-fit: contain;
-    object-position: center bottom;
+
+    object-position:
+      center bottom;
   }
 }
+
+
+// ========================================
+// DEMO ITEMS
+// ========================================
 
 .demoItems {
   min-width: 0;
 
   display: flex;
   align-items: center;
+
   gap: 7px;
 }
+
 
 .demoItem,
 .addItem {
   width: 50px;
   height: 58px;
+
   flex: 0 0 50px;
 
   box-sizing: border-box;
+
   border-radius: 7px;
 }
+
 
 .demoItem {
   position: relative;
 
   background: #fff;
 
+
   i {
     position: absolute;
+
     top: 4px;
     right: 4px;
 
@@ -314,7 +550,9 @@
 
     border-radius: 50%;
 
-    background: rgba(86, 145, 137, 0.92);
+    background:
+      rgba(86, 145, 137, 0.92);
+
     color: #fff;
 
     font-size: 9px;
@@ -323,21 +561,35 @@
   }
 }
 
-.featureBar.wish .demoItem i {
-  background: rgba(225, 96, 86, 0.94);
+
+.featureBar.wish {
+  .demoItem i {
+    background:
+      rgba(225, 96, 86, 0.94);
+  }
 }
+
 
 .addItem {
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border: 1.5px dashed rgba(255, 255, 255, 0.92);
+  border:
+    1.5px dashed
+    rgba(255, 255, 255, 0.92);
 
-  color: rgba(255, 255, 255, 0.96);
+  color:
+    rgba(255, 255, 255, 0.96);
+
   font-size: 24px;
   font-weight: 300;
 }
+
+
+// ========================================
+// SHORTCUT
+// ========================================
 
 .mockShortcut {
   width: 100%;
@@ -346,24 +598,31 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 12px;
 
-  padding: 0 12px 0 20px;
+  padding:
+    0 12px
+    0 20px;
 
   border-radius: 999px;
 
   background: #fff;
+
   color: #467d76;
 
   font-size: 14px;
   font-weight: 800;
+
   white-space: nowrap;
 
   cursor: default;
 
+
   span {
     width: 38px;
     height: 38px;
+
     flex: 0 0 38px;
 
     display: inline-flex;
@@ -373,6 +632,7 @@
     border-radius: 50%;
 
     background: #477f77;
+
     color: #fff;
 
     font-size: 20px;
@@ -380,10 +640,12 @@
   }
 }
 
+
 .featureBar.wish {
   .mockShortcut {
     color: #e16056;
   }
+
 
   .mockShortcut span {
     background: #e16056;
@@ -392,22 +654,34 @@
 
 
 // ========================================
-// BOTTOM NAVIGATION
+// BOTTOM CONTROLS
 // ========================================
 
 .bottomControls {
   position: fixed;
+
   left: 50%;
-  bottom: max(15px, calc(env(safe-area-inset-bottom) + 8px));
-  z-index: 12;
+  bottom:
+    max(
+      12px,
+      calc(
+        env(safe-area-inset-bottom)
+        + 6px
+      )
+    );
+
+  z-index: 20;
 
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 9px;
 
-  transform: translateX(-50%);
+  gap: 8px;
+
+  transform:
+    translateX(-50%);
 }
+
 
 .pageCount {
   min-width: 44px;
@@ -416,45 +690,57 @@
 
   border-radius: 999px;
 
-  background: rgba(255, 255, 255, 0.16);
+  background:
+    rgba(255, 255, 255, 0.16);
+
   color: #fff;
 
   font-size: 11px;
   font-weight: 800;
+
   text-align: center;
 }
+
 
 .controlRow {
   display: flex;
   align-items: center;
   justify-content: center;
+
   gap: 16px;
 }
+
 
 .skipButton,
 .nextButton {
   min-height: 32px;
 
   padding: 0;
+
   background: transparent;
 
   font-size: 17px;
   font-weight: 800;
 }
 
+
 .skipButton {
-  color: rgba(255, 255, 255, 0.52);
+  color:
+    rgba(255, 255, 255, 0.58);
 }
+
 
 .nextButton {
   color: #fff;
 }
 
+
 .divider {
   width: 1px;
   height: 18px;
 
-  background: rgba(255, 255, 255, 0.34);
+  background:
+    rgba(255, 255, 255, 0.34);
 }
 
 
@@ -464,15 +750,27 @@
 
 @media (max-height: 780px) {
   .featureBar {
-    bottom: 86px;
+    bottom: 78px;
 
-    width: min(710px, calc(100vw - 130px));
-    min-height: 78px;
+    width:
+      min(
+        710px,
+        calc(100vw - 130px)
+      );
 
-    grid-template-columns: minmax(0, 1fr) 205px;
+    min-height: 76px;
 
-    padding: 9px 16px 9px 138px;
+    grid-template-columns:
+      minmax(0, 1fr)
+      205px;
+
+    padding:
+      8px
+      16px
+      8px
+      138px;
   }
+
 
   .characterWrap {
     left: 18px;
@@ -481,27 +779,31 @@
     height: 124px;
   }
 
+
   .demoItem,
   .addItem {
     width: 44px;
-    height: 51px;
+    height: 50px;
+
     flex-basis: 44px;
   }
 
+
   .mockShortcut {
     min-height: 50px;
+
     font-size: 12px;
   }
 
+
   .bottomControls {
-    bottom: 10px;
+    bottom: 7px;
   }
 
-  .callout {
-    width: 225px;
 
+  .callout {
     strong {
-      font-size: 14px;
+      font-size: 13px;
     }
   }
 }
@@ -513,22 +815,28 @@
 
 @media (max-width: 980px) {
   .featureBar {
-    width: calc(100vw - 70px);
-    grid-template-columns: minmax(0, 1fr) 200px;
+    width:
+      calc(100vw - 70px);
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      200px;
+
     padding-left: 138px;
   }
 
+
   .characterWrap {
     left: 16px;
+
     width: 116px;
     height: 128px;
   }
 
-  .callout {
-    width: 220px;
 
+  .callout {
     strong {
-      font-size: 14px;
+      font-size: 13px;
     }
   }
 }
@@ -542,38 +850,53 @@
   .topActions {
     top: 12px;
     right: 12px;
+
     gap: 8px;
   }
+
 
   .closeButton {
     width: 31px;
     height: 31px;
+
     font-size: 30px;
   }
+
 
   .hideToday {
     font-size: 10px;
 
+
     span {
       width: 18px;
       height: 18px;
+
       font-size: 9px;
     }
   }
 
-  .featureBar {
-    bottom: 84px;
 
-    width: calc(100vw - 28px);
-    min-height: 145px;
+  .featureBar {
+    bottom: 80px;
+
+    width:
+      calc(100vw - 28px);
+
+    min-height: 142px;
 
     grid-template-columns: 1fr;
+
     gap: 8px;
 
-    padding: 14px 14px 12px 108px;
+    padding:
+      14px
+      14px
+      12px
+      108px;
 
     border-radius: 28px;
   }
+
 
   .characterWrap {
     left: 0;
@@ -583,54 +906,74 @@
     height: 122px;
   }
 
+
   .demoItems {
     gap: 5px;
   }
+
 
   .demoItem,
   .addItem {
     width: 36px;
     height: 44px;
+
     flex-basis: 36px;
   }
+
 
   .demoItem i {
     width: 13px;
     height: 13px;
+
     font-size: 8px;
   }
+
 
   .mockShortcut {
     min-height: 42px;
 
-    padding: 0 9px 0 12px;
+    padding:
+      0 9px
+      0 12px;
 
     font-size: 10px;
+
 
     span {
       width: 28px;
       height: 28px;
+
       flex-basis: 28px;
+
       font-size: 16px;
     }
   }
 
+
   .callout {
-    width: 160px;
-    gap: 7px;
+    padding: 7px 8px;
+
+    gap: 6px;
+
+    border-radius: 9px;
+
 
     strong {
-      font-size: 11px;
-      line-height: 1.42;
+      font-size: 10px;
+      line-height: 1.45;
     }
   }
+
 
   .numberBadge {
     width: 21px;
     height: 21px;
+
     flex-basis: 21px;
+
     font-size: 9px;
   }
+
 
   .skipButton,
   .nextButton {

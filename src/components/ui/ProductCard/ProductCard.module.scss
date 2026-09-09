@@ -33,3 +33,35 @@
   .actions button { pointer-events: auto; }
   .cartButton { width: auto; align-self: flex-start; padding: $space-2 $space-3; }
 }
+
+// ========================================
+// PRODUCT GUIDE
+// 가이드가 실행되는 동안 실제 액션 버튼을 강제로 표시
+// ========================================
+
+.card[data-product-guide-active='true'] {
+  .actions {
+    display: flex !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    transform: translateY(0) !important;
+
+    pointer-events: none !important;
+  }
+
+  .iconButton,
+  .cartButton {
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    transform: none !important;
+  }
+
+  // 실제 hover할 때 두 번째 이미지가 나타나는 구조라면
+  // 가이드에서도 같은 이미지가 보이게 함
+  .hoverImage {
+    opacity: 1 !important;
+  }
+}
