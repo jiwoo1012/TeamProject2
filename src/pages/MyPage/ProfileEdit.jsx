@@ -2624,7 +2624,7 @@ const ProfileEdit = () => {
                   styles.modalDescription
                 }
               >
-                회원 정보를 안전하게 변경하기 위해
+                회원 정보를 안전하게 변경하기 위해 <br/>
                 비밀번호를 다시 확인해주세요.
               </p>
 

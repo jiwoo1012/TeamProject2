@@ -93,6 +93,7 @@
 
     font-size: 19px;
     font-weight: 700;
+
     line-height: 1.45;
 
     letter-spacing: -0.02em;
@@ -393,8 +394,14 @@
     color: #69645e;
 
     font-size: 11px;
+
     line-height: 1.7;
   }
+}
+
+
+.mobileMainReason {
+  display: none;
 }
 
 
@@ -413,8 +420,7 @@
 
   gap: 12px;
 
-  padding:
-    16px;
+  padding: 16px;
 }
 
 
@@ -497,7 +503,8 @@
 
     transition:
       transform
-      0.25s ease;
+      0.25s
+      ease;
   }
 
 
@@ -524,7 +531,6 @@
 
 .productInfo {
   flex: 1;
-
   min-width: 0;
 
   > strong {
@@ -538,6 +544,7 @@
 
     font-size: 12px;
     font-weight: 700;
+
     line-height: 1.4;
 
     text-overflow: ellipsis;
@@ -571,9 +578,15 @@
   color: #888179;
 
   font-size: 10px;
+
   line-height: 1.65;
 
   word-break: keep-all;
+}
+
+
+.mobileReason {
+  display: none;
 }
 
 
@@ -852,110 +865,615 @@
     min-height: auto;
 
     padding:
-      24px
       18px
-      30px;
+      18px
+      34px;
 
-    border-radius: 15px;
+    border: 0;
+    border-radius: 0;
   }
 
 
+  /*
+   * 데스크탑의 목록으로 버튼은
+   * MyPageHeader의 action 영역이므로
+   * 모바일에서는 공통 헤더에서 숨겨짐.
+   */
   .headerBackButton {
-    width: 100%;
+    display: none;
   }
 
+
+  /* =====================
+     OVERVIEW
+  ===================== */
 
   .overview {
     padding:
-      17px
+      16px
       15px;
 
+    margin-bottom: 28px;
+
+    border-radius: 12px;
+
     h2 {
-      font-size: 17px;
+      margin-top: 6px;
+
+      font-size: 18px;
+
+      line-height: 1.45;
     }
   }
 
+
+  .overviewTop {
+    time {
+      font-size: 12px;
+    }
+  }
+
+
+  .savedBadge {
+    min-height: 21px;
+
+    padding:
+      0
+      7px;
+
+    font-size: 13px;
+  }
+
+
+  /* =====================
+     SURVEY
+  ===================== */
 
   .surveyArea {
     flex-direction: column;
 
     gap: 8px;
+
+    margin-top: 14px;
+
+    padding-top: 13px;
   }
 
 
   .surveyLabel {
     padding-top: 0;
+
+    font-size: 13px;
+    font-weight: 700;
   }
 
 
-  .sectionHeading {
-    align-items: flex-end;
+  .surveyKeywords {
+    gap: 6px;
 
-    h2 {
-      font-size: 16px;
+    span {
+      min-height: 26px;
+
+      padding:
+        0
+        10px;
+
+      font-size: 12px;
+      font-weight: 600;
     }
   }
 
 
+  /* =====================
+     SECTION HEADING
+  ===================== */
+
+  .sectionHeading {
+    align-items: center;
+
+    margin-bottom: 12px;
+
+    h2 {
+      font-size: 18px;
+    }
+
+
+    > span {
+      font-size: 13px;
+
+      strong {
+        font-size: 13px;
+      }
+    }
+  }
+
+
+  /* =====================
+     TABLE LIST
+  ===================== */
+
+  .tableList {
+    gap: 22px;
+  }
+
+
+  .tableCard {
+    overflow: hidden;
+
+    border-radius: 13px;
+  }
+
+
+  /* =====================
+     TABLE HEADER
+  ===================== */
+
   .tableHeader {
-    align-items: flex-start;
+    min-height: auto;
+
+    display: flex;
     flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+
+    gap: 9px;
+
+    padding:
+      12px
+      12px;
+  }
+
+
+  .tableTitle {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
 
     gap: 8px;
+
+    strong {
+      font-size: 15px;
+    }
   }
 
+
+  .tableNumber {
+    width: 28px;
+    height: 28px;
+
+    font-size: 12px;
+  }
+
+
+  /*
+   * 추천 시간 문구
+   * 모바일에서 잘리지 않고 줄바꿈
+   */
+  .timeBadge {
+    width: 100%;
+    max-width: none;
+    min-height: auto;
+
+    display: block;
+
+    padding:
+      7px
+      10px;
+
+    border: 1px solid #d6e3de;
+    border-radius: 9px;
+
+    background: #fff;
+
+    color: #64867c;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    line-height: 1.55;
+
+    white-space: normal;
+
+    word-break: keep-all;
+
+    text-align: left;
+  }
+
+
+  /* =====================
+     MAIN REASON
+  ===================== */
+
+  .mainReason {
+    display: none;
+  }
+
+
+  .mobileMainReason {
+    display: block;
+
+    margin:
+      12px
+      12px
+      0;
+
+    overflow: hidden;
+
+    border: 1px solid #dce8e3;
+    border-radius: 9px;
+
+    background: #f5f9f7;
+
+    summary {
+      min-height: 42px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding:
+        0
+        12px;
+
+      color: #4d7e73;
+
+      font-size: 14px;
+      font-weight: 700;
+
+      cursor: pointer;
+
+      list-style: none;
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      span {
+        color: #7a9d94;
+
+        font-size: 18px;
+        font-weight: 400;
+
+        transition:
+          transform
+          0.2s ease;
+      }
+    }
+
+
+    &[open] {
+      summary {
+        span {
+          transform:
+            rotate(45deg);
+        }
+      }
+    }
+
+
+    p {
+      margin: 0;
+
+      padding:
+        0
+        12px
+        12px;
+
+      color: #716b64;
+
+      font-size: 12px;
+
+      line-height: 1.75;
+
+      word-break: keep-all;
+    }
+  }
+
+
+  /* =====================
+     PRODUCT GRID
+     3개 한 줄
+  ===================== */
 
   .productGrid {
-    grid-template-columns:
-      1fr;
+    width: 100%;
 
-    gap: 10px;
-  }
-
-
-  .productCard {
     display: grid;
 
     grid-template-columns:
-      86px
-      minmax(0, 1fr);
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
 
-    column-gap: 12px;
+    align-items: start;
+
+    gap: 7px;
+
+    padding:
+      12px;
+  }
+
+
+  /* =====================
+     PRODUCT CARD
+  ===================== */
+
+  .productCard {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    padding:
+      8px;
+
+    border-radius: 10px;
   }
 
 
   .productType {
-    grid-column:
-      1 / -1;
+    align-self: flex-start;
+
+    min-height: 19px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 7px;
+
+    padding:
+      5px
+      10px;
+
+    font-size: 10px;
   }
 
+
+  /* =====================
+     PRODUCT IMAGE
+  ===================== */
 
   .productImage {
-    grid-row:
-      2 / 4;
+    width: 100%;
 
-    margin-bottom: 0;
+    aspect-ratio: 1 / 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 8px;
+
+    overflow: hidden;
+
+    border-radius: 8px;
+
+    img {
+      width: 100%;
+      height: 100%;
+
+      object-fit: cover;
+    }
   }
 
+
+  /* =====================
+     PRODUCT INFO
+  ===================== */
 
   .productInfo {
-    grid-column: 2;
+    width: 100%;
+    min-width: 0;
+
+    > strong {
+      min-height: 34px;
+
+      display: -webkit-box;
+
+      overflow: hidden;
+
+      margin-bottom: 4px;
+
+      color: #403b35;
+
+      font-size: 13px;
+      padding-top: 5px;
+      font-weight: 700;
+
+      line-height: 1.45;
+
+      line-clamp: 2;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+
+      white-space: normal;
+
+      word-break: keep-all;
+    }
   }
 
+
+  .productPrice {
+    display: block;
+
+    color: #777169;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    white-space: nowrap;
+  }
+
+
+  .productReason {
+    display: none;
+  }
+
+
+  /* =====================
+     MOBILE PRODUCT REASON
+  ===================== */
+
+  .mobileReason {
+    display: block;
+
+    width: 100%;
+
+    margin-top: 7px;
+
+    summary {
+      display: flex;
+      align-items: center;
+
+      gap: 3px;
+
+      color: #7b857f;
+
+      font-size: 12px;
+      font-weight: 600;
+
+      cursor: pointer;
+
+      list-style: none;
+
+      white-space: nowrap;
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      span {
+        color: #6d978d;
+
+        font-size: 15px;
+
+        transition:
+          transform
+          0.2s ease;
+      }
+    }
+
+
+    &[open] {
+      summary {
+        color: #4d7e73;
+
+        span {
+          transform:
+            rotate(45deg);
+        }
+      }
+    }
+
+
+    p {
+      margin:
+        6px
+        0
+        0;
+
+      padding-top: 6px;
+
+      border-top:
+        1px solid
+        #f0ece6;
+
+      color: #8a837c;
+
+      font-size: 12px;
+
+      line-height: 1.65;
+
+      word-break: keep-all;
+    }
+  }
+
+
+  /* =====================
+     PRODUCT BUTTON
+  ===================== */
 
   .productButton {
-    grid-column: 2;
+    width: 100%;
+    min-width: 0;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 2px;
 
     margin-top: 9px;
+
+    padding:
+      0
+      4px;
+
+    border-radius: 7px;
+
+    font-size: 11px;
+
+    white-space: nowrap;
+
+    span {
+      font-size: 13px;
+      padding-left: 5px;
+    }
   }
 
+
+  /* =====================
+     FALLBACK
+  ===================== */
+
+  .productFallback {
+    width: 100%;
+    min-height: 100px;
+
+    font-size: 9px;
+  }
+
+
+  /* =====================
+     BOTTOM ACTION
+     데스크탑에서만 사용
+  ===================== */
 
   .bottomActions {
-    justify-content: stretch;
+    display: none;
   }
 
 
-  .backButton {
-    width: 100%;
+  /* =====================
+     STATE
+  ===================== */
+
+  .stateBox {
+    min-height: 280px;
+  }
+
+
+  .errorState {
+    min-height: 280px;
+
+    /*
+     * 에러 상태 안의 '목록으로' 버튼도
+     * 모바일에서는 필요 없으므로 숨김.
+     * 상단 공통 MyPageHeader 뒤로가기 사용.
+     */
+    button {
+      display: none;
+    }
+  }
+
+
+  .emptyState {
+    min-height: 140px;
+
+    font-size: 11px;
   }
 }

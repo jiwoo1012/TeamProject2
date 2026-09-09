@@ -81,6 +81,7 @@
 
   font-size: 21px;
   font-weight: 700;
+
   line-height: 1;
 }
 
@@ -220,7 +221,6 @@
 .activeImage {
   width: 126px;
   height: 100%;
-
   min-height: 126px;
 
   display: block;
@@ -241,7 +241,8 @@
 
     transition:
       transform
-      0.25s ease;
+      0.25s
+      ease;
   }
 
 
@@ -278,6 +279,15 @@
   padding:
     13px
     14px;
+
+  time {
+    margin-top: 5px;
+
+    color: #aaa49c;
+
+    font-size: 10px;
+    font-weight: 500;
+  }
 }
 
 
@@ -314,6 +324,7 @@
 
   font-size: 13px;
   font-weight: 700;
+
   line-height: 1.45;
 
   text-decoration: none;
@@ -324,18 +335,6 @@
 
   &:hover {
     color: #3f756d;
-  }
-}
-
-
-.activeInfo {
-  time {
-    margin-top: 5px;
-
-    color: #aaa49c;
-
-    font-size: 10px;
-    font-weight: 500;
   }
 }
 
@@ -646,7 +645,8 @@
   height: 26px;
 
   border:
-    2px solid
+    2px
+    solid
     #eae6df;
 
   border-top-color: #519888;
@@ -681,7 +681,8 @@
   justify-content: center;
 
   border:
-    1px dashed
+    1px
+    dashed
     #ddd8d0;
 
   border-radius: 12px;
@@ -707,7 +708,8 @@
   justify-content: center;
 
   border:
-    1px dashed
+    1px
+    dashed
     #ddd8d0;
 
   border-radius: 12px;
@@ -829,25 +831,84 @@
   }
 
 
-  .summaryPanel {
-    grid-template-columns:
-      1fr;
+  /* =========================
+     SUMMARY
+     모바일 3개 한 줄
+  ========================= */
 
-    gap: 8px;
+  .summaryPanel {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+
+    gap: 7px;
+
+    margin-bottom: 26px;
   }
 
 
   .summaryItem {
-    min-height: 58px;
+    min-width: 0;
+    min-height: 76px;
 
-    flex-direction: row;
-    justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
 
     padding:
-      0
-      16px;
+      10px
+      4px;
+
+    border: 1px solid #dbe7e2;
+    border-radius: 10px;
+
+    background: #f2f7f4;
+
+    text-align: center;
   }
 
+
+  .summaryLabel {
+    width: 100%;
+
+    overflow: hidden;
+
+    color: #777f7b;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    line-height: 1.25;
+
+    text-align: center;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+
+  .summaryCount {
+    color: #3f756d;
+
+    font-size: 19px;
+    font-weight: 700;
+
+    line-height: 1;
+  }
+
+
+  /* =========================
+     SECTION
+  ========================= */
 
   .activeSection,
   .participationSection {
@@ -862,13 +923,21 @@
   }
 
 
+  /* =========================
+     ACTIVE EVENT
+  ========================= */
+
   .activeList {
     grid-template-columns:
       1fr;
+
+    gap: 10px;
   }
 
 
   .activeCard {
+    min-height: 112px;
+
     grid-template-columns:
       110px
       minmax(0, 1fr);
@@ -877,8 +946,37 @@
 
   .activeImage {
     width: 110px;
+    min-height: 112px;
   }
 
+
+  .activeInfo {
+    padding:
+      11px
+      12px;
+  }
+
+
+  .eventTitle {
+    font-size: 12px;
+  }
+
+
+  .applyButton {
+    min-width: 72px;
+    height: 34px;
+
+    padding:
+      0
+      12px;
+
+    font-size: 11px;
+  }
+
+
+  /* =========================
+     HISTORY
+  ========================= */
 
   .historyItem {
     grid-template-columns:
@@ -907,7 +1005,16 @@
   }
 
 
+  /* =========================
+     PAGINATION
+  ========================= */
+
   .pagination {
     margin-top: 24px;
+
+    button {
+      width: 34px;
+      height: 34px;
+    }
   }
 }
