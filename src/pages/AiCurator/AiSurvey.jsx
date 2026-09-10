@@ -19,6 +19,20 @@ import strongIcon from '../../assets/icons/preferenceQuestions/ABV-strong.png'
 import veryStrongIcon from '../../assets/icons/preferenceQuestions/ABV-verystrong.png'
 import pawIcon from '../../assets/images/brand/makdong-paw-mark.png'
 
+
+import preferenceIcon from '../../assets/icons/preferenceQuestions/preference-1.png'
+import alcoholAnyIcon from '../../assets/icons/preferenceQuestions/any-4.png'
+import moodRefreshIcon from '../../assets/icons/preferenceQuestions/refresh-1.png'
+import moodRelaxIcon from '../../assets/icons/preferenceQuestions/relax-4.png'
+import moodFoodIcon from '../../assets/icons/preferenceQuestions/food-1.png'
+import moodSpecialIcon from '../../assets/icons/preferenceQuestions/special-2.png'
+import moodDeepIcon from '../../assets/icons/preferenceQuestions/deep-4.png'
+import moodRandomIcon from '../../assets/icons/preferenceQuestions/random-5.png'
+import foodMealIcon from '../../assets/icons/preferenceQuestions/meal-4.png'
+import foodSnackIcon from '../../assets/icons/preferenceQuestions/snack-1.png'
+import foodDessertIcon from '../../assets/icons/preferenceQuestions/dessert-2.png'
+import foodRecommendIcon from '../../assets/icons/preferenceQuestions/recommend-3.png'
+
 import styles from './AiSurvey.module.scss'
 
 // 화면 장식 전용 정보. 질문 데이터와 추천에 전달하는 값은 변경하지 않는다.
@@ -28,8 +42,13 @@ const QUESTION_CAPTIONS = {
 }
 const OPTION_ICONS = {
   taste: { sweet: sweetIcon, sour: sourIcon, savory: savoryIcon, clean: cleanIcon,
-    dry: dryIcon, bitter: dryIcon, rich: richIcon },
-  alcohol: { light: lightIcon, medium: mediumIcon, strong: strongIcon, veryStrong: veryStrongIcon },
+    dry: dryIcon, bitter: dryIcon, rich: richIcon, preference: preferenceIcon },
+  alcohol: { light: lightIcon, medium: mediumIcon, strong: strongIcon, veryStrong: veryStrongIcon,
+    preference: preferenceIcon, any: alcoholAnyIcon },
+  mood: { refresh: moodRefreshIcon, relax: moodRelaxIcon, food: moodFoodIcon,
+    special: moodSpecialIcon, deep: moodDeepIcon, random: moodRandomIcon },
+  food: { meal: foodMealIcon, snack: foodSnackIcon, dessert: foodDessertIcon,
+    recommend: foodRecommendIcon },
 }
 const TASTE_NOTES = {
   sweet: '기분이 사르르 녹는, 부드러운 한 잔',
@@ -341,7 +360,6 @@ const GUEST_QUESTIONS = [
     title: '오늘은 어떤 안주와 함께하고 싶나요?',
     description:
       '한 잔 옆에 어떤 한 접시를 놓아볼까요?',
-    hint: '단일 선택',
     options: [
       {
         value: 'meal',
