@@ -5,6 +5,21 @@ import {
   useState,
 } from 'react'
 
+import {
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Filler,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Tooltip,
+} from 'chart.js'
+import {
+  Bar,
+  Line,
+} from 'react-chartjs-2'
+
 import AdminEmptyState from '../../components/admin/AdminEmptyState'
 import AdminFilterBar from '../../components/admin/AdminFilterBar'
 import AdminPageHeader from '../../components/admin/AdminPageHeader'
@@ -22,6 +37,17 @@ import {
 } from '../../constants/orderStatus'
 
 import styles from './OrdersManage.module.scss'
+
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Filler,
+  Tooltip
+)
 
 
 const quickFilters = [
@@ -363,10 +389,6 @@ const OrdersManage = () => {
       || order.payment.includes('취소')
     )
   ).length
-  const statusTotal = Math.max(totalCount, 1)
-  const readyEnd = (readyCount / statusTotal) * 100
-  const shippingEnd = readyEnd + (shippingCount / statusTotal) * 100
-  const completedEnd = shippingEnd + (completedCount / statusTotal) * 100
   const recentDates = Array.from({ length: 7 }, (_, index) => {
     const date = new Date()
     date.setHours(0, 0, 0, 0)
@@ -390,16 +412,274 @@ const OrdersManage = () => {
       && order.status === ORDER_STATUS.CANCELLED
     )).length,
   }))
-  const maxWeeklyCount = Math.max(
-    1,
-    ...weeklyData.flatMap((item) => [item.order, item.cancel])
-  )
   const yesterdayCount = weeklyData.at(-2)?.order || 0
   const orderChangeRate = yesterdayCount
     ? ((todayCount - yesterdayCount) / yesterdayCount) * 100
     : todayCount > 0
       ? 100
       : 0
+
+
+  // ========================================
+  // 주문 상태 분포 차트
+  // ========================================
+
+  const orderStatusChartData = useMemo(
+    () => ({
+      labels: ['전체 주문'],
+
+      datasets: [
+        {
+          label: '배송 준비',
+          data: [readyCount],
+          backgroundColor: '#568a80',
+          borderColor: '#ffffff',
+          borderWidth: 1,
+          borderSkipped: false,
+          borderRadius: 6,
+          barThickness: 24,
+          stack: 'status',
+        },
+        {
+          label: '배송 중',
+          data: [shippingCount],
+          backgroundColor: '#6f9bac',
+          borderColor: '#ffffff',
+          borderWidth: 1,
+          borderSkipped: false,
+          borderRadius: 6,
+          barThickness: 24,
+          stack: 'status',
+        },
+        {
+          label: '배송 완료',
+          data: [completedCount],
+          backgroundColor: '#aacdbf',
+          borderColor: '#ffffff',
+          borderWidth: 1,
+          borderSkipped: false,
+          borderRadius: 6,
+          barThickness: 24,
+          stack: 'status',
+        },
+        {
+          label: '취소·환불',
+          data: [requestCount],
+          backgroundColor: '#d69a95',
+          borderColor: '#ffffff',
+          borderWidth: 1,
+          borderSkipped: false,
+          borderRadius: 6,
+          barThickness: 24,
+          stack: 'status',
+        },
+      ],
+    }),
+    [
+      readyCount,
+      shippingCount,
+      completedCount,
+      requestCount,
+    ]
+  )
+
+
+  const orderStatusChartOptions = useMemo(
+    () => ({
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+
+      animation: {
+        duration: 900,
+        easing: 'easeOutQuart',
+      },
+
+      plugins: {
+        legend: {
+          display: false,
+        },
+
+        tooltip: {
+          enabled: true,
+          position: 'nearest',
+
+          xAlign: 'center',
+          yAlign: 'bottom',
+
+          caretPadding: 8,
+          padding: 10,
+
+          displayColors: true,
+          usePointStyle: true,
+          boxWidth: 7,
+          boxHeight: 7,
+
+          filter: (context) =>
+            Number(context.raw) > 0,
+
+          callbacks: {
+            title: () => '',
+
+            label: (context) => {
+              const count =
+                Number(context.raw) || 0
+
+              const rate =
+                totalCount > 0
+                  ? Math.round(
+                      (count / totalCount)
+                      * 100
+                    )
+                  : 0
+
+              return `${context.dataset.label} ${count}건 · ${rate}%`
+            },
+          },
+        },
+      },
+
+      scales: {
+        x: {
+          stacked: true,
+          display: false,
+          beginAtZero: true,
+          max: Math.max(totalCount, 1),
+        },
+
+        y: {
+          stacked: true,
+          display: false,
+        },
+      },
+    }),
+    [totalCount]
+  )
+
+
+  // ========================================
+  // 최근 7일 주문 현황 차트
+  // ========================================
+
+  const weeklyChartData = useMemo(
+    () => ({
+      labels: weeklyData.map(
+        (item) => item.day
+      ),
+
+      datasets: [
+        {
+          label: '주문 수',
+          data: weeklyData.map(
+            (item) => item.order
+          ),
+          borderColor: '#568a80',
+          backgroundColor: 'rgba(86, 138, 128, 0.12)',
+          pointBackgroundColor: '#568a80',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 3.5,
+          pointHoverRadius: 5,
+          borderWidth: 2,
+          tension: 0.35,
+          fill: true,
+        },
+        {
+          label: '취소 / 환불',
+          data: weeklyData.map(
+            (item) => item.cancel
+          ),
+          borderColor: '#d69a95',
+          backgroundColor: '#d69a95',
+          pointBackgroundColor: '#d69a95',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 4.5,
+          borderWidth: 1.5,
+          tension: 0.35,
+          fill: false,
+        },
+      ],
+    }),
+    [weeklyData]
+  )
+
+
+  const weeklyChartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+
+      interaction: {
+        mode: 'index',
+        intersect: false,
+      },
+
+      animation: {
+        duration: 900,
+        easing: 'easeOutQuart',
+      },
+
+      plugins: {
+        legend: {
+          display: false,
+        },
+
+        tooltip: {
+          displayColors: false,
+          padding: 10,
+
+          callbacks: {
+            label: (context) =>
+              `${context.dataset.label}: ${context.raw}건`,
+          },
+        },
+      },
+
+      scales: {
+        x: {
+          grid: {
+            display: false,
+          },
+
+          border: {
+            display: false,
+          },
+
+          ticks: {
+            color: '#8c9490',
+
+            font: {
+              size: 8,
+            },
+          },
+        },
+
+        y: {
+          beginAtZero: true,
+
+          border: {
+            display: false,
+          },
+
+          grid: {
+            color: 'rgba(223, 226, 224, 0.72)',
+          },
+
+          ticks: {
+            precision: 0,
+            color: '#8c9490',
+
+            font: {
+              size: 8,
+            },
+          },
+        },
+      },
+    }),
+    []
+  )
 
 
   const summaryCards = [
@@ -1396,26 +1676,13 @@ const OrdersManage = () => {
             >
               <div
                 className={
-                  styles.statusDonut
+                  styles.statusStackedChart
                 }
-                style={{
-                  '--ready-end': `${readyEnd}%`,
-                  '--shipping-end': `${shippingEnd}%`,
-                  '--completed-end': `${completedEnd}%`,
-                }}
               >
-                <div>
-                  <span>전체</span>
-
-                  <strong>
-                    {totalCount.toLocaleString(
-                      'ko-KR'
-                    )}
-                    <small>
-                      건
-                    </small>
-                  </strong>
-                </div>
+                <Bar
+                  data={orderStatusChartData}
+                  options={orderStatusChartOptions}
+                />
               </div>
 
 
@@ -1521,49 +1788,13 @@ const OrdersManage = () => {
 
             <div
               className={
-                styles.barChart
+                styles.lineChart
               }
             >
-              {weeklyData.map(
-                (item) => (
-                  <div
-                    className={
-                      styles.barItem
-                    }
-                    key={item.day}
-                  >
-                    <div
-                      className={
-                        styles.barPair
-                      }
-                    >
-                      <i
-                        className={
-                          styles.orderBar
-                        }
-                        style={{
-                          '--bar-height':
-                            `${(item.order / maxWeeklyCount) * 100}%`,
-                        }}
-                      />
-
-                      <i
-                        className={
-                          styles.cancelBar
-                        }
-                        style={{
-                          '--bar-height':
-                            `${(item.cancel / maxWeeklyCount) * 100}%`,
-                        }}
-                      />
-                    </div>
-
-                    <span>
-                      {item.day}
-                    </span>
-                  </div>
-                )
-              )}
+              <Line
+                data={weeklyChartData}
+                options={weeklyChartOptions}
+              />
             </div>
 
 

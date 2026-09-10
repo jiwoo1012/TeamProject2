@@ -5,6 +5,22 @@ import {
   useState,
 } from 'react'
 
+import {
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Filler,
+  LinearScale,
+  LineElement,
+  PointElement,
+  RadialLinearScale,
+  Tooltip,
+} from 'chart.js'
+import {
+  Bar,
+  Radar,
+} from 'react-chartjs-2'
+
 import AdminEmptyState from '../../components/admin/AdminEmptyState'
 import AdminFilterBar from '../../components/admin/AdminFilterBar'
 import AdminPageHeader from '../../components/admin/AdminPageHeader'
@@ -13,6 +29,18 @@ import AdminStatusBadge from '../../components/admin/AdminStatusBadge'
 import AdminSummaryCard from '../../components/admin/AdminSummaryCard'
 
 import styles from './AiLogManage.module.scss'
+
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip
+)
 
 
 const PAGE_SIZE = 8
@@ -966,6 +994,416 @@ const AiLogManage = () => {
   ]
 
 
+  // ========================================
+  // 사용자 취향 Radar Chart
+  // ========================================
+
+  const preferenceScores =
+    useMemo(() => {
+      const scoreMaps = {
+        sweetness: {
+          '거의 달지 않음': 1,
+          '은은한 단맛': 3,
+          '달콤함': 5,
+          '잘 모르겠음': 3,
+        },
+
+        acidity: {
+          '거의 없음': 1,
+          '은은함': 3,
+          '확실한 산미': 5,
+          '상관없음': 3,
+        },
+
+        body: {
+          '가볍고 깔끔': 1,
+          '적당한 무게감': 3,
+          '진하고 묵직': 5,
+          '잘 모르겠음': 3,
+        },
+
+        aroma: {
+          '은은함': 1,
+          '적당함': 3,
+          '확실함': 5,
+          '상관없음': 3,
+        },
+
+        alcohol: {
+          '10도 이하': 1,
+          '11~16도': 2,
+          '17~25도': 4,
+          '26도 이상': 5,
+          '상관없음': 3,
+        },
+      }
+
+      const axes = [
+        'sweetness',
+        'acidity',
+        'body',
+        'aroma',
+        'alcohol',
+      ]
+
+      return axes.map((axis) => {
+        const values =
+          mockLogs
+            .map((log) =>
+              scoreMaps[axis][
+                log.preferenceDetail?.[axis]
+              ]
+            )
+            .filter((value) =>
+              Number.isFinite(value)
+            )
+
+        if (values.length === 0) {
+          return 0
+        }
+
+        return Number(
+          (
+            values.reduce(
+              (sum, value) =>
+                sum + value,
+              0
+            )
+            / values.length
+          ).toFixed(1)
+        )
+      })
+    }, [])
+
+
+  const preferenceChartData =
+    useMemo(
+      () => ({
+        labels: [
+          '단맛',
+          '산미',
+          '바디감',
+          '향',
+          '도수',
+        ],
+
+        datasets: [
+          {
+            label: '평균 취향',
+
+            data:
+              preferenceScores,
+
+            backgroundColor:
+              'rgba(86, 138, 128, 0.16)',
+
+            borderColor:
+              '#568a80',
+
+            borderWidth: 2,
+
+            pointBackgroundColor:
+              '#568a80',
+
+            pointBorderColor:
+              '#ffffff',
+
+            pointBorderWidth: 2,
+
+            pointRadius: 3,
+
+            pointHoverRadius: 5,
+
+            fill: true,
+          },
+        ],
+      }),
+      [preferenceScores]
+    )
+
+
+  const preferenceChartOptions =
+    useMemo(
+      () => ({
+        responsive: true,
+        maintainAspectRatio: false,
+
+        animation: {
+          duration: 900,
+          easing: 'easeOutQuart',
+        },
+
+        plugins: {
+          legend: {
+            display: false,
+          },
+
+          tooltip: {
+            displayColors: false,
+            padding: 10,
+
+            callbacks: {
+              label: (context) =>
+                `평균 ${Number(
+                  context.raw
+                ).toFixed(1)} / 5`,
+            },
+          },
+        },
+
+        scales: {
+          r: {
+            beginAtZero: true,
+            min: 0,
+            max: 5,
+
+            ticks: {
+              display: false,
+              stepSize: 1,
+            },
+
+            angleLines: {
+              color:
+                'rgba(140, 148, 144, 0.24)',
+            },
+
+            grid: {
+              color:
+                'rgba(140, 148, 144, 0.22)',
+            },
+
+            pointLabels: {
+              color: '#4f5653',
+
+              font: {
+                size: 10,
+                weight: '600',
+              },
+            },
+          },
+        },
+      }),
+      []
+    )
+
+
+  // ========================================
+  // 추천 상품 TOP 5 Horizontal Bar Chart
+  // ========================================
+
+  const topProductLabelPlugin =
+    useMemo(
+      () => ({
+        id: 'topProductLabels',
+
+        afterDraw: (chart) => {
+          const {
+            ctx,
+            chartArea,
+            scales,
+          } = chart
+
+          const yScale = scales.y
+
+          if (
+            !chartArea
+            || !yScale
+          ) {
+            return
+          }
+
+          ctx.save()
+
+          topProducts.forEach(
+            (product, index) => {
+              const y =
+                yScale.getPixelForValue(
+                  index
+                )
+
+              const badgeSize = 18
+              const badgeX =
+                chartArea.left - 132
+              const badgeY =
+                y - badgeSize / 2
+
+              ctx.beginPath()
+              ctx.roundRect(
+                badgeX,
+                badgeY,
+                badgeSize,
+                badgeSize,
+                4
+              )
+              ctx.fillStyle =
+                '#568a80'
+              ctx.fill()
+
+              ctx.fillStyle =
+                '#ffffff'
+              ctx.font =
+                '700 9px sans-serif'
+              ctx.textAlign =
+                'center'
+              ctx.textBaseline =
+                'middle'
+
+              ctx.fillText(
+                String(index + 1),
+                badgeX
+                  + badgeSize / 2,
+                y
+              )
+
+              ctx.fillStyle =
+                '#222524'
+              ctx.font =
+                '600 10px sans-serif'
+              ctx.textAlign =
+                'left'
+              ctx.textBaseline =
+                'middle'
+
+              ctx.fillText(
+                product.name,
+                badgeX
+                  + badgeSize
+                  + 10,
+                y
+              )
+            }
+          )
+
+          ctx.restore()
+        },
+      }),
+      []
+    )
+
+
+  const topProductChartData =
+    useMemo(
+      () => ({
+        labels:
+          topProducts.map(
+            (product, index) =>
+              `${index + 1}. ${product.name}`
+          ),
+
+        datasets: [
+          {
+            label: '추천 횟수',
+
+            data:
+              topProducts.map(
+                (product) =>
+                  product.count
+              ),
+
+            backgroundColor:
+              'rgba(86, 138, 128, 0.84)',
+
+            borderColor:
+              '#568a80',
+
+            borderWidth: 1,
+
+            borderRadius: 5,
+
+            barThickness: 10,
+          },
+        ],
+      }),
+      [topPeriod]
+    )
+
+
+  const topProductChartOptions =
+    useMemo(
+      () => ({
+        responsive: true,
+        maintainAspectRatio: false,
+
+        indexAxis: 'y',
+
+        layout: {
+          padding: {
+            left: 132,
+          },
+        },
+
+        animation: {
+          duration: 900,
+          easing: 'easeOutQuart',
+        },
+
+        plugins: {
+          legend: {
+            display: false,
+          },
+
+          tooltip: {
+            displayColors: false,
+            padding: 10,
+
+            callbacks: {
+              label: (context) =>
+                `추천 ${context.raw}회`,
+            },
+          },
+        },
+
+        scales: {
+          x: {
+            beginAtZero: true,
+
+            suggestedMax:
+              Math.max(
+                ...topProducts.map(
+                  (product) =>
+                    product.count
+                )
+              ) + 8,
+
+            border: {
+              display: false,
+            },
+
+            grid: {
+              color:
+                'rgba(223, 226, 224, 0.68)',
+            },
+
+            ticks: {
+              precision: 0,
+
+              color: '#8c9490',
+
+              font: {
+                size: 9,
+              },
+            },
+          },
+
+          y: {
+            border: {
+              display: false,
+            },
+
+            grid: {
+              display: false,
+            },
+
+            ticks: {
+              display: false,
+            },
+          },
+        },
+      }),
+      []
+    )
+
+
   return (
     <section
       className={styles.page}
@@ -1388,51 +1826,14 @@ const AiLogManage = () => {
           >
 
             <AdminPanel
-              title="회원/비회원 이용 비율"
+              title="AI 추천 이용자 취향 분석"
               padding="compact"
             >
-              <div className={styles.memberRatioArea}>
-
-                <div className={styles.donutChart}>
-                  <div>
-                    <span>
-                      전체
-                    </span>
-
-                    <strong>
-                      1,234
-                      <small>
-                        건
-                      </small>
-                    </strong>
-                  </div>
-                </div>
-
-                <ul className={styles.ratioLegend}>
-                  <li>
-                    <i className={styles.memberDot} />
-                    <span>
-                      회원
-                    </span>
-                  </li>
-
-                  <li>
-                    <i className={styles.guestDot} />
-                    <span>
-                      비회원
-                    </span>
-                  </li>
-                </ul>
-
-              </div>
-
-              <div className={styles.ratioNotice}>
-                <span>
-                  ⓘ
-                </span>
-
-                비회원의 AI 추천 비중이
-                꾸준히 증가하고 있습니다.
+              <div className={styles.preferenceRadarChart}>
+                <Radar
+                  data={preferenceChartData}
+                  options={preferenceChartOptions}
+                />
               </div>
             </AdminPanel>
 
@@ -1465,44 +1866,14 @@ const AiLogManage = () => {
                 </select>
               }
             >
-              <div className={styles.topProductList}>
-                {topProducts.map(
-                  (product, index) => (
-                    <div
-                      className={
-                        styles.topProductRow
-                      }
-                      key={product.name}
-                    >
-                      <span className={styles.rank}>
-                        {index + 1}
-                      </span>
-
-                      <strong>
-                        {product.name}
-                      </strong>
-
-                      <span className={styles.barTrack}>
-                        <i
-                          style={{
-                            width:
-                              `${
-                                (
-                                  product.count /
-                                  topProducts[0]
-                                    .count
-                                ) * 100
-                              }%`,
-                          }}
-                        />
-                      </span>
-
-                      <small>
-                        {product.count}회
-                      </small>
-                    </div>
-                  )
-                )}
+              <div className={styles.topProductChart}>
+                <Bar
+                  data={topProductChartData}
+                  options={topProductChartOptions}
+                  plugins={[
+                    topProductLabelPlugin,
+                  ]}
+                />
               </div>
             </AdminPanel>
 

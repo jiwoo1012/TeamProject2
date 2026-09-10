@@ -344,43 +344,54 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 
 ```text
 jajak/
-│
 ├── .env.example
 ├── .env.local
 ├── .firebaserc
 ├── .gitignore
 ├── .oxlintrc.json
 ├── AGENTS.md
+├── README.md
+├── event-review.mjs
 ├── firebase.json
 ├── firestore.indexes.json
 ├── firestore.rules
 ├── index.html
 ├── package.json
 ├── package-lock.json
-├── README.md
 ├── vercel.json
 ├── vite.config.js
 │
+├── docs/
+│   └── images/
+│       ├── design/
+│       │   └── .gitkeep
+│       └── screenshots/
+│           └── .gitkeep
+│
 ├── functions/
-│   ├── src/
-│   │   ├── utils/
-│   │   │   ├── buildCandidateTables.js
-│   │   │   └── filterProducts.js
-│   │   ├── index.js
-│   │   └── recommendation.js
+│   ├── .env.local
 │   ├── .gitignore
+│   ├── .secret.local
 │   ├── package.json
-│   └── package-lock.json
+│   ├── package-lock.json
+│   └── src/
+│       ├── index.js
+│       ├── recommendation.js
+│       └── utils/
+│           ├── buildCandidateTables.js
+│           └── filterProducts.js
 │
 ├── public/
 │   └── favicon.png
 │
 └── src/
+    ├── App.jsx
+    ├── main.jsx
+    │
     ├── assets/
     │   ├── characters/
     │   ├── fonts/
     │   ├── icons/
-    │   │   └── preferenceQuestions/
     │   ├── images/
     │   │   ├── admin/
     │   │   ├── ai/
@@ -391,16 +402,29 @@ jajak/
     │   │   ├── main/
     │   │   ├── mypage/
     │   │   ├── products/
+    │   │   ├── shop/
     │   │   └── splash/
     │   ├── logos/
     │   └── videos/
     │
     ├── components/
     │   ├── admin/
+    │   │   ├── AdminEmptyState.jsx
+    │   │   ├── AdminEmptyState.module.scss
+    │   │   ├── AdminFilterBar.jsx
+    │   │   ├── AdminFilterBar.module.scss
+    │   │   ├── AdminFooter.jsx
+    │   │   ├── AdminFooter.module.scss
     │   │   ├── AdminHeader.jsx
     │   │   ├── AdminHeader.module.scss
-    │   │   ├── AdminFooter.jsx
-    │   │   └── AdminFooter.module.scss
+    │   │   ├── AdminPageHeader.jsx
+    │   │   ├── AdminPageHeader.module.scss
+    │   │   ├── AdminPanel.jsx
+    │   │   ├── AdminPanel.module.scss
+    │   │   ├── AdminStatusBadge.jsx
+    │   │   ├── AdminStatusBadge.module.scss
+    │   │   ├── AdminSummaryCard.jsx
+    │   │   └── AdminSummaryCard.module.scss
     │   │
     │   ├── ai/
     │   │   ├── AiLoginModal.jsx
@@ -428,18 +452,59 @@ jajak/
     │   │   ├── SearchModal.module.scss
     │   │   └── SiteLayout.jsx
     │   │
+    │   ├── mypage/
+    │   │   ├── MyPageCard.jsx
+    │   │   ├── MyPageCard.module.scss
+    │   │   ├── MyPageEmpty.jsx
+    │   │   ├── MyPageEmpty.module.scss
+    │   │   ├── MyPageHeader.jsx
+    │   │   ├── MyPageHeader.module.scss
+    │   │   ├── StatusBadge.jsx
+    │   │   └── StatusBadge.module.scss
+    │   │
+    │   ├── shop/
+    │   │   ├── ProductActionBar.jsx
+    │   │   ├── ProductActionBar.module.scss
+    │   │   ├── ProductGuide.jsx
+    │   │   └── ProductGuide.module.scss
+    │   │
     │   └── ui/
     │       ├── Badge/
+    │       │   ├── Badge.jsx
+    │       │   └── Badge.module.scss
     │       ├── Button/
+    │       │   ├── Button.jsx
+    │       │   └── Button.module.scss
     │       ├── EmptyState/
+    │       │   ├── EmptyState.jsx
+    │       │   └── EmptyState.module.scss
     │       ├── ErrorState/
+    │       │   ├── ErrorState.jsx
+    │       │   └── ErrorState.module.scss
     │       ├── Loading/
+    │       │   ├── Loading.jsx
+    │       │   └── Loading.module.scss
+    │       ├── MainSectionNav/
+    │       │   ├── MainSectionNav.jsx
+    │       │   └── MainSectionNav.module.scss
     │       ├── MobileTopButton/
+    │       │   ├── MobileTopButton.jsx
+    │       │   └── MobileTopButton.module.scss
     │       ├── Modal/
+    │       │   ├── Modal.jsx
+    │       │   └── Modal.module.scss
     │       ├── Pagination/
+    │       │   ├── Pagination.jsx
+    │       │   └── Pagination.module.scss
     │       ├── ProductCard/
+    │       │   ├── ProductCard.jsx
+    │       │   └── ProductCard.module.scss
     │       ├── QuestionCard/
+    │       │   ├── QuestionCard.jsx
+    │       │   └── QuestionCard.module.scss
     │       └── Tabs/
+    │           ├── Tabs.jsx
+    │           └── Tabs.module.scss
     │
     ├── constants/
     │   ├── aiSurvey.js
@@ -450,15 +515,16 @@ jajak/
     │   └── userRole.js
     │
     ├── data/
-    │   ├── products/
-    │   │   ├── foods.json
-    │   │   ├── gifts.json
-    │   │   ├── glasses.json
-    │   │   ├── index.js
-    │   │   └── liquors.json
     │   ├── events.json
     │   ├── pairings.json
-    │   └── quizs.json
+    │   ├── quizs.json
+    │   ├── tavernGame.js
+    │   └── products/
+    │       ├── foods.json
+    │       ├── gifts.json
+    │       ├── glasses.json
+    │       ├── index.js
+    │       └── liquors.json
     │
     ├── firebase/
     │   ├── auth.js
@@ -503,21 +569,23 @@ jajak/
     │   │   ├── AiSurvey.jsx
     │   │   ├── AiSurvey.module.scss
     │   │   ├── GuestChoiceModal.jsx
-    │   │   └── GuestChoiceModal.module.scss
+    │   │   ├── GuestChoiceModal.module.scss
+    │   │   ├── MakdongTavern.jsx
+    │   │   └── MakdongTavern.module.scss
     │   │
     │   ├── Auth/
     │   │   ├── Login.jsx
     │   │   ├── Login.module.scss
-    │   │   ├── PreferenceSurvey.jsx
-    │   │   ├── PreferenceSurvey.module.scss
-    │   │   ├── PreferenceSafetyIntro.jsx
-    │   │   ├── PreferenceSafetyIntro.module.scss
-    │   │   ├── PreferenceSafety.jsx
-    │   │   ├── PreferenceSafety.module.scss
-    │   │   ├── PreferenceQuestions.jsx
-    │   │   ├── PreferenceQuestions.module.scss
     │   │   ├── PreferenceComplete.jsx
     │   │   ├── PreferenceComplete.module.scss
+    │   │   ├── PreferenceQuestions.jsx
+    │   │   ├── PreferenceQuestions.module.scss
+    │   │   ├── PreferenceSafety.jsx
+    │   │   ├── PreferenceSafety.module.scss
+    │   │   ├── PreferenceSafetyIntro.jsx
+    │   │   ├── PreferenceSafetyIntro.module.scss
+    │   │   ├── PreferenceSurvey.jsx
+    │   │   ├── PreferenceSurvey.module.scss
     │   │   ├── Signup.jsx
     │   │   └── Signup.module.scss
     │   │
@@ -557,19 +625,21 @@ jajak/
     │   │   ├── JourneySection.module.scss
     │   │   ├── MainPage.jsx
     │   │   ├── MainPage.module.scss
+    │   │   ├── README.md
     │   │   ├── SplashIntro.jsx
     │   │   ├── SplashIntro.module.scss
     │   │   ├── useHeroReveal.js
     │   │   ├── useLogoScrollReset.js
     │   │   ├── useMainSectionWheel.js
-    │   │   ├── useSectionReveals.js
-    │   │   └── README.md
+    │   │   └── useSectionReveals.js
     │   │
     │   ├── MyPage/
     │   │   ├── AddressBook.jsx
     │   │   ├── AddressBook.module.scss
     │   │   ├── AiHistory.jsx
     │   │   ├── AiHistory.module.scss
+    │   │   ├── AiHistoryDetail.jsx
+    │   │   ├── AiHistoryDetail.module.scss
     │   │   ├── AiPreference.jsx
     │   │   ├── AiPreference.module.scss
     │   │   ├── ClaimHistory.jsx
@@ -582,10 +652,10 @@ jajak/
     │   │   ├── FrequentPurchase.module.scss
     │   │   ├── InquiryHistory.jsx
     │   │   ├── InquiryHistory.module.scss
-    │   │   ├── MyPageErrorContent.jsx
-    │   │   ├── MyPageErrorContent.module.scss
     │   │   ├── MyHome.jsx
     │   │   ├── MyHome.module.scss
+    │   │   ├── MyPageErrorContent.jsx
+    │   │   ├── MyPageErrorContent.module.scss
     │   │   ├── MyPageLayout.jsx
     │   │   ├── MyPageLayout.module.scss
     │   │   ├── OrderDetail.jsx
@@ -631,19 +701,19 @@ jajak/
     │   └── recommendationApi.js
     │
     ├── styles/
-    │   ├── global.scss
     │   ├── _mixins.scss
     │   ├── _reset.scss
-    │   └── _variables.scss
+    │   ├── _variables.scss
+    │   ├── global.scss
+    │   └── admin/
+    │       ├── _adminCommon.scss
+    │       ├── _adminMixins.scss
+    │       └── _adminVariables.scss
     │
-    ├── utils/
-    │   ├── cartStorage.js
-    │   ├── format.js
-    │   └── validation.js
-    │
-    ├── App.jsx
-    └── main.jsx
-```
+    └── utils/
+        ├── cartStorage.js
+        ├── format.js
+        └── validation.js
 
 ## Structure Rules
 

@@ -10,110 +10,110 @@
 
 .frequentCard {
   width: 100%;
-  min-height: 520px;
+  min-height: 610px;
 
   padding:
-    30px
-    30px
-    28px;
+    34px
+    32px
+    40px;
 
   background: #fff;
 
+  border: 1px solid #eeeae3;
   border-radius: 18px;
 }
 
 
 /* =========================
-   HEADER
+   PIN GUIDE
 ========================= */
 
-.pageHeader {
-  min-height: 38px;
-
+.pinGuide {
   display: flex;
   align-items: center;
 
-  h2 {
+  gap: 11px;
+
+  min-height: 50px;
+
+  padding:
+    10px
+    14px;
+
+  border: 1px solid #d9e4df;
+  border-radius: 10px;
+
+  background: #f3f8f6;
+
+  p {
     margin: 0;
 
-    color: #493d33;
+    color: #66766f;
 
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 1.3;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5;
   }
 }
 
 
-.titleDivider {
-  width: 100%;
-  height: 1px;
+.pinGuideIcon {
+  width: 30px;
+  height: 30px;
 
-  margin:
-    4px
-    0
-    18px;
+  flex-shrink: 0;
 
-  background: #625d56;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #e3efea;
+
+  color: #4d7e73;
+
+  svg {
+    width: 15px;
+    height: 15px;
+  }
 }
 
 
 /* =========================
-   LIST HEADER
+   TOOLBAR
 ========================= */
 
 .listHeader {
+  min-height: 36px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
 
   gap: 20px;
 
-  min-height: 28px;
-
-  margin-bottom: 12px;
+  margin:
+    26px
+    0
+    14px;
 }
 
 
 .countArea {
-  display: flex;
-  align-items: center;
-
-  gap: 3px;
-
-  color: #655f57;
+  color: #8f8981;
 
   font-size: 12px;
+  font-weight: 500;
 
   strong {
-    color: #4b443d;
+    margin: 0 2px;
 
-    font-size: 12px;
+    color: #3f756d;
+
+    font-size: 13px;
     font-weight: 700;
   }
-}
-
-
-.recommendBadge {
-  min-height: 20px;
-
-  display: inline-flex;
-  align-items: center;
-
-  margin-left: 9px;
-
-  padding:
-    0
-    11px;
-
-  border-radius: 20px;
-
-  background: #739e94;
-
-  color: #fff !important;
-
-  font-size: 11px !important;
-  font-weight: 600;
 }
 
 
@@ -124,17 +124,20 @@
 .sortArea {
   display: flex;
   align-items: center;
+
+  gap: 10px;
+}
+
+
+.sortItem {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
 }
 
 
 .sortButton {
-  position: relative;
-
-  display: inline-flex;
-  align-items: center;
-
-  gap: 8px;
-
   padding: 0;
 
   border: 0;
@@ -143,24 +146,70 @@
 
   color: #a09a92;
 
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
 
   cursor: pointer;
+
+  transition:
+    color 0.2s ease;
+
+  &:hover {
+    color: #4d7e73;
+  }
 }
 
 
 .activeSort {
-  color: #4e4942;
+  color: #3f756d;
 
   font-weight: 700;
 }
 
 
 .sortDivider {
-  color: #d2cdc5;
+  width: 1px;
+  height: 12px;
 
-  font-weight: 400;
+  background: #ddd8d0;
+}
+
+
+/* =========================
+   PIN NOTICE
+========================= */
+
+.notice {
+  position: fixed;
+
+  z-index: 1100;
+
+  left: 50%;
+  bottom: 40px;
+
+  margin: 0;
+
+  padding:
+    11px
+    18px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(
+      55,
+      51,
+      47,
+      0.92
+    );
+
+  color: #fff;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  transform:
+    translateX(-50%);
 }
 
 
@@ -169,6 +218,8 @@
 ========================= */
 
 .productGrid {
+  width: 100%;
+
   display: grid;
 
   grid-template-columns:
@@ -177,9 +228,8 @@
       minmax(0, 1fr)
     );
 
-  gap: 18px;
-
-  width: 100%;
+  column-gap: 18px;
+  row-gap: 30px;
 }
 
 
@@ -187,6 +237,17 @@
   min-width: 0;
 }
 
+
+.pinnedCard {
+  .imageArea {
+    border-color: #b9d0c8;
+  }
+}
+
+
+/* =========================
+   IMAGE
+========================= */
 
 .imageArea {
   position: relative;
@@ -197,9 +258,13 @@
 
   overflow: hidden;
 
-  border-radius: 3px;
+  border: 1px solid #eee9e2;
+  border-radius: 12px;
 
-  background: #d9d9d9;
+  background: #f2f0eb;
+
+  transition:
+    border-color 0.2s ease;
 }
 
 
@@ -218,13 +283,13 @@
     object-fit: cover;
 
     transition:
-      transform 0.25s ease;
+      transform 0.28s ease;
   }
 
   &:hover {
     img {
       transform:
-        scale(1.025);
+        scale(1.035);
     }
   }
 }
@@ -234,20 +299,24 @@
   width: 100%;
   height: 100%;
 
-  background: #d8d8d8;
+  background: #e2dfd8;
 }
 
 
-/* 순위 */
+/* =========================
+   RANK
+========================= */
 
 .rankBadge {
   position: absolute;
 
-  left: 5px;
-  bottom: 5px;
+  z-index: 2;
 
-  min-width: 21px;
-  height: 15px;
+  left: 10px;
+  bottom: 10px;
+
+  min-width: 27px;
+  height: 25px;
 
   display: inline-flex;
   align-items: center;
@@ -255,9 +324,17 @@
 
   padding:
     0
-    5px;
+    7px;
 
-  border-radius: 2px;
+  border: 1px solid
+    rgba(
+      225,
+      220,
+      212,
+      0.9
+    );
+
+  border-radius: 7px;
 
   background:
     rgba(
@@ -267,33 +344,99 @@
       0.9
     );
 
-  color: #656059;
+  color: #605a53;
 
   font-size: 11px;
   font-weight: 700;
+
+  backdrop-filter:
+    blur(4px);
 }
 
 
-/* 핀 */
+/* =========================
+   PIN
+========================= */
 
-.pinIcon {
+.pinButton {
   position: absolute;
 
-  top: 6px;
-  right: 6px;
+  z-index: 3;
 
-  width: 18px;
-  height: 18px;
+  top: 10px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  color: #66615b;
+  padding: 0;
+
+  border: 1px solid
+    rgba(
+      224,
+      219,
+      211,
+      0.9
+    );
+
+  border-radius: 50%;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.9
+    );
+
+  color: #736d66;
+
+  cursor: pointer;
+
+  backdrop-filter:
+    blur(4px);
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
 
   svg {
-    width: 11px;
-    height: 11px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    border-color: #9cb9b0;
+
+    background: #fff;
+
+    color: #3f756d;
+
+    transform:
+      translateY(-1px);
+  }
+}
+
+
+.pinned {
+  border-color: #4d7e7b;
+
+  background: #4d7e7b;
+
+  color: #fff;
+
+  &:hover {
+    border-color: #3e6d65;
+
+    background: #3e6d65;
+
+    color: #fff;
   }
 }
 
@@ -303,19 +446,52 @@
 ========================= */
 
 .productInfo {
-  padding-top: 7px;
+  padding:
+    11px
+    2px
+    0;
+}
+
+
+.productLabelRow {
+  min-height: 20px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  margin-bottom: 4px;
 }
 
 
 .category {
-  display: block;
-
-  margin-bottom: 4px;
-
-  color: #a09a92;
+  color: #9b958d;
 
   font-size: 11px;
   font-weight: 500;
+}
+
+
+.pinnedLabel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 19px;
+
+  padding:
+    0
+    7px;
+
+  border-radius: 999px;
+
+  background: #e8f2ee;
+
+  color: #3f756d;
+
+  font-size: 10px;
+  font-weight: 700;
 }
 
 
@@ -324,11 +500,11 @@
 
   overflow: hidden;
 
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 
-  color: #4d4740;
+  color: #38342e;
 
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
 
   text-decoration: none;
@@ -336,8 +512,11 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 
+  transition:
+    color 0.2s ease;
+
   &:hover {
-    color: #59887d;
+    color: #3f756d;
   }
 }
 
@@ -345,27 +524,31 @@
 .price {
   display: block;
 
-  color: #514b45;
+  color: #4b463f;
 
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
 }
 
+
+/* =========================
+   PURCHASE META
+========================= */
 
 .purchaseMeta {
   display: flex;
   flex-direction: column;
 
-  gap: 2px;
+  gap: 3px;
 
-  margin-top: 6px;
+  margin-top: 8px;
 
   color: #a19b94;
 
-  font-size: 11px;
+  font-size: 12px;
 
   span:first-child {
-    color: #63867e;
+    color: #4d7e73;
 
     font-weight: 600;
   }
@@ -373,95 +556,191 @@
 
 
 /* =========================
-   다시 구매
+   BUY AGAIN
 ========================= */
 
 .buyAgainButton {
   width: 100%;
-  height: 24px;
+  height: 36px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  gap: 4px;
+  gap: 6px;
 
-  margin-top: 8px;
+  margin-top: 12px;
+  padding: 0;
 
-  border:
-    1px solid
-    #b7cbc5;
-
-  border-radius: 4px;
+  border: 1px solid #a8c1b9;
+  border-radius: 8px;
 
   background: #fff;
 
-  color: #62877e;
+  color: #4d7e73;
 
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
 
-  text-decoration: none;
+  cursor: pointer;
 
   transition:
     background 0.2s ease,
     color 0.2s ease,
-    border-color 0.2s ease;
+    border-color 0.2s ease,
+    transform 0.2s ease;
 
   svg {
-    width: 10px;
-    height: 10px;
+    width: 14px;
+    height: 14px;
   }
 
   &:hover {
-    border-color: #65958a;
+    border-color: #4d7e7b;
 
-    background: #65958a;
+    background: #4d7e7b;
 
     color: #fff;
+
+    transform:
+      translateY(-1px);
+  }
+
+  &:active {
+    transform:
+      translateY(0);
   }
 }
 
 
 /* =========================
-   INFO
+   PAGINATION
 ========================= */
 
-.infoText {
-  margin-top: 34px;
-
-  color: #99938c;
-
-  p {
-    margin:
-      2px
-      0;
-
-    font-size: 11px;
-    line-height: 1.5;
-  }
-}
-
-
-/* =========================
-   EMPTY / LOADING
-========================= */
-
-.stateBox {
-  min-height: 240px;
-
+.pagination {
   display: flex;
   align-items: center;
   justify-content: center;
 
-  color: #99938b;
+  gap: 6px;
 
-  font-size: 12px;
+  margin-top: 34px;
+
+  button {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: transparent;
+
+    color: #8f8981;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: #edf5f1;
+
+      color: #3f756d;
+    }
+
+    &:disabled {
+      opacity: 0.3;
+
+      cursor: default;
+    }
+  }
 }
 
 
+.activePage {
+  background: #4d7e7b !important;
+
+  color: #fff !important;
+
+  font-weight: 700 !important;
+}
+
+
+/* =========================
+   LOADING / ERROR
+========================= */
+
+.stateBox {
+  min-height: 280px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  color: #99938b;
+
+  font-size: 12px;
+
+  text-align: center;
+
+  strong {
+    color: #554f48;
+
+    font-size: 13px;
+    font-weight: 600;
+  }
+}
+
+
+.loadingSpinner {
+  width: 26px;
+  height: 26px;
+
+  border:
+    2px
+    solid
+    #eae6df;
+
+  border-top-color:
+    #519888;
+
+  border-radius: 50%;
+
+  animation:
+    spin
+    0.8s
+    linear
+    infinite;
+}
+
+
+@keyframes spin {
+  to {
+    transform:
+      rotate(360deg);
+  }
+}
+
+
+/* =========================
+   EMPTY
+========================= */
+
 .emptyState {
-  min-height: 300px;
+  min-height: 320px;
 
   display: flex;
   flex-direction: column;
@@ -472,50 +751,40 @@
 
   strong {
     margin:
-      10px
+      13px
       0
-      5px;
+      20px;
 
-    color: #504a43;
+    color: #49433c;
 
-    font-size: 13px;
-  }
-
-  p {
-    margin:
-      0
-      0
-      15px;
-
-    color: #a69f97;
-
-    font-size: 12px;
-    line-height: 1.6;
+    font-size: 15px;
+    font-weight: 700;
   }
 }
 
 
 .emptyIcon {
-  width: 32px;
-  height: 32px;
+  width: 42px;
+  height: 42px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
+  border: 1px solid #d8e3de;
   border-radius: 50%;
 
-  background: #e8f0ed;
+  background: #f0f6f3;
 
-  color: #648e84;
+  color: #648d82;
 
-  font-size: 14px;
+  font-size: 18px;
 }
 
 
 .shopButton {
-  min-width: 90px;
-  height: 29px;
+  min-width: 110px;
+  height: 36px;
 
   display: inline-flex;
   align-items: center;
@@ -523,21 +792,28 @@
 
   padding:
     0
-    13px;
+    16px;
 
-  border-radius: 20px;
+  border: 1px solid #4d7e7b;
+  border-radius: 8px;
 
-  background: #608e84;
+  background: #4d7e7b;
 
   color: #fff;
 
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
 
   text-decoration: none;
 
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+
   &:hover {
-    background: #517c73;
+    border-color: #3c6763;
+
+    background: #3c6763;
   }
 }
 
@@ -549,13 +825,16 @@
 @media (max-width: 1024px) {
   .frequentCard {
     padding:
-      26px
-      24px;
+      28px
+      24px
+      34px;
   }
 
 
   .productGrid {
-    gap: 14px;
+    gap:
+      26px
+      14px;
   }
 }
 
@@ -569,18 +848,20 @@
     min-height: auto;
 
     padding:
-      22px
-      16px
-      26px;
+      24px
+      18px
+      30px;
 
-    border-radius: 14px;
+    border-radius: 15px;
   }
 
 
-  .pageHeader {
-    h2 {
-      font-size: 19px;
-    }
+  .pinGuide {
+    align-items: flex-start;
+
+    padding:
+      11px
+      12px;
   }
 
 
@@ -588,7 +869,14 @@
     align-items: flex-start;
     flex-direction: column;
 
-    gap: 9px;
+    gap: 10px;
+
+    margin-top: 22px;
+  }
+
+
+  .sortArea {
+    align-self: flex-end;
   }
 
 
@@ -600,12 +888,57 @@
       );
 
     gap:
-      24px
+      26px
       12px;
   }
 
 
-  .recommendBadge {
-    display: none;
+  .imageArea {
+    border-radius: 10px;
+  }
+
+
+  .pinButton {
+    top: 8px;
+    right: 8px;
+
+    width: 31px;
+    height: 31px;
+  }
+
+
+  .rankBadge {
+    left: 8px;
+    bottom: 8px;
+  }
+
+
+  .productInfo {
+    padding-top: 9px;
+  }
+
+
+  .productName {
+    font-size: 13px;
+  }
+
+
+  .price {
+    font-size: 12px;
+  }
+
+
+  .purchaseMeta {
+    font-size: 11px;
+  }
+
+
+  .buyAgainButton {
+    height: 34px;
+  }
+
+
+  .pagination {
+    margin-top: 28px;
   }
 }

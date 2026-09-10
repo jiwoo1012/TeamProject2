@@ -3,10 +3,19 @@
 
 .page { --shop-header-height: 72px; overflow: clip; color: $color-text-primary; background: $color-bg; font-family: $font-family-base; }
 .revealStage { position: relative; min-height: 100vh; background: $color-bg; }
-.stickyFrame { position: sticky; z-index: 0; top: var(--shop-header-height); width: calc(100% - #{$side-margin-desktop} * 2); height: clamp(200px, 28.23vw, 542px); margin-inline: auto; overflow: hidden; border-radius: $radius-xl; line-height: 0; background: $color-bg; }
+.stickyFrame { position: sticky; z-index: 0; top: var(--shop-header-height); width: 100%; height: clamp(220px, 31vw, 596px); margin-inline: 0; overflow: hidden; border-radius: $radius-xl $radius-xl 0 0; line-height: 0; background: $color-bg; }
 .bannerSlider, .bannerLink, .banner { position: absolute; inset: 0; width: 100%; height: 100%; }
 .bannerLink { display: block; opacity: 0; pointer-events: none; transition: opacity 0.5s ease, transform 0.5s ease; }
-.banner { display: block; object-fit: contain; }
+.banner { display: block; object-fit: cover; }
+.bannerCopy { position: absolute; top: 50%; left: 10%; max-width: 85%; color: $color-text-primary; transform: translateY(-50%); pointer-events: none; }
+.bannerCopy h2 { margin: 0; font-family: $font-family-display; font-size: clamp(12px, 2.9vw, 56px); font-weight: $font-weight-regular; line-height: 1.4; white-space: nowrap; }
+.bannerCopy p { margin: clamp(8px, 1.6vw, 32px) 0 0; font-size: clamp(10px, 1.25vw, 24px); font-weight: $font-weight-regular; line-height: $line-height-relaxed; }
+.eventBannerCopy p { margin-top: clamp(4px, 1.25vw, 24px); }
+.bannerCta { display: inline-flex; align-items: center; gap: $space-2; margin-top: clamp(6px, 1.67vw, 32px); padding: clamp(4px, .83vw, 16px) clamp(10px, 1.67vw, 32px); border-radius: $radius-md; color: $color-white; background: $color-primary; font-size: clamp(10px, 1.04vw, 20px); font-weight: $font-weight-medium; line-height: $line-height-tight; }
+.bannerCta > span { transition: transform $transition-fast ease; }
+.activeBanner .bannerCta { pointer-events: auto; }
+.tavernBannerCta { position: absolute; left: 76%; top: 64%; bottom: auto; margin-top: 0; transform: translateX(-50%); white-space: nowrap; pointer-events: none; }
+.bannerCta:hover > span, .bannerCta:focus-visible > span { transform: translateX($space-1); }
 .activeBanner { opacity: 1; pointer-events: auto; transform: scale(1); }
 .bannerDots { position: absolute; z-index: 2; bottom: $space-4; left: 50%; display: flex; gap: $space-2; align-items: center; transform: translateX(-50%); }
 .bannerDots button { width: 9px; height: 9px; padding: 0; background: rgba($color-bg, .7); border: 1px solid rgba($color-text-primary, .3); border-radius: $radius-pill; box-shadow: 0 1px 3px rgba($color-text-primary, .14); transition: width $transition-fast ease, background-color $transition-fast ease, transform $transition-fast ease; }
@@ -22,12 +31,10 @@
 
 .shopBody { position: relative; z-index: 1; background: $color-bg; }
 .catalog { position: relative; background: $color-bg; }
-.mainCategories { display: flex; justify-content: center; gap: $space-8; width: calc(100% - #{$side-margin-desktop}); max-width: 1600px; margin-inline: auto; padding: $space-10 0 $space-8; border-bottom: 1px solid $color-border; }
+.mainCategories { display: flex; justify-content: center; gap: $space-8; width: calc(100% - #{$side-margin-desktop}); max-width: 1600px; margin-inline: auto; padding: $space-16 0 $space-10; border-bottom: 1px solid $color-border; }
 .categoryButton { display: flex; flex-direction: column; align-items: center; gap: $space-3; width: $space-24; padding: 0 0 $space-3; color: $color-text-muted; background: transparent; border: 0; border-bottom: 2px solid transparent; transition: color $transition-fast ease, border-color $transition-fast ease; }
 .categoryImage { display: block; width: $space-24; height: $space-24; overflow: hidden; background: $color-surface; border-radius: $radius-lg; }
 .categoryImage > img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform $transition-base ease; }
-.allCategoryGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; width: 100%; height: 100%; }
-.allCategoryGrid img { display: block; width: 100%; height: 100%; min-height: 0; object-fit: cover; }
 .categoryLabel { font-size: $font-size-sm; font-weight: $font-weight-medium; white-space: nowrap; }
 .categoryButton:hover { color: $color-text-primary; }
 .categoryButton:hover .categoryImage > img { transform: scale(1.04); }
@@ -49,7 +56,7 @@
 .detailFilterItem:hover .alcoholInfoButton, .detailFilterItem:focus-within .alcoholInfoButton { opacity: 1; pointer-events: auto; }
 .selects { display: flex; flex-shrink: 0; gap: $space-4; margin-left: auto; }
 .selects label { position: relative; min-width: 0; }
-.selects label::after { position: absolute; top: 50%; right: 0; content: '⌄'; pointer-events: none; transform: translateY(-60%); color: $color-text-muted; }
+.selects label::after { position: absolute; top: 50%; right: $space-1; width: $space-2; height: $space-2; box-sizing: border-box; content: ''; pointer-events: none; border-right: 1.5px solid $color-text-muted; border-bottom: 1.5px solid $color-text-muted; transform: translateY(-75%) rotate(45deg); }
 .selects span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .selects select { width: 100%; padding: $space-2 $space-6 $space-2 0; color: $color-text-primary; font-size: $font-size-sm; font-weight: $font-weight-medium; background: transparent; border: 0; border-radius: 0; }
 .productGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: $space-12 $space-10; }
@@ -111,10 +118,11 @@
 .stylingMarquee { overflow: hidden; background: $color-bg; border-top: 1px solid $color-border; }
 .marqueeTrack { display: flex; align-items: stretch; width: max-content; gap: $grid-gutter; line-height: 0; animation: marquee 90s linear infinite; padding: 72px 0 ;}
 .marqueeTrack img { display: block; width: clamp(260px, 24vw, 420px); aspect-ratio: 1.15; object-fit: cover; border-radius: $radius-lg; }
+.marqueeTrack { cursor: grab; touch-action: pan-y pinch-zoom; user-select: none; -webkit-user-select: none; }
+.marqueeTrack[data-dragging='true'] { cursor: grabbing; }
 @keyframes marquee { to { transform: translateX(calc(-50% - (#{$grid-gutter} / 2))); } }
 
 @include mixins.tablet {
-  .stickyFrame { width: calc(100% - #{$side-margin-tablet} * 2); }
   .tastePanel { padding-inline: $side-margin-tablet; }
   .productGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .productSection { width: calc(100% - #{$side-margin-tablet}); }
@@ -138,15 +146,22 @@
   .tasteContent p { font-size: $font-size-sm; }
   .tasteContent p br { display: none; }
   .tasteContent a { margin-top: $space-6; }
-  .productGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-10 $space-3; }
+  .productGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-10 $space-5; }
+  .productTopButton.productTopButton {
+    right: $space-2;
+    bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+    width: $space-10; min-width: $space-10; height: 44px; padding: 0;
+    span { display: none; }
+  }
   .productSection { width: calc(100% - (#{$side-margin-mobile} * 2)); }
   .marqueeTrack img { width: 240px; }
-  .alcoholModal { grid-template-columns: 1fr; gap: $space-5; max-height: calc(100dvh - (#{$space-5} * 2)); padding: $space-6; overflow-y: auto; }
-  .modalImage { width: min(78vw, 340px); min-height: 0; height: auto; aspect-ratio: 1; margin-inline: auto; }
+  .alcoholModal { grid-template-columns: 1fr; grid-auto-rows: max-content; width: min(360px, calc(100% - #{$space-4})); gap: $space-3; max-height: calc(100dvh - (#{$space-6} * 2)); padding: $space-4; overflow-y: auto; }
+  .modalClose { top: $space-2; right: $space-2; display: grid; place-items: center; width: 44px; height: 44px; }
+  .modalImage { width: min(56vw, 24dvh, 200px); min-height: 0; height: auto; aspect-ratio: 1; margin-inline: auto; }
   .modalContent { padding-right: 0; }
   .modalContent > h2 { font-size: $font-size-4xl; text-align: center; }
-  .modalExplain { margin-top: $space-4; font-size: $font-size-sm; }
-  .modalDetails { gap: $space-5; margin-top: $space-5; padding: $space-5; }
+  .modalExplain { margin-top: $space-3; font-size: $font-size-sm; }
+  .modalDetails { gap: $space-3; margin-top: $space-3; padding: $space-3; }
   .modalDetails p { font-size: $font-size-sm; }
   .cartToast { bottom: calc(72px + #{$space-3}); grid-template-columns: auto 1fr; padding: $space-3 $space-4; }
   .cartToast > a { grid-column: 2; padding: 0; font-size: $font-size-sm; }
@@ -170,9 +185,15 @@
   .sectionHeader h2 { font-size: $font-size-2xl; }
   .sectionHeader p { font-size: $font-size-xs; }
   .filterBar { align-items: stretch; flex-direction: column; gap: $space-4; padding-bottom: $space-4; }
-  .detailFilters { gap: $space-2; }
-  .detailFilters button { padding: $space-2 $space-3; font-size: $font-size-xs; }
-  .detailFilters .alcoholInfoButton { position: static; order: 1; width: $space-5; height: $space-5; margin-left: $space-1; padding: 0; opacity: 1; transform: none; pointer-events: auto; }
+  .detailFilters { min-width: 0; max-width: 100%; flex-wrap: nowrap; gap: $space-3; overflow-x: auto; scrollbar-width: none; }
+  .detailFilters::-webkit-scrollbar { display: none; }
+  .detailFilterItem { flex: 0 0 auto; gap: 0; border: 1px solid $color-border; border-radius: $radius-pill; }
+  .detailFilterItem:has(.activeFilter) { background: $color-primary; border-color: $color-primary; }
+  .detailFilters button { min-height: $space-10; flex-shrink: 0; padding: $space-2 $space-3; font-size: $font-size-xs; }
+  .detailFilterItem > button { border: 0; }
+  .detailFilterItem:has(.alcoholInfoButton) > button:not(.alcoholInfoButton) { padding-right: $space-1; }
+  .detailFilters .alcoholInfoButton { position: static; order: 1; width: $space-8; height: $space-10; margin-left: 0; padding: 0; opacity: 1; transform: none; pointer-events: auto; background: transparent; }
+  .detailFilterItem:has(.activeFilter) .alcoholInfoButton { color: $color-bg; }
   .detailFilterItem::before { display: none; }
   .selects { width: 100%; justify-content: flex-end; padding-top: $space-3; border-top: 1px solid $color-border; }
   .selects label { min-width: $space-24; }

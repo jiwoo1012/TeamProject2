@@ -251,6 +251,10 @@ const useSectionReveals = ({
       })
 
     const replayEventsReveal = () => {
+      // The wheel-transition's own scroll crosses the fallback ScrollTrigger's
+      // 75% line before this event fires, so that trigger usually plays the
+      // reveal first — skip here so it doesn't restart from scratch mid-flight.
+      if (eventsReveal.progress() !== 0) return
       setEventCopyInitial()
       setEventCardsInitial()
       eventsReveal.restart(true)

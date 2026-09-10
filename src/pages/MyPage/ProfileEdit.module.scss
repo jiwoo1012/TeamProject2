@@ -12,190 +12,57 @@
   position: relative;
 
   width: 100%;
-  min-height: 560px;
+  min-height: 610px;
 
   padding:
-    30px
-    30px
-    28px;
-
-  overflow: hidden;
+    34px
+    32px
+    40px;
 
   background: #fff;
 
+  border: 1px solid #eeeae3;
   border-radius: 18px;
 }
 
 
 /* =========================
-   HEADER
+   ACCOUNT SUMMARY
 ========================= */
 
-.pageHeader {
-  min-height: 38px;
+.accountSummary {
+  display: grid;
 
-  display: flex;
+  grid-template-columns:
+    62px
+    minmax(0, 1fr)
+    auto;
+
   align-items: center;
 
-  h2 {
-    margin: 0;
-
-    color: #45392e;
-
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 1.3;
-  }
-}
-
-
-.titleDivider {
-  width: 100%;
-  height: 1px;
-
-  margin:
-    4px
-    0
-    17px;
-
-  background: #625d56;
-}
-
-
-/* =========================
-   개인정보 수정 메뉴
-========================= */
-
-.editMenu {
-  width: 100%;
-  min-height: 42px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  gap: 16px;
 
   padding:
-    0
-    2px;
+    16px
+    18px;
 
-  border: 0;
+  border: 1px solid #e7e2da;
+  border-radius: 12px;
 
-  background: transparent;
-
-  color: #474139;
-
-  font-size: 14px;
-  font-weight: 700;
-
-  text-align: left;
-
-  cursor: pointer;
-
-  transition:
-    color 0.2s ease;
-
-  &:hover {
-    color: #58877c;
-  }
-}
-
-
-.menuArrow {
-  padding-right: 4px;
-
-  color: #777169;
-
-  font-size: 21px;
-  font-weight: 300;
-}
-
-
-.sectionDivider {
-  width: 100%;
-  height: 1px;
-
-  margin-bottom: 15px;
-
-  background: #ece7e0;
-}
-
-
-/* =========================
-   PROFILE AVATAR
-========================= */
-
-.avatarSection {
-  h3 {
-    margin:
-      0
-      0
-      12px;
-
-    color: #494139;
-
-    font-size: 14px;
-    font-weight: 700;
-  }
-}
-
-
-.currentProfile {
-  display: flex;
-  align-items: center;
-
-  gap: 10px;
-
-  margin-bottom: 13px;
-
-  padding-left: 8px;
-
-  > div:last-child {
-    min-width: 0;
-  }
-
-  strong {
-    color: #4c463f;
-
-    font-size: 13px;
-    font-weight: 700;
-  }
-
-  span {
-    margin-left: 4px;
-
-    color: #9b958d;
-
-    font-size: 11px;
-  }
-
-  p {
-    margin:
-      2px
-      0
-      0;
-
-    color: #a7a199;
-
-    font-size: 11px;
-  }
+  background: #fbfaf8;
 }
 
 
 .currentAvatar {
-  width: 38px;
-  height: 38px;
-
-  flex-shrink: 0;
+  width: 62px;
+  height: 62px;
 
   overflow: hidden;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
+  border: 1px solid #d9e3df;
   border-radius: 50%;
 
-  background: #a7c3bf;
+  background: #eaf3ef;
 
   img {
     width: 100%;
@@ -208,9 +75,135 @@
 }
 
 
+.accountInfo {
+  min-width: 0;
+
+  p {
+    margin:
+      5px
+      0
+      0;
+
+    overflow: hidden;
+
+    color: #99938b;
+
+    font-size: 12px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+
+.accountNameRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 6px;
+
+  strong {
+    color: #35312b;
+
+    font-size: 16px;
+    font-weight: 700;
+  }
+}
+
+
+.levelText {
+  color: #9a958d;
+
+  font-size: 11px;
+  font-weight: 500;
+}
+
+
+.memberBadge {
+  min-height: 22px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    8px;
+
+  border: 1px solid #c9dcd5;
+  border-radius: 999px;
+
+  background: #eef6f2;
+
+  color: #4d7e73;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+.editInfoButton {
+  min-width: 116px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  padding:
+    0
+    13px;
+
+  border: 1px solid #a8c1b9;
+  border-radius: 8px;
+
+  background: #fff;
+
+  color: #4d7e73;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover {
+    border-color: #4d7e7b;
+
+    background: #4d7e7b;
+
+    color: #fff;
+  }
+}
+
+
 /* =========================
-   AVATAR PICKER
+   AVATAR
 ========================= */
+
+.avatarSection {
+  margin-top: 34px;
+
+  h3 {
+    margin:
+      0
+      0
+      14px;
+
+    color: #292620;
+
+    font-size: 17px;
+    font-weight: 700;
+  }
+}
+
 
 .avatarPicker {
   display: grid;
@@ -221,17 +214,14 @@
       minmax(0, 1fr)
     );
 
-  gap: 8px;
+  gap: 12px;
 
-  padding:
-    14px
-    12px;
+  padding: 16px;
 
-  border: 1px solid #e2ded8;
+  border: 1px solid #e8e3dc;
+  border-radius: 12px;
 
-  border-radius: 5px;
-
-  background: #fff;
+  background: #faf9f7;
 }
 
 
@@ -245,10 +235,9 @@
   padding: 0;
 
   border: 2px solid transparent;
+  border-radius: 10px;
 
-  border-radius: 6px;
-
-  background: #d3d3d3;
+  background: #eeeae4;
 
   cursor: pointer;
 
@@ -266,37 +255,40 @@
   }
 
   &:hover {
+    border-color: #c0d3cd;
+
     transform:
-      translateY(-1px);
+      translateY(-2px);
   }
 }
 
 
 .selectedAvatar {
-  border-color: #5c9085;
+  border-color: #4d7e7b;
 
   &::after {
     content: '✓';
 
     position: absolute;
 
-    top: 3px;
-    right: 3px;
+    top: 6px;
+    right: 6px;
 
-    width: 15px;
-    height: 15px;
+    width: 22px;
+    height: 22px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
+    border: 2px solid #fff;
     border-radius: 50%;
 
-    background: #56897e;
+    background: #4d7e7b;
 
     color: #fff;
 
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
   }
 }
@@ -310,65 +302,114 @@
 }
 
 
-.primarySmallButton {
-  min-width: 72px;
-  height: 29px;
+.avatarSaveButton {
+  text-align: center;
+  min-width: 126px;
+  height: 36px;
 
   padding:
     0
-    13px;
+    14px;
 
-  border: 0;
+  border: 1px solid #4d7e7b;
+  border-radius: 8px;
 
-  border-radius: 5px;
-
-  background: #5a9085;
+  background: #4d7e7b;
 
   color: #fff;
 
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
 
   cursor: pointer;
 
-  transition:
-    background 0.2s ease;
-
   &:hover {
-    background: #4c7e74;
+    background: #3d6965;
   }
 }
 
 
 /* =========================
-   EDIT FORM
+   EDIT
 ========================= */
 
 .editForm {
-  padding:
-    1px
-    12px
-    0;
+  max-width: 780px;
+
+  margin:
+    0
+    auto;
+}
+
+
+.editHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 24px;
 
   h3 {
-    margin:
-      0
-      0
-      19px;
+    margin: 0;
 
-    color: #4a433c;
+    color: #292620;
 
-    font-size: 12px;
+    font-size: 18px;
     font-weight: 700;
   }
 }
 
 
-.formRows {
-  display: flex;
-  flex-direction: column;
+.verifiedBadge {
+  min-height: 24px;
 
-  gap: 10px;
+  display: inline-flex;
+  align-items: center;
+
+  padding:
+    0
+    9px;
+
+  border-radius: 999px;
+
+  background: #edf5f1;
+
+  color: #4d7e73;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+/* =========================
+   FORM SECTION
+========================= */
+
+.formSection {
+  padding:
+    0
+    0
+    28px;
+
+  margin-bottom: 28px;
+
+  border-bottom: 1px solid #e8e3dc;
+
+  h4 {
+    margin:
+      0
+      0
+      6px;
+
+    color: #3d3832;
+
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
 }
 
 
@@ -376,109 +417,151 @@
   display: grid;
 
   grid-template-columns:
-    104px
+    140px
     minmax(0, 1fr);
 
-  align-items: center;
+  align-items: start;
 
-  gap: 12px;
+  gap: 20px;
 
-  > span:first-child {
-    color: #615a53;
+  min-height: 66px;
 
-    font-size: 12px;
-    font-weight: 700;
+  padding:
+    12px
+    0;
+
+  border-bottom: 1px solid #f0ece6;
+
+  &:last-child {
+    border-bottom: 0;
   }
+}
 
-  input[type='text'],
-  input[type='password'],
-  input[type='email'],
-  input[type='tel'],
-  input[type='date'] {
+
+.formLabel {
+  padding-top: 12px;
+
+  color: #514b44;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+.inputArea {
+  width: 100%;
+  min-width: 0;
+
+  input {
     width: 100%;
-    height: 34px;
+    height: 42px;
+
+    box-sizing: border-box;
 
     padding:
       0
-      12px;
+      14px;
 
-    border:
-      1px solid
-      #ddd8d1;
-
-    border-radius: 4px;
+    border: 1px solid #ddd8d0;
+    border-radius: 8px;
 
     outline: none;
 
     background: #fff;
 
-    color: #555049;
+    color: #403a34;
 
-    font-size: 12px;
+    font-size: 13px;
 
     transition:
       border-color 0.2s ease,
-      box-shadow 0.2s ease;
+      box-shadow 0.2s ease,
+      background 0.2s ease;
 
     &::placeholder {
-      color: #bab5ae;
+      color: #aaa49c;
     }
 
     &:focus {
-      border-color: #7da298;
+      border-color: #6d9b91;
 
       box-shadow:
-        0 0 0 2px
+        0 0 0 3px
         rgba(
-          98,
-          145,
-          133,
-          0.08
+          77,
+          126,
+          123,
+          0.09
         );
     }
+  }
 
-    &:read-only {
-      background: #faf9f7;
 
-      color: #77716a;
+  input.inputError {
+    border-color: #cf8f86;
+
+    background: #fffafa;
+
+    &:focus {
+      border-color: #bf746a;
+
+      box-shadow:
+        0 0 0 3px
+        rgba(
+          166,
+          95,
+          85,
+          0.08
+        );
     }
   }
 }
 
 
+.fieldError {
+  margin:
+    6px
+    0
+    0;
+
+  color: #a65f55;
+
+  font-size: 11px;
+  font-weight: 500;
+}
+
+
 /* =========================
-   성별 RADIO
+   RADIO
 ========================= */
 
 .radioGroup {
+  min-height: 42px;
+
   display: flex;
   align-items: center;
-  gap: 28px;
 
-  min-height: 34px;
+  gap: 26px;
 
   label {
     display: inline-flex;
     align-items: center;
+
     gap: 7px;
 
-    cursor: pointer;
+    color: #625c55;
 
-    span {
-      color: #69635c;
-      font-size: 12px;
-      font-weight: 400;
-    }
+    font-size: 12px;
+
+    cursor: pointer;
   }
 
-  input[type='radio'] {
+
+  input {
     appearance: none;
-    -webkit-appearance: none;
 
-    width: 14px;
-    height: 14px;
-
-    flex-shrink: 0;
+    width: 17px;
+    height: 17px;
 
     margin: 0;
 
@@ -491,8 +574,9 @@
 
     position: relative;
 
+
     &:checked {
-      border-color: #5b8d82;
+      border-color: #4d7e7b;
 
       &::after {
         content: '';
@@ -502,108 +586,142 @@
         top: 50%;
         left: 50%;
 
-        width: 7px;
-        height: 7px;
+        width: 9px;
+        height: 9px;
 
         border-radius: 50%;
 
-        background: #5b8d82;
+        background: #4d7e7b;
 
-        transform: translate(-50%, -50%);
+        transform:
+          translate(
+            -50%,
+            -50%
+          );
       }
     }
   }
 }
 
+
 /* =========================
-   마케팅 동의
+   AGREEMENT
 ========================= */
 
-.marketingSection {
-  margin-top: 24px;
+.agreementList {
+  margin-top: 14px;
 
-  h4 {
-    margin: 0 0 12px;
+  border: 1px solid #e3ddd4;
+  border-radius: 12px;
 
-    color: #4e4740;
+  overflow: hidden;
 
-    font-size: 13px;
-    font-weight: 700;
-  }
+  background: #fff;
 }
 
 
-.marketingMain {
+.agreementRow {
+  min-height: 46px;
+
   display: flex;
   align-items: center;
 
-  gap: 8px;
+  gap: 9px;
 
-  min-height: 26px;
+  padding:
+    0
+    15px;
 
   cursor: pointer;
 
-  span {
-    color: #6d675f;
+  input {
+    position: absolute;
 
-    font-size: 12px;
-    font-weight: 400;
+    width: 1px;
+    height: 1px;
+
+    opacity: 0;
   }
 
-  em {
-    margin-left: 3px;
 
-    color: #a39d95;
+  input:checked
+    + .checkBox {
+    border-color: #4d7e7b;
 
-    font-style: normal;
-  }
+    background: #4d7e7b;
 
-  input[type='checkbox'] {
-    appearance: none;
-    -webkit-appearance: none;
+    &::after {
+      content: '';
 
-    width: 14px;
-    height: 14px;
+      position: absolute;
 
-    flex-shrink: 0;
+      top: 3px;
+      left: 5px;
 
-    margin: 0;
+      width: 4px;
+      height: 7px;
 
-    border: 1px solid #aaa49c;
-    border-radius: 50%;
+      border-right:
+        1.5px solid #fff;
 
-    background: #fff;
+      border-bottom:
+        1.5px solid #fff;
 
-    cursor: pointer;
-
-    position: relative;
-
-    &:checked {
-      border-color: #5b8d82;
-      background: #5b8d82;
-
-      &::after {
-        content: '';
-
-        position: absolute;
-
-        left: 4px;
-        top: 2px;
-
-        width: 4px;
-        height: 7px;
-
-        border-right: 1.5px solid #fff;
-        border-bottom: 1.5px solid #fff;
-
-        transform: rotate(45deg);
-      }
+      transform:
+        rotate(45deg);
     }
+  }
+
+
+  input:disabled
+    + .checkBox {
+    opacity: 0.7;
   }
 }
 
 
-/* 문자 / 이메일 */
+.checkBox {
+  position: relative;
+
+  width: 16px;
+  height: 16px;
+
+  flex-shrink: 0;
+
+  border: 1px solid #aaa49c;
+  border-radius: 4px;
+
+  background: #fff;
+}
+
+
+.agreementText {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  color: #5e5851;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  em {
+    color: #9b958d;
+
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 500;
+  }
+}
+
+
+.marketingBlock {
+  border-top: 1px solid #eee9e2;
+
+  background: #faf9f7;
+}
+
 
 .marketingChannels {
   display: flex;
@@ -611,109 +729,144 @@
 
   gap: 24px;
 
-  padding: 5px 0 0 24px;
+  padding:
+    0
+    15px
+    14px
+    40px;
 
   label {
-    display: inline-flex;
+    display: flex;
     align-items: center;
 
-    gap: 7px;
+    gap: 6px;
+
+    color: #777169;
+
+    font-size: 11px;
 
     cursor: pointer;
   }
 
-  span {
-    color: #716b64;
+  input {
+    position: absolute;
 
-    font-size: 12px;
+    width: 1px;
+    height: 1px;
+
+    opacity: 0;
   }
 
-  input[type='checkbox'] {
-    appearance: none;
-    -webkit-appearance: none;
+  input:checked
+    + .smallCheck {
+    border-color: #4d7e7b;
 
-    width: 14px;
-    height: 14px;
+    background: #4d7e7b;
 
-    flex-shrink: 0;
+    &::after {
+      content: '';
 
-    margin: 0;
+      position: absolute;
 
-    border: 1px solid #aaa49c;
-    border-radius: 50%;
+      top: 2px;
+      left: 4px;
 
-    background: #fff;
+      width: 3px;
+      height: 6px;
 
-    cursor: pointer;
+      border-right:
+        1.5px solid #fff;
 
-    position: relative;
+      border-bottom:
+        1.5px solid #fff;
 
-    &:checked {
-      border-color: #5b8d82;
-      background: #5b8d82;
-
-      &::after {
-        content: '';
-
-        position: absolute;
-
-        left: 4px;
-        top: 2px;
-
-        width: 4px;
-        height: 7px;
-
-        border-right: 1.5px solid #fff;
-        border-bottom: 1.5px solid #fff;
-
-        transform: rotate(45deg);
-      }
+      transform:
+        rotate(45deg);
     }
   }
 }
 
+
+.smallCheck {
+  position: relative;
+
+  width: 14px;
+  height: 14px;
+
+  border: 1px solid #aaa49c;
+  border-radius: 4px;
+
+  background: #fff;
+}
+
+
 /* =========================
-   FORM BUTTON
+   FORM ERROR
+========================= */
+
+.formError {
+  margin:
+    14px
+    0
+    0;
+
+  padding:
+    10px
+    12px;
+
+  border-radius: 8px;
+
+  background: #fbf2f0;
+
+  color: #a65f55;
+
+  font-size: 12px;
+}
+
+
+/* =========================
+   ACTION
 ========================= */
 
 .formActions {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
 
   gap: 8px;
 
-  margin-top: 24px;
+  margin-top: 28px;
 }
 
 
 .submitButton,
 .cancelEditButton {
-  min-width: 134px;
-  height: 34px;
+
+  text-align: center;
+  min-width: 108px;
+  height: 38px;
 
   padding:
     0
-    16px;
+    15px;
 
-  border-radius: 4px;
+  border-radius: 8px;
 
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
 
   cursor: pointer;
 }
 
 
 .submitButton {
-  border: 1px solid #5a8e83;
+  border: 1px solid #4d7e7b;
 
-  background: #5a8e83;
+  background: #4d7e7b;
 
   color: #fff;
 
   &:hover:not(:disabled) {
-    background: #4c7d73;
+    background: #3d6965;
   }
 
   &:disabled {
@@ -725,96 +878,85 @@
 
 
 .cancelEditButton {
-  border: 1px solid #d9d4cc;
+  border: 1px solid #ddd8d0;
 
   background: #fff;
 
-  color: #716a63;
+  color: #777169;
 
   &:hover {
-    background: #f8f6f2;
+    background: #f7f5f1;
   }
 }
 
 
-.formError {
-  margin:
-    14px
-    0
-    0;
-
-  color: #a95f56;
-
-  font-size: 12px;
-
-  text-align: center;
-}
-
-
 /* =========================
-   PASSWORD MODAL
+   MODAL
 ========================= */
 
 .modalBackdrop {
-  position: absolute;
+  position: fixed;
 
-  z-index: 30;
+  z-index: 1200;
 
   inset: 0;
 
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
 
-  padding-top: 126px;
+  padding: 24px;
 
   background:
     rgba(
-      255,
-      255,
-      255,
-      0.48
+      32,
+      29,
+      26,
+      0.28
     );
 
   backdrop-filter:
-    blur(0.5px);
+    blur(2px);
 }
 
 
 .passwordModal {
   position: relative;
 
-  width: calc(100% - 58px);
-  max-width: 390px;
+  width: 100%;
+  max-width: 420px;
 
   padding:
-    23px
-    27px
-    20px;
+    30px
+    28px
+    26px;
 
-  border-radius: 15px;
+  border: 1px solid #e5dfd7;
+  border-radius: 16px;
 
-  background: #e7f2e9;
+  background: #fff;
 
   box-shadow:
-    0 6px 22px
+    0 18px 50px
     rgba(
-      80,
-      89,
-      77,
-      0.08
+      44,
+      38,
+      32,
+      0.14
     );
 
   h3 {
     margin:
+      12px
       0
-      0
-      5px;
+      7px;
 
-    color: #4c4b43;
+    color: #35312b;
 
-    font-size: 13px;
+    font-size: 18px;
     font-weight: 700;
+
+    text-align: center;
   }
 }
 
@@ -822,52 +964,73 @@
 .modalClose {
   position: absolute;
 
-  top: 10px;
+  top: 13px;
   right: 14px;
 
-  width: 23px;
-  height: 23px;
+  width: 30px;
+  height: 30px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding: 0;
-
   border: 0;
+  border-radius: 50%;
 
   background: transparent;
 
-  color: #7a7d74;
+  color: #8e8880;
 
-  font-size: 17px;
+  font-size: 20px;
 
   cursor: pointer;
+
+  &:hover {
+    background: #f5f3ef;
+  }
+}
+
+
+.modalIcon {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin:
+    0
+    auto;
+
+  border: 1px solid #d4e2dd;
+  border-radius: 50%;
+
+  background: #edf5f1;
+
+  color: #4d7e73;
+
+  svg {
+    width: 19px;
+    height: 19px;
+  }
 }
 
 
 .modalDescription {
+  max-width: 310px;
+
   margin:
     0
-    0
-    20px;
+    auto
+    24px;
 
-  color: #7c8179;
+  color: #8d877f;
 
-  font-size: 11px;
-  line-height: 1.5;
-}
+  font-size: 12px;
+  line-height: 1.6;
 
-
-/* =========================
-   VERIFY FORM
-========================= */
-
-.verifyRows {
-  display: flex;
-  flex-direction: column;
-
-  gap: 10px;
+  text-align: center;
 }
 
 
@@ -875,49 +1038,63 @@
   display: grid;
 
   grid-template-columns:
-    72px
+    76px
     minmax(0, 1fr);
 
   align-items: center;
 
-  gap: 10px;
+  gap: 12px;
 
-  > span {
-    color: #595a53;
+  min-height: 48px;
+
+  > span,
+  label {
+    color: #5d574f;
 
     font-size: 12px;
     font-weight: 700;
   }
 
   strong {
-    color: #73766f;
+    overflow: hidden;
+
+    color: #777169;
 
     font-size: 12px;
     font-weight: 500;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   input {
     width: 100%;
-    height: 29px;
+    height: 40px;
+
+    box-sizing: border-box;
 
     padding:
       0
-      10px;
+      12px;
 
-    border: 1px solid #dce4dc;
+    border: 1px solid #ddd8d0;
+    border-radius: 8px;
 
-    border-radius: 4px;
-
-    outline: none;
-
-    background: #fff;
-
-    color: #54564f;
+    outline: 0;
 
     font-size: 12px;
 
     &:focus {
-      border-color: #78a498;
+      border-color: #6d9b91;
+
+      box-shadow:
+        0 0 0 3px
+        rgba(
+          77,
+          126,
+          123,
+          0.09
+        );
     }
   }
 }
@@ -929,7 +1106,7 @@
     0
     0;
 
-  color: #a15e54;
+  color: #a65f55;
 
   font-size: 11px;
 
@@ -937,62 +1114,62 @@
 }
 
 
+.modalActions {
+  display: flex;
+
+  gap: 8px;
+
+  margin-top: 22px;
+}
+
+
+.modalCancelButton,
 .verifyButton {
-  width: 174px;
-  height: 32px;
 
-  display: block;
+  text-align: center;
+  flex: 1;
 
-  margin:
-    18px
-    auto
-    0;
+  height: 38px;
 
-  border: 1px solid #60998b;
-
-  border-radius: 5px;
-
-  background:
-    rgba(
-      255,
-      255,
-      255,
-      0.35
-    );
-
-  color: #507d73;
+  border-radius: 8px;
 
   font-size: 12px;
   font-weight: 700;
 
   cursor: pointer;
+}
 
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
 
-  &:hover:not(:disabled) {
-    background: #5d9186;
+.modalCancelButton {
+  border: 1px solid #ddd8d0;
 
-    color: #fff;
-  }
+  background: #fff;
 
-  &:disabled {
-    opacity: 0.55;
+  color: #777169;
+}
 
-    cursor: default;
+
+.verifyButton {
+  border: 1px solid #4d7e7b;
+
+  background: #4d7e7b;
+
+  color: #fff;
+
+  &:hover {
+    background: #3d6965;
   }
 }
 
 
 /* =========================
-   NOTICE
+   NOTICE / LOADING
 ========================= */
 
 .notice {
   position: fixed;
 
-  z-index: 1000;
+  z-index: 1300;
 
   left: 50%;
   bottom: 40px;
@@ -1000,44 +1177,71 @@
   margin: 0;
 
   padding:
-    10px
-    17px;
+    11px
+    18px;
 
-  border-radius: 30px;
+  border-radius: 999px;
 
   background:
     rgba(
       55,
       51,
       47,
-      0.9
+      0.92
     );
 
   color: #fff;
 
-  font-size: 13px;
+  font-size: 12px;
 
   transform:
     translateX(-50%);
 }
 
 
-/* =========================
-   LOADING
-========================= */
-
-.loading {
-  min-height: 420px;
+.stateBox {
+  min-height: 360px;
 
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  margin: 0;
+  gap: 12px;
 
-  color: #99938b;
+  strong {
+    color: #554f48;
 
-  font-size: 13px;
+    font-size: 13px;
+  }
+}
+
+
+.loadingSpinner {
+  width: 26px;
+  height: 26px;
+
+  border:
+    2px solid
+    #eae6df;
+
+  border-top-color: #519888;
+
+  border-radius: 50%;
+
+  animation:
+    spin
+    0.8s
+    linear
+    infinite;
+}
+
+
+@keyframes spin {
+  to {
+    transform:
+      rotate(360deg);
+  }
 }
 
 
@@ -1046,18 +1250,11 @@
 ========================= */
 
 @media (max-width: 1024px) {
-
   .profileCard {
     padding:
-      26px
-      24px;
-  }
-
-
-  .formRow {
-    grid-template-columns:
-      90px
-      minmax(0, 1fr);
+      28px
+      24px
+      34px;
   }
 }
 
@@ -1067,23 +1264,34 @@
 ========================= */
 
 @media (max-width: 767px) {
-
   .profileCard {
-    min-height: auto;
-
     padding:
-      22px
-      16px
-      26px;
+      24px
+      18px
+      30px;
 
-    border-radius: 14px;
+    border-radius: 15px;
   }
 
 
-  .pageHeader {
-    h2 {
-      font-size: 19px;
-    }
+  .accountSummary {
+    grid-template-columns:
+      52px
+      minmax(0, 1fr);
+  }
+
+
+  .currentAvatar {
+    width: 52px;
+    height: 52px;
+  }
+
+
+  .editInfoButton {
+    grid-column:
+      1 / -1;
+
+    width: 100%;
   }
 
 
@@ -1093,46 +1301,70 @@
         4,
         minmax(0, 1fr)
       );
+
+    gap: 8px;
+  }
+
+
+  .avatarSaveButton {
+    width: 100%;
   }
 
 
   .editForm {
-    padding: 0;
+    max-width: none;
+  }
+
+
+  .editHeader {
+    h3 {
+      font-size: 16px;
+    }
   }
 
 
   .formRow {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
 
-    gap: 6px;
+    gap: 7px;
+  }
+
+
+  .formLabel {
+    padding-top: 0;
   }
 
 
   .radioGroup {
-    gap: 15px;
+    flex-wrap: wrap;
+
+    gap:
+      12px
+      20px;
+  }
+
+
+  .marketingChannels {
+    padding-left: 40px;
   }
 
 
   .formActions {
-    flex-direction: column-reverse;
+    justify-content: stretch;
   }
 
 
   .submitButton,
   .cancelEditButton {
-    width: 100%;
+    flex: 1;
   }
 
 
-  .modalBackdrop {
-    padding:
-      110px
-      14px
-      0;
-  }
+  .verifyRow {
+    grid-template-columns:
+      1fr;
 
-
-  .passwordModal {
-    width: 100%;
+    gap: 5px;
   }
 }

@@ -20,6 +20,8 @@ import {
 import { getCollection } from '../../firebase/firestore'
 import { db } from '../../firebase/firebase'
 
+import StatusBadge from '../../components/mypage/StatusBadge'
+
 import styles from './MyHome.module.scss'
 
 
@@ -110,6 +112,7 @@ const BenefitIcon = ({ type }) => {
 
 const MyHome = () => {
   const { profileAvatar } = useOutletContext()
+
   const [firebaseUser, setFirebaseUser] =
     useState(null)
 
@@ -390,6 +393,10 @@ const MyHome = () => {
     .slice(0, 3)
 
 
+  /* =========================
+     상단 요약
+  ========================= */
+
   const benefits = [
     {
       key: 'order',
@@ -410,7 +417,10 @@ const MyHome = () => {
       label: '배송 진행',
 
       value: orders.filter((order) =>
-        [ORDER_STATUS.PREPARING, ORDER_STATUS.SHIPPED].includes(order.rawStatus)
+        [
+          ORDER_STATUS.PREPARING,
+          ORDER_STATUS.SHIPPED,
+        ].includes(order.rawStatus)
       ).length,
 
       unit: '건',
@@ -478,7 +488,10 @@ const MyHome = () => {
               styles.avatar
             }
           >
-            <img src={profileAvatar.src} alt={`${memberName} 프로필`} />
+            <img
+              src={profileAvatar.src}
+              alt={`${memberName} 프로필`}
+            />
           </div>
 
 
@@ -557,6 +570,7 @@ const MyHome = () => {
 
                   <strong>
                     {benefit.value}
+
                     <em>
                       {
                         benefit.unit
@@ -641,6 +655,7 @@ const MyHome = () => {
               }
             >
               주문 내역 전체 보기
+
               <span
                 aria-hidden="true"
               >
@@ -742,19 +757,15 @@ const MyHome = () => {
                         styles.orderActions
                       }
                     >
-
-                      <span
-                        className={`${styles.statusBadge} ${
-                          styles[
-                            order
-                              .status
-                          ] || ''
-                        }`}
+                      <StatusBadge
+                        tone={
+                          order.status
+                        }
                       >
                         {
                           order.statusLabel
                         }
-                      </span>
+                      </StatusBadge>
 
 
                       <Link
@@ -765,7 +776,6 @@ const MyHome = () => {
                       >
                         상세 보기
                       </Link>
-
                     </div>
 
                   </article>
@@ -803,8 +813,6 @@ const MyHome = () => {
                 추천받아보세요
               </p>
             </div>
-
-
           </div>
 
 
@@ -813,12 +821,32 @@ const MyHome = () => {
               styles.aiBox
             }
           >
-            <div className={styles.aiEmpty}>
+            <div
+              className={
+                styles.aiEmpty
+              }
+            >
               <div>
-                <strong>저장된 AI 추천 기록이 없습니다.</strong>
-                <span>취향 설문을 완료하고 나만의 전통주를 추천받아보세요.</span>
+                <strong>
+                  저장된 AI 추천 기록이 없습니다.
+                </strong>
+
+                <span>
+                  취향 설문을 완료하고
+                  나만의 전통주를
+                  추천받아보세요.
+                </span>
               </div>
-              <Link to="/ai" className={styles.recommendButton}>추천받기</Link>
+
+
+              <Link
+                to="/ai"
+                className={
+                  styles.recommendButton
+                }
+              >
+                추천받기
+              </Link>
             </div>
           </div>
 

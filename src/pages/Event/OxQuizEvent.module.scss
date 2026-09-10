@@ -37,7 +37,7 @@ $quiz-copy-delay: 0.35s;
 .quizShell {
   display: flex;
   flex-direction: column;
-  gap: clamp(16px, 3vh, 32px);
+  gap: clamp(#{$space-6}, 3.5vh, #{$space-8});
   width: 100%;
   max-width: 940px;
   margin: auto;
@@ -94,15 +94,15 @@ $quiz-copy-delay: 0.35s;
   animation: pointBurstFloat .9s ease-out both;
   pointer-events: none;
 }
-.rewardTrackRow { position: relative; width: 82%; max-width: 520px; margin-inline: auto; padding-top: 12px; }
-.rewardLine { position: absolute; top: 8px; left: 0; right: 0; height: 3px; overflow: hidden; background: rgba($color-white, .14); border-radius: $radius-pill; }
+.rewardTrackRow { --reward-track-inset: 12px; --reward-node-size: 16px; position: relative; width: 82%; max-width: 520px; margin-inline: auto; padding-top: var(--reward-track-inset); }
+.rewardLine { position: absolute; top: calc(var(--reward-track-inset) + var(--reward-node-size) / 2); transform: translateY(-50%); left: 0; right: 0; height: 3px; overflow: hidden; background: rgba($color-white, .14); border-radius: $radius-pill; }
 .rewardLine span { position: absolute; inset: 0; width: 0; background: linear-gradient(90deg, event.$color-reward, color-mix(in srgb, event.$color-reward 65%, $color-white)); border-radius: inherit; transition: width $quiz-slide-duration cubic-bezier(.22, 1, .36, 1); }
 .rewardMilestones { position: relative; z-index: 1; display: flex; list-style: none; margin: 0; padding: 0; }
 .rewardMilestone { display: flex; flex: 1; flex-direction: column; align-items: center; gap: 3px; min-width: 0; }
 .rewardNode {
   @include mixins.flex-center;
-  width: 16px;
-  height: 16px;
+  width: var(--reward-node-size);
+  height: var(--reward-node-size);
   color: transparent;
   font-size: 8px;
   font-weight: $font-weight-bold;
@@ -136,7 +136,6 @@ $quiz-copy-delay: 0.35s;
   grid-template-columns: minmax(160px, 36%) 1fr;
   width: 100%;
   min-height: clamp(200px, 29vh, 310px);
-  margin-top: clamp(-16px, -1.8vh, -6px);
   overflow: hidden;
   color: $color-text-primary;
   background: rgba($color-bg, 0.92);
@@ -181,7 +180,6 @@ $quiz-copy-delay: 0.35s;
   width: 100%;
   max-width: 720px;
   margin-inline: auto;
-  margin-top: clamp(8px, 1.6vh, 20px);
   gap: clamp(24px, 4.5vw, 46px);
 }
 .answerButton {
@@ -277,12 +275,11 @@ $quiz-copy-delay: 0.35s;
 
 @include mixins.mobile {
   .page { padding: clamp(12px, 2.5vh, 20px) clamp(12px, 4vw, 20px); }
-  .quizShell { gap: clamp(10px, 2vh, 18px); }
+  .quizShell { gap: clamp(#{$space-4}, 2.5vh, #{$space-6}); }
   .quitButton { font-size: $font-size-xs; }
 
-  .rewardTrackRow { width: 92%; max-width: none; padding-top: 15px; }
-  .rewardLine { top: 6px; }
-  .rewardNode { width: 13px; height: 13px; border-width: 1.5px; }
+  .rewardTrackRow { --reward-track-inset: 15px; --reward-node-size: 13px; width: 92%; max-width: none; }
+  .rewardNode { border-width: 1.5px; }
   .rewardMilestones { gap: 2px; }
   .rewardLabel { font-size: 8px; }
   .rewardSummary { font-size: 10px; }

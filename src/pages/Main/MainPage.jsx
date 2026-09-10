@@ -61,8 +61,8 @@ const mainEvents = eventsData.map(({ event }, index) => ({
 const makdongTraits = [
   { icon: '✣', title: '다정한 안내자', description: '전통주의 매력을\n쉽고 재미있게 소개해요.' },
   { icon: '♟', title: '호기심 많은 탐험가', description: '새로운 술과 이야기를\n찾아 전국을 여행해요.' },
-  { icon: '▱', title: '찐 애주가', description: '막둥이의 취향으로\n솔직하게 추천해요.' },
-  { icon: '♥', title: '따뜻한 친구', description: '막둥이의 이야기가\n당신의 일상에 스며들어요.' },
+  { icon: '▱', title: '찐 애주가', description: '막동이의 취향으로\n솔직하게 추천해요.' },
+  { icon: '♥', title: '따뜻한 친구', description: '막동이의 이야기가\n당신의 일상에 스며들어요.' },
 ]
 
 const moodRecommendations = [
@@ -539,7 +539,7 @@ const MainPage = () => {
             전통주의 즐거움을 전하는 막동이와 함께해요.
           </p>
           <Link className={styles.makdongButton} to="/brand/makdong">
-            막둥이 이야기 보기 <span aria-hidden="true">→</span>
+            막동이 이야기 보기 <span aria-hidden="true">→</span>
           </Link>
 
           <div className={styles.makdongTraits} aria-label="막동이의 특징">

@@ -18,6 +18,8 @@ import wishlistIcon from '../../assets/icons/wishIcon.png'
 import loginIcon from '../../assets/icons/loginIcon.png'
 import searchIcon from '../../assets/icons/searchIcon.png'
 import brandSnbImage from '../../assets/images/main/ai-recommendation/mood-celebration.png'
+import tavernWorld
+  from '../../assets/images/ai/tavern/background/game.png'
 
 import SearchModal from './SearchModal'
 
@@ -97,25 +99,60 @@ const shopSubcategories = {
   liquor: {
     title: '전통주 종류',
     items: [
-      { label: '탁주', to: '/shop?type=takju' },
-      { label: '약주 · 청주', to: '/shop?type=yakju' },
-      { label: '과실주', to: '/shop?type=fruit' },
-      { label: '증류주', to: '/shop?type=distilled' },
-      { label: '리큐르 · 기타상품', to: '/shop?type=liqueur' },
+      {
+        label: '탁주',
+        to: '/shop?type=takju',
+        activeKey: 'takju',
+      },
+      {
+        label: '약주 · 청주',
+        to: '/shop?type=yakju',
+        activeKey: 'yakju',
+      },
+      {
+        label: '과실주',
+        to: '/shop?type=fruit',
+        activeKey: 'fruit',
+      },
+      {
+        label: '증류주',
+        to: '/shop?type=distilled',
+        activeKey: 'distilled',
+      },
+      {
+        label: '리큐르 · 기타상품',
+        to: '/shop?type=liqueur',
+        activeKey: 'liqueur',
+      },
     ],
   },
+
   food: {
     title: '안주 종류',
     items: [
-      { label: '간편식', to: '/shop?category=food&detail=간편식' },
-      { label: '디저트', to: '/shop?category=food&detail=디저트' },
-      { label: '상온안주', to: '/shop?category=food&detail=상온안주' },
+      {
+        label: '간편식',
+        to: '/shop?category=food&detail=간편식',
+        activeKey: '간편식',
+      },
+      {
+        label: '디저트',
+        to: '/shop?category=food&detail=디저트',
+        activeKey: '디저트',
+      },
+      {
+        label: '상온안주',
+        to: '/shop?category=food&detail=상온안주',
+        activeKey: '상온안주',
+      },
     ],
   },
+
   glass: {
     title: '잔 종류',
     items: [],
   },
+
   gift: {
     title: '선물 세트',
     items: [],
@@ -135,6 +172,51 @@ const DesktopHeader = () => {
       '/brand/makdong'
     )
 
+  const isAiRecommendActive =
+    location.pathname === '/ai'
+
+  const isAiTavernActive =
+    location.pathname.startsWith(
+      '/ai/tavern'
+    )
+
+  const isAiPreferenceActive =
+    location.pathname.startsWith(
+      '/mypage/preference'
+    )
+
+  const isAiHistoryActive =
+    location.pathname.startsWith(
+      '/mypage/ai-history'
+    )
+
+  const shopSearchParams =
+    new URLSearchParams(location.search)
+
+  const shopCategoryParam =
+    shopSearchParams.get('category')
+
+  const shopTypeParam =
+    shopSearchParams.get('type')
+
+  const shopDetailParam =
+    shopSearchParams.get('detail')
+
+  const activeShopCategory =
+    location.pathname.startsWith('/shop')
+      ? (
+          shopCategoryParam ||
+          (shopTypeParam
+            ? 'liquor'
+            : null)
+        )
+      : null
+
+  const activeShopDetail =
+    shopTypeParam ||
+    shopDetailParam ||
+    null
+
   const [openMenu, setOpenMenu] = useState(null)
   const [hoveredShopCategory, setHoveredShopCategory] = useState('liquor')
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -150,6 +232,21 @@ const DesktopHeader = () => {
       return 0
     }
   })
+
+
+  useEffect(() => {
+    if (
+      activeShopCategory &&
+      shopSubcategories[activeShopCategory]
+    ) {
+      setHoveredShopCategory(
+        activeShopCategory
+      )
+    }
+  }, [
+    activeShopCategory,
+    location.search,
+  ])
 
 
   /* ========================================
@@ -1192,6 +1289,16 @@ const DesktopHeader = () => {
                 </Link>
 
                 <Link
+                  to="/ai/tavern"
+                  className={
+                    styles.drawerLink
+                  }
+                  onClick={closeAllMenu}
+                >
+                  막동이 주막
+                </Link>
+
+                <Link
                   to="/mypage/preference"
                   className={
                     styles.drawerLink
@@ -1436,9 +1543,6 @@ const DesktopHeader = () => {
               <span>
                 브랜드 소개
               </span>
-              <i aria-hidden="true">
-                →
-              </i>
             </Link>
 
             <Link
@@ -1456,11 +1560,8 @@ const DesktopHeader = () => {
               }
             >
               <span>
-                막둥이 소개
+                막동이 소개
               </span>
-              <i aria-hidden="true">
-                →
-              </i>
             </Link>
           </nav>
 
@@ -1518,61 +1619,109 @@ const DesktopHeader = () => {
           >
             <Link
               to="/ai"
-              className={styles.snbNavLink}
+              className={`${styles.snbNavLink} ${
+                isAiRecommendActive
+                  ? styles.snbNavLinkActive
+                  : ''
+              }`}
               onClick={closeMegaMenu}
             >
               <span>
                 주안상 추천 받기
               </span>
-              <i aria-hidden="true">
-                →
-              </i>
+            </Link>
+
+            <Link
+              to="/ai/tavern"
+              className={`${styles.snbNavLink} ${
+                isAiTavernActive
+                  ? styles.snbNavLinkActive
+                  : ''
+              }`}
+              onClick={closeMegaMenu}
+            >
+              <span>
+                막동이 주막
+              </span>
             </Link>
 
             <Link
               to="/mypage/preference"
-              className={styles.snbNavLink}
+              className={`${styles.snbNavLink} ${
+                isAiPreferenceActive
+                  ? styles.snbNavLinkActive
+                  : ''
+              }`}
               onClick={closeMegaMenu}
             >
               <span>
                 내 취향 분석
               </span>
-              <i aria-hidden="true">
-                →
-              </i>
             </Link>
 
             <Link
               to="/mypage/ai-history"
-              className={styles.snbNavLink}
+              className={`${styles.snbNavLink} ${
+                isAiHistoryActive
+                  ? styles.snbNavLinkActive
+                  : ''
+              }`}
               onClick={closeMegaMenu}
             >
               <span>
                 이전 추천 결과
               </span>
-              <i aria-hidden="true">
-                →
-              </i>
             </Link>
           </nav>
 
           <div className={styles.aiFeature}>
-            <h3>
-              내 취향에 맞는
-              <br />
-              한 상을 찾아보세요.
-            </h3>
+  <div className={styles.aiFeatureText}>
+    <h3>
+      내 취향에 맞는
+      <br />
+      한 상을 찾아보세요.
+    </h3>
 
-            <Link
-              to="/ai"
-              onClick={closeMegaMenu}
-            >
-              추천 시작하기
-              <span aria-hidden="true">
-                →
-              </span>
-            </Link>
-          </div>
+    <Link
+      to="/ai"
+      className={styles.aiRecommendLink}
+      onClick={closeMegaMenu}
+    >
+      추천 시작하기
+    </Link>
+  </div>
+
+  <Link
+    to="/ai/tavern"
+    className={styles.tavernFeature}
+    onClick={closeMegaMenu}
+  >
+    <div
+      className={
+        styles.tavernFeatureImage
+      }
+    >
+      <img
+        src={tavernWorld}
+        alt="막동이 주막"
+      />
+    </div>
+
+    <div
+      className={
+        styles.tavernFeatureInfo
+      }
+    >
+      <strong>
+        막동이 주막
+      </strong>
+
+      <span>
+        바로가기 →
+      </span>
+    </div>
+  </Link>
+</div>
         </div>
       </div>
 
@@ -1602,9 +1751,6 @@ const DesktopHeader = () => {
               onClick={closeMegaMenu}
             >
               전체 상품
-              <span aria-hidden="true">
-                →
-              </span>
             </Link>
           </div>
 
@@ -1615,7 +1761,7 @@ const DesktopHeader = () => {
             <Link
               to="/shop?category=liquor"
               className={`${styles.shopCategoryLink} ${
-                hoveredShopCategory === 'liquor'
+                activeShopCategory === 'liquor'
                   ? styles.shopCategoryLinkActive
                   : ''
               }`}
@@ -1623,15 +1769,19 @@ const DesktopHeader = () => {
                 setHoveredShopCategory('liquor')
               }
               onClick={closeMegaMenu}
+              aria-current={
+                activeShopCategory === 'liquor'
+                  ? 'page'
+                  : undefined
+              }
             >
               <span>전통주</span>
-              <i aria-hidden="true">→</i>
             </Link>
 
             <Link
               to="/shop?category=food"
               className={`${styles.shopCategoryLink} ${
-                hoveredShopCategory === 'food'
+                activeShopCategory === 'food'
                   ? styles.shopCategoryLinkActive
                   : ''
               }`}
@@ -1639,15 +1789,19 @@ const DesktopHeader = () => {
                 setHoveredShopCategory('food')
               }
               onClick={closeMegaMenu}
+              aria-current={
+                activeShopCategory === 'food'
+                  ? 'page'
+                  : undefined
+              }
             >
               <span>안주</span>
-              <i aria-hidden="true">→</i>
             </Link>
 
             <Link
               to="/shop?category=glass"
               className={`${styles.shopCategoryLink} ${
-                hoveredShopCategory === 'glass'
+                activeShopCategory === 'glass'
                   ? styles.shopCategoryLinkActive
                   : ''
               }`}
@@ -1655,15 +1809,19 @@ const DesktopHeader = () => {
                 setHoveredShopCategory('glass')
               }
               onClick={closeMegaMenu}
+              aria-current={
+                activeShopCategory === 'glass'
+                  ? 'page'
+                  : undefined
+              }
             >
               <span>잔</span>
-              <i aria-hidden="true">→</i>
             </Link>
 
             <Link
               to="/shop?category=gift"
               className={`${styles.shopCategoryLink} ${
-                hoveredShopCategory === 'gift'
+                activeShopCategory === 'gift'
                   ? styles.shopCategoryLinkActive
                   : ''
               }`}
@@ -1671,9 +1829,13 @@ const DesktopHeader = () => {
                 setHoveredShopCategory('gift')
               }
               onClick={closeMegaMenu}
+              aria-current={
+                activeShopCategory === 'gift'
+                  ? 'page'
+                  : undefined
+              }
             >
               <span>선물 세트</span>
-              <i aria-hidden="true">→</i>
             </Link>
           </nav>
 
@@ -1685,15 +1847,35 @@ const DesktopHeader = () => {
             {shopSubcategories[hoveredShopCategory].items.length > 0 ? (
               <div className={styles.shopDetailLinks}>
                 {shopSubcategories[hoveredShopCategory].items.map(
-                  ({ label, to }) => (
-                    <Link
-                      to={to}
-                      onClick={closeMegaMenu}
-                      key={label}
-                    >
-                      {label}
-                    </Link>
-                  )
+                  ({
+                    label,
+                    to,
+                    activeKey,
+                  }) => {
+                    const isDetailActive =
+                      activeShopCategory === hoveredShopCategory &&
+                      activeShopDetail === activeKey
+
+                    return (
+                      <Link
+                        to={to}
+                        key={label}
+                        className={`${styles.shopDetailLink} ${
+                          isDetailActive
+                            ? styles.shopDetailLinkActive
+                            : ''
+                        }`}
+                        onClick={closeMegaMenu}
+                        aria-current={
+                          isDetailActive
+                            ? 'page'
+                            : undefined
+                        }
+                      >
+                        {label}
+                      </Link>
+                    )
+                  }
                 )}
               </div>
             ) : (
@@ -1703,9 +1885,6 @@ const DesktopHeader = () => {
                 onClick={closeMegaMenu}
               >
                 전체 보기
-                <span aria-hidden="true">
-                  →
-                </span>
               </Link>
             )}
           </div>
@@ -1721,9 +1900,6 @@ const DesktopHeader = () => {
                 onClick={closeMegaMenu}
               >
                 전체보기
-                <span aria-hidden="true">
-                  →
-                </span>
               </Link>
             </div>
 

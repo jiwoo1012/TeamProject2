@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import styles from './MobileTopButton.module.scss'
 
-const MobileTopButton = ({ contentRef, targetRef, ariaLabel = '페이지 맨 위로 이동' }) => {
+const MobileTopButton = ({ contentRef, targetRef, ariaLabel = '페이지 맨 위로 이동', className = '' }) => {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const MobileTopButton = ({ contentRef, targetRef, ariaLabel = '페이지 맨 위
 
   return createPortal(
     <button
-      className={styles.button}
+      className={`${styles.button} ${className}`}
       type="button"
       aria-label={ariaLabel}
       onClick={() => window.scrollTo({

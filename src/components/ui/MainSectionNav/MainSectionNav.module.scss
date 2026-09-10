@@ -107,10 +107,24 @@
 }
 
 @include mobile {
+  .panelInner {
+    padding: $space-1;
+    gap: 0;
+  }
+  .panelItem {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: $space-10;
+    flex-shrink: 0;
+    padding: $space-2 $space-3;
+    font-size: $font-size-xs;
+    line-height: $line-height-base;
+  }
   .container {
     display: flex;
     right: $side-margin-mobile;
-    bottom: calc(92px + env(safe-area-inset-bottom, 0px) + 44px + #{$space-6});
+    bottom: calc(92px + env(safe-area-inset-bottom, 0px) + 44px + #{$space-3});
   }
   .button {
     width: 44px;
@@ -119,6 +133,20 @@
   .buttonIcon {
     width: 20px;
     height: 20px;
+  }
+}
+
+@media (min-width: 1200px) {
+  :global(body:has([data-main-page])) .container {
+    bottom: calc(#{$space-8} + #{$space-16} + #{$space-5});
+  }
+  :global(body:has([data-main-page])) .button {
+    width: $space-16;
+    height: $space-16;
+  }
+  :global(body:has([data-main-page])) .buttonIcon {
+    width: $space-6;
+    height: $space-6;
   }
 }
 

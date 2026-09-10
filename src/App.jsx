@@ -62,6 +62,7 @@ const PreferenceComplete = lazy(() => import('./pages/Auth/PreferenceComplete'))
 const AiIntro = lazy(() => import('./pages/AiCurator/AiIntro'))
 const AiSurvey = lazy(() => import('./pages/AiCurator/AiSurvey'))
 const AiResult = lazy(() => import('./pages/AiCurator/AiResult'))
+const MakdongTavern = lazy(() => import('./pages/AiCurator/MakdongTavern'))
 const AiPreference = lazy(() => import('./pages/MyPage/AiPreference'))
 
 // Cart / Order
@@ -82,6 +83,7 @@ const AddressBook = lazy(() => import('./pages/MyPage/AddressBook'))
 const ClaimHistory = lazy(() => import('./pages/MyPage/ClaimHistory'))
 const InquiryHistory = lazy(() => import('./pages/MyPage/InquiryHistory'))
 const AiHistory = lazy(() => import('./pages/MyPage/AiHistory'))
+const AiHistoryDetail = lazy(() => import('./pages/MyPage/AiHistoryDetail'))
 const EventHistory = lazy(() => import('./pages/MyPage/EventHistory'))
 const EventWinningHistory = lazy(() => import('./pages/MyPage/EventWinningHistory'))
 const MyPageErrorContent = lazy(() => import('./pages/MyPage/MyPageErrorContent'))
@@ -349,7 +351,16 @@ const App = () => {
                 <AiResult />
               }
             />
+{/* ========================================
+    막동이 주막 RPG
+======================================== */}
 
+<Route
+  path="/ai/tavern"
+  element={
+    <MakdongTavern />
+  }
+/>
 
             {/* 내 취향 분석 */}
 
@@ -676,6 +687,16 @@ const App = () => {
                 path="ai-history"
                 element={
                   <AiHistory />
+                }
+              />
+
+
+              {/* AI 추천 기록 상세 */}
+
+              <Route
+                path="ai-history/:recommendationId"
+                element={
+                  <AiHistoryDetail />
                 }
               />
 

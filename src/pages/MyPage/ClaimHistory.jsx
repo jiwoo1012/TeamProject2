@@ -1,21 +1,40 @@
-import { useEffect, useMemo, useState } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+
 import {
   collection,
   getDocs,
   query,
   where,
 } from 'firebase/firestore'
-import { Link } from 'react-router-dom'
+
+import {
+  Link,
+} from 'react-router-dom'
 
 import {
   getOrderStatusLabel,
   ORDER_STATUS,
 } from '../../constants/orderStatus'
 
-import { subscribeToAuthState } from '../../firebase/auth'
-import { db } from '../../firebase/firebase'
+import {
+  subscribeToAuthState,
+} from '../../firebase/auth'
+
+import {
+  db,
+} from '../../firebase/firebase'
+
+import MyPageHeader from '../../components/mypage/MyPageHeader'
+import StatusBadge from '../../components/mypage/StatusBadge'
 
 import styles from './ClaimHistory.module.scss'
+
+
+const ITEMS_PER_PAGE = 4
 
 
 const filterItems = [
@@ -38,12 +57,22 @@ const filterItems = [
 ]
 
 
-const formatDate = (value) => {
-  if (!value) return '-'
+/* =========================
+   FORMAT
+========================= */
+
+const formatDate = (
+  value
+) => {
+  if (!value) {
+    return '-'
+  }
+
 
   const date =
     value?.toDate?.() ||
     new Date(value)
+
 
   if (
     Number.isNaN(
@@ -52,6 +81,7 @@ const formatDate = (value) => {
   ) {
     return '-'
   }
+
 
   return new Intl.DateTimeFormat(
     'ko-KR',
@@ -66,13 +96,21 @@ const formatDate = (value) => {
 }
 
 
-const formatPrice = (value) =>
-  Number(value || 0).toLocaleString(
-    'ko-KR'
-  )
+const formatPrice = (
+  value
+) =>
+  Number(
+    value || 0
+  ).toLocaleString('ko-KR')
 
 
-const getClaimType = (order) => {
+/* =========================
+   CLAIM TYPE
+========================= */
+
+const getClaimType = (
+  order
+) => {
   const claimType =
     order.claimType ||
     order.claim?.type ||
@@ -106,16 +144,70 @@ const getClaimType = (order) => {
 }
 
 
-const getClaimLabel = (type) => {
+const getClaimLabel = (
+  type
+) => {
   const labels = {
     cancel: '취소',
     return: '반품',
     exchange: '교환',
   }
 
-  return labels[type] || '-'
+
+  return (
+    labels[type] ||
+    '-'
+  )
 }
 
+
+/* =========================
+   STATUS TONE
+========================= */
+
+const getStatusTone = (
+  claim
+) => {
+  const label =
+    String(
+      claim.statusLabel ||
+      ''
+    )
+
+
+  if (
+    claim.claimType ===
+      'cancel' ||
+    label.includes('취소')
+  ) {
+    return 'cancelled'
+  }
+
+
+  if (
+    label.includes('완료')
+  ) {
+    return 'complete'
+  }
+
+
+  if (
+    label.includes('접수') ||
+    label.includes('신청') ||
+    label.includes('처리') ||
+    label.includes('대기')
+  ) {
+    return 'pending'
+  }
+
+
+  return 'default'
+}
+
+
+/* =========================
+   EMPTY ICON
+========================= */
 
 const EmptyIcon = () => (
   <svg
@@ -151,18 +243,24 @@ const ClaimHistory = () => {
     setCurrentUser,
   ] = useState(undefined)
 
-  const [claims, setClaims] =
-    useState([])
+
+  const [
+    claims,
+    setClaims,
+  ] = useState([])
+
 
   const [
     activeFilter,
     setActiveFilter,
   ] = useState('all')
 
+
   const [
     isLoading,
     setIsLoading,
   ] = useState(true)
+
 
   const [
     loadError,
@@ -170,8 +268,14 @@ const ClaimHistory = () => {
   ] = useState('')
 
 
+  const [
+    currentPage,
+    setCurrentPage,
+  ] = useState(1)
+
+
   /* =========================
-     로그인 상태
+     LOGIN
   ========================= */
 
   useEffect(() => {
@@ -180,12 +284,13 @@ const ClaimHistory = () => {
         setCurrentUser
       )
 
+
     return unsubscribe
   }, [])
 
 
   /* =========================
-     취소 / 반품 / 교환 조회
+     LOAD CLAIMS
   ========================= */
 
   useEffect(() => {
@@ -261,7 +366,7 @@ const ClaimHistory = () => {
                       ?.toDate?.() ||
                     new Date(
                       data.createdAt ||
-                        0
+                      0
                     )
 
 
@@ -298,8 +403,7 @@ const ClaimHistory = () => {
                         }${
                           itemCount > 1
                             ? ` 외 ${
-                                itemCount -
-                                1
+                                itemCount - 1
                               }개`
                             : ''
                         }`
@@ -336,7 +440,7 @@ const ClaimHistory = () => {
                     totalPrice:
                       Number(
                         data.totalAmount ||
-                          0
+                        0
                       ),
 
                     createdAt:
@@ -381,7 +485,7 @@ const ClaimHistory = () => {
             setClaims([])
 
             setLoadError(
-              '교환 내역을 불러오지 못했습니다.'
+              '취소 · 반품 · 교환 내역을 불러오지 못했습니다.'
             )
           }
         } finally {
@@ -402,13 +506,14 @@ const ClaimHistory = () => {
 
 
   /* =========================
-     필터
+     FILTER
   ========================= */
 
   const filteredClaims =
     useMemo(() => {
       if (
-        activeFilter === 'all'
+        activeFilter ===
+        'all'
       ) {
         return claims
       }
@@ -425,55 +530,93 @@ const ClaimHistory = () => {
     ])
 
 
+  /* =========================
+     PAGINATION
+  ========================= */
+
+  const totalPages =
+    Math.max(
+      1,
+      Math.ceil(
+        filteredClaims.length /
+        ITEMS_PER_PAGE
+      )
+    )
+
+
+  const startIndex =
+    (currentPage - 1) *
+    ITEMS_PER_PAGE
+
+
+  const visibleClaims =
+    filteredClaims.slice(
+      startIndex,
+      startIndex +
+        ITEMS_PER_PAGE
+    )
+
+
+  useEffect(() => {
+    if (
+      currentPage >
+      totalPages
+    ) {
+      setCurrentPage(
+        totalPages
+      )
+    }
+  }, [
+    currentPage,
+    totalPages,
+  ])
+
+
+  const handleFilterChange = (
+    value
+  ) => {
+    setActiveFilter(
+      value
+    )
+
+    setCurrentPage(1)
+  }
+
+
+  /* =========================
+     EMPTY
+  ========================= */
+
   const emptyLabel =
     activeFilter === 'all'
-      ? '교환 내역이 없어요'
+      ? '취소 · 반품 · 교환 내역이 없습니다.'
       : `${
           getClaimLabel(
             activeFilter
           )
-        } 내역이 없어요`
+        } 내역이 없습니다.`
 
 
   return (
     <section
-      className={styles.page}
-      aria-labelledby="claim-history-title"
+      className={
+        styles.page
+      }
     >
-
       <div
         className={
           styles.claimCard
         }
       >
 
-        {/* =====================
-            HEADER
-        ===================== */}
+        {/* HEADER */}
 
-        <header
-          className={
-            styles.pageHeader
-          }
-        >
-          <h2
-            id="claim-history-title"
-          >
-            취소 반품 교환 내역
-          </h2>
-        </header>
-
-
-        <div
-          className={
-            styles.titleDivider
-          }
+        <MyPageHeader
+          title="취소 · 반품 · 교환 내역"
         />
 
 
-        {/* =====================
-            FILTER
-        ===================== */}
+        {/* FILTER */}
 
         <div
           className={
@@ -482,7 +625,6 @@ const ClaimHistory = () => {
           role="tablist"
           aria-label="취소 반품 교환 내역 필터"
         >
-
           {filterItems.map(
             (filter) => (
               <button
@@ -502,7 +644,7 @@ const ClaimHistory = () => {
                     : ''
                 }`}
                 onClick={() =>
-                  setActiveFilter(
+                  handleFilterChange(
                     filter.value
                   )
                 }
@@ -513,28 +655,54 @@ const ClaimHistory = () => {
               </button>
             )
           )}
-
         </div>
 
 
-        {/* =====================
-            CONTENT
-        ===================== */}
+        {/* COUNT */}
+
+        {!isLoading &&
+          !loadError &&
+          filteredClaims.length >
+            0 && (
+          <div
+            className={
+              styles.listHeader
+            }
+          >
+            총{' '}
+
+            <strong>
+              {
+                filteredClaims.length
+              }
+            </strong>
+
+            건
+          </div>
+        )}
+
+
+        {/* CONTENT */}
 
         {isLoading ? (
-
           <div
             className={
               styles.stateBox
             }
             role="status"
           >
-            내역을 불러오는
-            중입니다.
+            <span
+              className={
+                styles.loadingSpinner
+              }
+              aria-hidden="true"
+            />
+
+            <strong>
+              내역을 불러오는 중입니다.
+            </strong>
           </div>
-
         ) : loadError ? (
-
           <div
             className={
               styles.stateBox
@@ -543,173 +711,262 @@ const ClaimHistory = () => {
           >
             {loadError}
           </div>
-
         ) : filteredClaims.length >
           0 ? (
-
-          <div
-            className={
-              styles.claimList
-            }
-          >
-
-            {filteredClaims.map(
-              (claim) => (
-                <article
-                  key={
-                    claim.id
-                  }
-                  className={
-                    styles.claimItem
-                  }
-                >
-
-                  <div
+          <>
+            <div
+              className={
+                styles.claimList
+              }
+            >
+              {visibleClaims.map(
+                (claim) => (
+                  <article
+                    key={
+                      claim.id
+                    }
                     className={
-                      styles.itemTop
+                      styles.claimItem
                     }
                   >
-                    <div>
-                      <span
-                        className={`${styles.claimBadge} ${
-                          styles[
-                            claim.claimType
-                          ]
-                        }`}
-                      >
-                        {
-                          claim.claimLabel
-                        }
-                      </span>
-
-                      <time>
-                        {formatDate(
-                          claim.createdAt
-                        )}
-                      </time>
-                    </div>
-
-
-                    <Link
-                      to={`/mypage/orders/${claim.id}`}
-                      className={
-                        styles.detailLink
-                      }
-                    >
-                      주문 상세
-                      <span
-                        aria-hidden="true"
-                      >
-                        ›
-                      </span>
-                    </Link>
-                  </div>
-
-
-                  <div
-                    className={
-                      styles.itemBody
-                    }
-                  >
-
                     <div
                       className={
-                        styles.productImage
+                        styles.itemTop
                       }
                     >
-                      {claim.productImage ? (
-                        <img
-                          src={
-                            claim.productImage
-                          }
-                          alt=""
-                        />
-                      ) : (
-                        <span>
-                          IMG
-                        </span>
-                      )}
-                    </div>
-
-
-                    <div
-                      className={
-                        styles.productInfo
-                      }
-                    >
-                      <strong>
-                        {
-                          claim.productTitle
+                      <div
+                        className={
+                          styles.itemMeta
                         }
-                      </strong>
-
-                      <span>
-                        {formatPrice(
-                          claim.totalPrice
-                        )}
-                        원
-                      </span>
-
-                      {claim.reason && (
-                        <p>
-                          사유 ·{' '}
+                      >
+                        <span
+                          className={`${styles.claimBadge} ${
+                            styles[
+                              claim.claimType
+                            ]
+                          }`}
+                        >
                           {
-                            claim.reason
+                            claim.claimLabel
                           }
-                        </p>
-                      )}
+                        </span>
+
+                        <time>
+                          {formatDate(
+                            claim.createdAt
+                          )}
+                        </time>
+                      </div>
+
+
+                      <Link
+                        to={`/mypage/orders/${claim.id}`}
+                        className={
+                          styles.detailButton
+                        }
+                      >
+                        주문 상세
+
+                        <span
+                          aria-hidden="true"
+                        >
+                          ›
+                        </span>
+                      </Link>
                     </div>
 
 
-                    <span
+                    <div
                       className={
-                        styles.statusBadge
+                        styles.itemBody
                       }
                     >
-                      {
-                        claim.statusLabel
-                      }
-                    </span>
+                      <div
+                        className={
+                          styles.productImage
+                        }
+                      >
+                        {claim.productImage ? (
+                          <img
+                            src={
+                              claim.productImage
+                            }
+                            alt=""
+                          />
+                        ) : (
+                          <span>
+                            IMG
+                          </span>
+                        )}
+                      </div>
 
-                  </div>
 
-                </article>
-              )
+                      <div
+                        className={
+                          styles.productInfo
+                        }
+                      >
+                        <strong>
+                          {
+                            claim.productTitle
+                          }
+                        </strong>
+
+                        <span
+                          className={
+                            styles.price
+                          }
+                        >
+                          {formatPrice(
+                            claim.totalPrice
+                          )}
+                          원
+                        </span>
+
+
+                        {claim.reason && (
+                          <p>
+                            <span>
+                              사유
+                            </span>
+
+                            {
+                              claim.reason
+                            }
+                          </p>
+                        )}
+                      </div>
+
+
+                      <StatusBadge
+                        tone={
+                          getStatusTone(
+                            claim
+                          )
+                        }
+                      >
+                        {
+                          claim.statusLabel
+                        }
+                      </StatusBadge>
+                    </div>
+                  </article>
+                )
+              )}
+            </div>
+
+
+            {/* PAGINATION */}
+
+            {totalPages > 1 && (
+              <nav
+                className={
+                  styles.pagination
+                }
+                aria-label="취소 반품 교환 내역 페이지"
+              >
+                <button
+                  type="button"
+                  disabled={
+                    currentPage === 1
+                  }
+                  onClick={() =>
+                    setCurrentPage(
+                      Math.max(
+                        1,
+                        currentPage - 1
+                      )
+                    )
+                  }
+                  aria-label="이전 페이지"
+                >
+                  ‹
+                </button>
+
+
+                {Array.from(
+                  {
+                    length:
+                      totalPages,
+                  },
+                  (
+                    _,
+                    index
+                  ) => {
+                    const pageNumber =
+                      index + 1
+
+
+                    return (
+                      <button
+                        key={
+                          pageNumber
+                        }
+                        type="button"
+                        className={
+                          currentPage ===
+                          pageNumber
+                            ? styles.activePage
+                            : ''
+                        }
+                        onClick={() =>
+                          setCurrentPage(
+                            pageNumber
+                          )
+                        }
+                      >
+                        {
+                          pageNumber
+                        }
+                      </button>
+                    )
+                  }
+                )}
+
+
+                <button
+                  type="button"
+                  disabled={
+                    currentPage ===
+                    totalPages
+                  }
+                  onClick={() =>
+                    setCurrentPage(
+                      Math.min(
+                        totalPages,
+                        currentPage + 1
+                      )
+                    )
+                  }
+                  aria-label="다음 페이지"
+                >
+                  ›
+                </button>
+              </nav>
             )}
-
-          </div>
-
+          </>
         ) : (
-
-          /* =====================
-              EMPTY
-          ===================== */
-
           <div
             className={
               styles.emptyState
             }
           >
-
-            <div
+            <span
               className={
                 styles.emptyIcon
               }
+              aria-hidden="true"
             >
               <EmptyIcon />
-            </div>
+            </span>
 
-
-            <p>
+            <strong>
               {emptyLabel}
-            </p>
-
+            </strong>
           </div>
-
         )}
 
       </div>
-
     </section>
   )
 }

@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -90,6 +90,46 @@ const MakdongIntro = () => {
     if (!isMobile || !view) return
     board.scrollTo({ left: board.scrollLeft + view.getBoundingClientRect().left - board.getBoundingClientRect().left, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
   }
+
+  useEffect(() => {
+    const board = turnaroundRef.current
+    if (!isMobile || !hasStarted || !board) return undefined
+
+    let timer
+    let isInteracting = false
+    const schedule = () => {
+      window.clearTimeout(timer)
+      if (isInteracting) return
+      timer = window.setTimeout(() => {
+        const rect = board.getBoundingClientRect()
+        if (!document.hidden && rect.bottom > 0 && rect.top < window.innerHeight) {
+          const views = [...board.children]
+          const distances = views.map(view => Math.abs(view.getBoundingClientRect().left - rect.left))
+          const index = distances.indexOf(Math.min(...distances))
+          const next = views[(index + 1) % views.length]
+          board.scrollTo({
+            left: board.scrollLeft + next.getBoundingClientRect().left - rect.left,
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+          })
+        }
+        schedule()
+      }, 4000)
+    }
+    const pause = () => { isInteracting = true; window.clearTimeout(timer) }
+    const resume = () => { isInteracting = false; schedule() }
+    board.addEventListener('pointerdown', pause)
+    window.addEventListener('pointerup', resume)
+    window.addEventListener('pointercancel', resume)
+    board.addEventListener('scroll', schedule, { passive: true })
+    schedule()
+    return () => {
+      window.clearTimeout(timer)
+      board.removeEventListener('pointerdown', pause)
+      window.removeEventListener('pointerup', resume)
+      window.removeEventListener('pointercancel', resume)
+      board.removeEventListener('scroll', schedule)
+    }
+  }, [hasStarted, isMobile])
 
   useLayoutEffect(() => {
     if (hasStarted) return undefined
@@ -351,7 +391,7 @@ const MakdongIntro = () => {
           <aside className={styles.guideBoard} aria-label="막동이 캐릭터 가이드">
             <header className={styles.guideBoardHeader}>
               <h2 id="makdong-guide-title">MAKDONG CHARACTER GUIDE</h2>
-              <span>JAJAK ARCHIVE · 01</span>
+              <span aria-hidden="true" style={{ visibility: 'hidden' }}>JAJAK ARCHIVE · 01</span>
             </header>
 
             <div className={styles.turnaroundBoard} ref={turnaroundRef} onScroll={isMobile ? handleViewScroll : undefined} tabIndex={isMobile ? 0 : undefined} aria-label={isMobile ? '막동이 앞·옆·뒤 모습, 좌우로 넘겨보세요' : undefined}>
@@ -372,7 +412,6 @@ const MakdongIntro = () => {
             </div>
 
             {isMobile && <div className={styles.viewNavigation} aria-label="캐릭터 모습 선택">
-              <span>좌우로 넘겨보세요</span>
               <div>{MAKDONG_GUIDE_IMAGES.turnaround.map(({ label }, index) => <button key={label} type="button" aria-label={`${label} 보기`} aria-pressed={activeViewIndex === index} onClick={() => handleViewChange(index)}><span /></button>)}</div>
               <output aria-live="polite">{activeViewIndex + 1} / 3</output>
             </div>}

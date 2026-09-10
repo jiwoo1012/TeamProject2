@@ -2,6 +2,16 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { collection, onSnapshot } from 'firebase/firestore'
 
+import {
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  LinearScale,
+  Tooltip,
+} from 'chart.js'
+import { Bar } from 'react-chartjs-2'
+
+
 import AdminEmptyState from '../../components/admin/AdminEmptyState'
 import AdminFilterBar from '../../components/admin/AdminFilterBar'
 import AdminPageHeader from '../../components/admin/AdminPageHeader'
@@ -24,6 +34,15 @@ import { db } from '../../firebase/firebase'
 import { addDocument, deleteDocument, updateDocument } from '../../firebase/firestore'
 
 import styles from './EventManage.module.scss'
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Tooltip
+)
+
+
 
 const statusLabels = {
 
@@ -294,6 +313,157 @@ const EventManage = () => {
     { key: 'todayClosing', label: '오늘 마감 이벤트', value: todayClosingCount, unit: '개', caption: '실시간 마감 임박', icon: endIcon },
 
   ]
+
+
+  // ========================================
+  // 이벤트별 응모 현황 차트
+  // ========================================
+
+  const eventChartItems = useMemo(
+    () =>
+      events.map((event) => ({
+        id: event.id,
+        title: event.title,
+        shortTitle:
+          event.title.length > 7
+            ? `${event.title.slice(0, 7)}…`
+            : event.title,
+        applicants: Number(
+          participationCounts[event.id]
+          ?? event.applicants
+          ?? 0
+        ),
+      })),
+    [
+      events,
+      participationCounts,
+    ]
+  )
+
+
+  const eventChartData = useMemo(
+    () => ({
+      labels:
+        eventChartItems.map(
+          (event) =>
+            event.shortTitle
+        ),
+
+      datasets: [
+        {
+          label: '응모 수',
+
+          data:
+            eventChartItems.map(
+              (event) =>
+                event.applicants
+            ),
+
+          backgroundColor:
+            'rgba(86, 138, 128, 0.82)',
+
+          borderColor:
+            '#568a80',
+
+          borderWidth: 1,
+
+          borderRadius: 5,
+
+          maxBarThickness: 28,
+        },
+      ],
+    }),
+    [eventChartItems]
+  )
+
+
+  const eventChartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+
+      animation: {
+        duration: 900,
+        easing: 'easeOutQuart',
+      },
+
+      plugins: {
+        legend: {
+          display: false,
+        },
+
+        tooltip: {
+          enabled: true,
+          displayColors: false,
+          padding: 10,
+
+          callbacks: {
+            title: (items) => {
+              const index =
+                items[0]?.dataIndex
+
+              return (
+                eventChartItems[
+                  index
+                ]?.title
+                ?? ''
+              )
+            },
+
+            label: (context) =>
+              `응모 ${context.raw}건`,
+          },
+        },
+      },
+
+      scales: {
+        x: {
+          grid: {
+            display: false,
+          },
+
+          border: {
+            display: false,
+          },
+
+          ticks: {
+            color: '#8c9490',
+
+            font: {
+              size: 9,
+            },
+
+            maxRotation: 0,
+            minRotation: 0,
+          },
+        },
+
+        y: {
+          beginAtZero: true,
+
+          border: {
+            display: false,
+          },
+
+          grid: {
+            color:
+              'rgba(223, 226, 224, 0.72)',
+          },
+
+          ticks: {
+            precision: 0,
+
+            color: '#8c9490',
+
+            font: {
+              size: 9,
+            },
+          },
+        },
+      },
+    }),
+    [eventChartItems]
+  )
 
   // 상단 요약 카드 클릭 필터
 
@@ -1656,6 +1826,18 @@ const EventManage = () => {
                     전통주 동행형 이벤트는 사전 답사 로그가 필수입니다.
                   </li>
                 </ul>
+              </div>
+            </AdminPanel>
+
+            <AdminPanel
+              title="이벤트별 응모 현황"
+              padding="compact"
+            >
+              <div className={styles.eventChart}>
+                <Bar
+                  data={eventChartData}
+                  options={eventChartOptions}
+                />
               </div>
             </AdminPanel>
 

@@ -1,0 +1,81 @@
+.badge {
+  min-width: 72px;
+  height: 26px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 10px;
+
+  border: 1px solid transparent;
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+
+/* 기본 */
+
+.default {
+  border-color: #ddd8d0;
+  background: #faf9f7;
+  color: #756f68;
+}
+
+
+/* 배송 준비 */
+
+.preparing {
+  border-color: #b7d7c3;
+  background: #f5fbf7;
+  color: #62806f;
+}
+
+
+/* 배송 중 */
+
+.shipping {
+  border-color: #d6cdbf;
+  background: #fcfaf7;
+  color: #7d7464;
+}
+
+
+/* 배송 완료 */
+
+.completed {
+  border-color: #a9cec0;
+  background: #f4faf6;
+  color: #587761;
+}
+
+
+/* 취소 */
+
+.cancelled {
+  border-color: #e3beb9;
+  background: #fdf7f6;
+  color: #9b6861;
+}
+
+
+/* 문의/처리 완료 등에 사용 */
+
+.complete {
+  border-color: #a9cec0;
+  background: #f4faf6;
+  color: #587761;
+}
+
+
+/* 처리 대기 */
+
+.pending {
+  border-color: #ded5c6;
+  background: #faf8f4;
+  color: #807665;
+}

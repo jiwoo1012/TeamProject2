@@ -1,0 +1,3377 @@
+/* ========================================
+   PAGE
+======================================== */
+
+.page {
+  width: 100%;
+
+  height: calc(100dvh - 82px);
+  min-height: 0;
+
+  padding: 20px 34px;
+
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+
+  background: #f5f3ed;
+}
+
+
+/* ========================================
+   INTRO
+======================================== */
+
+.intro {
+  position: relative;
+
+  width: 100%;
+  max-width: 1320px;
+  height: 100%;
+
+  padding: 50px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  text-align: center;
+
+  border-radius: 26px;
+
+  background:
+    radial-gradient(
+      circle at 50% 35%,
+      rgba(255, 255, 255, 0.9),
+      transparent 38%
+    ),
+    #e7efe8;
+
+  box-shadow:
+    0 20px 60px
+    rgba(45, 72, 59, 0.08);
+}
+
+
+.introMakdong {
+  width: 300px;
+  height: 300px;
+
+  margin-bottom: -30px;
+
+  object-fit: contain;
+}
+
+
+.intro h1 {
+  margin: 0;
+
+  font-family: 'JS Arirang HON', sans-serif !important;
+  font-weight: 400 !important;
+  font-style: normal;
+
+  font-size: clamp(
+    58px,
+    4.3vw,
+    70px
+  );
+
+  line-height: 1.14;
+
+  color: #26392f;
+}
+
+
+.intro p {
+  margin: 20px 0 0;
+
+  font-size: 20px;
+  line-height: 1.8;
+
+  color: #67746c;
+}
+
+
+.introMission {
+  margin-top: 22px;
+
+  padding: 10px 17px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  border-radius: 11px;
+
+  font-size: 15px;
+
+  color: #6b7c72;
+
+  background:
+    rgba(255, 255, 255, 0.7);
+}
+
+
+.introMission strong {
+  color: #3d5e4d;
+}
+
+
+.startButton {
+  min-width: 210px;
+  height: 52px;
+
+  margin-top: 25px;
+  padding: 0 32px;
+
+  border: 0;
+  border-radius: 999px;
+
+  font-size: 18px;
+  font-weight: 800;
+
+  color: #fff;
+
+  /*
+    처음에는 기존 초록색,
+    hover 시 왼쪽 → 오른쪽으로 진한 초록색이 들어옴
+  */
+  background:
+    linear-gradient(
+      to right,
+      #3f6852 0%,
+      #3f6852 50%,
+      #527864 50%,
+      #527864 100%
+    );
+
+  background-size: 200% 100%;
+  background-position: right bottom;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 10px 24px
+    rgba(48, 88, 68, 0.18);
+
+  transition:
+    background-position 0.45s
+      cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+
+.startButton:hover {
+  background-position: left bottom;
+
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 15px 32px
+    rgba(48, 88, 68, 0.27);
+}
+
+
+.startButton:active {
+  transform: translateY(-1px);
+}
+/* ========================================
+   GAME SHELL
+======================================== */
+
+.gameShell {
+  position: relative;
+
+  width: 100%;
+  max-width: 1480px;
+  height: 100%;
+
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(71, 100, 84, 0.16);
+
+  border-radius: 24px;
+
+  background: #fff;
+
+  box-shadow:
+    0 20px 65px
+    rgba(47, 66, 56, 0.1);
+}
+
+
+/* ========================================
+   HUD
+======================================== */
+
+.gameHud {
+  flex: 0 0 70px;
+
+  padding: 0 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  box-sizing: border-box;
+
+  border-bottom:
+    1px solid
+    rgba(73, 96, 83, 0.1);
+
+  background: #fff;
+}
+
+
+.gameHud > strong {
+  font-size: 22px;
+  font-weight: 800;
+
+  color: #293a31;
+}
+
+
+.hudStatus {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+
+.hudStatus span {
+  padding: 8px 13px;
+
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  color: #557063;
+
+  background: #edf3ef;
+}
+
+
+/* ========================================
+   VIEWPORT
+======================================== */
+
+.viewport {
+  position: relative;
+
+  width: 100%;
+
+  flex: 1;
+  min-height: 0;
+
+  overflow: hidden;
+
+  background: #422a1b;
+}
+
+
+/* ========================================
+   의뢰창
+======================================== */
+
+.questCard {
+  position: absolute;
+
+  z-index: 40;
+
+  top: 18px;
+  left: 18px;
+
+  width: 320px;
+
+  padding:
+    17px 18px 15px;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(98, 73, 48, 0.18);
+
+  border-radius: 14px;
+
+  background:
+    rgba(255, 250, 239, 0.95);
+
+  box-shadow:
+    0 10px 30px
+    rgba(52, 35, 22, 0.18);
+
+  backdrop-filter:
+    blur(7px);
+
+  animation:
+    questAppear
+    0.35s
+    cubic-bezier(
+      0.16,
+      1,
+      0.3,
+      1
+    );
+}
+
+
+.questCard::before {
+  content: '';
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 5px;
+  height: 100%;
+
+  background: #527864;
+}
+
+
+@keyframes questAppear {
+  from {
+    opacity: 0;
+
+    transform:
+      translateX(-10px)
+      translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateX(0)
+      translateY(0);
+  }
+}
+
+
+.questCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 8px;
+}
+
+
+.questBadge {
+  padding:
+    4px 8px;
+
+  border-radius: 5px;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  color: #fff;
+
+  background: #527864;
+}
+
+
+.questCount {
+  font-size: 15px;
+  font-weight: 700;
+
+  color: #877a6b;
+}
+
+
+.questTitle {
+  display: block;
+
+  font-size: 18px;
+  font-weight: 800;
+
+  color: #3b342c;
+}
+
+
+.questDescription {
+  margin:
+    5px 0 12px;
+
+  font-size: 13px;
+  line-height: 1.55;
+
+  word-break: keep-all;
+
+  color: #786f65;
+}
+
+
+.questProgress {
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, 1fr);
+
+  gap: 5px;
+}
+
+
+.questProgress span {
+  height: 4px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background:
+    rgba(92, 80, 66, 0.12);
+
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+
+
+.questProgress .questComplete {
+  background:
+    rgba(82, 120, 100, 0.45);
+}
+
+
+.questProgress .questCurrent {
+  background: #527864;
+
+  transform:
+    scaleY(1.4);
+}
+
+
+/* ========================================
+   WORLD
+======================================== */
+
+.world {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  height: 100%;
+
+  background-size: 100% 100%;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+
+  will-change: transform;
+
+  transition:
+    transform 0.04s linear;
+}
+
+
+/* ========================================
+   간판
+======================================== */
+
+.signBoard {
+  position: absolute;
+
+  z-index: 8;
+
+  top: 25px;
+
+  width: 190px;
+
+  transform:
+    translateX(-50%);
+
+  pointer-events: none;
+
+  opacity: 0.92;
+
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease,
+    filter 0.25s ease;
+}
+
+
+.signBoard img {
+  display: block;
+
+  width: 100%;
+  height: auto;
+
+  object-fit: contain;
+
+  user-select: none;
+}
+
+
+.signActive {
+  opacity: 1;
+
+  transform:
+    translateX(-50%)
+    translateY(4px)
+    scale(1.08);
+
+  filter:
+    drop-shadow(
+      0 6px 9px
+      rgba(255, 221, 148, 0.42)
+    );
+
+  animation:
+    signGuide
+    1.15s
+    ease-in-out
+    infinite
+    alternate;
+}
+
+
+@keyframes signGuide {
+  from {
+    transform:
+      translateX(-50%)
+      translateY(0)
+      scale(1.05);
+  }
+
+  to {
+    transform:
+      translateX(-50%)
+      translateY(5px)
+      scale(1.08);
+  }
+}
+
+
+/* ========================================
+   CUSTOMER
+======================================== */
+
+.customer {
+  position: absolute;
+
+  z-index: 12;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  transform:
+    translateX(-50%);
+
+  transition:
+    left 1.15s
+    cubic-bezier(
+      0.16,
+      1,
+      0.3,
+      1
+    );
+
+  pointer-events: none;
+}
+
+
+/*
+  네가 직접 조정한 크기 유지
+*/
+
+.customerEntering {
+  bottom: 63px;
+
+  width: 500px;
+}
+
+
+.customerEntering img {
+  width: 100%;
+  max-height: 400px;
+
+  object-fit: contain;
+
+  filter:
+    drop-shadow(
+      0 8px 8px
+      rgba(38, 25, 16, 0.22)
+    );
+}
+
+
+.customerEntering span {
+  margin-top: -4px;
+
+  padding: 5px 10px;
+
+  border-radius: 999px;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  color: #fff;
+
+  background:
+    rgba(51, 38, 29, 0.7);
+}
+
+
+.customerSeated {
+  bottom: 22px;
+
+  width: 540px;
+}
+
+
+.customerSeated img {
+  width: 100%;
+  max-height: 460px;
+
+  object-fit: contain;
+
+  filter:
+    drop-shadow(
+      0 12px 12px
+      rgba(35, 23, 15, 0.18)
+    );
+}
+
+
+/* ========================================
+   MAKDONG
+======================================== */
+
+.character {
+  position: absolute;
+
+  bottom: 54px;
+
+  z-index: 20;
+
+  width: 450px;
+
+  transform-origin:
+    center bottom;
+
+  will-change:
+    left,
+    transform;
+
+  pointer-events: none;
+}
+
+
+.characterInner {
+  position: relative;
+
+  z-index: 2;
+
+  width: 100%;
+}
+
+
+.characterInner img {
+  display: block;
+
+  width: 100%;
+  max-height: 400px;
+
+  object-fit: contain;
+
+  user-select: none;
+
+  pointer-events: none;
+
+  filter:
+    drop-shadow(
+      0 8px 6px
+      rgba(40, 26, 17, 0.18)
+    );
+}
+
+
+.walking {
+  animation:
+    characterRun
+    0.2s
+    ease-in-out
+    infinite
+    alternate;
+}
+
+
+@keyframes characterRun {
+  from {
+    transform:
+      translateY(0);
+  }
+
+  to {
+    transform:
+      translateY(-4px);
+  }
+}
+
+
+.characterShadow {
+  position: absolute;
+
+  z-index: 1;
+
+  left: 50%;
+  bottom: 1px;
+
+  width: 74px;
+  height: 14px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius: 50%;
+
+  background:
+    rgba(27, 18, 12, 0.18);
+
+  filter:
+    blur(3px);
+}
+
+
+/* ========================================
+   INTERACTION PROMPT
+======================================== */
+
+.worldPrompt {
+  position: absolute;
+
+  z-index: 45;
+
+  left: 50%;
+  bottom: 20px;
+
+  transform:
+    translateX(-50%);
+
+  min-width: 175px;
+  height: 44px;
+
+  padding: 0 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  border-radius: 10px;
+
+  color: #fff;
+
+  background:
+    rgba(38, 54, 45, 0.95);
+
+  box-shadow:
+    0 10px 28px
+    rgba(31, 44, 37, 0.18);
+
+  animation:
+    promptFloat
+    0.7s
+    ease-in-out
+    infinite
+    alternate;
+}
+
+
+@keyframes promptFloat {
+  from {
+    transform:
+      translateX(-50%)
+      translateY(0);
+  }
+
+  to {
+    transform:
+      translateX(-50%)
+      translateY(-5px);
+  }
+}
+
+
+.interactionKey {
+  width: 25px;
+  height: 25px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.45);
+
+  border-bottom-width: 3px;
+
+  border-radius: 6px;
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+
+/* ========================================
+   OVERLAY
+======================================== */
+
+.dialogueOverlay,
+.choiceOverlay,
+.resultOverlay,
+.clearOverlay {
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 50;
+}
+
+
+/* ========================================
+   DIALOGUE
+======================================== */
+
+.dialogueOverlay {
+  padding: 24px;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(
+      to bottom,
+      transparent 28%,
+      rgba(25, 32, 28, 0.26)
+    );
+
+  pointer-events: none;
+}
+
+
+.dialogueBox {
+  position: relative;
+
+  width: min(
+    920px,
+    calc(100% - 30px)
+  );
+
+  min-height: 155px;
+
+  padding: 22px 26px;
+
+  display: grid;
+
+  grid-template-columns:
+    165px 1fr;
+
+  gap: 24px;
+
+  box-sizing: border-box;
+
+  border:
+    2px solid
+    #425a4d;
+
+  border-radius: 16px;
+
+  background:
+    rgba(255, 253, 248, 0.98);
+
+  box-shadow:
+    0 18px 48px
+    rgba(22, 35, 28, 0.23);
+
+  pointer-events: auto;
+
+  animation:
+    panelIn
+    0.22s
+    ease-out;
+}
+
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(15px)
+      scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+.dialogueSpeaker {
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  padding-right: 17px;
+
+  border-right:
+    1px solid
+    rgba(68, 91, 79, 0.14);
+}
+
+
+.dialogueAvatar {
+  width: 58px;
+  height: 58px;
+
+  flex-shrink: 0;
+
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #edf3ef;
+}
+
+
+.dialogueAvatar img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  object-position:
+    center 18%;
+}
+
+
+.dialogueSpeaker > div:last-child {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+
+.dialogueSpeaker span {
+  font-size: 9px;
+  font-weight: 800;
+
+  color: #8b978f;
+}
+
+
+.dialogueSpeaker strong {
+  font-size: 13px;
+
+  color: #34483e;
+}
+
+
+.dialogueContent {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  gap: 14px;
+}
+
+
+.dialogueContent p {
+  min-height: 58px;
+
+  margin: 0;
+
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.7;
+
+  word-break: keep-all;
+
+  color: #293a31;
+}
+
+
+.typeCursor {
+  width: 2px;
+  height: 1em;
+
+  margin-left: 4px;
+
+  display: inline-block;
+
+  vertical-align: -2px;
+
+  background: #527864;
+
+  animation:
+    cursorBlink
+    0.55s infinite;
+}
+
+
+@keyframes cursorBlink {
+  0%,
+  45% {
+    opacity: 1;
+  }
+
+  46%,
+  100% {
+    opacity: 0;
+  }
+}
+
+
+.dialogueNext {
+  align-self: flex-end;
+
+  min-width: 112px;
+  height: 39px;
+
+  padding: 0 13px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  border: 0;
+  border-radius: 8px;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  color: #fff;
+
+  background: #527864;
+
+  cursor: pointer;
+}
+
+
+.dialogueKey {
+  width: 21px;
+  height: 21px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.45);
+
+  border-bottom-width: 2px;
+
+  border-radius: 5px;
+
+  font-size: 9px;
+}
+
+
+.dialogueProgress {
+  position: absolute;
+
+  left: 50%;
+  bottom: 10px;
+
+  transform:
+    translateX(-50%);
+
+  display: flex;
+
+  gap: 5px;
+}
+
+
+.dialogueProgress span {
+  width: 16px;
+  height: 3px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(76, 103, 88, 0.17);
+}
+
+
+.dialogueProgressActive {
+  width: 26px !important;
+
+  background:
+    #58816b !important;
+}
+
+
+/* ========================================
+   CHOICE
+======================================== */
+
+.choiceOverlay {
+  padding: 26px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  background:
+    rgba(30, 39, 34, 0.53);
+
+  backdrop-filter:
+    blur(5px);
+}
+
+
+.choicePanel {
+  width: min(
+    900px,
+    calc(100% - 30px)
+  );
+
+  max-height:
+    calc(100% - 20px);
+
+  padding: 28px 32px;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  border-radius: 20px;
+
+  background: #fbfaf6;
+
+  box-shadow:
+    0 22px 65px
+    rgba(19, 29, 23, 0.28);
+
+  animation:
+    panelIn
+    0.24s ease-out;
+}
+
+
+.choiceHeader {
+  text-align: center;
+}
+
+
+.choiceHeader > span {
+  font-size: 10px;
+  font-weight: 800;
+
+  color: #6c8979;
+}
+
+
+.choiceHeader h2 {
+  margin: 8px 0 13px;
+
+  font-size: 25px;
+
+  color: #293b31;
+}
+
+
+.requestTags {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  gap: 6px;
+}
+
+
+.requestTags span {
+  padding: 5px 9px;
+
+  border-radius: 999px;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  color: #557063;
+
+  background: #e8f0ea;
+}
+
+
+.choiceGrid {
+  margin-top: 24px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 13px;
+}
+
+
+.choiceCard {
+  min-height: 210px;
+
+  padding: 22px 15px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  border:
+    1px solid
+    rgba(74, 101, 87, 0.14);
+
+  border-radius: 15px;
+
+  color: inherit;
+
+  background: #fff;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.choiceCard:hover {
+  transform:
+    translateY(-5px);
+
+  border-color:
+    rgba(72, 119, 94, 0.48);
+
+  box-shadow:
+    0 12px 30px
+    rgba(48, 73, 59, 0.12);
+}
+
+
+.choiceEmoji {
+  font-size: 44px;
+}
+
+
+.choiceCard strong {
+  margin-top: 13px;
+
+  font-size: 14px;
+
+  color: #34473d;
+}
+
+
+.choiceCard p {
+  min-height: 35px;
+
+  margin: 6px 0 14px;
+
+  font-size: 11px;
+  line-height: 1.6;
+
+  color: #7b867f;
+}
+
+
+.choiceSelect {
+  margin-top: auto;
+
+  padding-bottom: 2px;
+
+  border-bottom:
+    1px solid
+    #60816f;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  color: #527460;
+}
+
+
+/* ========================================
+   FEEDBACK
+======================================== */
+
+.feedback {
+  min-height: 340px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+
+.feedbackGrade {
+  padding: 6px 12px;
+
+  border-radius: 999px;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+
+.feedbackBest {
+  color: #426c57;
+
+  background: #e4f1e8;
+}
+
+
+.feedbackGood {
+  color: #886c32;
+
+  background: #f6efd9;
+}
+
+
+.feedbackMiss {
+  color: #9c5c58;
+
+  background: #f8e8e6;
+}
+
+
+.feedbackEmoji {
+  margin-top: 16px;
+
+  font-size: 58px;
+}
+
+
+.feedback h2 {
+  margin: 9px 0 3px;
+
+  font-size: 25px;
+
+  color: #31463a;
+}
+
+
+.feedback p {
+  max-width: 490px;
+
+  margin: 16px auto 20px;
+
+  font-size: 13px;
+  line-height: 1.7;
+
+  color: #68756e;
+}
+
+
+.feedback button {
+  min-width: 160px;
+  height: 44px;
+
+  border: 0;
+  border-radius: 9px;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  color: #fff;
+
+  background: #527864;
+
+  cursor: pointer;
+}
+
+
+/* ========================================
+   CUSTOMER RESULT
+======================================== */
+
+.resultOverlay {
+  padding: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  background:
+    rgba(30, 39, 34, 0.58);
+
+  backdrop-filter:
+    blur(5px);
+}
+
+
+.resultPanel {
+  width: min(
+    1020px,
+    calc(100% - 30px)
+  );
+
+  height: min(
+    410px,
+    calc(100% - 24px)
+  );
+
+  display: grid;
+
+  grid-template-columns:
+    38% 62%;
+
+  overflow: hidden;
+
+  border-radius: 22px;
+
+  background: #fffdf8;
+
+  box-shadow:
+    0 24px 70px
+    rgba(18, 27, 22, 0.28);
+
+  animation:
+    panelIn
+    0.25s ease-out;
+}
+
+
+.resultVisual {
+  position: relative;
+
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+
+  background:
+    linear-gradient(
+      145deg,
+      #e6eee5,
+      #f5f3e9
+    );
+}
+
+
+.resultVisualTitle {
+  position: absolute;
+
+  top: 24px;
+
+  z-index: 2;
+
+  padding:
+    5px 10px;
+
+  border-radius: 999px;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  color: #60766a;
+
+  background:
+    rgba(255, 255, 255, 0.72);
+}
+
+
+.resultVisual img {
+  width: 94%;
+  max-height: 360px;
+
+  object-fit: contain;
+
+  object-position:
+    center bottom;
+}
+
+
+.resultContent {
+  padding: 30px 34px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  box-sizing: border-box;
+}
+
+
+.resultLabel {
+  font-size: 10px;
+  font-weight: 800;
+
+  color: #708579;
+}
+
+
+.resultContent h2 {
+  margin: 6px 0 16px;
+
+  font-size: 23px;
+  line-height: 1.4;
+
+  color: #304339;
+}
+
+
+.tableSetting {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 9px;
+}
+
+
+.tableSetting > div {
+  min-height: 82px;
+
+  padding: 10px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  border-radius: 11px;
+
+  background: #f5f4ee;
+}
+
+
+.tableSetting span {
+  font-size: 27px;
+}
+
+
+.tableSetting strong {
+  font-size: 10px;
+
+  color: #43564c;
+}
+
+
+.customerReaction {
+  margin-top: 13px;
+
+  padding: 11px 13px;
+
+  border-radius: 9px;
+
+  font-size: 11px;
+  line-height: 1.65;
+
+  color: #66756d;
+
+  background: #f8f7f2;
+}
+
+
+.resultBottom {
+  margin-top: 13px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+}
+
+
+.satisfactionResult {
+  display: flex;
+  align-items: baseline;
+
+  gap: 7px;
+}
+
+
+.satisfactionResult strong {
+  font-size: 34px;
+
+  color: #50735f;
+}
+
+
+.satisfactionResult span {
+  font-size: 10px;
+
+  color: #79867f;
+}
+
+
+.resultBottom button {
+  text-align: center;
+  min-width: 170px;
+  height: 43px;
+
+  border: 0;
+  border-radius: 9px;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  color: #fff;
+
+  background: #527864;
+
+  cursor: pointer;
+}
+
+
+/* ========================================
+   영업 완료
+======================================== */
+
+.clearOverlay {
+  padding: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(40, 73, 57, 0.96),
+      rgba(76, 108, 89, 0.94)
+    );
+}
+
+
+.clearPanel {
+  width: min(
+    1040px,
+    calc(100% - 30px)
+  );
+
+  height: min(
+    410px,
+    calc(100% - 24px)
+  );
+
+  display: grid;
+
+  grid-template-columns:
+    35% 65%;
+
+  overflow: hidden;
+
+  border-radius: 23px;
+
+  background: #fbfaf4;
+
+  box-shadow:
+    0 30px 80px
+    rgba(13, 23, 18, 0.3);
+
+  animation:
+    clearIn
+    0.48s
+    cubic-bezier(
+      0.16,
+      1,
+      0.3,
+      1
+    );
+}
+
+
+@keyframes clearIn {
+  from {
+    opacity: 0;
+
+    transform:
+      scale(0.9)
+      translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      scale(1)
+      translateY(0);
+  }
+}
+
+
+.clearVisual {
+  position: relative;
+
+  padding: 26px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(255, 255, 255, 0.94),
+      transparent 50%
+    ),
+    #e7efe8;
+}
+
+
+.clearStamp {
+  position: absolute;
+
+  top: 24px;
+
+  padding:
+    6px 12px;
+
+  border:
+    1px solid
+    rgba(82, 120, 100, 0.34);
+
+  border-radius: 999px;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  color: #557863;
+
+  background:
+    rgba(255, 255, 255, 0.66);
+}
+
+.clearVisual img {
+  width: 360px;
+  height: auto;
+
+  max-width: none;
+
+  object-fit: contain;
+
+  transform: scale(1.35);
+}
+
+
+.clearContent {
+  padding: 31px 38px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  box-sizing: border-box;
+}
+
+
+.clearLabel {
+  font-size: 11px;
+  font-weight: 800;
+
+  color: #698171;
+}
+
+
+.clearContent h2 {
+  margin: 6px 0 18px;
+
+  font-size: 27px;
+  line-height: 1.35;
+
+  color: #2d4036;
+}
+
+
+.clearStats {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(72, 102, 86, 0.13);
+
+  border-radius: 12px;
+}
+
+
+.clearStats > div {
+  padding: 12px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+
+  background: #f4f6f2;
+}
+
+
+.clearStats > div + div {
+  border-left:
+    1px solid
+    rgba(72, 102, 86, 0.12);
+}
+
+
+.clearStats span {
+  font-size: 9px;
+
+  color: #819087;
+}
+
+
+.clearStats strong {
+  font-size: 18px;
+
+  color: #456752;
+}
+
+
+.aiBridge {
+  width: 100%;
+
+  margin-top: 13px;
+
+  padding: 12px 15px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+
+  box-sizing: border-box;
+
+  border-radius: 11px;
+
+  background: #edf2ed;
+}
+
+
+.aiBridge span {
+  font-size: 9px;
+
+  color: #829087;
+}
+
+
+.aiBridge strong {
+  font-size: 12px;
+  line-height: 1.55;
+
+  color: #3e5849;
+}
+
+
+.clearActions {
+  width: 100%;
+
+  margin-top: 12px;
+
+  display: grid;
+
+  grid-template-columns:
+    1.3fr 1fr;
+
+  gap: 9px;
+}
+
+
+.aiButton,
+.retryButton {
+  text-align: center;
+  height: 43px;
+
+  border-radius: 8px;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+.aiButton {
+  border: 0;
+
+  color: #fff;
+
+  background: #4f7862;
+}
+
+
+.retryButton {
+  border:
+    1px solid
+    rgba(70, 101, 85, 0.22);
+
+  color: #52665b;
+
+  background: #fff;
+}
+
+
+/* ========================================
+   CONTROLS
+======================================== */
+
+.controls {
+  flex: 0 0 58px;
+
+  padding: 10px 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 14px;
+
+  box-sizing: border-box;
+
+  color: #607067;
+
+  background: #fafaf7;
+}
+
+
+.controlGroup {
+  display: flex;
+  align-items: center;
+
+  gap: 5px;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+.key {
+  min-width: 28px;
+  height: 28px;
+
+  padding: 0 6px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid
+    rgba(73, 91, 80, 0.2);
+
+  border-bottom-width: 3px;
+
+  border-radius: 6px;
+
+  color: #43564b;
+
+  background: #fff;
+}
+
+
+.controlDivider {
+  width: 1px;
+  height: 25px;
+
+  margin: 0 3px;
+
+  background:
+    rgba(68, 89, 77, 0.11);
+}
+/* ========================================
+   DIALOGUE FINAL FIX
+======================================== */
+
+/* 대화창 왼쪽 프로필 영역을 조금 넓힘 */
+.dialogueBox {
+  grid-template-columns: 210px 1fr;
+}
+
+
+/* 프로필 영역 */
+.dialogueSpeaker {
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+
+  padding-right: 24px;
+}
+
+
+/* 손님 프로필 사진 확대 */
+.dialogueAvatar {
+  width: 84px;
+  height: 84px;
+
+  flex-shrink: 0;
+
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #edf3ef;
+}
+
+
+.dialogueAvatar img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center;
+}
+
+
+/*
+  혹시 JSX에 예전 "손님" span이 남아 있어도
+  무조건 안 보이게 처리
+*/
+.dialogueSpeaker > div:last-child > span {
+  display: none;
+}
+
+
+/* 이름만 가운데 정렬 */
+.dialogueSpeaker > div:last-child {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  gap: 0;
+}
+
+
+/* ========================================
+   대화 내용 세로 중앙
+======================================== */
+
+.dialogueContent {
+  position: relative;
+
+  min-width: 0;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  /*
+    오른쪽 버튼 자리만 확보
+  */
+  padding: 0 150px 0 0;
+
+  box-sizing: border-box;
+}
+
+
+/*
+  기존 min-height: 58px 때문에
+  문장이 위쪽에 붙어 보이는 것 제거
+*/
+.dialogueContent p {
+  min-height: 0;
+
+  margin: 0;
+
+  word-break: keep-all;
+}
+
+
+/* 다음 버튼도 세로 중앙 */
+.dialogueNext {
+  position: absolute;
+
+  top: 50%;
+  right: 0;
+
+  transform: translateY(-50%);
+
+  margin: 0;
+}
+
+
+/* 진행 바는 기존처럼 아래 */
+.dialogueProgress {
+  bottom: 10px;
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (
+  max-width: 1000px
+) {
+  .page {
+    padding:
+      14px 18px;
+  }
+
+
+  .resultPanel,
+  .clearPanel {
+    width:
+      calc(100% - 20px);
+  }
+
+
+  .questCard {
+    width: 285px;
+
+    top: 12px;
+    left: 12px;
+  }
+}
+
+/* ========================================
+   MOBILE - MAKDONG TAVERN
+   Desktop styles above remain untouched.
+======================================== */
+
+@media (max-width: 767px) {
+  .page {
+    width: 100%;
+    height: auto;
+    min-height: calc(100dvh - 64px);
+
+    padding:
+      10px
+      12px
+      18px;
+
+    align-items: flex-start;
+
+    overflow: visible;
+
+    box-sizing: border-box;
+  }
+
+
+  /* ==============================
+     INTRO
+  ============================== */
+
+  .intro {
+    width: 100%;
+    height: auto;
+
+    min-height:
+      calc(
+        100dvh -
+        64px -
+        88px -
+        28px
+      );
+
+    padding:
+      28px
+      18px
+      30px;
+
+    justify-content: flex-start;
+
+    overflow: visible;
+
+    border-radius: 20px;
+  }
+
+
+  .introMakdong {
+    width: 118px;
+    height: 118px;
+
+    max-width: none;
+
+    margin:
+      0
+      0
+      8px;
+
+    flex-shrink: 0;
+  }
+
+
+  .intro h1 {
+    max-width: 330px;
+
+    font-size:
+      clamp(
+        34px,
+        10.5vw,
+        42px
+      );
+
+    line-height: 1.28;
+
+    word-break: keep-all;
+  }
+
+
+  .intro p {
+    max-width: 305px;
+
+    margin:
+      16px
+      0
+      0;
+
+    font-size: 14px;
+    line-height: 1.72;
+
+    word-break: keep-all;
+  }
+
+
+  .introMission {
+    margin-top: 18px;
+
+    padding:
+      9px
+      13px;
+
+    gap: 8px;
+
+    font-size: 12px;
+  }
+
+
+  .startButton {
+    min-width: 190px;
+    height: 48px;
+
+    margin-top: 18px;
+
+    padding:
+      0
+      26px;
+
+    font-size: 15px;
+  }
+
+
+  /* ==============================
+     GAME SHELL / HUD
+  ============================== */
+
+  .gameShell {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    box-shadow:
+      0 12px 34px
+      rgba(47, 66, 56, 0.08);
+  }
+
+
+  .gameHud {
+    flex:
+      0
+      0
+      56px;
+
+    padding:
+      0
+      14px;
+  }
+
+
+  .gameHud > strong {
+    font-size: 18px;
+    line-height: 1;
+
+    white-space: nowrap;
+  }
+
+
+  .hudStatus {
+    gap: 5px;
+  }
+
+
+  .hudStatus span {
+    padding:
+      7px
+      9px;
+
+    font-size: 10px;
+
+    white-space: nowrap;
+  }
+
+
+  /* ==============================
+     MOBILE WORLD
+  ============================== */
+
+  .viewport {
+    position: relative;
+
+    flex:
+      0
+      0
+      clamp(
+        500px,
+        63dvh,
+        540px
+      );
+
+    width: 100%;
+    height:
+      clamp(
+        500px,
+        63dvh,
+        540px
+      );
+
+    min-height: 500px;
+
+    overflow: hidden;
+
+    border-radius:
+      0
+      0
+      18px
+      18px;
+
+    background: #422a1b;
+
+    touch-action: manipulation;
+  }
+
+
+  .world {
+    height: 100%;
+
+    background-size:
+      auto
+      100%;
+
+    background-position:
+      left
+      bottom;
+
+    background-repeat:
+      repeat-x;
+
+    user-select: none;
+
+    cursor: pointer;
+  }
+
+
+  /* ==============================
+     QUEST
+     화면을 덜 가리도록 최소화
+  ============================== */
+
+  .questCard {
+    top: 9px;
+    left: 9px;
+
+    width:
+      min(
+        184px,
+        calc(100% - 18px)
+      );
+
+    padding:
+      7px
+      8px
+      7px;
+
+    border-radius: 9px;
+
+    pointer-events: none;
+
+    box-shadow:
+      0 6px 14px
+      rgba(52, 35, 22, 0.13);
+  }
+
+
+  .questCard::before {
+    width: 3px;
+  }
+
+
+  .questCardTop {
+    margin-bottom: 3px;
+  }
+
+
+  .questBadge {
+    padding:
+      2px
+      5px;
+
+    font-size: 7px;
+
+    border-radius: 3px;
+  }
+
+
+  .questCount {
+    font-size: 8px;
+  }
+
+
+  .questTitle {
+    font-size: 11px;
+    line-height: 1.3;
+
+    word-break: keep-all;
+  }
+
+
+  .questDescription {
+    display: none;
+  }
+
+
+  .questProgress {
+    margin-top: 5px;
+
+    gap: 3px;
+  }
+
+
+  .questProgress span {
+    height: 2px;
+  }
+
+
+  /* ==============================
+     FIRST MOVE GUIDE
+  ============================== */
+
+  .mobileTutorialHint {
+    position: absolute;
+
+    z-index: 44;
+
+    left: 50%;
+    bottom: 20px;
+
+    transform:
+      translateX(-50%);
+
+    width:
+      max-content;
+    max-width:
+      calc(100% - 30px);
+
+    padding:
+      7px
+      10px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    box-sizing: border-box;
+
+    border:
+      1px solid
+      rgba(255, 255, 255, 0.22);
+
+    border-radius: 999px;
+
+    color: #fff;
+
+    background:
+      rgba(40, 55, 47, 0.78);
+
+    box-shadow:
+      0 6px 18px
+      rgba(26, 34, 29, 0.2);
+
+    backdrop-filter:
+      blur(6px);
+
+    pointer-events: none;
+  }
+
+
+  .mobileTutorialText {
+    font-size: 9px;
+    font-weight: 700;
+
+    white-space: nowrap;
+  }
+
+
+  .mobileMoveArrow {
+  display: inline-block;
+
+  margin-left: 6px;
+
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+
+  color: #527864;
+
+  animation:
+    mobileMoveArrow 0.8s
+    ease-in-out
+    infinite
+    alternate;
+}
+
+@keyframes mobileMoveArrow {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(8px);
+  }
+}
+
+
+  @keyframes mobileTutorialArrowMove {
+    from {
+      transform:
+        translateX(-2px);
+    }
+
+    to {
+      transform:
+        translateX(7px);
+    }
+  }
+
+
+  /* ==============================
+     SIGN BOARDS
+     모바일에서는 장식만 유지
+  ============================== */
+
+  .signBoard {
+    top: 16px;
+
+    width: 102px;
+
+    pointer-events: none;
+  }
+
+
+  .signBoard[data-mobile-target='true'] {
+    pointer-events: none;
+  }
+
+
+  .signActive {
+    animation: none;
+
+    filter: none;
+
+    opacity: 0.92;
+
+    transform:
+      translateX(-50%);
+  }
+
+
+  /* ==============================
+     WORLD TARGET ICON
+     술 곶간 / 주방 / 잔 진열대
+  ============================== */
+
+  .mobileWorldTarget {
+    position: absolute;
+
+    z-index: 32;
+
+    width: 72px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transform:
+      translate(
+        -50%,
+        -50%
+      );
+
+    border: 0;
+
+    color: inherit;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    pointer-events: auto;
+
+    -webkit-tap-highlight-color:
+      transparent;
+  }
+
+
+  .mobileWorldTargetFloat {
+    width: 200px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 0px;
+
+    animation:
+      mobileWorldTargetFloat
+      0.72s
+      ease-in-out
+      infinite
+      alternate;
+  }
+
+
+  .mobileWorldTargetFloat img {
+    display: block;
+
+    width: 200px;
+    height: 200px;
+
+    object-fit: contain;
+
+    filter:
+      drop-shadow(
+        0 7px 8px
+        rgba(45, 28, 17, 0.24)
+      );
+
+    user-select: none;
+
+    pointer-events: none;
+  }
+
+
+  .mobileWorldTargetFloat > span {
+     margin-top: -50px;
+    padding:
+      3px
+      7px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    color: #405c4d;
+
+    background:
+      rgba(255, 251, 239, 0.95);
+
+    box-shadow:
+      0 3px 8px
+      rgba(50, 35, 22, 0.12);
+
+    white-space: nowrap;
+  }
+
+
+  .mobileWorldTarget:active
+  .mobileWorldTargetFloat {
+    transform:
+      scale(0.94);
+  }
+
+
+  @keyframes mobileWorldTargetFloat {
+    from {
+      transform:
+        translateY(-5px);
+    }
+
+    to {
+      transform:
+        translateY(7px);
+    }
+  }
+
+
+  /* ==============================
+     CUSTOMER TARGET
+     손님만 기존 화살표 사용
+  ============================== */
+
+  .customer {
+    pointer-events: none;
+  }
+
+
+  .customer[data-mobile-target='true'] {
+    pointer-events: auto;
+
+    cursor: pointer;
+  }
+
+
+  .customer[data-mobile-target='true'] img {
+    pointer-events: auto;
+  }
+
+
+  .mobileTargetArrow {
+  position: absolute;
+
+  z-index: 30;
+
+  top: -14px;
+  left: 50%;
+
+  width: auto;
+  height: auto;
+
+  margin: 0;
+  padding: 0;
+
+  transform:
+    translateX(-50%);
+
+  border: 0;
+
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+
+  color: #f3df91;
+
+  background: transparent;
+
+  filter:
+    drop-shadow(
+      0 2px 2px
+      rgba(55, 41, 23, 0.28)
+    );
+
+  animation:
+    mobileTargetBlink
+    0.75s
+    ease-in-out
+    infinite
+    alternate;
+
+  pointer-events: auto;
+}
+
+.mobileTargetArrow::before {
+  content: '▼';
+}
+
+
+  .customer .mobileTargetArrow {
+    top: 10px;
+  }
+
+
+  @keyframes mobileTargetBlink {
+    from {
+      opacity: 0.58;
+
+      transform:
+        translateX(-50%)
+        translateY(-2px);
+    }
+
+    to {
+      opacity: 1;
+
+      transform:
+        translateX(-50%)
+        translateY(6px);
+    }
+  }
+
+
+  /* ==============================
+     CUSTOMER
+  ============================== */
+
+  .customerEntering {
+    bottom: 38px;
+
+    width: 370px;
+  }
+
+
+  .customerEntering img {
+    max-height: 370px;
+  }
+
+
+  .customerEntering span:not(.mobileTargetArrow) {
+    display: none;
+  }
+
+
+  .customerSeated {
+    bottom: 16px;
+
+    width: 195px;
+  }
+
+
+  .customerSeated img {
+    max-height: 225px;
+  }
+
+
+  /* ==============================
+     MAKDONG
+  ============================== */
+
+  .character {
+    bottom: 38px;
+
+    width: 300px;
+  }
+
+
+  .characterInner img {
+    max-height: 300px;
+  }
+
+
+  .characterShadow {
+    width: 52px;
+    height: 10px;
+  }
+
+
+  .worldPrompt {
+    display: none;
+  }
+
+
+  /* ==============================
+     DIALOGUE
+  ============================== */
+
+  .dialogueOverlay {
+    padding: 8px;
+
+    align-items: flex-end;
+  }
+
+
+  .dialogueBox {
+    width: 100%;
+    min-height: 0;
+
+    padding:
+      12px;
+
+    grid-template-columns:
+      1fr;
+
+    gap: 8px;
+
+    border-width: 1.5px;
+    border-radius: 13px;
+  }
+
+
+  .dialogueSpeaker {
+    gap: 8px;
+
+    padding:
+      0
+      0
+      8px;
+
+    border-right: 0;
+
+    border-bottom:
+      1px solid
+      rgba(68, 91, 79, 0.14);
+  }
+
+
+  .dialogueAvatar {
+    width: 46px;
+    height: 46px;
+  }
+
+
+  .dialogueSpeaker strong {
+    font-size: 11px;
+  }
+
+
+  .dialogueContent {
+    gap: 8px;
+  }
+
+
+  .dialogueContent p {
+    min-height: 0;
+
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+
+  .dialogueNext {
+    min-width: 88px;
+    height: 34px;
+
+    font-size: 11px;
+  }
+
+
+  /* ==============================
+     CHOICE
+     세 선택지를 한 화면에 가로 배치
+  ============================== */
+
+  .choiceOverlay {
+    padding: 7px;
+
+    align-items: center;
+
+    overflow: hidden;
+  }
+
+
+  .choicePanel {
+    width: 100%;
+    max-height:
+      calc(100% - 10px);
+
+    margin: 0;
+
+    padding:
+      14px
+      9px;
+
+    overflow: hidden;
+
+    border-radius: 15px;
+  }
+
+
+  .choiceHeader > span {
+    font-size: 9px;
+  }
+
+
+  .choiceHeader h2 {
+    margin:
+      5px
+      0
+      8px;
+
+    font-size: 17px;
+    line-height: 1.3;
+  }
+
+
+  .requestTags {
+    gap: 4px;
+  }
+
+
+  .requestTags span {
+    padding:
+      4px
+      8px;
+
+    font-size: 9px;
+  }
+
+
+  .choiceGrid {
+    margin-top: 11px;
+
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+
+    gap: 6px;
+  }
+
+
+  .choiceCard {
+    min-width: 0;
+    min-height: 158px;
+
+    padding:
+      10px
+      5px
+      9px;
+
+    border-radius: 11px;
+  }
+
+
+  .choiceEmoji {
+    font-size: 30px;
+  }
+
+
+  .choiceCard strong {
+    margin-top: 7px;
+
+    max-width: 100%;
+
+    overflow: hidden;
+
+    font-size: 11px;
+    line-height: 1.3;
+
+    text-align: center;
+
+    word-break: keep-all;
+  }
+
+
+  .choiceCard p {
+    min-height: 30px;
+    text-align: center;
+
+    margin:
+      5px
+      0
+      7px;
+
+    overflow: hidden;
+
+    display:
+      -webkit-box;
+
+    -webkit-box-orient:
+      vertical;
+
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+
+    font-size: 9px;
+    line-height: 1.4;
+  }
+
+
+  .choiceSelect {
+    font-size: 8px;
+  }
+
+
+  /* ==============================
+     FEEDBACK POPUP
+     선택 후 팝업을 더 작게
+  ============================== */
+
+  .choicePanelFeedback {
+    width:
+      min(
+        286px,
+        calc(100% - 26px)
+      );
+
+    padding:
+      16px
+      14px;
+
+    border-radius: 15px;
+  }
+
+
+  .feedback {
+    min-height: 0;
+
+    padding:
+      4px
+      0;
+  }
+
+
+  .feedbackGrade {
+    padding:
+      5px
+      9px;
+
+    font-size: 8px;
+  }
+
+
+  .feedbackEmoji {
+    margin-top: 10px;
+
+    font-size: 40px;
+  }
+
+
+  .feedback h2 {
+    margin:
+      6px
+      0
+      2px;
+
+    font-size: 18px;
+  }
+
+
+  .feedback p {
+    max-width: 240px;
+
+    margin:
+      9px
+      auto
+      12px;
+
+    font-size: 10px;
+    line-height: 1.55;
+  }
+
+
+  .feedback button {
+    min-width: 136px;
+    height: 38px;
+
+    font-size: 10px;
+  }
+
+
+  /* ==============================
+     RESULT / CLEAR
+  ============================== */
+
+  .resultOverlay,
+  .clearOverlay {
+    padding: 8px;
+
+    align-items: flex-start;
+
+    overflow-y: auto;
+  }
+
+
+  .resultPanel {
+    width: 100%;
+    height: auto;
+
+    margin:
+      8px
+      0;
+
+    grid-template-columns:
+      1fr;
+
+    border-radius: 15px;
+  }
+
+
+  .resultVisual {
+    min-height: 165px;
+  }
+
+
+  .resultVisualTitle {
+    top: 12px;
+  }
+
+
+  .resultVisual img {
+    width: 64%;
+    max-height: 205px;
+  }
+
+
+  .resultContent {
+    padding:
+      18px
+      16px
+      20px;
+  }
+
+
+  .resultContent h2 {
+    font-size: 20px;
+  }
+
+
+  .tableSetting {
+    gap: 6px;
+  }
+
+
+  .tableSetting > div {
+    min-height: 68px;
+
+    padding: 8px;
+  }
+
+
+  .tableSetting span {
+    font-size: 22px;
+  }
+
+
+  .resultBottom {
+    gap: 12px;
+
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+
+  .resultBottom button {
+    width: 100%;
+    min-width: 0;
+  }
+
+
+  .clearPanel {
+    width: 100%;
+    height: auto;
+
+    margin:
+      8px
+      0;
+
+    grid-template-columns:
+      1fr;
+
+    border-radius: 15px;
+  }
+
+
+  .clearVisual {
+    min-height: 185px;
+
+    padding: 18px;
+  }
+
+
+  .clearVisual img {
+    width: 185px;
+    height: 185px;
+
+    max-width: none;
+  }
+
+
+  .clearContent {
+    padding:
+      18px
+      16px
+      20px;
+  }
+
+
+  .clearContent h2 {
+    font-size: 21px;
+  }
+
+
+  .clearStats > div {
+    padding:
+      9px
+      6px;
+  }
+
+
+  .clearStats strong {
+    font-size: 15px;
+  }
+
+
+  .clearActions {
+    grid-template-columns:
+      1fr;
+
+    gap: 7px;
+  }
+
+
+  .controls {
+    display: none;
+  }
+}
+

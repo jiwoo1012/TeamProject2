@@ -7,6 +7,8 @@
 ======================================== */
 
 .desktopHeader {
+  --desktop-header-height: 76px;
+
   position: relative;
   z-index: $z-header;
 
@@ -27,6 +29,7 @@
   z-index: $z-dropdown + 2;
 
   width: 100%;
+  height: var(--desktop-header-height);
 
   background: transparent;
 
@@ -41,23 +44,17 @@
 
     position: absolute;
 
-    // 한지 이미지 위치
-    top: calc(50% - 22px);
+    top: 0;
     left: 0;
     z-index: 0;
 
     width: 100%;
-
-    // 이거 다시 살려야 함
-    aspect-ratio: 2103 / 748;
+    height: calc(var(--desktop-header-height) + 18px);
 
     background:
       url('../../assets/images/common/header-hanji.webp')
-      center top / 100% auto
+      center 56% / max(100%, 1660px) auto
       no-repeat;
-
-    transform:
-      translateY(-50%);
 
     pointer-events: none;
   }
@@ -74,7 +71,7 @@
   align-items: center;
   justify-content: space-between;
 
-  height: 76px;
+  height: var(--desktop-header-height);
 }
 
 
@@ -101,7 +98,18 @@
     display: block;
 
     width: auto;
-    height: 77px;
+    height:
+      clamp(
+        50px,
+        5vw,
+        77px
+      );
+
+    max-height:
+      calc(
+        var(--desktop-header-height)
+        - 2px
+      );
 
     object-fit: contain;
   }
@@ -259,7 +267,7 @@
 .allMenuBackdrop {
   position: fixed;
 
-  top: 72px;
+  top: var(--desktop-header-height);
   right: 0;
   bottom: 0;
   left: 0;
@@ -295,7 +303,7 @@
 .allMenuDrawer {
   position: fixed;
 
-  top: 72px;
+  top: var(--desktop-header-height);
   bottom: 0;
   left: 0;
   z-index: $z-dropdown + 1;
@@ -742,7 +750,7 @@
   display: flex;
   align-items: center;
 
-  height: 72px;
+  height: var(--desktop-header-height);
 }
 
 
@@ -1063,7 +1071,7 @@
 .searchPanel {
   position: absolute;
 
-  top: 72px;
+  top: var(--desktop-header-height);
   left: 0;
 
   z-index: $z-dropdown + 1;
@@ -1266,7 +1274,7 @@
 
 .megaMenu {
   position: absolute;
-  top: 72px;
+  top: var(--desktop-header-height);
   left: 0;
   z-index: $z-dropdown;
 
@@ -1456,8 +1464,6 @@
   display: inline-flex;
   align-items: center;
 
-  gap: 8px;
-
   margin-top: 24px;
 
   color: $color-text-secondary;
@@ -1465,31 +1471,26 @@
   font-size: 13px;
   font-weight: $font-weight-medium;
 
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
 
   transition:
-    color $transition-fast ease;
-
-
-  span {
-    color: $color-primary;
-
-    transition:
-      transform $transition-fast ease;
-  }
+    color $transition-fast ease,
+    text-decoration-color $transition-fast ease,
+    transform $transition-fast ease;
 
 
   &:hover,
   &:focus-visible {
     color: $color-primary;
 
+    text-decoration-color: currentcolor;
+
+    transform:
+      translateX(2px);
+
     outline: none;
-
-
-    span {
-      transform:
-        translateX(3px);
-    }
   }
 }
 
@@ -1502,13 +1503,15 @@
 .shopCategoryLink {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
 
   min-height: 46px;
 
   padding:
     0
-    15px;
+    15px
+    0
+    18px;
 
   box-sizing: border-box;
 
@@ -1519,84 +1522,61 @@
 
   text-decoration: none;
 
-  border:
-    1px
-    solid
-    transparent;
+  /*
+    왼쪽 초록 바.
+    pseudo-element 대신 background-size를 사용해서
+    다른 selector에 덮이지 않도록 처리.
+  */
+  background-image:
+    linear-gradient(
+      $color-primary,
+      $color-primary
+    );
 
-  border-radius: 8px;
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 5px 0;
+
+  border: 0;
 
   transition:
-    color $transition-fast ease,
-    background $transition-fast ease,
-    border-color $transition-fast ease;
-
-
-  i {
-    color: $color-text-muted;
-
-    font-size: 13px;
-    font-style: normal;
-
-    transition:
-      color $transition-fast ease,
-      transform $transition-fast ease;
-  }
+    color 0.24s ease,
+    padding-left 0.24s ease,
+    background-size 0.24s
+      cubic-bezier(.22, 1, .36, 1);
 
 
   &:hover,
   &:focus-visible {
-    color: #8f4f3e;
+    color: $color-primary;
 
-    background:
-      rgba(193, 103, 78, 0.06);
+    padding-left: 23px;
 
-    border-color:
-      rgba(193, 103, 78, 0.22);
+    background-size: 5px 24px;
 
     outline: none;
-
-
-    i {
-      color: #c1674e;
-
-      transform:
-        translateX(3px);
-    }
   }
 }
 
 
 .snbNavLinkActive,
 .shopCategoryLinkActive {
-  color: #fff;
+  color: $color-primary;
 
-  background: #315d53;
+  font-weight: $font-weight-semibold;
 
-  border-color: #315d53;
+  padding-left: 23px;
 
-
-  i {
-    color:
-      rgba(
-        $color-white,
-        0.88
-      );
-  }
+  background-size: 5px 30px;
 
 
   &:hover,
   &:focus-visible {
-    color: #fff;
+    color: $color-primary;
 
-    background: #294f47;
+    padding-left: 23px;
 
-    border-color: #294f47;
-
-
-    i {
-      color: #fff;
-    }
+    background-size: 5px 30px;
   }
 }
 
@@ -1742,7 +1722,6 @@
 
   gap: 8px;
 
-
   padding:
     28px
     30px;
@@ -1751,16 +1730,26 @@
     1px
     solid
     rgba($color-text-primary, 0.09);
-      .snbNavLink {
+
+
+  .snbNavLink {
+    width: 100%;
+
     font-size: 14px;
   }
 }
 
 
 .aiFeature {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  display: grid;
+
+  grid-template-columns:
+    220px
+    minmax(320px, 1fr);
+
+  align-items: center;
+
+  gap: 34px;
 
   min-height: 180px;
 
@@ -1769,6 +1758,13 @@
     0
     0
     44px;
+}
+
+
+.aiFeatureText {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 
 
   h3 {
@@ -1777,46 +1773,129 @@
       0
       22px;
 
-    font-family: $font-family-display;
+    font-family:
+      $font-family-display;
+
     font-size: 25px;
-    font-weight: $font-weight-semibold;
+    font-weight:
+      $font-weight-semibold;
 
     line-height: 1.5;
   }
+}
 
 
-  a {
-    width: fit-content;
+.aiRecommendLink {
+  width: fit-content;
 
-    display: inline-flex;
-    align-items: center;
+  color: $color-primary;
 
-    gap: 10px;
+  font-size: 14px;
+  font-weight:
+    $font-weight-semibold;
 
+  text-decoration: none;
+
+  transition:
+    color $transition-fast ease,
+    transform $transition-fast ease;
+
+
+  &:hover,
+  &:focus-visible {
+    color: #315d53;
+
+    transform:
+      translateX(3px);
+
+    outline: none;
+  }
+}
+
+
+/* ================================
+   막동이 주막 FEATURE
+================================ */
+
+.tavernFeature {
+  width: 280px;
+  max-width: 100%;
+
+  display: block;
+
+  color: $color-text-primary;
+
+  text-decoration: none;
+}
+
+
+.tavernFeatureImage {
+  width: 100%;
+  height: 130px;
+
+  overflow: hidden;
+
+  border-radius: 12px;
+
+  background: $color-surface;
+
+
+  img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
+
+.tavernFeatureInfo {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: 10px;
+
+
+  strong {
+    font-size: 14px;
+    font-weight:
+      $font-weight-semibold;
+  }
+
+
+  span {
+    color:
+      $color-text-secondary;
+
+    font-size: 12px;
+
+    transition:
+      color $transition-fast ease,
+      transform $transition-fast ease;
+  }
+}
+
+
+.tavernFeature:hover,
+.tavernFeature:focus-visible {
+  outline: none;
+
+
+  .tavernFeatureImage img {
+    transform:
+      scale(1.035);
+  }
+
+
+  .tavernFeatureInfo span {
     color: $color-primary;
 
-    font-size: 14px;
-    font-weight: $font-weight-semibold;
-
-    text-decoration: none;
-
-
-    span {
-      transition:
-        transform $transition-fast ease;
-    }
-
-
-    &:hover,
-    &:focus-visible {
-      outline: none;
-
-
-      span {
-        transform:
-          translateX(4px);
-      }
-    }
+    transform:
+      translateX(3px);
   }
 }
 
@@ -1883,36 +1962,77 @@
   flex-direction: column;
 
   gap: 4px;
+}
 
 
-  a {
-    min-height: 34px;
+.shopDetailLink {
+  display: flex;
+  align-items: center;
 
-    display: flex;
-    align-items: center;
+  width: 100%;
+  min-height: 34px;
 
-    width: fit-content;
+  padding:
+    0
+    8px
+    0
+    0;
 
-    color: $color-text-secondary;
+  box-sizing: border-box;
 
-    font-size: 13px;
+  color: $color-text-secondary;
 
-    text-decoration: none;
+  font-size: 13px;
 
-    transition:
-      color $transition-fast ease,
-      transform $transition-fast ease;
+  text-decoration: none;
+
+  background-image:
+    linear-gradient(
+      $color-primary,
+      $color-primary
+    );
+
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 4px 0;
+
+  transition:
+    color 0.22s ease,
+    padding-left 0.22s ease,
+    background-size 0.22s
+      cubic-bezier(.22, 1, .36, 1);
 
 
-    &:hover,
-    &:focus-visible {
-      color: $color-primary;
+  &:hover,
+  &:focus-visible {
+    color: $color-primary;
 
-      transform:
-        translateX(3px);
+    padding-left: 13px;
 
-      outline: none;
-    }
+    background-size: 4px 22px;
+
+    outline: none;
+  }
+}
+
+
+.shopDetailLinkActive {
+  color: $color-primary;
+
+  font-weight: $font-weight-semibold;
+
+  padding-left: 13px;
+
+  background-size: 4px 24px;
+
+
+  &:hover,
+  &:focus-visible {
+    color: $color-primary;
+
+    padding-left: 13px;
+
+    background-size: 4px 24px;
   }
 }
 
@@ -1921,34 +2041,30 @@
   display: inline-flex;
   align-items: center;
 
-  gap: 8px;
-
   color: $color-text-secondary;
 
-  font-size: 11px;
+  font-size: 13px;
 
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
 
-
-  span {
-    color: $color-primary;
-
-    transition:
-      transform $transition-fast ease;
-  }
+  transition:
+    color $transition-fast ease,
+    text-decoration-color $transition-fast ease,
+    transform $transition-fast ease;
 
 
   &:hover,
   &:focus-visible {
     color: $color-primary;
 
+    text-decoration-color: currentcolor;
+
+    transform:
+      translateX(2px);
+
     outline: none;
-
-
-    span {
-      transform:
-        translateX(3px);
-    }
   }
 }
 
@@ -1985,34 +2101,30 @@
     display: inline-flex;
     align-items: center;
 
-    gap: 7px;
-
     color: $color-text-secondary;
 
     font-size: 13px;
 
-    text-decoration: none;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 4px;
 
-
-    span {
-      color: $color-primary;
-
-      transition:
-        transform $transition-fast ease;
-    }
+    transition:
+      color $transition-fast ease,
+      text-decoration-color $transition-fast ease,
+      transform $transition-fast ease;
 
 
     &:hover,
     &:focus-visible {
       color: $color-primary;
 
+      text-decoration-color: currentcolor;
+
+      transform:
+        translateX(2px);
+
       outline: none;
-
-
-      span {
-        transform:
-          translateX(3px);
-      }
     }
   }
 }
@@ -2143,29 +2255,8 @@
      오른쪽 아이콘이 서로 겹치지 않도록 조정
   ---------------------------------------- */
 
-   .headerInner {
-    &::before {
-      top: calc(50% - 30px);
-
-      left: -5%;
-
-      width: 210%;
-
-      aspect-ratio: 2103 / 748;
-
-      background:
-        url('../../assets/images/common/header-hanji.webp')
-        center top / 100% auto
-        no-repeat;
-
-      transform:
-        translateY(-50%);
-    }
-  }
-
-
   .headerContainer {
-    height: 76px;
+    height: var(--desktop-header-height);
 
     box-sizing: border-box;
 
@@ -2207,7 +2298,7 @@
 
 
   .gnbItem {
-    height: 68px;
+    height: var(--desktop-header-height);
   }
 
 
@@ -2223,14 +2314,7 @@
 
 
     &::after {
-      bottom: 15px;
-    }
-  }
-
-
-  .logo {
-    img {
-      height: 34px;
+      bottom: 17px;
     }
   }
 
@@ -2274,7 +2358,7 @@
 
   .allMenuDrawer,
   .allMenuBackdrop {
-    top: 68px;
+    top: var(--desktop-header-height);
   }
 
 
@@ -2298,7 +2382,7 @@
 
   .megaMenu,
   .searchPanel {
-    top: 68px;
+    top: var(--desktop-header-height);
   }
 
 
@@ -2347,9 +2431,27 @@
 
     padding:
       0
-      12px;
+      12px
+      0
+      16px;
 
     font-size: 12px;
+
+
+    &:hover,
+    &:focus-visible {
+      padding-left: 21px;
+
+      background-size: 5px 22px;
+    }
+  }
+
+
+  .snbNavLinkActive,
+  .shopCategoryLinkActive {
+    padding-left: 21px;
+
+    background-size: 5px 27px;
   }
 
 
@@ -2505,13 +2607,13 @@
 
   .shopDetailLinks {
     gap: 2px;
+  }
 
 
-    a {
-      min-height: 30px;
+  .shopDetailLink {
+    min-height: 30px;
 
-      font-size: 12px;
-    }
+    font-size: 12px;
   }
 
 
@@ -2614,7 +2716,12 @@
 
     .logo {
       img {
-        height: 31px;
+        height:
+          clamp(
+            46px,
+            5.4vw,
+            52px
+          );
       }
     }
 
@@ -2732,7 +2839,7 @@
 
 
 .makdongLink::after {
-  content: '막둥이 소개';
+  content: '막동이 소개';
 
   font-size: 16px;
 }

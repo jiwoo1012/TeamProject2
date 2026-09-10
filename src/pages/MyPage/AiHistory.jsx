@@ -28,6 +28,8 @@ import {
   products,
 } from '../../data/products'
 
+import MyPageHeader from '../../components/mypage/MyPageHeader'
+
 import styles from './AiHistory.module.scss'
 
 
@@ -37,24 +39,23 @@ const FILTERS = [
   '최근 추천',
 ]
 
+
 const PAGE_SIZE = 3
 const RECENT_LIMIT = 5
 
 
 /* ========================================
-   상품 이미지 불러오기
-
-   products 데이터의 imageUrl 파일명과
-   실제 assets 이미지 파일을 연결
+   상품 이미지
 ======================================== */
 
-const productImages = import.meta.glob(
-  '../../assets/images/products/**/*.{png,jpg,jpeg,webp,avif}',
-  {
-    eager: true,
-    import: 'default',
-  }
-)
+const productImages =
+  import.meta.glob(
+    '../../assets/images/products/**/*.{png,jpg,jpeg,webp,avif}',
+    {
+      eager: true,
+      import: 'default',
+    }
+  )
 
 
 const resolveProductImage = (
@@ -64,20 +65,33 @@ const resolveProductImage = (
     return null
   }
 
+
   if (
-    imageUrl.startsWith('http://') ||
-    imageUrl.startsWith('https://') ||
-    imageUrl.startsWith('data:') ||
-    imageUrl.startsWith('blob:')
+    imageUrl.startsWith(
+      'http://'
+    ) ||
+    imageUrl.startsWith(
+      'https://'
+    ) ||
+    imageUrl.startsWith(
+      'data:'
+    ) ||
+    imageUrl.startsWith(
+      'blob:'
+    )
   ) {
     return imageUrl
   }
 
+
   const normalizedUrl =
-    String(imageUrl).replace(
+    String(
+      imageUrl
+    ).replace(
       /\\/g,
       '/'
     )
+
 
   const fileName =
     normalizedUrl
@@ -102,7 +116,9 @@ const resolveProductImage = (
 
 
   if (
-    normalizedUrl.startsWith('/')
+    normalizedUrl.startsWith(
+      '/'
+    )
   ) {
     return normalizedUrl
   }
@@ -113,7 +129,7 @@ const resolveProductImage = (
 
 
 /* ========================================
-   날짜 변환
+   날짜
 ======================================== */
 
 const formatDate = (
@@ -127,11 +143,14 @@ const formatDate = (
   const date =
     timestamp.toDate
       ? timestamp.toDate()
-      : new Date(timestamp)
+      : new Date(
+          timestamp
+        )
 
 
   const year =
     date.getFullYear()
+
 
   const month =
     String(
@@ -140,6 +159,7 @@ const formatDate = (
       2,
       '0'
     )
+
 
   const day =
     String(
@@ -155,7 +175,7 @@ const formatDate = (
 
 
 /* ========================================
-   날짜 비교용 숫자
+   날짜 비교
 ======================================== */
 
 const getCreatedAtMillis = (
@@ -188,7 +208,10 @@ const getCreatedAtMillis = (
         item.createdAt
       ).getTime()
 
-    return Number.isNaN(time)
+
+    return Number.isNaN(
+      time
+    )
       ? 0
       : time
   }
@@ -199,7 +222,7 @@ const getCreatedAtMillis = (
 
 
 /* ========================================
-   오늘 설문 표시 문구
+   설문 라벨
 ======================================== */
 
 const TASTE_LABELS = {
@@ -281,18 +304,16 @@ const FOOD_LABELS = {
 
 
 /* ========================================
-   추천 제목 만들기
-
-   Firestore에는 title이 별도로
-   저장되지 않기 때문에
-   todaySurvey를 이용해 화면용 제목 생성
+   추천 제목
 ======================================== */
 
 const buildHistoryTitle = (
   history
 ) => {
   const survey =
-    history?.todaySurvey || {}
+    history?.todaySurvey ||
+    {}
+
 
   const taste =
     Array.isArray(
@@ -330,7 +351,9 @@ const buildHistoryTitle = (
   }
 
 
-  switch (survey.mood) {
+  switch (
+    survey.mood
+  ) {
     case 'refresh':
       return '기분 전환이 필요한 오늘의 한 상'
 
@@ -347,23 +370,22 @@ const buildHistoryTitle = (
       return '천천히 깊은 풍미를 즐기는 한 상'
 
     default:
-      return '막둥이가 추천한 오늘의 주안상'
+      return '막동이가 추천한 오늘의 주안상'
   }
 }
 
 
 /* ========================================
-   추천 키워드 만들기
-
-   Firestore에는 keywords가 없으므로
-   todaySurvey에서 최대 3개 생성
+   추천 키워드
 ======================================== */
 
 const buildHistoryKeywords = (
   history
 ) => {
   const survey =
-    history?.todaySurvey || {}
+    history?.todaySurvey ||
+    {}
+
 
   const keywords = []
 
@@ -385,6 +407,7 @@ const buildHistoryKeywords = (
           taste
         ]
 
+
       if (label) {
         keywords.push(
           label
@@ -399,6 +422,7 @@ const buildHistoryKeywords = (
       survey.alcohol
     ]
 
+
   if (alcoholLabel) {
     keywords.push(
       alcoholLabel
@@ -411,6 +435,7 @@ const buildHistoryKeywords = (
       survey.mood
     ]
 
+
   if (moodLabel) {
     keywords.push(
       moodLabel
@@ -422,6 +447,7 @@ const buildHistoryKeywords = (
     FOOD_LABELS[
       survey.food
     ]
+
 
   if (foodLabel) {
     keywords.push(
@@ -442,7 +468,7 @@ const buildHistoryKeywords = (
 
 
 /* ========================================
-   AiHistory
+   COMPONENT
 ======================================== */
 
 const AiHistory = () => {
@@ -455,12 +481,14 @@ const AiHistory = () => {
     setRecommendations,
   ] = useState([])
 
+
   const [
     activeFilter,
     setActiveFilter,
   ] = useState(
     '전체'
   )
+
 
   const [
     sort,
@@ -469,10 +497,12 @@ const AiHistory = () => {
     '최신순'
   )
 
+
   const [
     currentPage,
     setCurrentPage,
   ] = useState(1)
+
 
   const [
     loading,
@@ -481,17 +511,16 @@ const AiHistory = () => {
 
 
   /* ========================================
-     상품 ID → 실제 상품 데이터 Map
-
-     liquorId / foodId / glassId로
-     products 데이터에서 상품을 찾음
+     상품 MAP
   ======================================== */
 
   const productMap =
     useMemo(() => {
       return new Map(
         products.map(
-          (product) => [
+          (
+            product
+          ) => [
             String(
               product.productId
             ),
@@ -587,7 +616,7 @@ const AiHistory = () => {
 
 
   /* ========================================
-     Firestore 추천 기록 불러오기
+     추천 기록 불러오기
   ======================================== */
 
   useEffect(() => {
@@ -623,11 +652,8 @@ const AiHistory = () => {
             const recommendationRef =
               collection(
                 db,
-
                 'users',
-
                 currentUser.uid,
-
                 'recommendations'
               )
 
@@ -651,7 +677,9 @@ const AiHistory = () => {
 
             const data =
               snapshot.docs.map(
-                (document) => ({
+                (
+                  document
+                ) => ({
                   id:
                     document.id,
 
@@ -687,7 +715,7 @@ const AiHistory = () => {
 
 
   /* ========================================
-     추천 기록 최신순
+     최신순
   ======================================== */
 
   const latestRecommendations =
@@ -709,7 +737,7 @@ const AiHistory = () => {
 
 
   /* ========================================
-     요약 정보
+     SUMMARY
   ======================================== */
 
   const summaryData =
@@ -757,9 +785,6 @@ const AiHistory = () => {
 
   /* ========================================
      최근 저장한 추천
-
-     isSaved === true인 기록 중
-     최근 2개만 표시
   ======================================== */
 
   const recentRecommendations =
@@ -780,15 +805,14 @@ const AiHistory = () => {
 
 
   /* ========================================
-     필터 + 정렬
+     FILTER + SORT
   ======================================== */
 
   const filteredRecommendations =
     useMemo(() => {
-      let result =
-        [
-          ...recommendations,
-        ]
+      let result = [
+        ...recommendations,
+      ]
 
 
       if (
@@ -810,6 +834,7 @@ const AiHistory = () => {
             getCreatedAtMillis(
               a
             )
+
 
           const bDate =
             getCreatedAtMillis(
@@ -840,23 +865,22 @@ const AiHistory = () => {
         activeFilter ===
         '최근 추천'
       ) {
-        const recent =
-          [
-            ...recommendations,
-          ]
-            .sort(
-              (a, b) =>
-                getCreatedAtMillis(
-                  b
-                ) -
-                getCreatedAtMillis(
-                  a
-                )
-            )
-            .slice(
-              0,
-              RECENT_LIMIT
-            )
+        const recent = [
+          ...recommendations,
+        ]
+          .sort(
+            (a, b) =>
+              getCreatedAtMillis(
+                b
+              ) -
+              getCreatedAtMillis(
+                a
+              )
+          )
+          .slice(
+            0,
+            RECENT_LIMIT
+          )
 
 
         if (
@@ -881,7 +905,7 @@ const AiHistory = () => {
 
 
   /* ========================================
-     페이지네이션
+     PAGINATION
   ======================================== */
 
   const totalPages =
@@ -927,8 +951,23 @@ const AiHistory = () => {
   ])
 
 
+  useEffect(() => {
+    if (
+      currentPage >
+      totalPages
+    ) {
+      setCurrentPage(
+        totalPages
+      )
+    }
+  }, [
+    currentPage,
+    totalPages,
+  ])
+
+
   /* ========================================
-     상세 보기
+     DETAIL
   ======================================== */
 
   const handleDetail = (
@@ -941,7 +980,7 @@ const AiHistory = () => {
 
 
   /* ========================================
-     로딩
+     LOADING
   ======================================== */
 
   if (loading) {
@@ -956,12 +995,27 @@ const AiHistory = () => {
             styles.contentCard
           }
         >
+          <MyPageHeader
+            title="AI 추천 기록"
+          />
+
+
           <div
             className={
               styles.loadingState
             }
+            role="status"
           >
-            추천 기록을 불러오는 중입니다.
+            <span
+              className={
+                styles.loadingSpinner
+              }
+              aria-hidden="true"
+            />
+
+            <strong>
+              추천 기록을 불러오는 중입니다.
+            </strong>
           </div>
         </div>
       </div>
@@ -981,24 +1035,18 @@ const AiHistory = () => {
         }
       >
 
-        {/* ========================================
-            제목
-        ======================================== */}
+        {/* =========================
+            HEADER
+        ========================= */}
 
-        <header
-          className={
-            styles.pageHeader
-          }
-        >
-          <h1>
-            AI 추천 기록
-          </h1>
-        </header>
+        <MyPageHeader
+          title="AI 추천 기록"
+        />
 
 
-        {/* ========================================
-            추천 요약
-        ======================================== */}
+        {/* =========================
+            SUMMARY
+        ========================= */}
 
         <section
           className={
@@ -1017,32 +1065,28 @@ const AiHistory = () => {
               >
                 <span
                   className={
-                    styles.summaryIcon
-                  }
-                />
-
-                <div
-                  className={
-                    styles.summaryText
+                    styles.summaryLabel
                   }
                 >
-                  <span>
-                    {item.label}
-                  </span>
+                  {
+                    item.label
+                  }
+                </span>
 
-                  <strong>
-                    {item.value}
-                  </strong>
-                </div>
+                <strong>
+                  {
+                    item.value
+                  }
+                </strong>
               </div>
             )
           )}
         </section>
 
 
-        {/* ========================================
-            최근 저장한 추천
-        ======================================== */}
+        {/* =========================
+            RECENT SAVED
+        ========================= */}
 
         <section
           className={
@@ -1136,16 +1180,15 @@ const AiHistory = () => {
                           }
                         </strong>
 
+
                         <span
                           className={
                             styles.recentDate
                           }
                         >
-                          {
-                            formatDate(
-                              item.createdAt
-                            )
-                          }
+                          {formatDate(
+                            item.createdAt
+                          )}
                         </span>
 
 
@@ -1177,6 +1220,7 @@ const AiHistory = () => {
                         className={
                           styles.arrow
                         }
+                        aria-hidden="true"
                       >
                         ›
                       </span>
@@ -1197,9 +1241,9 @@ const AiHistory = () => {
         </section>
 
 
-        {/* ========================================
-            추천받은 주안상 목록
-        ======================================== */}
+        {/* =========================
+            HISTORY
+        ========================= */}
 
         <section
           className={
@@ -1208,51 +1252,12 @@ const AiHistory = () => {
         >
           <div
             className={
-              styles.historyTop
+              styles.historyHeader
             }
           >
-            <div>
-              <h2>
-                추천받은 주안상 목록
-              </h2>
-
-
-              <div
-                className={
-                  styles.filters
-                }
-              >
-                {FILTERS.map(
-                  (
-                    filter
-                  ) => (
-                    <button
-                      key={
-                        filter
-                      }
-                      type="button"
-                      className={`${
-                        styles.filterButton
-                      } ${
-                        activeFilter ===
-                        filter
-                          ? styles.activeFilter
-                          : ''
-                      }`}
-                      onClick={() =>
-                        setActiveFilter(
-                          filter
-                        )
-                      }
-                    >
-                      {
-                        filter
-                      }
-                    </button>
-                  )
-                )}
-              </div>
-            </div>
+            <h2>
+              추천받은 주안상 목록
+            </h2>
 
 
             <select
@@ -1266,9 +1271,7 @@ const AiHistory = () => {
                 event
               ) =>
                 setSort(
-                  event
-                    .target
-                    .value
+                  event.target.value
                 )
               }
             >
@@ -1286,6 +1289,71 @@ const AiHistory = () => {
             </select>
           </div>
 
+
+          {/* =========================
+              FILTER
+          ========================= */}
+
+          <div
+            className={
+              styles.filters
+            }
+          >
+            {FILTERS.map(
+              (filter) => (
+                <button
+                  key={
+                    filter
+                  }
+                  type="button"
+                  className={`${styles.filterButton} ${
+                    activeFilter ===
+                    filter
+                      ? styles.activeFilter
+                      : ''
+                  }`}
+                  onClick={() =>
+                    setActiveFilter(
+                      filter
+                    )
+                  }
+                >
+                  {
+                    filter
+                  }
+                </button>
+              )
+            )}
+          </div>
+
+
+          {/* =========================
+              COUNT
+          ========================= */}
+
+          {filteredRecommendations.length >
+            0 && (
+            <div
+              className={
+                styles.listCount
+              }
+            >
+              총{' '}
+
+              <strong>
+                {
+                  filteredRecommendations.length
+                }
+              </strong>
+
+              건
+            </div>
+          )}
+
+
+          {/* =========================
+              LIST
+          ========================= */}
 
           <div
             className={
@@ -1331,12 +1399,11 @@ const AiHistory = () => {
                     )
 
 
-                  const historyProducts =
-                    [
-                      liquor,
-                      food,
-                      glass,
-                    ]
+                  const historyProducts = [
+                    liquor,
+                    food,
+                    glass,
+                  ]
 
 
                   return (
@@ -1388,11 +1455,9 @@ const AiHistory = () => {
                           }
                         >
                           <span>
-                            {
-                              formatDate(
-                                history.createdAt
-                              )
-                            }
+                            {formatDate(
+                              history.createdAt
+                            )}
                           </span>
 
                           <strong>
@@ -1404,8 +1469,6 @@ const AiHistory = () => {
                           </strong>
                         </div>
 
-
-                        {/* 첫 번째 추천 주안상 */}
 
                         <div
                           className={
@@ -1474,7 +1537,7 @@ const AiHistory = () => {
                       </div>
 
 
-                      {/* 상세 보기 */}
+                      {/* 상세 */}
 
                       <button
                         type="button"
@@ -1489,7 +1552,9 @@ const AiHistory = () => {
                       >
                         상세 보기
 
-                        <span>
+                        <span
+                          aria-hidden="true"
+                        >
                           ›
                         </span>
                       </button>
@@ -1513,22 +1578,22 @@ const AiHistory = () => {
         </section>
 
 
-        {/* ========================================
-            페이지네이션
-        ======================================== */}
+        {/* =========================
+            PAGINATION
+        ========================= */}
 
         {filteredRecommendations.length >
           PAGE_SIZE && (
-          <div
+          <nav
             className={
               styles.pagination
             }
+            aria-label="AI 추천 기록 페이지"
           >
             <button
               type="button"
               disabled={
-                currentPage ===
-                1
+                currentPage === 1
               }
               onClick={() =>
                 setCurrentPage(
@@ -1536,9 +1601,7 @@ const AiHistory = () => {
                     prev
                   ) =>
                     Math.max(
-                      prev -
-                        1,
-
+                      prev - 1,
                       1
                     )
                 )
@@ -1554,13 +1617,11 @@ const AiHistory = () => {
                 length:
                   totalPages,
               },
-
               (
                 _,
                 index
               ) =>
-                index +
-                1
+                index + 1
             ).map(
               (
                 page
@@ -1582,9 +1643,7 @@ const AiHistory = () => {
                     )
                   }
                 >
-                  {
-                    page
-                  }
+                  {page}
                 </button>
               )
             )}
@@ -1602,9 +1661,7 @@ const AiHistory = () => {
                     prev
                   ) =>
                     Math.min(
-                      prev +
-                        1,
-
+                      prev + 1,
                       totalPages
                     )
                 )
@@ -1613,8 +1670,9 @@ const AiHistory = () => {
             >
               ›
             </button>
-          </div>
+          </nav>
         )}
+
       </div>
     </div>
   )
