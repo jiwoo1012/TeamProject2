@@ -709,7 +709,6 @@ const MyHome = () => {
           <div className={styles.sectionHeading}>
             <div>
               <h3 id="home-taste-title">나의 취향 분석</h3>
-              <p>취향 설문에서 알려주신 나으리의 입맛이에요.</p>
             </div>
           </div>
           {hasPreference ? (
@@ -768,11 +767,6 @@ const MyHome = () => {
                 최근 주문
               </h3>
 
-              <p>
-                최근 구매한 상품과
-                배송 상태를 확인할 수
-                있어요
-              </p>
             </div>
 
 
@@ -935,9 +929,6 @@ const MyHome = () => {
                 AI 추천
               </h3>
 
-              <p>
-                저장해 둔 나으리의 주안상을 다시 만나보세요.
-              </p>
             </div>
             <Link to="ai-history" className={styles.moreLink}>추천 기록 전체 보기 ›</Link>
           </div>
