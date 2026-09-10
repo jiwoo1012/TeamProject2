@@ -28,6 +28,107 @@ import { cancelSavedRecommendation } from '../../services/recommendationApi'
 import styles from './MyHome.module.scss'
 
 
+/* =========================
+   상품 이미지
+   - 기존 주문 데이터에 .png가 남아 있어도
+     현재 .webp 파일을 확장자와 무관하게 찾아줍니다.
+========================= */
+
+const productImages = import.meta.glob(
+  '../../assets/images/products/**/*.{webp,png,jpg,jpeg,avif}',
+  {
+    eager: true,
+    import: 'default',
+  }
+)
+
+const normalizeImageFileName = (value = '') => {
+  const normalizedPath = String(value)
+    .split('?')[0]
+    .split('#')[0]
+    .replace(/\\/g, '/')
+
+  const fileName =
+    normalizedPath
+      .split('/')
+      .pop() || ''
+
+  try {
+    return decodeURIComponent(fileName).toLowerCase()
+  } catch {
+    return fileName.toLowerCase()
+  }
+}
+
+const removeImageExtension = (fileName = '') =>
+  fileName.replace(/\.[^.]+$/, '')
+
+const productImageEntries =
+  Object.entries(productImages).map(
+    ([path, src]) => {
+      const fileName =
+        normalizeImageFileName(path)
+
+      return {
+        src,
+        fileName,
+        stem:
+          removeImageExtension(
+            fileName
+          ),
+      }
+    }
+  )
+
+const resolveProductImage = (imageUrl) => {
+  if (!imageUrl) return ''
+
+  const rawUrl =
+    String(imageUrl).trim()
+
+  if (
+    /^(https?:\/\/|data:|blob:)/i.test(
+      rawUrl
+    )
+  ) {
+    return rawUrl
+  }
+
+  const targetFileName =
+    normalizeImageFileName(
+      rawUrl
+    )
+
+  if (!targetFileName) {
+    return ''
+  }
+
+  const exactMatch =
+    productImageEntries.find(
+      (image) =>
+        image.fileName ===
+        targetFileName
+    )
+
+  if (exactMatch) {
+    return exactMatch.src
+  }
+
+  const targetStem =
+    removeImageExtension(
+      targetFileName
+    )
+
+  const stemMatch =
+    productImageEntries.find(
+      (image) =>
+        image.stem === targetStem
+    )
+
+  return stemMatch?.src || ''
+}
+
+
 const formatNumber = (value) =>
   new Intl.NumberFormat('ko-KR').format(value)
 
@@ -835,10 +936,12 @@ const MyHome = () => {
                         styles.productThumb
                       }
                     >
-                      {order.imageUrl ? (
+                      {resolveProductImage(order.imageUrl) ? (
                         <img
                           src={
-                            order.imageUrl
+                            resolveProductImage(
+                              order.imageUrl
+                            )
                           }
                           alt=""
                         />
