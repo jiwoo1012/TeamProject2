@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
+import { PATHS } from '../../routes/paths'
 import { collection, doc, getDoc, onSnapshot } from 'firebase/firestore'
 
 import { auth, db } from '../../firebase/firebase'
@@ -491,7 +492,7 @@ const DesktopHeader = () => {
       closeMegaMenu()
       setIsAllMenuOpen(false)
 
-      navigate('/')
+      navigate(PATHS.home, { state: { skipJourney: true, resetMainAfterLogout: true } })
     } catch (error) {
       console.error(
         '로그아웃 실패:',
