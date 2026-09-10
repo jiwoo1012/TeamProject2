@@ -21,6 +21,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 import app from '../../firebase/firebase'
+import { PATHS } from '../../routes/paths'
 
 import {
   foods,
@@ -272,6 +273,10 @@ const AiResult = () => {
     recommendationResponse,
     setRecommendationResponse,
   ] = useState(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isSaved, setIsSaved] = useState(false)
+  const [saveMessage, setSaveMessage] = useState('')
+  const saveInFlightRef = useRef(false)
 
   const [
     isLoading,
@@ -518,14 +523,39 @@ const AiResult = () => {
 
 
   const handleSaveTable =
-    () => {
-      if (!currentResult) {
+    async () => {
+      if (!currentResult || saveInFlightRef.current || isSaved) return
+      if (surveyType !== 'member') {
+        setSaveMessage('로그인 후 회원 추천을 받으면 마이페이지에 저장할 수 있어요.')
         return
       }
-      console.log(
-        '주안상 저장:',
-        currentResult.tableId
-      )
+      const recommendationId = recommendationResponse?.recommendationId
+      if (!recommendationId) {
+        setSaveMessage('추천 기록을 확인할 수 없어요. 추천을 다시 받은 후 저장해주세요.')
+        return
+      }
+      saveInFlightRef.current = true
+      setIsSaving(true)
+      setSaveMessage('')
+      try {
+        await httpsCallable(functions, 'saveJajakRecommendation')({ recommendationId })
+        setIsSaved(true)
+        setSaveMessage('주안상 3개를 마이페이지의 저장한 추천에 담았어요.')
+      } catch (error) {
+        console.error('추천 결과 저장 실패:', error.code, error.message)
+        const saveErrors = {
+          'functions/unauthenticated': '로그인이 필요해요. 로그인 상태를 확인해주세요.',
+          'functions/permission-denied': '회원 상태를 확인할 수 없어 저장하지 못했어요. 로그인 상태를 확인해주세요.',
+          'functions/not-found': '추천 기록을 찾을 수 없어요. 새 추천을 받은 후 저장해주세요.',
+          'functions/unavailable': '저장 서버에 연결하지 못했어요. 잠시 후 저장 버튼을 다시 눌러주세요.',
+          'functions/deadline-exceeded': '서버 응답이 늦어지고 있어요. 저장 버튼을 다시 눌러주세요.',
+          'functions/internal': '저장 요청을 처리하지 못했어요. 잠시 후 다시 시도해주세요.',
+        }
+        setSaveMessage(saveErrors[error.code] || '저장하지 못했어요. 잠시 후 다시 시도해주세요.')
+      } finally {
+        saveInFlightRef.current = false
+        setIsSaving(false)
+      }
     }
 
 
@@ -1400,7 +1430,7 @@ const AiResult = () => {
               styles.compositionFooter
             }
           >
-            <button
+            {!isSaved && <button
               type="button"
               className={
                 styles.saveButton
@@ -1408,9 +1438,25 @@ const AiResult = () => {
               onClick={
                 handleSaveTable
               }
+              disabled={isSaving || isSaved}
+              aria-busy={isSaving}
             >
-              이 주안상 저장하기
-            </button>
+              {isSaving ? '저장 중…' : isSaved ? '저장 완료' : '추천 결과 저장하기'}
+            </button>}
+            {!isSaved && saveMessage && <p className={styles.saveFeedback} role="status">{saveMessage}</p>}
+            {isSaved && (
+              <div className={styles.savedPanel}>
+                <span className={styles.savedIcon} aria-hidden="true">✓</span>
+                <div className={styles.savedCopy} role="status">
+                  <strong>오늘의 주안상을 담았어요</strong>
+                  <p>추천받은 주안상 3개는 마이페이지에서 다시 볼 수 있어요.</p>
+                </div>
+                <button type="button" className={styles.savedLink}
+                  onClick={() => navigate(`${PATHS.mypage}/ai-history`)}>
+                  마이페이지에서 보기 <span aria-hidden="true">→</span>
+                </button>
+              </div>
+            )}
           </div>
 
 
