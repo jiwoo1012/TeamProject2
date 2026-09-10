@@ -1,0 +1,119 @@
+@use '../../styles/variables' as *;
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: $space-5;
+  background: rgba($color-text-primary, .55);
+  overscroll-behavior: contain;
+  overflow-y: auto;
+  animation: popupBackdropIn 320ms ease both;
+}
+
+.popupGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-6;
+  width: 100%;
+  min-height: 0;
+  margin-block: auto;
+}
+
+.popup {
+  width: min(100%, 720px);
+  max-height: calc(100dvh - #{$space-10});
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: $radius-lg;
+  background: $color-bg;
+  color: $color-text-primary;
+  font-family: $font-family-base;
+  animation: popupIn 350ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes popupBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popupIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop, .popup { animation: none; }
+}
+
+.imageArea {
+  min-height: 0;
+  overflow: auto;
+  img { display: block; width: 100%; height: auto; }
+}
+
+.actions {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  button {
+    min-height: 44px;
+    padding: $space-2;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: $font-size-sm;
+    cursor: pointer;
+    &:focus-visible { outline: 2px solid $color-primary; outline-offset: -2px; }
+  }
+}
+
+@media (min-width: $breakpoint-tablet-min) {
+  .popup {
+    // Preserve the 1037 × 1385 artwork, reserving 60px for the controls.
+    width: min(100%, 480px, calc((82dvh - 60px) * 1037 / 1385));
+    max-height: 82dvh;
+  }
+
+  .imageArea {
+    flex-shrink: 0;
+    overflow: visible;
+  }
+}
+
+@media (min-width: $breakpoint-desktop-min) {
+  .backdrop {
+    // Header: 76px body + 18px paper edge + 20px breathing room.
+    --popup-top: 114px;
+    place-items: start;
+    padding: var(--popup-top) $space-10 $space-5;
+  }
+
+  .popup {
+    width: min(380px, calc((100dvh - var(--popup-top) - #{$space-5} - 60px) * 1066 / 1476));
+    max-height: calc(100dvh - var(--popup-top) - #{$space-5});
+  }
+
+  .popup[data-popup-id='event2'] {
+    // Match the first image's height while preserving the second image's ratio.
+    width: calc(min(380px, (100dvh - var(--popup-top) - #{$space-5} - 60px) * 1066 / 1476) * 1385 / 1037 * 1066 / 1476);
+  }
+
+  .popupGroup {
+    flex-direction: row;
+    align-items: flex-start;
+    margin-block: 0;
+  }
+
+  .actions {
+    padding-inline: $space-2;
+    button { font-size: $font-size-xs; padding-inline: $space-1; }
+  }
+}

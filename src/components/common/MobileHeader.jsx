@@ -264,6 +264,34 @@ const MobileHeader = () => {
             </Link>
           </div>
 
+          {/* 고객센터 */}
+          <div className={styles.menuGroup}>
+            <button
+              type="button"
+              className={styles.menuTitle}
+              onClick={() => toggleAccordion('customerService')}
+            >
+              <span>고객센터</span>
+              <span className={styles.arrow}>{openAccordion === 'customerService' ? '−' : '+'}</span>
+            </button>
+
+            <div
+              className={`${styles.subMenu} ${openAccordion === 'customerService' ? styles.subMenuOpen : ''}`}
+            >
+              <div className={styles.subMenuInner}>
+                <Link to="/faq" onClick={closeMenu} className={styles.subMenuLink}>
+                  자주 묻는 질문
+                </Link>
+                <Link to="/inquiry" onClick={closeMenu} className={styles.subMenuLink}>
+                  1:1 문의하기
+                </Link>
+                <Link to="/notices" onClick={closeMenu} className={styles.subMenuLink}>
+                  공지사항
+                </Link>
+              </div>
+            </div>
+          </div>
+
           {/* 마이 자작 */}
           <div className={styles.menuGroup}>
             <button

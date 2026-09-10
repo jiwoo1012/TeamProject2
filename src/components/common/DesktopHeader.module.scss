@@ -1901,6 +1901,42 @@
 
 
 /* ========================================
+   고객센터 MEGA MENU
+   (title + SNB only — no feature panel, since
+   there are just 3 support links to show)
+======================================== */
+
+.customerServiceMegaContainer {
+  display: grid;
+
+  grid-template-columns:
+    190px
+    minmax(240px, 320px);
+
+  align-items: stretch;
+}
+
+
+.customerServiceSnb {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  padding:
+    28px
+    30px;
+
+
+  .snbNavLink {
+    width: 100%;
+
+    font-size: 14px;
+  }
+}
+
+
+/* ========================================
    SHOP MEGA MENU
 ======================================== */
 
@@ -2543,6 +2579,35 @@
     }
   }
 
+
+  /* ----------------------------------------
+     고객센터 MEGA MENU
+  ---------------------------------------- */
+
+  .customerServiceMegaContainer {
+    grid-template-columns:
+      135px
+      minmax(200px, 260px);
+  }
+
+
+  .customerServiceSnb {
+    gap: 7px;
+
+    padding:
+      22px
+      18px;
+
+
+    .snbNavLink {
+      font-size: 13px;
+    }
+  }
+
+
+  /* ----------------------------------------
+     AI MEGA MENU (feature panel)
+  ---------------------------------------- */
 
   .aiFeature {
     min-height: 164px;
