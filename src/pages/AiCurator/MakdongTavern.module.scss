@@ -1,12 +1,3 @@
-@font-face {
-  font-family: 'JS Arirang HON';
-  src: url('../assets/fonts/JSArirangHON.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-
 /* ========================================
    PAGE
 ======================================== */
@@ -2205,3 +2196,1182 @@
     left: 12px;
   }
 }
+
+/* ========================================
+   MOBILE - MAKDONG TAVERN
+   Desktop styles above remain untouched.
+======================================== */
+
+@media (max-width: 767px) {
+  .page {
+    width: 100%;
+    height: auto;
+    min-height: calc(100dvh - 64px);
+
+    padding:
+      10px
+      12px
+      18px;
+
+    align-items: flex-start;
+
+    overflow: visible;
+
+    box-sizing: border-box;
+  }
+
+
+  /* ==============================
+     INTRO
+  ============================== */
+
+  .intro {
+    width: 100%;
+    height: auto;
+
+    min-height:
+      calc(
+        100dvh -
+        64px -
+        88px -
+        28px
+      );
+
+    padding:
+      28px
+      18px
+      30px;
+
+    justify-content: flex-start;
+
+    overflow: visible;
+
+    border-radius: 20px;
+  }
+
+
+  .introMakdong {
+    width: 118px;
+    height: 118px;
+
+    max-width: none;
+
+    margin:
+      0
+      0
+      8px;
+
+    flex-shrink: 0;
+  }
+
+
+  .intro h1 {
+    max-width: 330px;
+
+    font-size:
+      clamp(
+        34px,
+        10.5vw,
+        42px
+      );
+
+    line-height: 1.28;
+
+    word-break: keep-all;
+  }
+
+
+  .intro p {
+    max-width: 305px;
+
+    margin:
+      16px
+      0
+      0;
+
+    font-size: 14px;
+    line-height: 1.72;
+
+    word-break: keep-all;
+  }
+
+
+  .introMission {
+    margin-top: 18px;
+
+    padding:
+      9px
+      13px;
+
+    gap: 8px;
+
+    font-size: 12px;
+  }
+
+
+  .startButton {
+    min-width: 190px;
+    height: 48px;
+
+    margin-top: 18px;
+
+    padding:
+      0
+      26px;
+
+    font-size: 15px;
+  }
+
+
+  /* ==============================
+     GAME SHELL / HUD
+  ============================== */
+
+  .gameShell {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    box-shadow:
+      0 12px 34px
+      rgba(47, 66, 56, 0.08);
+  }
+
+
+  .gameHud {
+    flex:
+      0
+      0
+      56px;
+
+    padding:
+      0
+      14px;
+  }
+
+
+  .gameHud > strong {
+    font-size: 18px;
+    line-height: 1;
+
+    white-space: nowrap;
+  }
+
+
+  .hudStatus {
+    gap: 5px;
+  }
+
+
+  .hudStatus span {
+    padding:
+      7px
+      9px;
+
+    font-size: 10px;
+
+    white-space: nowrap;
+  }
+
+
+  /* ==============================
+     MOBILE WORLD
+  ============================== */
+
+  .viewport {
+    position: relative;
+
+    flex:
+      0
+      0
+      clamp(
+        500px,
+        63dvh,
+        540px
+      );
+
+    width: 100%;
+    height:
+      clamp(
+        500px,
+        63dvh,
+        540px
+      );
+
+    min-height: 500px;
+
+    overflow: hidden;
+
+    border-radius:
+      0
+      0
+      18px
+      18px;
+
+    background: #422a1b;
+
+    touch-action: manipulation;
+  }
+
+
+  .world {
+    height: 100%;
+
+    background-size:
+      auto
+      100%;
+
+    background-position:
+      left
+      bottom;
+
+    background-repeat:
+      repeat-x;
+
+    user-select: none;
+
+    cursor: pointer;
+  }
+
+
+  /* ==============================
+     QUEST
+     화면을 덜 가리도록 최소화
+  ============================== */
+
+  .questCard {
+    top: 9px;
+    left: 9px;
+
+    width:
+      min(
+        184px,
+        calc(100% - 18px)
+      );
+
+    padding:
+      7px
+      8px
+      7px;
+
+    border-radius: 9px;
+
+    pointer-events: none;
+
+    box-shadow:
+      0 6px 14px
+      rgba(52, 35, 22, 0.13);
+  }
+
+
+  .questCard::before {
+    width: 3px;
+  }
+
+
+  .questCardTop {
+    margin-bottom: 3px;
+  }
+
+
+  .questBadge {
+    padding:
+      2px
+      5px;
+
+    font-size: 7px;
+
+    border-radius: 3px;
+  }
+
+
+  .questCount {
+    font-size: 8px;
+  }
+
+
+  .questTitle {
+    font-size: 11px;
+    line-height: 1.3;
+
+    word-break: keep-all;
+  }
+
+
+  .questDescription {
+    display: none;
+  }
+
+
+  .questProgress {
+    margin-top: 5px;
+
+    gap: 3px;
+  }
+
+
+  .questProgress span {
+    height: 2px;
+  }
+
+
+  /* ==============================
+     FIRST MOVE GUIDE
+  ============================== */
+
+  .mobileTutorialHint {
+    position: absolute;
+
+    z-index: 44;
+
+    left: 50%;
+    bottom: 20px;
+
+    transform:
+      translateX(-50%);
+
+    width:
+      max-content;
+    max-width:
+      calc(100% - 30px);
+
+    padding:
+      7px
+      10px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    box-sizing: border-box;
+
+    border:
+      1px solid
+      rgba(255, 255, 255, 0.22);
+
+    border-radius: 999px;
+
+    color: #fff;
+
+    background:
+      rgba(40, 55, 47, 0.78);
+
+    box-shadow:
+      0 6px 18px
+      rgba(26, 34, 29, 0.2);
+
+    backdrop-filter:
+      blur(6px);
+
+    pointer-events: none;
+  }
+
+
+  .mobileTutorialText {
+    font-size: 9px;
+    font-weight: 700;
+
+    white-space: nowrap;
+  }
+
+
+  .mobileMoveArrow {
+  display: inline-block;
+
+  margin-left: 6px;
+
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+
+  color: #527864;
+
+  animation:
+    mobileMoveArrow 0.8s
+    ease-in-out
+    infinite
+    alternate;
+}
+
+@keyframes mobileMoveArrow {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(8px);
+  }
+}
+
+
+  @keyframes mobileTutorialArrowMove {
+    from {
+      transform:
+        translateX(-2px);
+    }
+
+    to {
+      transform:
+        translateX(7px);
+    }
+  }
+
+
+  /* ==============================
+     SIGN BOARDS
+     모바일에서는 장식만 유지
+  ============================== */
+
+  .signBoard {
+    top: 16px;
+
+    width: 102px;
+
+    pointer-events: none;
+  }
+
+
+  .signBoard[data-mobile-target='true'] {
+    pointer-events: none;
+  }
+
+
+  .signActive {
+    animation: none;
+
+    filter: none;
+
+    opacity: 0.92;
+
+    transform:
+      translateX(-50%);
+  }
+
+
+  /* ==============================
+     WORLD TARGET ICON
+     술 곶간 / 주방 / 잔 진열대
+  ============================== */
+
+  .mobileWorldTarget {
+    position: absolute;
+
+    z-index: 32;
+
+    width: 72px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transform:
+      translate(
+        -50%,
+        -50%
+      );
+
+    border: 0;
+
+    color: inherit;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    pointer-events: auto;
+
+    -webkit-tap-highlight-color:
+      transparent;
+  }
+
+
+  .mobileWorldTargetFloat {
+    width: 200px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 0px;
+
+    animation:
+      mobileWorldTargetFloat
+      0.72s
+      ease-in-out
+      infinite
+      alternate;
+  }
+
+
+  .mobileWorldTargetFloat img {
+    display: block;
+
+    width: 200px;
+    height: 200px;
+
+    object-fit: contain;
+
+    filter:
+      drop-shadow(
+        0 7px 8px
+        rgba(45, 28, 17, 0.24)
+      );
+
+    user-select: none;
+
+    pointer-events: none;
+  }
+
+
+  .mobileWorldTargetFloat > span {
+     margin-top: -50px;
+    padding:
+      3px
+      7px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    color: #405c4d;
+
+    background:
+      rgba(255, 251, 239, 0.95);
+
+    box-shadow:
+      0 3px 8px
+      rgba(50, 35, 22, 0.12);
+
+    white-space: nowrap;
+  }
+
+
+  .mobileWorldTarget:active
+  .mobileWorldTargetFloat {
+    transform:
+      scale(0.94);
+  }
+
+
+  @keyframes mobileWorldTargetFloat {
+    from {
+      transform:
+        translateY(-5px);
+    }
+
+    to {
+      transform:
+        translateY(7px);
+    }
+  }
+
+
+  /* ==============================
+     CUSTOMER TARGET
+     손님만 기존 화살표 사용
+  ============================== */
+
+  .customer {
+    pointer-events: none;
+  }
+
+
+  .customer[data-mobile-target='true'] {
+    pointer-events: auto;
+
+    cursor: pointer;
+  }
+
+
+  .customer[data-mobile-target='true'] img {
+    pointer-events: auto;
+  }
+
+
+  .mobileTargetArrow {
+  position: absolute;
+
+  z-index: 30;
+
+  top: -14px;
+  left: 50%;
+
+  width: auto;
+  height: auto;
+
+  margin: 0;
+  padding: 0;
+
+  transform:
+    translateX(-50%);
+
+  border: 0;
+
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+
+  color: #f3df91;
+
+  background: transparent;
+
+  filter:
+    drop-shadow(
+      0 2px 2px
+      rgba(55, 41, 23, 0.28)
+    );
+
+  animation:
+    mobileTargetBlink
+    0.75s
+    ease-in-out
+    infinite
+    alternate;
+
+  pointer-events: auto;
+}
+
+.mobileTargetArrow::before {
+  content: '▼';
+}
+
+
+  .customer .mobileTargetArrow {
+    top: 10px;
+  }
+
+
+  @keyframes mobileTargetBlink {
+    from {
+      opacity: 0.58;
+
+      transform:
+        translateX(-50%)
+        translateY(-2px);
+    }
+
+    to {
+      opacity: 1;
+
+      transform:
+        translateX(-50%)
+        translateY(6px);
+    }
+  }
+
+
+  /* ==============================
+     CUSTOMER
+  ============================== */
+
+  .customerEntering {
+    bottom: 38px;
+
+    width: 370px;
+  }
+
+
+  .customerEntering img {
+    max-height: 370px;
+  }
+
+
+  .customerEntering span:not(.mobileTargetArrow) {
+    display: none;
+  }
+
+
+  .customerSeated {
+    bottom: 16px;
+
+    width: 195px;
+  }
+
+
+  .customerSeated img {
+    max-height: 225px;
+  }
+
+
+  /* ==============================
+     MAKDONG
+  ============================== */
+
+  .character {
+    bottom: 38px;
+
+    width: 300px;
+  }
+
+
+  .characterInner img {
+    max-height: 300px;
+  }
+
+
+  .characterShadow {
+    width: 52px;
+    height: 10px;
+  }
+
+
+  .worldPrompt {
+    display: none;
+  }
+
+
+  /* ==============================
+     DIALOGUE
+  ============================== */
+
+  .dialogueOverlay {
+    padding: 8px;
+
+    align-items: flex-end;
+  }
+
+
+  .dialogueBox {
+    width: 100%;
+    min-height: 0;
+
+    padding:
+      12px;
+
+    grid-template-columns:
+      1fr;
+
+    gap: 8px;
+
+    border-width: 1.5px;
+    border-radius: 13px;
+  }
+
+
+  .dialogueSpeaker {
+    gap: 8px;
+
+    padding:
+      0
+      0
+      8px;
+
+    border-right: 0;
+
+    border-bottom:
+      1px solid
+      rgba(68, 91, 79, 0.14);
+  }
+
+
+  .dialogueAvatar {
+    width: 46px;
+    height: 46px;
+  }
+
+
+  .dialogueSpeaker strong {
+    font-size: 11px;
+  }
+
+
+  .dialogueContent {
+    gap: 8px;
+  }
+
+
+  .dialogueContent p {
+    min-height: 0;
+
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+
+  .dialogueNext {
+    min-width: 88px;
+    height: 34px;
+
+    font-size: 11px;
+  }
+
+
+  /* ==============================
+     CHOICE
+     세 선택지를 한 화면에 가로 배치
+  ============================== */
+
+  .choiceOverlay {
+    padding: 7px;
+
+    align-items: center;
+
+    overflow: hidden;
+  }
+
+
+  .choicePanel {
+    width: 100%;
+    max-height:
+      calc(100% - 10px);
+
+    margin: 0;
+
+    padding:
+      14px
+      9px;
+
+    overflow: hidden;
+
+    border-radius: 15px;
+  }
+
+
+  .choiceHeader > span {
+    font-size: 9px;
+  }
+
+
+  .choiceHeader h2 {
+    margin:
+      5px
+      0
+      8px;
+
+    font-size: 17px;
+    line-height: 1.3;
+  }
+
+
+  .requestTags {
+    gap: 4px;
+  }
+
+
+  .requestTags span {
+    padding:
+      4px
+      8px;
+
+    font-size: 9px;
+  }
+
+
+  .choiceGrid {
+    margin-top: 11px;
+
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+
+    gap: 6px;
+  }
+
+
+  .choiceCard {
+    min-width: 0;
+    min-height: 158px;
+
+    padding:
+      10px
+      5px
+      9px;
+
+    border-radius: 11px;
+  }
+
+
+  .choiceEmoji {
+    font-size: 30px;
+  }
+
+
+  .choiceCard strong {
+    margin-top: 7px;
+
+    max-width: 100%;
+
+    overflow: hidden;
+
+    font-size: 11px;
+    line-height: 1.3;
+
+    text-align: center;
+
+    word-break: keep-all;
+  }
+
+
+  .choiceCard p {
+    min-height: 30px;
+    text-align: center;
+
+    margin:
+      5px
+      0
+      7px;
+
+    overflow: hidden;
+
+    display:
+      -webkit-box;
+
+    -webkit-box-orient:
+      vertical;
+
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+
+    font-size: 9px;
+    line-height: 1.4;
+  }
+
+
+  .choiceSelect {
+    font-size: 8px;
+  }
+
+
+  /* ==============================
+     FEEDBACK POPUP
+     선택 후 팝업을 더 작게
+  ============================== */
+
+  .choicePanelFeedback {
+    width:
+      min(
+        286px,
+        calc(100% - 26px)
+      );
+
+    padding:
+      16px
+      14px;
+
+    border-radius: 15px;
+  }
+
+
+  .feedback {
+    min-height: 0;
+
+    padding:
+      4px
+      0;
+  }
+
+
+  .feedbackGrade {
+    padding:
+      5px
+      9px;
+
+    font-size: 8px;
+  }
+
+
+  .feedbackEmoji {
+    margin-top: 10px;
+
+    font-size: 40px;
+  }
+
+
+  .feedback h2 {
+    margin:
+      6px
+      0
+      2px;
+
+    font-size: 18px;
+  }
+
+
+  .feedback p {
+    max-width: 240px;
+
+    margin:
+      9px
+      auto
+      12px;
+
+    font-size: 10px;
+    line-height: 1.55;
+  }
+
+
+  .feedback button {
+    min-width: 136px;
+    height: 38px;
+
+    font-size: 10px;
+  }
+
+
+  /* ==============================
+     RESULT / CLEAR
+  ============================== */
+
+  .resultOverlay,
+  .clearOverlay {
+    padding: 8px;
+
+    align-items: flex-start;
+
+    overflow-y: auto;
+  }
+
+
+  .resultPanel {
+    width: 100%;
+    height: auto;
+
+    margin:
+      8px
+      0;
+
+    grid-template-columns:
+      1fr;
+
+    border-radius: 15px;
+  }
+
+
+  .resultVisual {
+    min-height: 165px;
+  }
+
+
+  .resultVisualTitle {
+    top: 12px;
+  }
+
+
+  .resultVisual img {
+    width: 64%;
+    max-height: 205px;
+  }
+
+
+  .resultContent {
+    padding:
+      18px
+      16px
+      20px;
+  }
+
+
+  .resultContent h2 {
+    font-size: 20px;
+  }
+
+
+  .tableSetting {
+    gap: 6px;
+  }
+
+
+  .tableSetting > div {
+    min-height: 68px;
+
+    padding: 8px;
+  }
+
+
+  .tableSetting span {
+    font-size: 22px;
+  }
+
+
+  .resultBottom {
+    gap: 12px;
+
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+
+  .resultBottom button {
+    width: 100%;
+    min-width: 0;
+  }
+
+
+  .clearPanel {
+    width: 100%;
+    height: auto;
+
+    margin:
+      8px
+      0;
+
+    grid-template-columns:
+      1fr;
+
+    border-radius: 15px;
+  }
+
+
+  .clearVisual {
+    min-height: 185px;
+
+    padding: 18px;
+  }
+
+
+  .clearVisual img {
+    width: 185px;
+    height: 185px;
+
+    max-width: none;
+  }
+
+
+  .clearContent {
+    padding:
+      18px
+      16px
+      20px;
+  }
+
+
+  .clearContent h2 {
+    font-size: 21px;
+  }
+
+
+  .clearStats > div {
+    padding:
+      9px
+      6px;
+  }
+
+
+  .clearStats strong {
+    font-size: 15px;
+  }
+
+
+  .clearActions {
+    grid-template-columns:
+      1fr;
+
+    gap: 7px;
+  }
+
+
+  .controls {
+    display: none;
+  }
+}
+

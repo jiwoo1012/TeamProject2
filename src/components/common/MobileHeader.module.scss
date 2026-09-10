@@ -14,9 +14,18 @@
 
 /* ========================================
    MOBILE
+
+   z-index는 variables.scss에 $z-dropdown이
+   정의돼 있지 않아 이 파일 안에서 직접 관리한다.
+   (상단바 > 메뉴 패널 > 오버레이 순서로 쌓는다)
 ======================================== */
 
 @include mobile {
+  $menu-top-z: 1002;
+  $menu-panel-z: 1001;
+  $menu-overlay-z: 1000;
+
+
   .mobileHeader {
     position: relative;
     z-index: $z-header;
@@ -33,7 +42,7 @@
 
   .mobileTop {
     position: relative;
-    z-index: $z-dropdown + 1;
+    z-index: $menu-top-z;
 
     @include flex-between;
 
@@ -181,8 +190,41 @@
 
 
   /* ========================================
+     배경 딤 오버레이
+
+     화면 전체(inset: 0)를 덮되, z-index가
+     메뉴 패널(1001)보다 낮은 1000이라
+     패널이 차지한 오른쪽 절반은 패널이 위에 덮고,
+     나머지 왼쪽 절반만 어둡게 보인다.
+  ======================================== */
+
+  .menuOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: $menu-overlay-z;
+
+    background: rgba(0, 0, 0, 0.45);
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition:
+      opacity $transition-base ease,
+      visibility $transition-base ease;
+  }
+
+  .menuOverlayOpen {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+
+  /* ========================================
      HALF-SCREEN MENU PANEL
      오른쪽에서 화면 절반만 차지
+     (오버레이보다 z-index가 높아야 함)
   ======================================== */
 
   .menuPanel {
@@ -190,7 +232,7 @@
     top: 76px;
     right: 0;
     left: auto;
-    z-index: $z-dropdown;
+    z-index: $menu-panel-z;
 
     display: flex;
     flex-direction: column;
@@ -228,6 +270,33 @@
     visibility: visible;
     transform: translateX(0);
     pointer-events: auto;
+  }
+
+
+  /* ========================================
+     메뉴 인트로 타이틀
+  ======================================== */
+
+  .menuIntro {
+    margin-bottom: $space-6;
+    flex-shrink: 0;
+  }
+
+  .menuHeading {
+    margin: 0 0 8px;
+
+    color: $color-text-primary;
+    font-family: $font-family-display;
+    font-size: 20px;
+    font-weight: $font-weight-bold;
+  }
+
+  .menuSubheading {
+    margin: 0;
+
+    color: $color-text-muted;
+    font-size: 12px;
+    line-height: 1.5;
   }
 
 
@@ -280,12 +349,13 @@
   .directLink {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 0 $space-3;
   }
 
 
   /* ========================================
-     ARROW
+     ARROW ( + / − )
   ======================================== */
 
   .arrow {
@@ -299,12 +369,7 @@
     font-size: $font-size-md;
     font-weight: $font-weight-bold;
 
-    transition:
-      transform $transition-fast ease;
-  }
-
-  .arrowOpen {
-    transform: rotate(180deg);
+    transition: transform $transition-fast ease;
   }
 
 
@@ -325,7 +390,7 @@
   }
 
   .subMenuOpen {
-    max-height: 230px;
+    max-height: 420px;
     opacity: 1;
   }
 
@@ -335,7 +400,7 @@
     padding: $space-2 0;
   }
 
-  .subMenuInner a {
+  .subMenuLink {
     display: flex;
     align-items: center;
 
@@ -359,6 +424,48 @@
       color: $color-primary;
       background: rgba($color-primary, 0.05);
       padding-left: 24px;
+    }
+  }
+
+
+  /* ========================================
+     서브 카테고리 (전통주 / 안주)
+     타이틀 + 하위 항목 인라인 나열
+  ======================================== */
+
+  .subCategoryGroup {
+    padding: $space-2 $space-5;
+  }
+
+  .subCategoryTitle {
+    display: block;
+    margin-bottom: 4px;
+
+    color: $color-text-primary;
+    font-size: 12px;
+    font-weight: $font-weight-semibold;
+  }
+
+  .subCategoryList {
+    display: flex;
+    flex-wrap: wrap;
+
+    font-size: 11px;
+
+    a {
+      color: $color-text-muted;
+      text-decoration: none;
+
+      transition: color $transition-fast ease;
+
+      &:not(:last-child)::after {
+        content: ' · ';
+        color: rgba($color-text-primary, 0.3);
+      }
+
+      &:active {
+        color: $color-primary;
+      }
     }
   }
 
@@ -438,8 +545,7 @@
       font-weight: $font-weight-regular;
       text-decoration: none;
 
-      transition:
-        color $transition-fast ease;
+      transition: color $transition-fast ease;
 
       &:active {
         color: $color-primary;
