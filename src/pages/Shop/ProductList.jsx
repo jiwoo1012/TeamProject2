@@ -15,7 +15,7 @@ import Pagination from '../../components/ui/Pagination/Pagination'
 
 import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 
-import ProductGuide from '../../components/shop/ProductGuide'
+import ProductGuide, { canShowProductGuide } from '../../components/shop/ProductGuide'
 
 import { fetchProducts, getManagedProducts } from '../../services/productCatalog'
 
@@ -528,6 +528,7 @@ const ProductList = () => {
         !targetUrl.search
 
       ) {
+        if (canShowProductGuide()) return
 
         window.scrollTo({
 
@@ -667,6 +668,13 @@ const ProductList = () => {
 
       )
 
+    // The guide owns entry scrolling whenever it can show a product target.
+    // Keep the ordinary entry behavior for hidden guides, search, and empty lists.
+    if (!search && canShowProductGuide()) {
+      if (!isCatalogReady) return undefined
+      if (document.querySelector('[data-product-guide-card="candidate"]')) return undefined
+    }
+
     const frameId =
 
       window.requestAnimationFrame(
@@ -707,7 +715,7 @@ const ProductList = () => {
 
       window.cancelAnimationFrame(frameId)
 
-  }, [location.key, mainCategories, searchParams])
+  }, [location.key, mainCategories, searchParams, isCatalogReady])
 
   const activeCategory =
 
@@ -2112,12 +2120,13 @@ const ProductList = () => {
       <MobileTopButton contentRef={pageRef} className={styles.productTopButton} />
 
       <ProductGuide
+        key={location.key}
         enabled={
           isCatalogReady &&
           visibleProducts.length > 0 &&
           currentPage === 1 &&
           location.pathname === '/shop' &&
-          !searchParams.toString()
+          !searchParams.get('search')?.trim()
         }
       />
 

@@ -221,7 +221,6 @@ const OxQuizEvent = () => {
                 <p className={styles.explanation}>{currentQuiz.explanation}</p>
                 <button className={styles.continueButton} type="button" onClick={handleContinue}>
                   {isLastQuiz ? '결과 보기' : '다음 문제'}
-                  <span aria-hidden="true">→</span>
                 </button>
               </>
             ) : (

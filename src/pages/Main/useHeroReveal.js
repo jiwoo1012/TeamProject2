@@ -92,6 +92,9 @@ const useHeroReveal = ({
 
     updateSunPathMetrics()
     placeSunOnArch(sunProgress.angle)
+    const [sunIcon, moonIcon] = heroSunRef.current.querySelectorAll('img')
+    gsap.set(sunIcon, { opacity: 1 })
+    gsap.set(moonIcon, { opacity: 0 })
     const originalRightTitleColor = window.getComputedStyle(rightHeroTitleRef.current).color
     const sunTimeline = gsap.timeline({
       paused: true,
@@ -102,7 +105,6 @@ const useHeroReveal = ({
         isHeroSunCompleteRef.current = false
       },
     })
-      .set(heroSunRef.current, { attr: { 'data-phase': 'sun' } })
       .set(rightHeroTitleRef.current, { color: HERO_SUN_COLOR })
       .to(sunProgress, {
         angle: Math.PI,
@@ -115,7 +117,8 @@ const useHeroReveal = ({
         duration: HERO_SUN_PATH_DURATION,
         ease: 'none',
       }, '<')
-      .set(heroSunRef.current, { attr: { 'data-phase': 'moon' } }, HERO_SUN_PATH_MIDPOINT)
+      .to(sunIcon, { opacity: 0, duration: 0.35, ease: 'sine.inOut' }, HERO_SUN_PATH_MIDPOINT - 0.175)
+      .to(moonIcon, { opacity: 1, duration: 0.35, ease: 'sine.inOut' }, HERO_SUN_PATH_MIDPOINT - 0.175)
       .to(rightHeroTitleRef.current, {
         color: originalRightTitleColor,
         duration: 0.7,
@@ -123,14 +126,18 @@ const useHeroReveal = ({
       }, HERO_SUN_PATH_MIDPOINT)
 
     heroSunPlayRef.current = () => {
-      if (sunTimeline.isActive() || isHeroSunCompleteRef.current) return
+      if (sunTimeline.progress() === 1 && !sunTimeline.reversed()) return false
       updateSunPathMetrics()
       placeSunOnArch(sunProgress.angle)
-      sunTimeline.restart()
+      isHeroSunCompleteRef.current = false
+      sunTimeline.play()
+      return true
     }
     heroSunResetRef.current = () => {
-      if (!isHeroSunCompleteRef.current || sunTimeline.isActive()) return
+      if (sunTimeline.progress() === 0) return false
+      isHeroSunCompleteRef.current = false
       sunTimeline.reverse()
+      return true
     }
 
     const sunResetTrigger = ScrollTrigger.create({
@@ -225,7 +232,9 @@ const useHeroReveal = ({
       onReverseComplete: () => { canMovePastHeroRef.current = false },
       scrollTrigger: isMobile ? undefined : {
         trigger: mainContentRef.current,
-        start: () => `top top-=${window.innerHeight * 0.25 + 100}`,
+        // Keep the arch in place at the sun/moon stop (one viewport).
+        // Reveal the caption only on the next scroll toward the exit stop.
+        start: () => `top top-=${window.innerHeight * 1.5}`,
         toggleActions: 'play none none reverse',
         onEnter: () => {
           // Finish fitting the cover before moving the image underneath it.
@@ -341,6 +350,7 @@ const useHeroReveal = ({
       coverTimeline.scrollTrigger?.kill()
       coverTimeline.kill()
       sunTimeline.kill()
+      gsap.set([sunIcon, moonIcon], { clearProps: 'opacity' })
       timeline.scrollTrigger?.kill()
       timeline.kill()
       heroRevealRef.current = null

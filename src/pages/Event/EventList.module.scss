@@ -2,9 +2,12 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as mixins;
 
+// No top padding: the hero banner is the page's first visual element and
+// must sit flush against the header above it (header is in normal document
+// flow, not fixed/sticky, so no offset is needed here either).
 .page {
   min-height: 100vh;
-  padding: $space-20 0 $space-16;
+  padding: 0 0 $space-16;
   color: $color-text-primary;
   font-family: $font-family-base;
   background: $color-bg;
@@ -16,28 +19,25 @@
   line-height: $line-height-base;
   letter-spacing: .16em;
 }
+// Full-bleed breakout: .hero lives inside the centered .container, but the
+// banner photo itself should touch both viewport edges. width:100vw plus
+// negative margins sized against the *container's* own width (the "50%" in
+// the calc) is what cancels the container's centering regardless of its
+// max-width.
 .hero {
   position: relative;
   isolation: isolate;
-  display: flex;
-  align-items: center;
-  min-height: 300px;
-  padding: $space-10 34% $space-16 $space-12;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  aspect-ratio: 2048 / 768;
   overflow: hidden;
-  color: $color-bg;
-  background: $color-primary;
-  border-radius: $radius-lg $radius-lg 0 0;
+  color: $color-text-primary;
+  background-color: $color-bg;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
 
-  &::before {
-    position: absolute;
-    z-index: -1;
-    inset: 0;
-    background: url('../../assets/images/common/header-hanji.webp') center / auto 500% no-repeat;
-    mix-blend-mode: soft-light;
-    opacity: .12;
-    pointer-events: none;
-    content: '';
-  }
   &::after {
     position: absolute;
     z-index: 3;
@@ -56,56 +56,7 @@
   position: relative;
   z-index: 2;
   min-width: 0;
-
-  h1 {
-    margin-top: $space-4;
-    font-family: $font-family-display;
-    font-size: clamp(#{$font-size-3xl}, 2.8vw, #{$font-size-4xl});
-    font-weight: $font-weight-bold;
-    line-height: $line-height-tight;
-    word-break: keep-all;
-  }
 }
-.heroDescription {
-  margin-top: $space-5;
-  font-size: $font-size-md;
-  line-height: $line-height-relaxed;
-  word-break: keep-all;
-}
-.heroLink {
-  display: inline-flex;
-  align-items: center;
-  gap: $space-6;
-  min-height: 44px;
-  margin-top: $space-4;
-  padding: $space-2 0;
-  border-bottom: 1px solid rgba($color-bg, .55);
-  color: inherit;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
-
-  span { transition: transform $transition-fast ease; }
-}
-.makdongCrop {
-  position: absolute;
-  z-index: 1;
-  inset: 0 0 $space-6 auto;
-  width: 34%;
-  overflow: hidden;
-  pointer-events: none;
-
-  &::before {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 52%;
-    height: $space-4;
-    background: radial-gradient(ellipse at center, rgba($color-text-primary, .22), rgba($color-text-primary, 0) 70%);
-    transform: translateX(-50%);
-    content: none;
-  }
-}
-.makdong { position: absolute; top: 50%; left: 50%; width: 110%; max-width: none; height: auto; transform: translate(-50%, -40%); filter: drop-shadow(0 $space-2 $space-3 rgba($color-text-primary, .12)); }
 
 .eventSection {
   position: relative;
@@ -192,7 +143,11 @@
   border: 1px solid $color-border;
   border-radius: $radius-md;
   background: $color-bg;
-  transition: transform $transition-fast ease, border-color $transition-fast ease;
+  box-shadow: 0 0 0 rgba($color-text-primary, 0);
+  transition:
+    transform $transition-base cubic-bezier(.22, 1, .36, 1),
+    border-color $transition-base ease,
+    box-shadow $transition-base cubic-bezier(.22, 1, .36, 1);
 }
 .roulette { --event-tint: #{color.mix($color-primary, $color-bg, 18%)}; }
 .card { --event-tint: #{color.mix($color-primary, $color-bg, 12%)}; }
@@ -233,7 +188,16 @@
 
   &::before, &::after { position: absolute; content: ''; }
 }
+@keyframes eventMotifSpin {
+  to { transform: rotate(360deg); }
+}
+@keyframes eventMotifFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
 .roulette .gameMotif {
+  // Ambient motion: the dashed ring reads as a roulette wheel, so a very
+  // slow continuous spin is a background detail, not a distraction.
   &::before {
     top: 10%;
     left: 8%;
@@ -241,6 +205,8 @@
     aspect-ratio: 1;
     border: 1px dashed rgba($color-primary, .2);
     border-radius: 50%;
+    transform-origin: center;
+    animation: eventMotifSpin 22s linear infinite;
   }
   &::after {
     top: 16%;
@@ -272,6 +238,8 @@
     border-radius: $radius-xl $radius-xl $radius-xl 0;
     background: rgba($color-bg, .24);
   }
+  // Ambient motion: the small O/X speech-dots get a very gentle bob so the
+  // quiz card doesn't sit completely still.
   &::after {
     top: 23%;
     left: 18%;
@@ -280,6 +248,7 @@
     border-radius: 50%;
     background: rgba($color-primary, .2);
     box-shadow: $space-3 0 rgba($color-primary, .2), $space-6 0 rgba($color-primary, .2);
+    animation: eventMotifFloat 5s ease-in-out infinite;
   }
 }
 .quiz .cardCharacter { filter: drop-shadow(0 $space-1 $space-1 rgba($color-primary, .16)); }
@@ -364,8 +333,9 @@
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;
   border-bottom: 1px solid rgba($color-primary, .35);
+  transition: border-color $transition-base ease;
 
-  span { transition: transform $transition-fast ease; }
+  span { transition: transform $transition-fast cubic-bezier(.22, 1, .36, 1); }
 }
 .featuredGrid {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -420,27 +390,24 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
-.heroLink:focus-visible, .filters button:focus-visible,
+.filters button:focus-visible,
 .cardLink:focus-visible, .emptyState button:focus-visible {
   outline: 2px solid $color-primary;
   outline-offset: $space-1;
 }
-.heroLink:focus-visible { outline-color: $color-bg; }
 .eventSection:focus { outline: none; }
 
 @media (hover: hover) and (pointer: fine) {
   .eventCard:hover {
-    transform: translateY(-$space-1);
+    transform: translateY(-$space-2);
     border-color: $color-primary;
-    .cardCharacter, .imageArea > img { transform: scale(1.03); }
+    box-shadow: 0 $space-3 $space-6 rgba($color-text-primary, .12);
+    .cardCharacter, .imageArea > img { transform: scale(1.035); }
+    .cardLink { border-bottom-color: $color-primary; }
     .cardLink span { transform: translateX($space-1); }
   }
-  .heroLink:hover span { transform: translateX($space-1); }
 }
 @include mixins.tablet {
-  .hero { padding: $space-8 35% $space-12 $space-8; }
-  .heroText h1 { font-size: $font-size-3xl; }
-  .makdongCrop { right: 0; width: 34%; }
   .sectionHeading { flex-direction: column; align-items: flex-start; gap: 0; }
   .sectionHeading > div:first-child { padding-bottom: $space-3; }
   .featuredGrid {
@@ -460,14 +427,8 @@
   }
 }
 @include mixins.mobile {
-  .page { padding: $space-10 0 $space-12; }
-  .hero { display: block; min-height: 0; padding: $space-8 $space-6 $space-12; }
+  .page { padding: 0 0 $space-12; }
   .hero::after { height: $space-4; mask-size: 100% 80px; }
-  .heroText h1 { font-size: $font-size-2xl; }
-  .heroDescription { max-width: 72%; font-size: $font-size-sm; margin-top: $space-4; }
-  .heroLink { gap: $space-3; font-size: $font-size-xs; }
-  .makdongCrop { inset: auto 0 $space-4 auto; width: 28%; height: 132px; }
-  .makdongCrop::before { height: $space-2; }
   .eventSection { margin-top: $space-10; }
   .eventSection::before { top: -$space-10; height: $space-10; }
   .eventSection::after { top: -$space-8; width: $space-6; height: $space-4; }
@@ -490,7 +451,10 @@
   .featuredCard .cardLink { margin-top: $space-4; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .eventCard, .cardCharacter, .imageArea > img, .cardLink span, .heroLink span, .filters button { transition: none; }
+  .eventCard, .cardCharacter, .imageArea > img, .cardLink, .cardLink span, .filters button { transition: none; }
   .eventCard:hover, .eventCard:hover .cardCharacter, .eventCard:hover .imageArea > img,
-  .eventCard:hover .cardLink span, .heroLink:hover span { transform: none; }
+  .eventCard:hover .cardLink span { transform: none; box-shadow: none; }
+  .roulette .gameMotif::before, .roulette .gameMotif::after, .quiz .gameMotif::after {
+    animation: none;
+  }
 }

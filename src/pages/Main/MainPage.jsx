@@ -333,7 +333,7 @@ const MainPage = () => {
                   aria-hidden="true"
                 />
               </figure>
-              <span ref={heroSunRef} className={styles.heroSun} data-phase="sun" aria-hidden="true">
+              <span ref={heroSunRef} className={styles.heroSun} aria-hidden="true">
                 <img className={styles.heroSunIcon} src={heroSunIcon} alt="" />
                 <img className={styles.heroMoonIcon} src={heroMoonIcon} alt="" />
               </span>
