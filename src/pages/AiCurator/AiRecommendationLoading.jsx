@@ -4,7 +4,7 @@ import {
   useState,
 } from 'react'
 
-import loadingVideo from '../../assets/videos/ai-recommendation-loading.mp4'
+import loadingVideo from '../../assets/videos/ai-recommendation-loading-FDFBF9.mp4'
 
 import styles from './AiRecommendationLoading.module.scss'
 
