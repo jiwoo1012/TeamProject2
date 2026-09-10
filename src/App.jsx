@@ -62,6 +62,7 @@ const PreferenceComplete = lazy(() => import('./pages/Auth/PreferenceComplete'))
 const AiIntro = lazy(() => import('./pages/AiCurator/AiIntro'))
 const AiSurvey = lazy(() => import('./pages/AiCurator/AiSurvey'))
 const AiResult = lazy(() => import('./pages/AiCurator/AiResult'))
+const MakdongTavern = lazy(() => import('./pages/AiCurator/MakdongTavern'))
 const AiPreference = lazy(() => import('./pages/MyPage/AiPreference'))
 
 // Cart / Order
@@ -350,7 +351,16 @@ const App = () => {
                 <AiResult />
               }
             />
+{/* ========================================
+    막둥이 주막 RPG
+======================================== */}
 
+<Route
+  path="/ai/tavern"
+  element={
+    <MakdongTavern />
+  }
+/>
 
             {/* 내 취향 분석 */}
 

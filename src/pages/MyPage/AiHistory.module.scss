@@ -912,91 +912,425 @@
   }
 
 
-  .summary {
-    grid-template-columns:
-      1fr;
+  /* =========================
+     SUMMARY
+     3개 한 줄
+  ========================= */
 
-    gap: 8px;
+  .summary {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+
+    gap: 7px;
+
+    margin-bottom: 28px;
   }
 
 
   .summaryItem {
-    min-height: 62px;
+    min-width: 0;
+    min-height: 76px;
 
-    flex-direction: row;
-    justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
 
     padding:
-      0
-      16px;
+      10px
+      4px;
+
+    border: 1px solid #dbe7e2;
+    border-radius: 10px;
+
+    background: #f2f7f4;
+
+    text-align: center;
+
+    strong {
+      color: #3f756d;
+
+      font-size: 19px;
+      font-weight: 700;
+
+      line-height: 1;
+    }
+  }
+
+
+  .summaryLabel {
+    width: 100%;
+
+    overflow: hidden;
+
+    color: #777f7b;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    line-height: 1.25;
+
+    text-align: center;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+
+  /* =========================
+     RECENT SAVED
+  ========================= */
+
+  .recentSection {
+    padding-bottom: 26px;
+    margin-bottom: 26px;
+
+    > h2 {
+      margin-bottom: 12px;
+
+      font-size: 18px;
+    }
   }
 
 
   .recentList {
     grid-template-columns:
       1fr;
+
+    gap: 9px;
   }
 
 
+  .recentCard {
+    min-height: 78px;
+
+    grid-template-columns:
+      58px
+      minmax(0, 1fr)
+      18px;
+
+    gap: 10px;
+
+    padding:
+      9px
+      10px;
+
+    border-radius: 10px;
+  }
+
+
+  .recentThumbnail {
+    width: 58px;
+    height: 58px;
+
+    border-radius: 8px;
+  }
+
+
+  .recentInfo {
+    > strong {
+      margin-bottom: 3px;
+
+      font-size: 13px;
+    }
+  }
+
+
+  .recentDate {
+    margin-bottom: 4px;
+
+    font-size: 13px;
+  }
+
+
+  .keywordList {
+    gap: 3px;
+
+    span {
+      min-height: 19px;
+
+      padding:
+        0
+        6px;
+
+      font-size: 13px;
+    }
+  }
+
+
+  .arrow {
+    font-size: 19px;
+  }
+
+
+  .recentEmpty {
+    min-height: 90px;
+
+    font-size: 13px;
+  }
+
+
+  /* =========================
+     HISTORY HEADER
+  ========================= */
+
   .historyHeader {
-    align-items: flex-start;
+    min-height: 34px;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 12px;
 
     h2 {
-      font-size: 16px;
+      min-width: 0;
+
+      overflow: hidden;
+
+      font-size: 18px;
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+
+  .sortSelect {
+    width: 86px;
+    min-width: 86px;
+    height: 32px;
+
+    flex:
+      0
+      0
+      86px;
+
+    padding:
+      0
+      24px
+      0
+      9px;
+
+    font-size: 12px;
+  }
+
+
+  /* =========================
+     FILTER
+  ========================= */
+
+  .filters {
+    flex-wrap: nowrap;
+
+    gap: 6px;
+
+    overflow-x: auto;
+
+    margin-bottom: 10px;
+
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
     }
   }
 
 
   .filterButton {
+    min-width: auto;
     height: 32px;
+
+    flex-shrink: 0;
 
     padding:
       0
       12px;
 
-    font-size: 11px;
+    font-size: 12px;
   }
 
 
-  .historyCard {
-    grid-template-columns:
-      64px
-      minmax(0, 1fr);
+  /* =========================
+     COUNT
+  ========================= */
 
-    align-items: start;
+  .listCount {
+    min-height: 24px;
+
+    margin-bottom: 7px;
+
+    font-size: 13px;
+
+    strong {
+      font-size: 13px;
+    }
+  }
+
+
+  /* =========================
+     HISTORY LIST
+  ========================= */
+
+  .historyList {
+    gap: 8px;
+  }
+
+
+  /*
+   * 모바일에서는 추천 한 건을
+   * 한 줄짜리 목록 형태로 보여준다.
+   */
+  .historyCard {
+    width: 100%;
+    min-height: 78px;
+
+    display: grid;
+
+    grid-template-columns:
+      58px
+      minmax(0, 1fr)
+      auto;
+
+    align-items: center;
 
     gap: 10px;
 
     padding:
-      12px;
+      9px
+      10px;
+
+    border: 1px solid #e3ddd4;
+    border-radius: 10px;
+
+    background: #fff;
   }
 
+
+  /* 대표 이미지 */
 
   .historyThumbnail {
-    width: 64px;
-    height: 64px;
+    width: 58px;
+    height: 58px;
+
+    border-radius: 8px;
   }
 
 
+  /* 추천 제목 */
+
+  .historyContent {
+    min-width: 0;
+  }
+
+
+  .historyTitle {
+    min-width: 0;
+
+    margin-bottom: 0;
+
+    span {
+      display: block;
+
+      margin-bottom: 3px;
+
+      color: #aaa49c;
+
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    strong {
+      display: block;
+
+      width: 100%;
+
+      overflow: hidden;
+
+      color: #403b35;
+
+      font-size: 14px;
+      font-weight: 700;
+
+      line-height: 1.4;
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+
+  /*
+   * 모바일 목록에서는
+   * 전통주 / 안주 / 술잔 상세 구성 숨김.
+   *
+   * 자세한 구성은 상세 페이지에서 확인.
+   */
   .products {
-    align-items: flex-start;
-    flex-direction: column;
-
-    gap: 7px;
+    display: none;
   }
 
+
+  /* 상세 보기 */
 
   .detailButton {
-    grid-column:
-      2;
+    min-width: 70px;
+    height: 32px;
 
-    justify-self: flex-start;
+    grid-column: auto;
 
-    margin-top: 4px;
+    justify-self: end;
+
+    margin-top: 0;
+
+    padding:
+      0
+      9px;
+
+    border-radius: 7px;
+
+    font-size: 12px;
+
+    white-space: nowrap;
+
+    span {
+      font-size: 13px;
+    }
   }
 
+
+  /* =========================
+     EMPTY
+  ========================= */
+
+  .emptyState {
+    min-height: 130px;
+
+    border-radius: 10px;
+
+    font-size: 11px;
+  }
+
+
+  /* =========================
+     PAGINATION
+  ========================= */
 
   .pagination {
     margin-top: 24px;
+
+    button {
+      width: 34px;
+      height: 34px;
+    }
   }
 }

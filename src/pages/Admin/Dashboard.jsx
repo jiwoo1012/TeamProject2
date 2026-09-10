@@ -2926,7 +2926,7 @@ const Dashboard = () => {
                 }
               >
                 <h2>
-                  인기 상품 TOP 5
+                  AI 추천 인기 상품 TOP 5
                 </h2>
 
                 <span

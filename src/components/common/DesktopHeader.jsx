@@ -1521,6 +1521,16 @@ const DesktopHeader = () => {
             </Link>
 
             <Link
+  to="/ai/tavern"
+  className={
+    styles.drawerLink
+  }
+  onClick={closeAllMenu}
+>
+  막둥이 주막
+</Link>
+
+            <Link
               to="/mypage/preference"
               className={styles.snbNavLink}
               onClick={closeMegaMenu}

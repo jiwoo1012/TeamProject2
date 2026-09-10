@@ -572,6 +572,8 @@ const ProductInfoCard = ({
         )}
 
 
+        {/* PC 추천 이유 */}
+
         {reason && (
           <p
             className={
@@ -580,6 +582,32 @@ const ProductInfoCard = ({
           >
             {reason}
           </p>
+        )}
+
+
+        {/* 모바일 추천 이유 */}
+
+        {reason && (
+          <details
+            className={
+              styles.mobileReason
+            }
+          >
+            <summary>
+              추천 이유 보기
+
+              <span
+                aria-hidden="true"
+              >
+                +
+              </span>
+            </summary>
+
+
+            <p>
+              {reason}
+            </p>
+          </details>
         )}
       </div>
 
@@ -693,6 +721,17 @@ const AiHistoryDetail = () => {
 
 
   /* ========================================
+     DESKTOP LIST BUTTON
+  ======================================== */
+
+  const handleList = () => {
+    navigate(
+      '/mypage/ai-history'
+    )
+  }
+
+
+  /* ========================================
      AUTH
   ======================================== */
 
@@ -716,7 +755,8 @@ const AiHistoryDetail = () => {
 
 
     if (
-      currentUser === undefined
+      currentUser ===
+      undefined
     ) {
       return undefined
     }
@@ -890,7 +930,9 @@ const AiHistoryDetail = () => {
         buildSurveyKeywords(
           recommendation
         ),
-      [recommendation]
+      [
+        recommendation,
+      ]
     )
 
 
@@ -976,10 +1018,8 @@ const AiHistoryDetail = () => {
 
             <button
               type="button"
-              onClick={() =>
-                navigate(
-                  '/mypage/ai-history'
-                )
+              onClick={
+                handleList
               }
             >
               목록으로
@@ -1019,10 +1059,8 @@ const AiHistoryDetail = () => {
             className={
               styles.headerBackButton
             }
-            onClick={() =>
-              navigate(
-                '/mypage/ai-history'
-              )
+            onClick={
+              handleList
             }
           >
             ‹ 목록으로
@@ -1125,6 +1163,7 @@ const AiHistoryDetail = () => {
             추천받은 주안상
           </h2>
 
+
           <span>
             총{' '}
 
@@ -1144,7 +1183,7 @@ const AiHistoryDetail = () => {
         ========================= */}
 
         {recommendationTables.length >
-          0 ? (
+        0 ? (
           <div
             className={
               styles.tableList
@@ -1194,7 +1233,7 @@ const AiHistoryDetail = () => {
 
                       <strong>
                         {table.index ===
-                          1
+                        1
                           ? '첫 번째 주안상'
                           : table.index ===
                               2
@@ -1219,7 +1258,7 @@ const AiHistoryDetail = () => {
 
 
                   {/* =========================
-                      MAIN REASON
+                      MAIN REASON PC
                   ========================= */}
 
                   {table.reason && (
@@ -1239,6 +1278,36 @@ const AiHistoryDetail = () => {
                         }
                       </p>
                     </div>
+                  )}
+
+
+                  {/* =========================
+                      MAIN REASON MOBILE
+                  ========================= */}
+
+                  {table.reason && (
+                    <details
+                      className={
+                        styles.mobileMainReason
+                      }
+                    >
+                      <summary>
+                        막둥이의 추천 이유
+
+                        <span
+                          aria-hidden="true"
+                        >
+                          +
+                        </span>
+                      </summary>
+
+
+                      <p>
+                        {
+                          table.reason
+                        }
+                      </p>
+                    </details>
                   )}
 
 
@@ -1283,7 +1352,6 @@ const AiHistoryDetail = () => {
                       }
                     />
                   </div>
-
                 </article>
               )
             )}
@@ -1301,6 +1369,7 @@ const AiHistoryDetail = () => {
 
         {/* =========================
             BOTTOM ACTION
+            PC ONLY
         ========================= */}
 
         <div
@@ -1313,16 +1382,13 @@ const AiHistoryDetail = () => {
             className={
               styles.backButton
             }
-            onClick={() =>
-              navigate(
-                '/mypage/ai-history'
-              )
+            onClick={
+              handleList
             }
           >
             목록으로
           </button>
         </div>
-
       </div>
     </section>
   )

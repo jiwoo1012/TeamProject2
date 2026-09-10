@@ -70,7 +70,7 @@ const resolveBanner = (
 
 
 /* =========================
-   FORMAT
+   DATE
 ========================= */
 
 const formatDate = (
@@ -178,7 +178,7 @@ const fallbackEvents =
 
 
 /* =========================
-   EVENT HISTORY
+   COMPONENT
 ========================= */
 
 const EventHistory = () => {
@@ -246,7 +246,8 @@ const EventHistory = () => {
         ) => {
           if (
             !isMounted ||
-            documents.length === 0
+            documents.length ===
+              0
           ) {
             return
           }
@@ -529,7 +530,7 @@ const EventHistory = () => {
   const summaryItems = [
     {
       label:
-        '참여한 이벤트',
+        '참여 이벤트',
 
       count:
         history.length,
@@ -537,7 +538,7 @@ const EventHistory = () => {
 
     {
       label:
-        '응모 중 이벤트',
+        '응모 중',
 
       count:
         activeParticipationCount,
@@ -1024,7 +1025,8 @@ const EventHistory = () => {
                       index
                     ) => {
                       const pageNumber =
-                        index + 1
+                        index +
+                        1
 
 
                       return (
