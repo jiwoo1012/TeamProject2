@@ -48,7 +48,7 @@ const AdultModal = ({
           <div className={styles.prohibition}>
             <img
               src={makdongImg}
-              alt="성인 인증 안내 막둥이"
+              alt="성인 인증 안내 막동이"
               className={styles.makdong}
             />
 

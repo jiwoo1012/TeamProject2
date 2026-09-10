@@ -10,7 +10,7 @@ import styles from './AiRecommendationLoading.module.scss'
 
 
 const MESSAGES = [
-  '막둥이가 주안상을 차리고 있어요!',
+  '막동이가 주안상을 차리고 있어요!',
   '잠시만 기다려주세요!',
 ]
 
@@ -276,7 +276,7 @@ const AiRecommendationLoading = ({
         </div>
 
 
-        {/* 막둥이 영상 */}
+        {/* 막동이 영상 */}
 
         <div
           className={

@@ -72,7 +72,7 @@ const QUESTIONS = [
     id: 'sweetness',
     category: '단맛',
     title: '술은 어느 정도 달콤한 게 좋나요?',
-    description: '막둥이가 먼저 좋아하는 단맛부터 알아볼게요!',
+    description: '막동이가 먼저 좋아하는 단맛부터 알아볼게요!',
     type: 'single',
     options: [
       {
@@ -379,7 +379,7 @@ const PreferenceQuestions = () => {
           </div>
         </section>
         <section className={styles.questionHeader} aria-labelledby="preference-question-title">
-          <img src={makdongImg} alt="취향을 알아보는 막둥이" className={styles.makdong} />
+          <img src={makdongImg} alt="취향을 알아보는 막동이" className={styles.makdong} />
           <div className={styles.questionCopy}>
             <span className={styles.questionNumber}>QUESTION {String(currentStep + 1).padStart(2, '0')}</span>
             <h1 id="preference-question-title" className={styles.questionTitle}>{currentQuestion.title}</h1>

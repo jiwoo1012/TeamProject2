@@ -19,7 +19,7 @@ import styles from './AiIntro.module.scss'
 
 
 const MESSAGE_LINES = [
-  '막둥이에게',
+  '막동이에게',
   '주안상을',
   '추천받아보세요!',
 ]

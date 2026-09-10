@@ -182,7 +182,7 @@ const PreferenceSafetyIntro = () => {
             </h1>
 
             <p className={styles.completeDescription}>
-              막둥이가 나으리의 취향을 거의 다 알아냈어요!
+              막동이가 나으리의 취향을 거의 다 알아냈어요!
               <br />
               마지막으로 안전한 추천을 위해 꼭 확인할 게 하나 있어요.
             </p>
@@ -190,7 +190,7 @@ const PreferenceSafetyIntro = () => {
 
             <img
               src={makdongImg}
-              alt="취향을 기억한 막둥이"
+              alt="취향을 기억한 막동이"
               className={styles.makdong}
             />
 

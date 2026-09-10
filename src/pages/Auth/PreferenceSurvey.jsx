@@ -60,7 +60,7 @@ const PreferenceSurvey = () => {
 
 
             <h1 className={styles.title}>
-              막둥이에게
+              막동이에게
               <br />
               당신의 취향을 알려주세요
             </h1>
@@ -102,11 +102,11 @@ const PreferenceSurvey = () => {
           </div>
 
 
-          {/* 왼쪽 막둥이 이미지 */}
+          {/* 왼쪽 막동이 이미지 */}
           <div className={styles.characterArea}>
             <img
               src={makdongImg}
-              alt="막둥이"
+              alt="막동이"
               className={styles.character}
             />
           </div>

@@ -245,7 +245,7 @@ const getErrorMessage = (
     return '추천 서버에 연결할 수 없어요. Functions Emulator가 실행 중인지 확인해주세요.'
   }
 
-  return '막둥이가 주안상을 준비하는 중 문제가 생겼어요. 다시 시도해주세요.'
+  return '막동이가 주안상을 준비하는 중 문제가 생겼어요. 다시 시도해주세요.'
 }
 
 
@@ -364,7 +364,7 @@ const AiResult = () => {
     ) {
       setIsLoading(false)
       setErrorMessage(
-        '추천에 필요한 설문 정보가 없어요. 먼저 막둥이의 질문에 답해주세요.'
+        '추천에 필요한 설문 정보가 없어요. 먼저 막동이의 질문에 답해주세요.'
       )
       return
     }
@@ -1228,7 +1228,7 @@ const AiResult = () => {
             }
           >
             <h1>
-              막둥이가 오늘의
+              막동이가 오늘의
               <br />
               주안상을 정갈히 차렸어요!
             </h1>
@@ -1451,7 +1451,7 @@ const AiResult = () => {
                     styles.detailKicker
                   }
                 >
-                  막둥이가 고른 오늘의 한 잔
+                  막동이가 고른 오늘의 한 잔
                 </p>
 
                 <h2>
@@ -1560,7 +1560,7 @@ const AiResult = () => {
                     styles.detailKicker
                   }
                 >
-                  막둥이가 곁들인 오늘의 한 접시
+                  막동이가 곁들인 오늘의 한 접시
                 </p>
 
                 <h2>
@@ -2250,7 +2250,7 @@ const AiResult = () => {
         <div className={styles.otherInner}>
           <header className={styles.otherHeading}>
             <h2>
-              막둥이가 준비한 또 다른 주안상도 있어요
+              막동이가 준비한 또 다른 주안상도 있어요
             </h2>
             <p>
               같은 취향을 조금 다른 분위기로 즐겨보세요!
@@ -2260,7 +2260,7 @@ const AiResult = () => {
           <div className={styles.otherShowcase}>
             <img
               src={makdongImage}
-              alt="다른 주안상을 소개하는 막둥이"
+              alt="다른 주안상을 소개하는 막동이"
               className={styles.otherMakdong}
             />
 
@@ -2288,7 +2288,7 @@ const AiResult = () => {
                         '전통주',
                       flavorKeywords[1] ||
                         item.food.snackType ||
-                        '막둥이 추천',
+                        '막동이 추천',
                     ].filter(Boolean)
 
                     const cardTitle =
@@ -2360,7 +2360,7 @@ const AiResult = () => {
                         <div className={styles.otherCardText}>
                           <p className={styles.otherCardReason}>
                             {item.reason ||
-                              `${item.liquor.productName}와 ${item.food.productName}을 함께 즐기는 막둥이의 또 다른 주안상이에요.`}
+                              `${item.liquor.productName}와 ${item.food.productName}을 함께 즐기는 막동이의 또 다른 주안상이에요.`}
                           </p>
 
                           <div className={styles.otherCardTags}>
