@@ -309,75 +309,64 @@
     padding: $space-4;
   }
 
-
   .modal {
-    width: 100%;
+    width: min(340px, calc(100vw - 32px));
 
-    padding: $space-8 $space-5 $space-6;
+    padding: $space-6 $space-5 $space-5;
 
-    border-radius: $radius-xl;
+    border-radius: $radius-lg;
   }
-
 
   .visualArea {
-    margin-bottom: $space-5;
+    margin-bottom: $space-4;
   }
 
-
   .prohibition {
-    width: 132px;
-    height: 132px;
+    width: 112px;
+    height: 112px;
 
     border-width: 5px;
   }
 
-
   .makdong {
-    width: 95px;
+    width: 68px;
   }
 
-
   .slash {
-    width: 124px;
+    width: 104px;
     height: 5px;
   }
 
-
   .content {
-    margin-bottom: $space-5;
+    margin-bottom: $space-4;
   }
 
-
   .title {
-    margin-bottom: $space-3;
+    margin-bottom: $space-2;
 
     font-size: $font-size-lg;
   }
 
-
   .description {
-    font-size: $font-size-sm;
+    font-size: $font-size-xs;
+    line-height: $line-height-relaxed;
   }
 
+  .buttonArea {
+    gap: $space-2;
+  }
 
   .verifyButton,
   .exitButton {
     width: 100%;
-
-    height: 44px;
+    height: 42px;
 
     font-size: $font-size-sm;
   }
 
-
   .notice {
-    margin-top: $space-5;
-  }
-}
+    margin-top: $space-4;
 
-
-@media (prefers-reduced-motion: reduce) {
-  .modal {
-    animation: none;
+    font-size: $font-size-xs;
   }
 }

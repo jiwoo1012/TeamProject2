@@ -32,6 +32,8 @@ import {
 
 import eventsData from '../../data/events.json'
 
+import makdongTavernImage from '../../assets/characters/M007_Poses03.png'
+
 import {
   PATHS,
 } from '../../routes/paths'
@@ -132,6 +134,199 @@ const quickMenus = [
     icon: 'repeat',
   },
 ]
+
+
+/* =========================
+   MOBILE TASTE DATA
+========================= */
+
+const tasteAxes = [
+  {
+    key: 'sweetness',
+    title: '단맛',
+    options: [
+      'dry',
+      'mild',
+      'sweet',
+    ],
+    labels: [
+      '깔끔한 맛',
+      '은은한 단맛',
+      '달콤한 맛',
+    ],
+    empty: '아직 탐색 중',
+  },
+
+  {
+    key: 'acidity',
+    legacy: 'sourness',
+    title: '산미',
+    options: [
+      'low',
+      'medium',
+      'high',
+    ],
+    labels: [
+      '산미가 적은 맛',
+      '은은하게 상큼한 맛',
+      '새콤한 맛',
+    ],
+    empty: '상관없어요',
+  },
+
+  {
+    key: 'bodyWeight',
+    legacy: 'body',
+    title: '무게감',
+    options: [
+      'light',
+      'medium',
+      'full',
+    ],
+    labels: [
+      '가볍고 깔끔한 술',
+      '적당한 무게감의 술',
+      '진하고 묵직한 술',
+    ],
+    empty: '아직 탐색 중',
+  },
+
+  {
+    key: 'scentIntensity',
+    legacy: 'aroma',
+    title: '향',
+    options: [
+      'mild',
+      'medium',
+      'strong',
+    ],
+    labels: [
+      '은은한 향',
+      '적당히 느껴지는 향',
+      '뚜렷한 향',
+    ],
+    empty: '상관없어요',
+  },
+
+  {
+    key: 'alcoholRange',
+    legacy: 'abv',
+    title: '도수',
+    options: [
+      'light',
+      'moderate',
+      'strong',
+      'veryStrong',
+    ],
+    labels: [
+      '10도 이하',
+      '11~16도',
+      '17~25도',
+      '26도 이상',
+    ],
+    empty: '상관없어요',
+  },
+]
+
+
+const getTasteRows = (
+  preference
+) =>
+  tasteAxes.map(
+    (
+      axis
+    ) => {
+      const rawValue =
+        preference?.[
+          axis.key
+        ] ??
+        preference?.[
+          axis.legacy
+        ]
+
+      const value =
+        Array.isArray(
+          rawValue
+        )
+          ? rawValue[0]
+          : rawValue
+
+      let index =
+        axis.options.indexOf(
+          value
+        )
+
+
+      if (
+        axis.key ===
+        'alcoholRange'
+      ) {
+        if (
+          value &&
+          typeof value ===
+            'object'
+        ) {
+          if (
+            value.min >= 26
+          ) {
+            index = 3
+          } else if (
+            value.min >= 17
+          ) {
+            index = 2
+          } else if (
+            value.min >= 11
+          ) {
+            index = 1
+          } else if (
+            typeof value.max ===
+              'number' &&
+            value.max <= 10
+          ) {
+            index = 0
+          }
+        } else if (
+          typeof value ===
+            'number' &&
+          Number.isFinite(
+            value
+          )
+        ) {
+          index =
+            value <= 10
+              ? 0
+              : value <= 16
+                ? 1
+                : value <= 25
+                  ? 2
+                  : 3
+        }
+      } else if (
+        typeof value ===
+          'number' &&
+        value >= 1 &&
+        value <= 5
+      ) {
+        index =
+          value <= 2
+            ? 0
+            : value >= 4
+              ? 2
+              : 1
+      }
+
+
+      return {
+        ...axis,
+        index,
+        label:
+          axis.labels[
+            index
+          ] ??
+          axis.empty,
+      }
+    }
+  )
 
 
 /* =========================
@@ -775,6 +970,67 @@ const MyPageLayout = () => {
     )
 
 
+  const preference =
+    userData?.userPreference
+
+
+  const hasPreference =
+    Boolean(
+      preference &&
+        tasteAxes.some(
+          (
+            axis
+          ) =>
+            Object.hasOwn(
+              preference,
+              axis.key
+            ) ||
+            (
+              axis.legacy &&
+              Object.hasOwn(
+                preference,
+                axis.legacy
+              )
+            )
+        )
+    )
+
+
+  const tasteRows =
+    getTasteRows(
+      preference
+    )
+
+
+  const tasteDescription =
+    [
+      tasteRows
+        .slice(
+          0,
+          2
+        )
+        .find(
+          (
+            row
+          ) =>
+            row.index >= 0
+        ),
+
+      tasteRows[2]
+        ?.index >= 0
+        ? tasteRows[2]
+        : null,
+    ]
+      .filter(Boolean)
+      .map(
+        (
+          row
+        ) =>
+          row.label
+      )
+      .join('과 ')
+
+
   return (
     <section
       className={
@@ -860,12 +1116,23 @@ const MyPageLayout = () => {
                 </div>
 
 
+                {tasteDescription && (
+                  <span
+                    className={
+                      styles.mobileTasteGreeting
+                    }
+                  >
+                    {`${tasteDescription}을 좋아하시는`}
+                  </span>
+                )}
+
+
                 <strong
                   className={
                     styles.mobileWelcome
                   }
                 >
-                  {`${userName} ${userGrade}, 환영합니다!`}
+                  {`${userName} ${userGrade}! 어서 오세요.`}
                 </strong>
 
 
@@ -1041,6 +1308,176 @@ const MyPageLayout = () => {
             </div>
           </div>
 
+          {/* =====================
+              MOBILE TASTE
+          ===================== */}
+
+          <section
+            className={
+              styles.mobileTasteSection
+            }
+            aria-labelledby="mobile-mypage-taste-title"
+          >
+            <div
+              className={
+                styles.mobileTasteHeader
+              }
+            >
+              <div>
+                <h2
+                  id="mobile-mypage-taste-title"
+                >
+                  나의 취향
+                </h2>
+
+                <p>
+                  막동이가 기억하고 있는 나리의 취향이에요.
+                </p>
+              </div>
+            </div>
+
+
+            {hasPreference ? (
+              <div
+                className={
+                  styles.mobileTasteCard
+                }
+              >
+                <div
+                  className={
+                    styles.mobileTasteIntro
+                  }
+                >
+                  <span>
+                    막동이가 기억한 취향
+                  </span>
+
+                  <strong>
+                    {tasteDescription
+                      ? `${tasteDescription}을 좋아하시네요!`
+                      : '나리의 취향을 차곡차곡 기억하고 있어요.'}
+                  </strong>
+                </div>
+
+
+                <div
+                  className={
+                    styles.mobileTasteList
+                  }
+                >
+                  {tasteRows.map(
+                    (
+                      row
+                    ) => (
+                      <div
+                        key={
+                          row.key
+                        }
+                        className={
+                          styles.mobileTasteRow
+                        }
+                      >
+                        <span
+                          className={
+                            styles.mobileTasteLabel
+                          }
+                        >
+                          {
+                            row.title
+                          }
+                        </span>
+
+
+                        <div
+                          className={
+                            styles.mobileTasteScale
+                          }
+                          aria-hidden="true"
+                        >
+                          {row.options.map(
+                            (
+                              option,
+                              index
+                            ) => (
+                              <span
+                                key={
+                                  option
+                                }
+                                className={
+                                  index <=
+                                  row.index
+                                    ? styles.mobileTasteSelected
+                                    : undefined
+                                }
+                              />
+                            )
+                          )}
+                        </div>
+
+
+                        <span
+                          className={
+                            styles.mobileTasteAnswer
+                          }
+                        >
+                          {
+                            row.label
+                          }
+                        </span>
+                      </div>
+                    )
+                  )}
+                </div>
+
+
+                <NavLink
+                  to="preference"
+                  className={
+                    styles.mobileTasteLink
+                  }
+                >
+                  내 취향 자세히 보기
+
+                  <span
+                    aria-hidden="true"
+                  >
+                    ›
+                  </span>
+                </NavLink>
+              </div>
+            ) : (
+              <div
+                className={
+                  styles.mobileTasteEmpty
+                }
+              >
+                <strong>
+                  아직 등록된 취향이 없어요.
+                </strong>
+
+                <p>
+                  몇 가지 질문에 답하고 나리의 취향을 알려주세요.
+                </p>
+
+                <NavLink
+                  to="preference"
+                  className={
+                    styles.mobileTasteLink
+                  }
+                >
+                  내 취향 알아보기
+
+                  <span
+                    aria-hidden="true"
+                  >
+                    ›
+                  </span>
+                </NavLink>
+              </div>
+            )}
+          </section>
+
+
 
           {/* =====================
               MOBILE ACTIVE EVENTS
@@ -1080,93 +1517,130 @@ const MyPageLayout = () => {
             </div>
 
 
-            {activeEvents.length >
-            0 ? (
-              <div
-                className={
-                  styles.eventScroller
-                }
+            <div
+              className={
+                styles.eventScroller
+              }
+            >
+              {/* 막동이 주막 게임 - 항상 첫 번째 */}
+              <NavLink
+                to="/ai/tavern"
+                className={`${styles.eventCard} ${styles.tavernEventCard}`}
               >
-                {activeEvents.map(
-                  (
-                    event
-                  ) => (
-                    <NavLink
-                      key={
-                        event.id
-                      }
-                      to={
-                        event.path ||
-                        PATHS.events
-                      }
+                <div
+                  className={`${styles.eventCardImage} ${styles.tavernEventImage}`}
+                >
+                  <img
+                    src={
+                      makdongTavernImage
+                    }
+                    alt="막동이"
+                  />
+                </div>
+
+
+                <div
+                  className={
+                    styles.eventCardInfo
+                  }
+                >
+                  <span
+                    className={
+                      styles.eventCardLabel
+                    }
+                  >
+                    바로가기
+                  </span>
+
+
+                  <strong>
+                    막동이 주막 게임
+                  </strong>
+                </div>
+
+
+                <span
+                  className={
+                    styles.eventCardArrow
+                  }
+                  aria-hidden="true"
+                >
+                  ›
+                </span>
+              </NavLink>
+
+
+              {activeEvents.map(
+                (
+                  event
+                ) => (
+                  <NavLink
+                    key={
+                      event.id
+                    }
+                    to={
+                      event.path ||
+                      PATHS.events
+                    }
+                    className={
+                      styles.eventCard
+                    }
+                  >
+                    <div
                       className={
-                        styles.eventCard
+                        styles.eventCardImage
                       }
                     >
-                      <div
-                        className={
-                          styles.eventCardImage
-                        }
-                      >
-                        {event.bannerSrc ? (
-                          <img
-                            src={
-                              event.bannerSrc
-                            }
-                            alt=""
-                          />
-                        ) : (
-                          <span
-                            aria-hidden="true"
-                          >
-                            ✦
-                          </span>
-                        )}
-                      </div>
-
-
-                      <div
-                        className={
-                          styles.eventCardInfo
-                        }
-                      >
-                        <span
-                          className={
-                            styles.eventCardLabel
+                      {event.bannerSrc ? (
+                        <img
+                          src={
+                            event.bannerSrc
                           }
+                          alt=""
+                        />
+                      ) : (
+                        <span
+                          aria-hidden="true"
                         >
-                          진행 중
+                          ✦
                         </span>
+                      )}
+                    </div>
 
 
-                        <strong>
-                          {event.title ||
-                            '자작 이벤트'}
-                        </strong>
-                      </div>
-
-
+                    <div
+                      className={
+                        styles.eventCardInfo
+                      }
+                    >
                       <span
                         className={
-                          styles.eventCardArrow
+                          styles.eventCardLabel
                         }
-                        aria-hidden="true"
                       >
-                        ›
+                        진행 중
                       </span>
-                    </NavLink>
-                  )
-                )}
-              </div>
-            ) : (
-              <div
-                className={
-                  styles.noEvent
-                }
-              >
-                현재 진행 중인 이벤트가 없습니다.
-              </div>
-            )}
+
+
+                      <strong>
+                        {event.title ||
+                          '자작 이벤트'}
+                      </strong>
+                    </div>
+
+
+                    <span
+                      className={
+                        styles.eventCardArrow
+                      }
+                      aria-hidden="true"
+                    >
+                      ›
+                    </span>
+                  </NavLink>
+                )
+              )}
+            </div>
           </section>
 
 

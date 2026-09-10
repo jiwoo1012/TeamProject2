@@ -13,7 +13,7 @@ import {
   subscribeToAuthState,
 } from '../../firebase/auth'
 
-import AiLoginModal from '../../components/ai/AiLoginModal'
+import GuestChoiceModal from './GuestChoiceModal'
 
 import styles from './AiIntro.module.scss'
 
@@ -443,7 +443,7 @@ const AiIntro = () => {
           비로그인 사용자용 로그인 안내 모달
       ======================================== */}
 
-      <AiLoginModal
+      <GuestChoiceModal
         isOpen={
           isLoginModalOpen
         }
