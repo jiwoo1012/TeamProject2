@@ -77,7 +77,7 @@ const MobileHeader = () => {
   }
 
   return (
-    <div className={styles.mobileHeader}>
+    <div className={styles.mobileHeader} data-mobile-menu-open={isMenuOpen}>
       {/* ==============================
           모바일 상단 헤더
       ============================== */}
