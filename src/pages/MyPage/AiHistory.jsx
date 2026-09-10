@@ -31,6 +31,7 @@ import {
 import MyPageHeader from '../../components/mypage/MyPageHeader'
 
 import styles from './AiHistory.module.scss'
+import { cancelSavedRecommendation } from '../../services/recommendationApi'
 
 
 const FILTERS = [
@@ -472,6 +473,22 @@ const buildHistoryKeywords = (
 ======================================== */
 
 const AiHistory = () => {
+  const [isCancellingSave, setIsCancellingSave] = useState(false)
+  const [cancelSaveMessage, setCancelSaveMessage] = useState('')
+  const handleCancelSave = async (id) => {
+    if (isCancellingSave) return
+    setIsCancellingSave(true)
+    setCancelSaveMessage('')
+    try {
+      await cancelSavedRecommendation(id)
+      setRecommendations((items) => items.map((item) => item.id === id ? { ...item, isSaved: false } : item))
+      setCancelSaveMessage('저장을 취소했어요. 전체 추천 기록은 유지됩니다.')
+    } catch {
+      setCancelSaveMessage('저장 취소에 실패했어요. 잠시 후 다시 시도해주세요.')
+    } finally {
+      setIsCancellingSave(false)
+    }
+  }
   const navigate =
     useNavigate()
 
@@ -1096,6 +1113,7 @@ const AiHistory = () => {
           <h2>
             최근 저장한 추천
           </h2>
+          {cancelSaveMessage && <p role="status">{cancelSaveMessage}</p>}
 
 
           {recentRecommendations.length >
@@ -1129,6 +1147,7 @@ const AiHistory = () => {
 
 
                   return (
+                    <div key={item.id} className={styles.recentSavedItem}>
                     <button
                       key={
                         item.id
@@ -1225,6 +1244,9 @@ const AiHistory = () => {
                         ›
                       </span>
                     </button>
+                    <button type="button" className={styles.cancelSaveButton} disabled={isCancellingSave}
+                      onClick={() => handleCancelSave(item.id)}>저장 취소</button>
+                    </div>
                   )
                 }
               )}
