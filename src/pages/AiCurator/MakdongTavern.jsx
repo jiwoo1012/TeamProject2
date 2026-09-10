@@ -19,9 +19,16 @@ import customerManSeat from '../../assets/images/ai/tavern/customers/customer-ma
 import customerWomanEnter from '../../assets/images/ai/tavern/customers/customer-woman-enter.png'
 import customerWomanSeat from '../../assets/images/ai/tavern/customers/customer-woman-seat.png'
 
+import customerManPortrait from '../../assets/images/ai/tavern/portraits/customer-man-portrait.png'
+import customerWomanPortrait from '../../assets/images/ai/tavern/portraits/customer-woman-portrait.png'
+
 import liquorStorageSign from '../../assets/images/ai/tavern/signs/sign-liquor-storage.png'
 import kitchenSign from '../../assets/images/ai/tavern/signs/sign-kitchen.png'
 import glassDisplaySign from '../../assets/images/ai/tavern/signs/sign-glass-display.png'
+
+import liquorStorageIcon from '../../assets/images/ai/tavern/icons/icon-liquor-storage.png'
+import kitchenIcon from '../../assets/images/ai/tavern/icons/icon-kitchen.png'
+import glassDisplayIcon from '../../assets/images/ai/tavern/icons/icon-glass-display.png'
 
 import {
   TAVERN_CUSTOMERS,
@@ -35,11 +42,13 @@ const CUSTOMER_IMAGES = {
   man: {
     enter: customerManEnter,
     seat: customerManSeat,
+    portrait: customerManPortrait,
   },
 
   woman: {
     enter: customerWomanEnter,
     seat: customerWomanSeat,
+    portrait: customerWomanPortrait,
   },
 }
 
@@ -63,6 +72,20 @@ const INTERACTION_DISTANCE = 100
 const CAMERA_FOCUS_RATIO = 0.38
 
 const TYPE_SPEED = 27
+
+const CUSTOMER_APPEAR_DELAY = 1800
+
+const MOBILE_BREAKPOINT = 767
+
+const MOBILE_CHARACTER_WIDTH = 170
+
+const MOBILE_FREE_MOVE_SPEED = 240
+
+const MOBILE_AUTO_MOVE_SPEED = 430
+
+const MOBILE_TAP_STEP = 92
+
+const MOBILE_STOP_DISTANCE = 5
 
 
 const WORLD_OBJECTS = {
@@ -162,6 +185,27 @@ const STAGE_INFO = {
 }
 
 
+const MOBILE_STAGE_ACTIONS = {
+  liquor: {
+    icon: liquorStorageIcon,
+    label: '술 곶간',
+    top: '34%',
+  },
+
+  food: {
+    icon: kitchenIcon,
+    label: '주방',
+    top: '36%',
+  },
+
+  glass: {
+    icon: glassDisplayIcon,
+    label: '잔 진열대',
+    top: '32%',
+  },
+}
+
+
 const MakdongTavern = () => {
   const navigate =
     useNavigate()
@@ -205,8 +249,49 @@ const MakdongTavern = () => {
     useRef(false)
 
 
+  const isCustomerVisibleRef =
+    useRef(false)
+
+
   const typingTimerRef =
     useRef(null)
+
+
+  const isMobileRef =
+    useRef(false)
+
+
+  const mobileMoveTargetRef =
+    useRef(null)
+
+
+  const mobilePendingInteractionRef =
+    useRef(false)
+
+
+  const [
+    isMobile,
+    setIsMobile,
+  ] = useState(() => {
+    if (
+      typeof window === 'undefined'
+    ) {
+      return false
+    }
+
+
+    return window
+      .matchMedia(
+        `(max-width: ${MOBILE_BREAKPOINT}px)`
+      )
+      .matches
+  })
+
+
+  const [
+    hasMobileMoved,
+    setHasMobileMoved,
+  ] = useState(false)
 
 
   const [
@@ -220,6 +305,10 @@ const MakdongTavern = () => {
     setGameStarted,
   ] = useState(false)
 
+  const [
+    isCustomerVisible,
+    setIsCustomerVisible,
+  ] = useState(false)
 
   const [
     characterX,
@@ -357,6 +446,12 @@ const MakdongTavern = () => {
     ]
 
 
+  const currentMobileStageAction =
+    MOBILE_STAGE_ACTIONS[
+      gameStage
+    ] ?? null
+
+
   const currentQuestStep =
     QUEST_STEPS.indexOf(
       gameStage
@@ -398,6 +493,66 @@ const MakdongTavern = () => {
 
 
   useEffect(() => {
+    const mediaQuery =
+      window.matchMedia(
+        `(max-width: ${MOBILE_BREAKPOINT}px)`
+      )
+
+
+    const updateMobileState = (
+      event
+    ) => {
+      const matches =
+        event.matches
+
+
+      isMobileRef.current =
+        matches
+
+
+      setIsMobile(
+        matches
+      )
+
+
+      if (
+        !matches
+      ) {
+        mobileMoveTargetRef.current =
+          null
+
+
+        mobilePendingInteractionRef.current =
+          false
+      }
+    }
+
+
+    isMobileRef.current =
+      mediaQuery.matches
+
+
+    setIsMobile(
+      mediaQuery.matches
+    )
+
+
+    mediaQuery.addEventListener(
+      'change',
+      updateMobileState
+    )
+
+
+    return () => {
+      mediaQuery.removeEventListener(
+        'change',
+        updateMobileState
+      )
+    }
+  }, [])
+
+
+  useEffect(() => {
     gameStageRef.current =
       gameStage
   }, [gameStage])
@@ -406,6 +561,18 @@ const MakdongTavern = () => {
   useEffect(() => {
     movementBlockedRef.current =
       movementBlocked
+
+
+    if (
+      movementBlocked
+    ) {
+      mobileMoveTargetRef.current =
+        null
+
+
+      mobilePendingInteractionRef.current =
+        false
+    }
   }, [movementBlocked])
 
 
@@ -413,6 +580,41 @@ const MakdongTavern = () => {
     isNearTargetRef.current =
       isNearTarget
   }, [isNearTarget])
+
+
+  useEffect(() => {
+    isCustomerVisibleRef.current =
+      isCustomerVisible
+  }, [isCustomerVisible])
+
+
+  useEffect(() => {
+    if (!gameStarted) {
+      setIsCustomerVisible(false)
+
+      return undefined
+    }
+
+
+    setIsCustomerVisible(false)
+
+
+    const timer =
+      window.setTimeout(
+        () => {
+          setIsCustomerVisible(true)
+        },
+        CUSTOMER_APPEAR_DELAY
+      )
+
+
+    return () => {
+      window.clearTimeout(timer)
+    }
+  }, [
+    gameStarted,
+    customerIndex,
+  ])
 
 
   useEffect(() => {
@@ -457,6 +659,12 @@ const MakdongTavern = () => {
   }, [gameStarted])
 
 
+  const characterLayoutWidth =
+    isMobile
+      ? MOBILE_CHARACTER_WIDTH
+      : CHARACTER_WIDTH
+
+
   const maxCameraX =
     Math.max(
       0,
@@ -466,14 +674,24 @@ const MakdongTavern = () => {
     )
 
 
+  const cameraTargetX =
+    isMobile
+      ? characterX +
+        characterLayoutWidth /
+          2 -
+        viewportWidth /
+          2
+      : characterX -
+        viewportWidth *
+          CAMERA_FOCUS_RATIO
+
+
   const cameraX =
     Math.max(
       0,
 
       Math.min(
-        characterX -
-          viewportWidth *
-            CAMERA_FOCUS_RATIO,
+        cameraTargetX,
 
         maxCameraX
       )
@@ -507,6 +725,14 @@ const MakdongTavern = () => {
 
 
   const resetCharacter = () => {
+    mobileMoveTargetRef.current =
+      null
+
+
+    mobilePendingInteractionRef.current =
+      false
+
+
     positionRef.current =
       CHARACTER_START_X
 
@@ -535,6 +761,11 @@ const MakdongTavern = () => {
 
 
   const resetCurrentCustomer = () => {
+    setIsCustomerVisible(
+      false
+    )
+
+
     setGameStage(
       'talk'
     )
@@ -595,6 +826,11 @@ const MakdongTavern = () => {
 
 
   const handleStartGame = () => {
+    setHasMobileMoved(
+      false
+    )
+
+
     setCustomerIndex(
       0
     )
@@ -1119,9 +1355,10 @@ const MakdongTavern = () => {
       : 0
 
 
-  const handleInteraction = () => {
+  const runStageInteraction = () => {
     if (
-      !isNearTargetRef.current
+      gameStageRef.current === 'talk' &&
+      !isCustomerVisibleRef.current
     ) {
       return
     }
@@ -1166,6 +1403,271 @@ const MakdongTavern = () => {
     }
   }
 
+
+  const handleInteraction = () => {
+    if (
+      !isNearTargetRef.current
+    ) {
+      return
+    }
+
+
+    runStageInteraction()
+  }
+
+
+  const clampCharacterX = (
+    nextX,
+    layoutWidth
+  ) => {
+    const maxX =
+      WORLD_WIDTH -
+      layoutWidth -
+      SIDE_PADDING
+
+
+    return Math.max(
+      SIDE_PADDING,
+
+      Math.min(
+        nextX,
+        maxX
+      )
+    )
+  }
+
+
+  const startMobileMove = (
+    targetWorldX,
+    shouldInteract = false
+  ) => {
+    if (
+      !isMobileRef.current ||
+      movementBlockedRef.current
+    ) {
+      return
+    }
+
+
+    if (
+      gameStageRef.current === 'talk' &&
+      shouldInteract &&
+      !isCustomerVisibleRef.current
+    ) {
+      return
+    }
+
+
+    pressedKeysRef.current.clear()
+
+
+    const targetLeft =
+      clampCharacterX(
+        targetWorldX -
+          MOBILE_CHARACTER_WIDTH /
+            2,
+        MOBILE_CHARACTER_WIDTH
+      )
+
+
+    const delta =
+      targetLeft -
+      positionRef.current
+
+
+    if (
+      Math.abs(
+        delta
+      ) <=
+      MOBILE_STOP_DISTANCE
+    ) {
+      positionRef.current =
+        targetLeft
+
+
+      setCharacterX(
+        targetLeft
+      )
+
+
+      setIsMoving(
+        false
+      )
+
+
+      movingRef.current =
+        false
+
+
+      mobileMoveTargetRef.current =
+        null
+
+
+      if (
+        shouldInteract
+      ) {
+        isNearTargetRef.current =
+          true
+
+
+        setIsNearTarget(
+          true
+        )
+
+
+        runStageInteraction()
+      }
+
+
+      return
+    }
+
+
+    setDirection(
+      delta > 0
+        ? 'right'
+        : 'left'
+    )
+
+
+    mobileMoveTargetRef.current =
+      targetLeft
+
+
+    mobilePendingInteractionRef.current =
+      shouldInteract
+  }
+
+
+  const handleMobileWorldPointer = (
+    event
+  ) => {
+    if (
+      !isMobileRef.current ||
+      movementBlockedRef.current
+    ) {
+      return
+    }
+
+
+    if (
+      event.target.closest(
+        '[data-mobile-target="true"]'
+      )
+    ) {
+      return
+    }
+
+
+    const viewportElement =
+      viewportRef.current
+
+
+    if (
+      !viewportElement
+    ) {
+      return
+    }
+
+
+    const rect =
+      viewportElement
+        .getBoundingClientRect()
+
+
+    const tapX =
+      Math.max(
+        0,
+
+        Math.min(
+          event.clientX -
+            rect.left,
+
+          rect.width
+        )
+      )
+
+
+    const characterScreenCenterX =
+      positionRef.current -
+      cameraX +
+      MOBILE_CHARACTER_WIDTH /
+        2
+
+
+    const deltaFromCharacter =
+      tapX -
+      characterScreenCenterX
+
+
+    if (
+      Math.abs(
+        deltaFromCharacter
+      ) < 24
+    ) {
+      return
+    }
+
+
+    const moveDirection =
+      deltaFromCharacter > 0
+        ? 1
+        : -1
+
+
+    const targetWorldX =
+      positionRef.current +
+      MOBILE_CHARACTER_WIDTH /
+        2 +
+      moveDirection *
+        MOBILE_TAP_STEP
+
+
+    setHasMobileMoved(
+      true
+    )
+
+
+    startMobileMove(
+      targetWorldX,
+      false
+    )
+  }
+
+
+  const handleMobileStageTarget = (
+    event
+  ) => {
+    if (
+      !isMobileRef.current ||
+      movementBlockedRef.current
+    ) {
+      return
+    }
+
+
+    event.preventDefault()
+    event.stopPropagation()
+
+
+    const targetX =
+      getTargetX(
+        gameStageRef.current
+      )
+
+
+    if (
+      targetX === null
+    ) {
+      return
+    }
+
+
+    startMobileMove(
+      targetX,
+      true
+    )
+  }
 
   useEffect(() => {
     if (
@@ -1373,6 +1875,138 @@ const MakdongTavern = () => {
             false
           )
         }
+      } else if (
+        isMobileRef.current
+      ) {
+        const mobileTarget =
+          mobileMoveTargetRef.current
+
+
+        if (
+          mobileTarget !== null
+        ) {
+          const distance =
+            mobileTarget -
+            positionRef.current
+
+
+          const moveDirection =
+            distance > 0
+              ? 1
+              : -1
+
+
+          const mobileMoveSpeed =
+            mobilePendingInteractionRef.current
+              ? MOBILE_AUTO_MOVE_SPEED
+              : MOBILE_FREE_MOVE_SPEED
+
+
+          const maxStep =
+            mobileMoveSpeed *
+            deltaTime
+
+
+          const reached =
+            Math.abs(
+              distance
+            ) <=
+            Math.max(
+              MOBILE_STOP_DISTANCE,
+              maxStep
+            )
+
+
+          const nextX =
+            reached
+              ? mobileTarget
+              : positionRef.current +
+                moveDirection *
+                  maxStep
+
+
+          const clampedX =
+            clampCharacterX(
+              nextX,
+              MOBILE_CHARACTER_WIDTH
+            )
+
+
+          positionRef.current =
+            clampedX
+
+
+          setCharacterX(
+            clampedX
+          )
+
+
+          setDirection(
+            moveDirection > 0
+              ? 'right'
+              : 'left'
+          )
+
+
+          if (
+            !movingRef.current
+          ) {
+            movingRef.current =
+              true
+
+
+            setIsMoving(
+              true
+            )
+          }
+
+
+          if (
+            reached
+          ) {
+            mobileMoveTargetRef.current =
+              null
+
+
+            movingRef.current =
+              false
+
+
+            setIsMoving(
+              false
+            )
+
+
+            if (
+              mobilePendingInteractionRef.current
+            ) {
+              mobilePendingInteractionRef.current =
+                false
+
+
+              isNearTargetRef.current =
+                true
+
+
+              setIsNearTarget(
+                true
+              )
+
+
+              runStageInteraction()
+            }
+          }
+        } else if (
+          movingRef.current
+        ) {
+          movingRef.current =
+            false
+
+
+          setIsMoving(
+            false
+          )
+        }
       } else {
         const keys =
           pressedKeysRef.current
@@ -1447,12 +2081,6 @@ const MakdongTavern = () => {
         if (
           moving
         ) {
-          const maxX =
-            WORLD_WIDTH -
-            CHARACTER_WIDTH -
-            SIDE_PADDING
-
-
           const nextX =
             positionRef.current +
             moveDirection *
@@ -1461,13 +2089,9 @@ const MakdongTavern = () => {
 
 
           const clampedX =
-            Math.max(
-              SIDE_PADDING,
-
-              Math.min(
-                nextX,
-                maxX
-              )
+            clampCharacterX(
+              nextX,
+              CHARACTER_WIDTH
             )
 
 
@@ -1481,7 +2105,6 @@ const MakdongTavern = () => {
         }
       }
 
-
       const targetX =
         getTargetX(
           gameStageRef.current
@@ -1491,9 +2114,15 @@ const MakdongTavern = () => {
       if (
         targetX !== null
       ) {
+        const interactionCharacterWidth =
+          isMobileRef.current
+            ? MOBILE_CHARACTER_WIDTH
+            : CHARACTER_WIDTH
+
+
         const characterCenter =
           positionRef.current +
-          CHARACTER_WIDTH /
+          interactionCharacterWidth /
             2
 
 
@@ -1744,6 +2373,7 @@ const MakdongTavern = () => {
               </p>
 
 
+
               <div
                 className={
                   styles.questProgress
@@ -1791,9 +2421,42 @@ const MakdongTavern = () => {
           )}
 
 
+          {isMobile &&
+            gameStage === 'talk' &&
+            !hasMobileMoved &&
+            !movementBlocked &&
+            !isQuestClear && (
+              <div
+                className={
+                  styles.mobileTutorialHint
+                }
+              >
+                <span
+                  className={
+                    styles.mobileTutorialText
+                  }
+                >
+                  바닥을 눌러 막동이를 이동해보세요!
+                </span>
+
+                <span
+                  className={
+                    styles.mobileTutorialArrow
+                  }
+                  aria-hidden="true"
+                >
+                  →
+                </span>
+              </div>
+            )}
+
+
           <div
             className={
               styles.world
+            }
+            onPointerDown={
+              handleMobileWorldPointer
             }
             style={{
               width:
@@ -1873,15 +2536,103 @@ const MakdongTavern = () => {
             </div>
 
 
+            {isMobile &&
+              currentMobileStageAction &&
+              !movementBlocked &&
+              !isQuestClear && (
+                <button
+                  type="button"
+                  className={
+                    styles.mobileWorldTarget
+                  }
+                  data-mobile-target="true"
+                  onPointerDown={
+                    handleMobileStageTarget
+                  }
+                  style={{
+                    left:
+                      `${getTargetX(gameStage)}px`,
+
+                    top:
+                      currentMobileStageAction.top,
+                  }}
+                  aria-label={`${currentMobileStageAction.label} 선택하기`}
+                >
+                  <span
+                    className={
+                      styles.mobileWorldTargetFloat
+                    }
+                  >
+                    <img
+                      src={
+                        currentMobileStageAction.icon
+                      }
+                      alt=""
+                      aria-hidden="true"
+                      draggable="false"
+                    />
+
+                    <span>
+                      눌러보세요
+                    </span>
+                  </span>
+                </button>
+              )}
+
+
             <div
+              key={`${currentCustomer.id}-${customerAtTable ? 'seat' : 'enter'}`}
               className={`${styles.customer} ${
                 customerAtTable
                   ? styles.customerSeated
                   : styles.customerEntering
               }`}
+              data-mobile-target={
+                isMobile &&
+                isCustomerVisible &&
+                (
+                  gameStage ===
+                    'talk' ||
+                  gameStage ===
+                    'serve'
+                )
+                  ? 'true'
+                  : undefined
+              }
+              onPointerDown={
+                isMobile &&
+                (
+                  gameStage ===
+                    'talk' ||
+                  gameStage ===
+                    'serve'
+                )
+                  ? handleMobileStageTarget
+                  : undefined
+              }
               style={{
                 left:
                   `${customerWorldX}px`,
+
+                opacity:
+                  isCustomerVisible
+                    ? 1
+                    : 0,
+
+                transform:
+                  `translateX(-50%) translateY(${
+                    isCustomerVisible
+                      ? '0px'
+                      : '18px'
+                  })`,
+
+                filter:
+                  isCustomerVisible
+                    ? 'blur(0px)'
+                    : 'blur(4px)',
+
+                transition:
+                  'left 1.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease, transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s ease',
               }}
             >
               <img
@@ -1901,6 +2652,22 @@ const MakdongTavern = () => {
                   }
                 </span>
               )}
+
+              {isMobile &&
+                isCustomerVisible &&
+                (
+                  gameStage ===
+                    'talk' ||
+                  gameStage ===
+                    'serve'
+                ) && (
+                  <span
+                    className={
+                      styles.mobileTargetArrow
+                    }
+                    aria-hidden="true"
+                  />
+                )}
             </div>
 
 
@@ -1953,8 +2720,13 @@ const MakdongTavern = () => {
           </div>
 
 
-          {isNearTarget &&
-            !movementBlocked && (
+          {!isMobile &&
+            isNearTarget &&
+            !movementBlocked &&
+            (
+              gameStage !== 'talk' ||
+              isCustomerVisible
+            ) && (
               <div
                 className={
                   styles.worldPrompt
@@ -2001,18 +2773,14 @@ const MakdongTavern = () => {
                   >
                     <img
                       src={
-                        currentCustomerImages.enter
+                        currentCustomerImages.portrait
                       }
-                      alt=""
+                      alt={`${currentCustomer.name} 프로필`}
                     />
                   </div>
 
 
                   <div>
-                    <span>
-                      손님
-                    </span>
-
                     <strong>
                       {
                         currentCustomer.name
@@ -2112,9 +2880,11 @@ const MakdongTavern = () => {
               }
             >
               <div
-                className={
-                  styles.choicePanel
-                }
+                className={`${styles.choicePanel} ${
+                  choiceFeedback
+                    ? styles.choicePanelFeedback
+                    : ''
+                }`}
               >
                 {!choiceFeedback ? (
                   <>

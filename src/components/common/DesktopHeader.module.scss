@@ -1503,13 +1503,15 @@
 .shopCategoryLink {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
 
   min-height: 46px;
 
   padding:
     0
-    15px;
+    15px
+    0
+    18px;
 
   box-sizing: border-box;
 
@@ -1520,28 +1522,37 @@
 
   text-decoration: none;
 
-  border:
-    1px
-    solid
-    transparent;
+  /*
+    왼쪽 초록 바.
+    pseudo-element 대신 background-size를 사용해서
+    다른 selector에 덮이지 않도록 처리.
+  */
+  background-image:
+    linear-gradient(
+      $color-primary,
+      $color-primary
+    );
 
-  border-radius: 8px;
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 5px 0;
+
+  border: 0;
 
   transition:
-    color $transition-fast ease,
-    background $transition-fast ease,
-    border-color $transition-fast ease;
+    color 0.24s ease,
+    padding-left 0.24s ease,
+    background-size 0.24s
+      cubic-bezier(.22, 1, .36, 1);
 
 
   &:hover,
   &:focus-visible {
-    color: #8f4f3e;
+    color: $color-primary;
 
-    background:
-      rgba(193, 103, 78, 0.06);
+    padding-left: 23px;
 
-    border-color:
-      rgba(193, 103, 78, 0.22);
+    background-size: 5px 24px;
 
     outline: none;
   }
@@ -1550,20 +1561,22 @@
 
 .snbNavLinkActive,
 .shopCategoryLinkActive {
-  color: #fff;
+  color: $color-primary;
 
-  background: #315d53;
+  font-weight: $font-weight-semibold;
 
-  border-color: #315d53;
+  padding-left: 23px;
+
+  background-size: 5px 30px;
 
 
   &:hover,
   &:focus-visible {
-    color: #fff;
+    color: $color-primary;
 
-    background: #294f47;
+    padding-left: 23px;
 
-    border-color: #294f47;
+    background-size: 5px 30px;
   }
 }
 
@@ -1709,7 +1722,6 @@
 
   gap: 8px;
 
-
   padding:
     28px
     30px;
@@ -1718,16 +1730,26 @@
     1px
     solid
     rgba($color-text-primary, 0.09);
-      .snbNavLink {
+
+
+  .snbNavLink {
+    width: 100%;
+
     font-size: 14px;
   }
 }
 
 
 .aiFeature {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  display: grid;
+
+  grid-template-columns:
+    220px
+    minmax(320px, 1fr);
+
+  align-items: center;
+
+  gap: 34px;
 
   min-height: 180px;
 
@@ -1736,6 +1758,13 @@
     0
     0
     44px;
+}
+
+
+.aiFeatureText {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 
 
   h3 {
@@ -1744,46 +1773,129 @@
       0
       22px;
 
-    font-family: $font-family-display;
+    font-family:
+      $font-family-display;
+
     font-size: 25px;
-    font-weight: $font-weight-semibold;
+    font-weight:
+      $font-weight-semibold;
 
     line-height: 1.5;
   }
+}
 
 
-  a {
-    width: fit-content;
+.aiRecommendLink {
+  width: fit-content;
 
-    display: inline-flex;
-    align-items: center;
+  color: $color-primary;
 
-    color: $color-primary;
+  font-size: 14px;
+  font-weight:
+    $font-weight-semibold;
 
+  text-decoration: none;
+
+  transition:
+    color $transition-fast ease,
+    transform $transition-fast ease;
+
+
+  &:hover,
+  &:focus-visible {
+    color: #315d53;
+
+    transform:
+      translateX(3px);
+
+    outline: none;
+  }
+}
+
+
+/* ================================
+   막동이 주막 FEATURE
+================================ */
+
+.tavernFeature {
+  width: 280px;
+  max-width: 100%;
+
+  display: block;
+
+  color: $color-text-primary;
+
+  text-decoration: none;
+}
+
+
+.tavernFeatureImage {
+  width: 100%;
+  height: 130px;
+
+  overflow: hidden;
+
+  border-radius: 12px;
+
+  background: $color-surface;
+
+
+  img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
+
+.tavernFeatureInfo {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: 10px;
+
+
+  strong {
     font-size: 14px;
-    font-weight: $font-weight-semibold;
+    font-weight:
+      $font-weight-semibold;
+  }
 
-    text-decoration: underline;
-    text-decoration-color: transparent;
-    text-underline-offset: 4px;
+
+  span {
+    color:
+      $color-text-secondary;
+
+    font-size: 12px;
 
     transition:
       color $transition-fast ease,
-      text-decoration-color $transition-fast ease,
       transform $transition-fast ease;
+  }
+}
 
 
-    &:hover,
-    &:focus-visible {
-      color: #315d53;
+.tavernFeature:hover,
+.tavernFeature:focus-visible {
+  outline: none;
 
-      text-decoration-color: currentcolor;
 
-      transform:
-        translateX(3px);
+  .tavernFeatureImage img {
+    transform:
+      scale(1.035);
+  }
 
-      outline: none;
-    }
+
+  .tavernFeatureInfo span {
+    color: $color-primary;
+
+    transform:
+      translateX(3px);
   }
 }
 
@@ -1850,36 +1962,77 @@
   flex-direction: column;
 
   gap: 4px;
+}
 
 
-  a {
-    min-height: 34px;
+.shopDetailLink {
+  display: flex;
+  align-items: center;
 
-    display: flex;
-    align-items: center;
+  width: 100%;
+  min-height: 34px;
 
-    width: fit-content;
+  padding:
+    0
+    8px
+    0
+    0;
 
-    color: $color-text-secondary;
+  box-sizing: border-box;
 
-    font-size: 13px;
+  color: $color-text-secondary;
 
-    text-decoration: none;
+  font-size: 13px;
 
-    transition:
-      color $transition-fast ease,
-      transform $transition-fast ease;
+  text-decoration: none;
+
+  background-image:
+    linear-gradient(
+      $color-primary,
+      $color-primary
+    );
+
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 4px 0;
+
+  transition:
+    color 0.22s ease,
+    padding-left 0.22s ease,
+    background-size 0.22s
+      cubic-bezier(.22, 1, .36, 1);
 
 
-    &:hover,
-    &:focus-visible {
-      color: $color-primary;
+  &:hover,
+  &:focus-visible {
+    color: $color-primary;
 
-      transform:
-        translateX(3px);
+    padding-left: 13px;
 
-      outline: none;
-    }
+    background-size: 4px 22px;
+
+    outline: none;
+  }
+}
+
+
+.shopDetailLinkActive {
+  color: $color-primary;
+
+  font-weight: $font-weight-semibold;
+
+  padding-left: 13px;
+
+  background-size: 4px 24px;
+
+
+  &:hover,
+  &:focus-visible {
+    color: $color-primary;
+
+    padding-left: 13px;
+
+    background-size: 4px 24px;
   }
 }
 
@@ -1890,7 +2043,7 @@
 
   color: $color-text-secondary;
 
-  font-size: 11px;
+  font-size: 13px;
 
   text-decoration: underline;
   text-decoration-color: transparent;
@@ -2278,9 +2431,27 @@
 
     padding:
       0
-      12px;
+      12px
+      0
+      16px;
 
     font-size: 12px;
+
+
+    &:hover,
+    &:focus-visible {
+      padding-left: 21px;
+
+      background-size: 5px 22px;
+    }
+  }
+
+
+  .snbNavLinkActive,
+  .shopCategoryLinkActive {
+    padding-left: 21px;
+
+    background-size: 5px 27px;
   }
 
 
@@ -2436,13 +2607,13 @@
 
   .shopDetailLinks {
     gap: 2px;
+  }
 
 
-    a {
-      min-height: 30px;
+  .shopDetailLink {
+    min-height: 30px;
 
-      font-size: 12px;
-    }
+    font-size: 12px;
   }
 
 

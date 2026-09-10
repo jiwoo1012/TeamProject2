@@ -39,6 +39,12 @@
     pointer-events: none;
   }
 
+  // 메인 인트로 진행 중이거나 모바일 전체 메뉴가 열려 있으면 숨김
+  :global(html:not(.main-header-visible) body:has([data-main-page])) .bottomNav,
+  :global(body:has(header button[aria-label='메뉴 닫기'][aria-expanded='true'])) .bottomNav {
+    display: none;
+  }
+
 
   .bottomNavInner {
     display: grid;
