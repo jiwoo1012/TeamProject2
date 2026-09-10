@@ -97,13 +97,14 @@ const MainPage = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const shouldSkipJourney = location.state?.skipJourney === true
+  const resetMainAfterLogout = location.state?.resetMainAfterLogout === true
 
   const [isIntroSkipped, setIsIntroSkipped] = useState(
     !IS_JOURNEY_ENABLED || shouldSkipJourney
   )
   const [bestSellerProducts, setBestSellerProducts] = useState([])
   const [isHeroDismissed, setIsHeroDismissed] = useState(
-    () => !window.matchMedia('(max-width: 767px)').matches
+    () => !resetMainAfterLogout && !window.matchMedia('(max-width: 767px)').matches
       && sessionStorage.getItem(HERO_DISMISSED_KEY) === 'true'
   )
   useEffect(() => {
@@ -205,12 +206,18 @@ const MainPage = () => {
     if (!shouldSkipJourney) return
 
     setIsIntroSkipped(true)
+    if (resetMainAfterLogout) {
+      sessionStorage.removeItem(HERO_DISMISSED_KEY)
+      setIsHeroDismissed(false)
+      heroRevealRef.current?.pause(0)
+      canMovePastHeroRef.current = false
+    }
 
     const root = document.documentElement
     const previousScrollBehavior = root.style.scrollBehavior
 
     root.style.scrollBehavior = 'auto'
-    window.scrollTo({ top: isHeroDismissed ? aiIntroRef.current?.offsetTop ?? 0 : 0, behavior: 'instant' })
+    window.scrollTo({ top: !resetMainAfterLogout && isHeroDismissed ? aiIntroRef.current?.offsetTop ?? 0 : 0, behavior: 'instant' })
     ScrollTrigger.refresh()
     root.style.scrollBehavior = previousScrollBehavior
 
@@ -220,7 +227,7 @@ const MainPage = () => {
       replace: true,
       state: null,
     })
-  }, [shouldSkipJourney, navigate, location.pathname, isHeroDismissed])
+  }, [shouldSkipJourney, resetMainAfterLogout, navigate, location.pathname, isHeroDismissed])
 
 
   useEffect(() => {
