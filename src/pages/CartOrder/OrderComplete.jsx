@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { PATHS } from '../../routes/paths'
 import cartStepOrnament from '../../assets/images/mypage/cartStepOrnament.svg'
-import orderCompleteSeal from '../../assets/images/mypage/orderCompleteSeal.png'
+import orderCompleteSeal from '../../assets/webpImages/images/mypage/orderCompleteSeal.webp'
 import styles from './OrderComplete.module.scss'
 
 const formatPrice = (value) => `${value.toLocaleString('ko-KR')}원`

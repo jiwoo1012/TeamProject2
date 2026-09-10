@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import jajakLogo from '../../assets/logos/jajakLogo.png'
-import cartIcon from '../../assets/icons/cartIcon.png'
-import searchIcon from '../../assets/icons/searchIcon.png'
+import cartIcon from '../../assets/webpImages/icons/cartIcon.webp'
+import searchIcon from '../../assets/webpImages/icons/searchIcon.webp'
 
 import MobileSearchModal from './MobileSearchModal'
 import { subscribeToAuthState } from '../../firebase/auth'

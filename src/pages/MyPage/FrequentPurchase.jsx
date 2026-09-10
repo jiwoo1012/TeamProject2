@@ -45,7 +45,7 @@ const CART_BAR_DURATION = 3200
 
 
 const productImages = import.meta.glob(
-  '../../assets/images/products/product*.png',
+  '../../assets/webpImages/images/products/product*.webp',
   {
     eager: true,
     import: 'default',
@@ -67,7 +67,7 @@ const resolveImage = (imageUrl) => {
   return Object.entries(
     productImages
   ).find(([path]) =>
-    path.endsWith(`/${imageUrl}`)
+    (path.endsWith(`/${imageUrl}`) || path.endsWith((`/${imageUrl}`).replace(/\.(png|jpe?g)$/i, '.webp')))
   )?.[1]
 }
 

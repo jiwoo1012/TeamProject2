@@ -19,13 +19,13 @@ import AdminPanel from '../../components/admin/AdminPanel'
 import AdminStatusBadge from '../../components/admin/AdminStatusBadge'
 import AdminSummaryCard from '../../components/admin/AdminSummaryCard'
 
-import ticketIcon from '../../assets/icons/ticket.png'
+import ticketIcon from '../../assets/webpImages/icons/ticket.webp'
 
-import waitingIcon from '../../assets/icons/waiting.png'
+import waitingIcon from '../../assets/webpImages/icons/waiting.webp'
 
-import pendingIcon from '../../assets/icons/pending.png'
+import pendingIcon from '../../assets/webpImages/icons/pending.webp'
 
-import endIcon from '../../assets/icons/end.png'
+import endIcon from '../../assets/webpImages/icons/end.webp'
 
 import eventsData from '../../data/events.json'
 
@@ -144,7 +144,7 @@ const fallbackEvents = eventsData.map((item, index) => normalizeEvent(item, `eve
 
 const EVENTS_PER_PAGE = 4
 
-const eventBannerImages = import.meta.glob('../../assets/images/banner/eventBanner*.png', { eager: true, import: 'default' })
+const eventBannerImages = import.meta.glob(['../../assets/webpImages/images/banner/eventBanner*.webp', '../../assets/images/banner/eventBanner-6.png'], { eager: true, import: 'default' })
 
 const resolveEventBanner = (image = {}) => {
 
@@ -154,7 +154,7 @@ const resolveEventBanner = (image = {}) => {
 
   const fileName = source.split('/').pop()
 
-  return Object.entries(eventBannerImages).find(([path]) => path.endsWith(`/${fileName}`))?.[1]
+  return Object.entries(eventBannerImages).find(([path]) => (path.endsWith(`/${fileName}`) || path.endsWith((`/${fileName}`).replace(/\.(png|jpe?g)$/i, '.webp'))))?.[1]
 
 }
 

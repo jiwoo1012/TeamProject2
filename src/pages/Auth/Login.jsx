@@ -4,9 +4,9 @@ import { useNavigate, Link } from 'react-router-dom'
 import { login, subscribeToAuthState } from '../../firebase/auth'
 import { PATHS } from '../../routes/paths'
 
-import makdongImage from '../../assets/characters/M007_Poses03.png'
-import eyeIconImage from '../../assets/icons/eye.png'
-import eyeNoIconImage from '../../assets/icons/eyeNO.png'
+import makdongImage from '../../assets/webpImages/characters/M007_Poses03.webp'
+import eyeIconImage from '../../assets/webpImages/icons/eye.webp'
+import eyeNoIconImage from '../../assets/webpImages/icons/eyeNO.webp'
 
 import styles from './Login.module.scss'
 

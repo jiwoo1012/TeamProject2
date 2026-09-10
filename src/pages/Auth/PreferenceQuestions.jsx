@@ -1,33 +1,33 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import makdongImg from '../../assets/characters/M007_Poses01.png'
+import makdongImg from '../../assets/webpImages/characters/M007_Poses01.webp'
 
 // Q1 단맛
-import sweetnessDryImg from '../../assets/icons/preferenceQuestions/sweetness-dry.png'
-import sweetnessMildImg from '../../assets/icons/preferenceQuestions/sweetness-mild.png'
-import sweetnessSweetImg from '../../assets/icons/preferenceQuestions/sweetness-sweet.png'
+import sweetnessDryImg from '../../assets/webpImages/icons/preferenceQuestions/sweetness-dry.webp'
+import sweetnessMildImg from '../../assets/webpImages/icons/preferenceQuestions/sweetness-mild.webp'
+import sweetnessSweetImg from '../../assets/webpImages/icons/preferenceQuestions/sweetness-sweet.webp'
 
 // Q2 신맛
-import sournessLowImg from '../../assets/icons/preferenceQuestions/sourness-low.png'
-import sournessMediumImg from '../../assets/icons/preferenceQuestions/sourness-medium.png'
-import sournessHighImg from '../../assets/icons/preferenceQuestions/sourness-high.png'
+import sournessLowImg from '../../assets/webpImages/icons/preferenceQuestions/sourness-low.webp'
+import sournessMediumImg from '../../assets/webpImages/icons/preferenceQuestions/sourness-medium.webp'
+import sournessHighImg from '../../assets/webpImages/icons/preferenceQuestions/sourness-high.webp'
 
 // Q3 무게감
-import bodyLightImg from '../../assets/icons/preferenceQuestions/body-light.png'
-import bodyMediumImg from '../../assets/icons/preferenceQuestions/body-medium.png'
-import bodyHighImg from '../../assets/icons/preferenceQuestions/body-full.png'
+import bodyLightImg from '../../assets/webpImages/icons/preferenceQuestions/body-light.webp'
+import bodyMediumImg from '../../assets/webpImages/icons/preferenceQuestions/body-medium.webp'
+import bodyHighImg from '../../assets/webpImages/icons/preferenceQuestions/body-full.webp'
 
 // Q4 향
-import aromaMildImg from '../../assets/icons/preferenceQuestions/aroma-mild.png'
-import aromaMediumImg from '../../assets/icons/preferenceQuestions/aroma-medium.png'
-import aromaStrongImg from '../../assets/icons/preferenceQuestions/aroma-strong.png'
+import aromaMildImg from '../../assets/webpImages/icons/preferenceQuestions/aroma-mild.webp'
+import aromaMediumImg from '../../assets/webpImages/icons/preferenceQuestions/aroma-medium.webp'
+import aromaStrongImg from '../../assets/webpImages/icons/preferenceQuestions/aroma-strong.webp'
 
 // Q5 도수
-import ABVLightImg from '../../assets/icons/preferenceQuestions/ABV-light.png'
-import ABVModerateImg from '../../assets/icons/preferenceQuestions/ABV-moderate.png'
-import ABVStrongImg from '../../assets/icons/preferenceQuestions/ABV-strong.png'
-import ABVVeryStrongImg from '../../assets/icons/preferenceQuestions/ABV-verystrong.png'
+import ABVLightImg from '../../assets/webpImages/icons/preferenceQuestions/ABV-light.webp'
+import ABVModerateImg from '../../assets/webpImages/icons/preferenceQuestions/ABV-moderate.webp'
+import ABVStrongImg from '../../assets/webpImages/icons/preferenceQuestions/ABV-strong.webp'
+import ABVVeryStrongImg from '../../assets/webpImages/icons/preferenceQuestions/ABV-verystrong.webp'
 
 import aiStyles from '../AiCurator/AiSurvey.module.scss'
 import preferenceStyles from './PreferenceQuestions.module.scss'

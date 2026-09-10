@@ -5,7 +5,7 @@ import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { serverTimestamp } from 'firebase/firestore'
 
 import gsap from 'gsap'
-import allCategoryImage from '../../assets/images/main/hero/main-hero-table.webp'
+import allCategoryImage from '../../assets/webpImages/images/main/hero/main-hero-table.webp'
 
 import ProductActionBar from '../../components/shop/ProductActionBar'
 
@@ -29,17 +29,17 @@ import { getCollection, setDocument, deleteDocument } from '../../firebase/fires
 
 import { PATHS } from '../../routes/paths'
 
-import bannerOne from '../../assets/images/banner/shopBenner-1.png'
+import bannerOne from '../../assets/webpImages/images/banner/shopBenner-1.webp'
 
-import bannerTwo from '../../assets/images/banner/shopBenner-2.png'
+import bannerTwo from '../../assets/webpImages/images/banner/shopBenner-2.webp'
 
-import bannerThree from '../../assets/images/banner/shopBenner-3.png'
+import bannerThree from '../../assets/webpImages/images/banner/shopBenner-3.webp'
 
 import styles from './ProductList.module.scss'
 
 const productImages = import.meta.glob(
 
-  '../../assets/images/products/product*.png',
+  '../../assets/webpImages/images/products/product*.webp',
 
   {
 
@@ -53,7 +53,7 @@ const productImages = import.meta.glob(
 
 const alcoholExplainImages = import.meta.glob(
 
-  '../../assets/images/products/explain/*.{png,jpg,jpeg,webp}',
+  '../../assets/webpImages/images/products/explain/*.webp',
 
   {
 
@@ -69,7 +69,7 @@ const stylingImageFiles =
 
   import.meta.glob(
 
-    '../../assets/images/products/stylingProduct/**/*.{png,jpg,jpeg,webp}',
+    '../../assets/webpImages/images/products/stylingProduct/**/*.webp',
 
     {
 
@@ -85,7 +85,7 @@ const stylingImages = Object.values(stylingImageFiles)
 
 const detailImageFiles = import.meta.glob(
 
-  '../../assets/images/products/productDetail/**/*.{png,jpg,jpeg,webp}',
+  '../../assets/webpImages/images/products/productDetail/**/*.webp',
 
   { eager: true, import: 'default' }
 
@@ -157,7 +157,7 @@ const resolveImage = (imageUrl) =>
 
     : Object.entries(productImages).find(([path]) =>
 
-    path.endsWith(`/${imageUrl}`)
+    (path.endsWith(`/${imageUrl}`) || path.endsWith((`/${imageUrl}`).replace(/\.(png|jpe?g)$/i, '.webp')))
 
   )?.[1]
 
@@ -165,7 +165,7 @@ const resolveAlcoholExplainImage = (imageUrl) =>
 
   Object.entries(alcoholExplainImages).find(([path]) =>
 
-    path.endsWith(`/${imageUrl.split('/').pop()}`)
+    (path.endsWith(`/${imageUrl.split('/').pop()}`) || path.endsWith((`/${imageUrl.split('/').pop()}`).replace(/\.(png|jpe?g)$/i, '.webp')))
 
   )?.[1]
 
@@ -2021,7 +2021,7 @@ const ProductList = () => {
 
         '비 오는 날이나 출출할 때, 부침개 같은 기름진 음식과 함께 편안하게 즐기고 싶으실 때 가장 좋습니다.',
 
-      image: '/explain/Takju.png',
+      image: '/explain/Takju.webp',
 
     },
 
@@ -2041,7 +2041,7 @@ const ProductList = () => {
 
         '맑고 깨끗한 맛을 좋아하시거나, 소중한 분들과 정갈한 식사를 하실 때 잘 어울립니다.',
 
-      image: '/explain/Yakju.png',
+      image: '/explain/Yakju.webp',
 
     },
 
@@ -2063,7 +2063,7 @@ const ProductList = () => {
 
       image:
 
-        '/explain/fruitwine.png',
+        '/explain/fruitwine.webp',
 
     },
 
@@ -2085,7 +2085,7 @@ const ProductList = () => {
 
       image:
 
-        '/explain/spirit.png',
+        '/explain/spirit.webp',
 
     },
 
@@ -2107,7 +2107,7 @@ const ProductList = () => {
 
       image:
 
-        '/explain/liqueur.png',
+        '/explain/liqueur.webp',
 
     },
 
