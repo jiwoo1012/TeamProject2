@@ -65,7 +65,7 @@ $survey-ivory: #F2EDE4;
 .questionTitle {
   max-width: 560px;
   margin: 0;
-  font-family: 'Batang', 'Noto Serif KR', serif;
+  font-family: $font-family-base;
   font-size: clamp(30px, 2.5vw, 36px);
   font-weight: $font-weight-bold;
   line-height: 1.45;

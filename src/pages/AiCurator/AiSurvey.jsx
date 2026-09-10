@@ -978,14 +978,7 @@ const AiSurvey = () => {
           <img className={styles.guideCharacter} src={makdongImage} alt="취향 선택을 안내하는 막동이" />
 
           <div className={styles.questionHeader}>
-          {/* Q */}
-          <span
-            className={
-              styles.questionNumber
-            }
-          >
-            {String(currentStep + 1).padStart(2, '0')}. {QUESTION_CAPTIONS[currentQuestion.id]}
-          </span>
+        
 
 
           {/* 제목 */}
@@ -1242,7 +1235,7 @@ const AiSurvey = () => {
               styles.buttonArea
             }
           >
-            <button
+              <button
               type="button"
               className={
                 styles.prevButton
@@ -1251,7 +1244,8 @@ const AiSurvey = () => {
                 handlePrev
               }
             >
-              ← 이전으로
+              <span>←</span>
+              <span>이전으로</span>
             </button>
 
             <button
