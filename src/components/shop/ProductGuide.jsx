@@ -8,8 +8,8 @@ import {
 
 import { createPortal } from 'react-dom'
 
-import cartGuideMakdong from '../../assets/images/shop/cart-guide-makdong.png'
-import wishlistGuideMakdong from '../../assets/images/shop/wishlist-guide-makdong.png'
+import cartGuideMakdong from '../../assets/webpImages/images/shop/cart-guide-makdong.webp'
+import wishlistGuideMakdong from '../../assets/webpImages/images/shop/wishlist-guide-makdong.webp'
 
 import styles from './ProductGuide.module.scss'
 

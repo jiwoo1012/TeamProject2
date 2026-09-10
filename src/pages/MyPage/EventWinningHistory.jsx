@@ -40,7 +40,7 @@ const ITEMS_PER_PAGE = 4
 
 const bannerImages =
   import.meta.glob(
-    '../../assets/images/banner/eventBanner*.png',
+    ['../../assets/webpImages/images/banner/eventBanner*.webp', '../../assets/images/banner/eventBanner-6.png'],
     {
       eager: true,
       import: 'default',
@@ -61,9 +61,9 @@ const resolveBanner = (
     bannerImages
   ).find(
     ([path]) =>
-      path.endsWith(
+      (path.endsWith(
         `/${fileName}`
-      )
+      ) || path.endsWith((`/${fileName}`).replace(/\.(png|jpe?g)$/i, '.webp')))
   )?.[1]
 }
 

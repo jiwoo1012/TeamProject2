@@ -1,9 +1,9 @@
 ﻿import { Link, useNavigate } from 'react-router-dom'
-import makdong from '../../assets/images/brand/makdong-look-up-hands-behind.png'
-import liquor from '../../assets/images/brand/guide-liquor.png'
-import pairing from '../../assets/images/brand/guide-pairing.png'
-import choice from '../../assets/images/brand/guide-choice.png'
-import giftSet from '../../assets/images/products/productDetail/product23/celadon_1_gift_box_open.png'
+import makdong from '../../assets/webpImages/images/brand/makdong-look-up-hands-behind.webp'
+import liquor from '../../assets/webpImages/images/brand/guide-liquor.webp'
+import pairing from '../../assets/webpImages/images/brand/guide-pairing.webp'
+import choice from '../../assets/webpImages/images/brand/guide-choice.webp'
+import giftSet from '../../assets/webpImages/images/products/productDetail/product23/celadon_1_gift_box_open.webp'
 import styles from './NotFound.module.scss'
 
 const menus = [

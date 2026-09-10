@@ -13,13 +13,13 @@ import {
 } from '../../data/products'
 
 import jajakLogo from '../../assets/logos/jajakLogo.png'
-import cartIcon from '../../assets/icons/cartIcon.png'
-import wishlistIcon from '../../assets/icons/wishIcon.png'
-import loginIcon from '../../assets/icons/loginIcon.png'
-import searchIcon from '../../assets/icons/searchIcon.png'
-import brandSnbImage from '../../assets/images/main/ai-recommendation/mood-celebration.png'
+import cartIcon from '../../assets/webpImages/icons/cartIcon.webp'
+import wishlistIcon from '../../assets/webpImages/icons/wishIcon.webp'
+import loginIcon from '../../assets/webpImages/icons/loginIcon.webp'
+import searchIcon from '../../assets/webpImages/icons/searchIcon.webp'
+import brandSnbImage from '../../assets/webpImages/images/main/ai-recommendation/mood-celebration.webp'
 import tavernWorld
-  from '../../assets/images/ai/tavern/background/game.png'
+  from '../../assets/webpImages/images/ai/tavern/background/game.webp'
 
 import SearchModal from './SearchModal'
 
@@ -34,7 +34,7 @@ import styles from './DesktopHeader.module.scss'
 ======================================== */
 
 const productImages = import.meta.glob(
-  '../../assets/images/products/product*.png',
+  '../../assets/webpImages/images/products/product*.webp',
   {
     eager: true,
     import: 'default',
@@ -44,7 +44,7 @@ const productImages = import.meta.glob(
 
 const resolveImage = (imageUrl) => {
   return Object.entries(productImages).find(([path]) =>
-    path.endsWith(`/${imageUrl}`)
+    (path.endsWith(`/${imageUrl}`) || path.endsWith((`/${imageUrl}`).replace(/\.(png|jpe?g)$/i, '.webp')))
   )?.[1]
 }
 

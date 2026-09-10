@@ -22,7 +22,7 @@ import {
   db,
 } from '../../firebase/firebase'
 
-import makdongImage from '../../assets/characters/M007_Poses03.png'
+import makdongImage from '../../assets/webpImages/characters/M007_Poses03.webp'
 import MyPageHeader from '../../components/mypage/MyPageHeader'
 
 import styles from './AiPreference.module.scss'

@@ -20,7 +20,7 @@
             ],
             "isActive": true,
             "image": {
-            "bannerUrl": "/banner/eventBanner.png"
+            "bannerUrl": "/banner/eventBanner.webp"
             }
         }
     },
@@ -45,7 +45,7 @@
             ],
             "isActive": true,
             "image": {
-            "bannerUrl": "/banner/eventBanner-5.png"
+            "bannerUrl": "/banner/eventBanner-5.webp"
             }
         }
     },
@@ -70,7 +70,7 @@
             ],
             "isActive": true,
             "image": {
-            "bannerUrl": "/banner/eventBanner-1.png"
+            "bannerUrl": "/banner/eventBanner-1.webp"
             }
         }
     },
@@ -95,7 +95,7 @@
             ],
             "isActive": false,
             "image": {
-            "bannerUrl": "/banner/eventBanner-3.png"
+            "bannerUrl": "/banner/eventBanner-3.webp"
             }
         }
     },
@@ -120,7 +120,7 @@
             ],
             "isActive": false,
             "image": {
-            "bannerUrl": "/banner/eventBanner-4.png"
+            "bannerUrl": "/banner/eventBanner-4.webp"
             }
         }
     }

@@ -12,7 +12,7 @@
     "glassType": "선물세트",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product23.png"
+    "imageUrl": "product23.webp"
   },
   {
     "productId": "gft_002",
@@ -27,7 +27,7 @@
     "glassType": "선물세트",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product24.png"
+    "imageUrl": "product24.webp"
   },
   {
     "productId": "gft_003",
@@ -42,7 +42,7 @@
     "glassType": "선물세트",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product32.png"
+    "imageUrl": "product32.webp"
   },
   {
     "productId": "gft_004",
@@ -57,7 +57,7 @@
     "glassType": "선물세트",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product33.png"
+    "imageUrl": "product33.webp"
   },
   {
     "productId": "gft_005",
@@ -72,6 +72,6 @@
     "glassType": "선물세트",
     "stock": 100,
     "status": "selling",
-    "imageUrl": "product34.png"
+    "imageUrl": "product34.webp"
   }
 ]

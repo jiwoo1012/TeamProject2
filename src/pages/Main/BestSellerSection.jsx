@@ -3,25 +3,25 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Link } from 'react-router-dom'
 
-import bestSellerTransitionImage from '../../assets/images/main/best-seller/bestseller.png'
-import jadeBottleSetImage from '../../assets/images/main/best-seller/bestseller-products01.png'
+import bestSellerTransitionImage from '../../assets/webpImages/images/main/best-seller/bestseller.webp'
+import jadeBottleSetImage from '../../assets/webpImages/images/main/best-seller/bestseller-products01.webp'
 import styles from './MainPage.module.scss'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const productImages = import.meta.glob('../../assets/images/products/product*.png', {
+const productImages = import.meta.glob('../../assets/webpImages/images/products/product*.webp', {
   eager: true,
   import: 'default',
 })
 
 const resolveProductImage = (imageUrl) => Object.entries(productImages)
-  .find(([path]) => path.endsWith(`/${imageUrl}`))?.[1]
+  .find(([path]) => (path.endsWith(`/${imageUrl}`) || path.endsWith((`/${imageUrl}`).replace(/\.(png|jpe?g)$/i, '.webp'))))?.[1]
 
 const fallbackProducts = [
-  { productId: 'liq_001', productName: '햇쌀 맑은 이화주', imageUrl: 'product1.png' },
-  { productId: 'liq_002', productName: '새벽 솔잎 막걸리', imageUrl: 'product2.png' },
-  { productId: 'liq_003', productName: '메밀밭 생 막걸리', imageUrl: 'product3.png' },
-  { productId: 'liq_004', productName: '들꽃 국화주', imageUrl: 'product4.png' },
+  { productId: 'liq_001', productName: '햇쌀 맑은 이화주', imageUrl: 'product1.webp' },
+  { productId: 'liq_002', productName: '새벽 솔잎 막걸리', imageUrl: 'product2.webp' },
+  { productId: 'liq_003', productName: '메밀밭 생 막걸리', imageUrl: 'product3.webp' },
+  { productId: 'liq_004', productName: '들꽃 국화주', imageUrl: 'product4.webp' },
 ].map((product) => ({ ...product, imageSrc: resolveProductImage(product.imageUrl) }))
 
 const EXIT_EXPAND_DURATION = 1.15

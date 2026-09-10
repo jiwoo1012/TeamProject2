@@ -10,7 +10,7 @@ import {
 } from 'react-router-dom'
 
 import { liquors } from '../../data/products'
-import searchIcon from '../../assets/icons/searchIcon.png'
+import searchIcon from '../../assets/webpImages/icons/searchIcon.webp'
 
 import styles from './MobileSearchModal.module.scss'
 

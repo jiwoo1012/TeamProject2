@@ -8,28 +8,28 @@ import {
   useNavigate,
 } from 'react-router-dom'
 
-import tavernWorld from '../../assets/images/ai/tavern/background/tavern-world.webp'
+import tavernWorld from '../../assets/webpImages/images/ai/tavern/background/tavern-world.webp'
 import tavernIntroBg from '../../assets/images/ai/tavern/background/makdong-tavern-intro.webp'
 
-import makdongWelcome from '../../assets/images/ai/tavern/makdong/makdong-welcome.png'
-import makdongRun from '../../assets/images/ai/tavern/makdong/makdong-run.png'
+import makdongWelcome from '../../assets/webpImages/images/ai/tavern/makdong/makdong-welcome.webp'
+import makdongRun from '../../assets/webpImages/images/ai/tavern/makdong/makdong-run.webp'
 
-import customerManEnter from '../../assets/images/ai/tavern/customers/customer-man-enter.png'
-import customerManSeat from '../../assets/images/ai/tavern/customers/customer-man-seat.png'
+import customerManEnter from '../../assets/webpImages/images/ai/tavern/customers/customer-man-enter.webp'
+import customerManSeat from '../../assets/webpImages/images/ai/tavern/customers/customer-man-seat.webp'
 
-import customerWomanEnter from '../../assets/images/ai/tavern/customers/customer-woman-enter.png'
-import customerWomanSeat from '../../assets/images/ai/tavern/customers/customer-woman-seat.png'
+import customerWomanEnter from '../../assets/webpImages/images/ai/tavern/customers/customer-woman-enter.webp'
+import customerWomanSeat from '../../assets/webpImages/images/ai/tavern/customers/customer-woman-seat.webp'
 
-import customerManPortrait from '../../assets/images/ai/tavern/portraits/customer-man-portrait.png'
-import customerWomanPortrait from '../../assets/images/ai/tavern/portraits/customer-woman-portrait.png'
+import customerManPortrait from '../../assets/webpImages/images/ai/tavern/portraits/customer-man-portrait.webp'
+import customerWomanPortrait from '../../assets/webpImages/images/ai/tavern/portraits/customer-woman-portrait.webp'
 
-import liquorStorageSign from '../../assets/images/ai/tavern/signs/sign-liquor-storage.png'
-import kitchenSign from '../../assets/images/ai/tavern/signs/sign-kitchen.png'
-import glassDisplaySign from '../../assets/images/ai/tavern/signs/sign-glass-display.png'
+import liquorStorageSign from '../../assets/webpImages/images/ai/tavern/signs/sign-liquor-storage.webp'
+import kitchenSign from '../../assets/webpImages/images/ai/tavern/signs/sign-kitchen.webp'
+import glassDisplaySign from '../../assets/webpImages/images/ai/tavern/signs/sign-glass-display.webp'
 
-import liquorStorageIcon from '../../assets/images/ai/tavern/icons/icon-liquor-storage.png'
-import kitchenIcon from '../../assets/images/ai/tavern/icons/icon-kitchen.png'
-import glassDisplayIcon from '../../assets/images/ai/tavern/icons/icon-glass-display.png'
+import liquorStorageIcon from '../../assets/webpImages/images/ai/tavern/icons/icon-liquor-storage.webp'
+import kitchenIcon from '../../assets/webpImages/images/ai/tavern/icons/icon-kitchen.webp'
+import glassDisplayIcon from '../../assets/webpImages/images/ai/tavern/icons/icon-glass-display.webp'
 
 import {
   TAVERN_CUSTOMERS,
