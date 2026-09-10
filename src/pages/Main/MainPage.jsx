@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import JourneySection from './JourneySection'
+import MainPopup from './MainPopup'
 import BestSellerSection from './BestSellerSection'
 import useHeroReveal from './useHeroReveal'
 import useLogoScrollReset from './useLogoScrollReset'
@@ -306,6 +307,7 @@ const MainPage = () => {
       <MainSectionNav contentRef={aiIntroRef} />
       {/* 여정 인트로 섹션 */}
       {!isIntroSkipped && <JourneySection onSkip={handleSkipIntro} />}
+      <MainPopup enabled={isIntroSkipped} />
 
       {/* 메인 히어로 섹션 */}
       <section ref={mainContentRef} className={`${styles.mainContent} ${isHeroDismissed ? styles.mainContentDismissed : ''}`} aria-labelledby="main-content-title">

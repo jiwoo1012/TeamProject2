@@ -13,6 +13,7 @@
 
 .content h1 {
   margin: 0 0 v.$space-8;
+  font-family: v.$font-family-display;
   font-size: v.$font-size-3xl;
   color: v.$color-text-primary;
 }
@@ -179,6 +180,7 @@
   }
 
   em {
+    font-family: v.$font-family-display;
     font-size: v.$font-size-sm;
     font-style: normal;
     font-weight: v.$font-weight-medium;
