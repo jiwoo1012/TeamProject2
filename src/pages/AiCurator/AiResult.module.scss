@@ -2,6 +2,8 @@
    AiResult.module.scss (트레이 맞춤 정렬)
 ======================================== */
 
+@use '../../styles/variables' as v;
+
 .aiResult {
   width: 100%;
   min-height: 100vh;
@@ -238,6 +240,80 @@
 .compositionFooter {
   z-index: 5;
   margin-top: 30px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: v.$space-3;
+  padding-inline: v.$space-5;
+  box-sizing: border-box;
+}
+
+.savedPanel {
+  display: flex;
+  align-items: center;
+  gap: v.$space-4;
+  width: 100%;
+  max-width: 760px;
+  box-sizing: border-box;
+  padding: v.$space-5 v.$space-6;
+  background: v.$color-bg;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-xl;
+}
+
+.savedIcon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: v.$space-10;
+  height: v.$space-10;
+  border-radius: v.$radius-pill;
+  background: v.$color-primary;
+  color: v.$color-white;
+  font-size: v.$font-size-xl;
+}
+
+.savedCopy {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  word-break: keep-all;
+
+  strong { color: v.$color-text-primary; font-size: v.$font-size-md; }
+  p { margin: v.$space-1 0 0; color: v.$color-text-muted; font-size: v.$font-size-sm; line-height: v.$line-height-base; }
+}
+
+.savedLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: v.$space-2;
+  flex-shrink: 0;
+  padding: v.$space-3 v.$space-4;
+  border: 1px solid v.$color-primary;
+  border-radius: v.$radius-pill;
+  background: transparent;
+  color: v.$color-primary;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-semibold;
+  cursor: pointer;
+
+  &:hover { background: v.$color-primary; color: v.$color-white; }
+  &:focus-visible { outline: 2px solid v.$color-primary; outline-offset: 4px; }
+}
+
+.saveFeedback {
+  margin: 0;
+  color: v.$color-text-secondary;
+  font-size: v.$font-size-sm;
+  line-height: v.$line-height-base;
+  text-align: center;
+}
+
+@media (max-width: v.$breakpoint-mobile-max) {
+  .savedPanel { flex-wrap: wrap; padding: v.$space-4; gap: v.$space-3; }
+  .savedLink { width: 100%; }
 }
 
 .saveButton {

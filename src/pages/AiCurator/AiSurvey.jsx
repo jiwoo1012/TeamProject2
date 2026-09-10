@@ -19,6 +19,20 @@ import strongIcon from '../../assets/icons/preferenceQuestions/ABV-strong.png'
 import veryStrongIcon from '../../assets/icons/preferenceQuestions/ABV-verystrong.png'
 import pawIcon from '../../assets/images/brand/makdong-paw-mark.png'
 
+
+import preferenceIcon from '../../assets/icons/preferenceQuestions/preference-1.png'
+import alcoholAnyIcon from '../../assets/icons/preferenceQuestions/any-4.png'
+import moodRefreshIcon from '../../assets/icons/preferenceQuestions/refresh-1.png'
+import moodRelaxIcon from '../../assets/icons/preferenceQuestions/relax-4.png'
+import moodFoodIcon from '../../assets/icons/preferenceQuestions/food-1.png'
+import moodSpecialIcon from '../../assets/icons/preferenceQuestions/special-2.png'
+import moodDeepIcon from '../../assets/icons/preferenceQuestions/deep-4.png'
+import moodRandomIcon from '../../assets/icons/preferenceQuestions/random-5.png'
+import foodMealIcon from '../../assets/icons/preferenceQuestions/meal-4.png'
+import foodSnackIcon from '../../assets/icons/preferenceQuestions/snack-1.png'
+import foodDessertIcon from '../../assets/icons/preferenceQuestions/dessert-2.png'
+import foodRecommendIcon from '../../assets/icons/preferenceQuestions/recommend-3.png'
+
 import styles from './AiSurvey.module.scss'
 
 // 화면 장식 전용 정보. 질문 데이터와 추천에 전달하는 값은 변경하지 않는다.
@@ -28,8 +42,13 @@ const QUESTION_CAPTIONS = {
 }
 const OPTION_ICONS = {
   taste: { sweet: sweetIcon, sour: sourIcon, savory: savoryIcon, clean: cleanIcon,
-    dry: dryIcon, bitter: dryIcon, rich: richIcon },
-  alcohol: { light: lightIcon, medium: mediumIcon, strong: strongIcon, veryStrong: veryStrongIcon },
+    dry: dryIcon, bitter: dryIcon, rich: richIcon, preference: preferenceIcon },
+  alcohol: { light: lightIcon, medium: mediumIcon, strong: strongIcon, veryStrong: veryStrongIcon,
+    preference: preferenceIcon, any: alcoholAnyIcon },
+  mood: { refresh: moodRefreshIcon, relax: moodRelaxIcon, food: moodFoodIcon,
+    special: moodSpecialIcon, deep: moodDeepIcon, random: moodRandomIcon },
+  food: { meal: foodMealIcon, snack: foodSnackIcon, dessert: foodDessertIcon,
+    recommend: foodRecommendIcon },
 }
 const TASTE_NOTES = {
   sweet: '기분이 사르르 녹는, 부드러운 한 잔',
@@ -50,7 +69,7 @@ const MEMBER_QUESTIONS = [
     type: 'single',
     title: '오늘은 어떤 한 잔을 원하시나요?',
     description:
-      '오늘의 시간을 알려주시면 막둥이가 분위기까지 맞춰볼게요!',
+      '오늘의 시간을 알려주시면 막동이가 분위기까지 맞춰볼게요!',
     options: [
       {
         value: 'refresh',
@@ -80,7 +99,7 @@ const MEMBER_QUESTIONS = [
       {
         value: 'random',
         emoji: '🎲',
-        label: '오늘은 막둥이에게 맡길래요',
+        label: '오늘은 막동이에게 맡길래요',
       },
     ],
   },
@@ -330,7 +349,7 @@ const GUEST_QUESTIONS = [
       {
         value: 'random',
         emoji: '🎲',
-        label: '오늘은 막둥이에게 맡길래요',
+        label: '오늘은 막동이에게 맡길래요',
       },
     ],
   },
@@ -341,7 +360,6 @@ const GUEST_QUESTIONS = [
     title: '오늘은 어떤 안주와 함께하고 싶나요?',
     description:
       '한 잔 옆에 어떤 한 접시를 놓아볼까요?',
-    hint: '단일 선택',
     options: [
       {
         value: 'meal',
@@ -371,7 +389,7 @@ const GUEST_QUESTIONS = [
     type: 'multiple',
     title: '마지막 안전 확인. 피해야 하는 재료가 있나요?',
     description:
-      '막둥이가 안전하게 골라드릴 수 있도록 꼭 확인해주세요.',
+      '막동이가 안전하게 골라드릴 수 있도록 꼭 확인해주세요.',
     hint: '복수 선택 · 필수 응답',
     isSafety: true,
     options: [
@@ -960,14 +978,7 @@ const AiSurvey = () => {
           <img className={styles.guideCharacter} src={makdongImage} alt="취향 선택을 안내하는 막동이" />
 
           <div className={styles.questionHeader}>
-          {/* Q */}
-          <span
-            className={
-              styles.questionNumber
-            }
-          >
-            {String(currentStep + 1).padStart(2, '0')}. {QUESTION_CAPTIONS[currentQuestion.id]}
-          </span>
+        
 
 
           {/* 제목 */}
@@ -1224,7 +1235,7 @@ const AiSurvey = () => {
               styles.buttonArea
             }
           >
-            <button
+              <button
               type="button"
               className={
                 styles.prevButton
@@ -1233,7 +1244,8 @@ const AiSurvey = () => {
                 handlePrev
               }
             >
-              ← 이전으로
+              <span>←</span>
+              <span>이전으로</span>
             </button>
 
             <button
@@ -1271,7 +1283,7 @@ const AiSurvey = () => {
             ? '저장된 취향과 오늘의 답변을 함께 살펴보고 있어요.'
             : currentQuestion.isSafety
               ? '안전 확인 정보는 추천 상품을 제외하는 데 사용돼요.'
-              : '조금만 더 알려주시면 막둥이가 오늘의 주안상을 골라드릴게요.'}
+              : '조금만 더 알려주시면 막동이가 오늘의 주안상을 골라드릴게요.'}
         </p>
 
       </div>

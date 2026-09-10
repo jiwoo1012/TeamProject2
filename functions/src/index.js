@@ -107,6 +107,36 @@ const isPlainObject = (
 // 추천 Function
 // ========================================
 
+// 기존 추천 기록에 저장 표시만 추가한다. 추천 내용은 클라이언트에서 받지 않는다.
+exports.saveJajakRecommendation = onCall({ cors: true }, async (request) => {
+  if (!request.auth || request.auth.token.firebase?.sign_in_provider === 'anonymous') {
+    throw new HttpsError('unauthenticated', '로그인 후 추천 결과를 저장할 수 있습니다.')
+  }
+  const { recommendationId, isSaved = true } = request.data || {}
+  if (typeof isSaved !== 'boolean') {
+    throw new HttpsError('invalid-argument', '저장 상태가 올바르지 않습니다.')
+  }
+  if (typeof recommendationId !== 'string' || !/^[a-zA-Z0-9_-]{1,128}$/.test(recommendationId)) {
+    throw new HttpsError('invalid-argument', '올바른 추천 기록이 필요합니다.')
+  }
+  const userRef = db.collection('users').doc(request.auth.uid)
+  const recommendationRef = userRef.collection('recommendations').doc(recommendationId)
+  await db.runTransaction(async (transaction) => {
+    const user = await transaction.get(userRef)
+    if (!user.exists || user.data().status !== 'active') {
+      throw new HttpsError('permission-denied', '추천 결과를 저장할 수 없는 회원 상태입니다.')
+    }
+    const snapshot = await transaction.get(recommendationRef)
+    if (!snapshot.exists) {
+      throw new HttpsError('not-found', '추천 기록을 찾을 수 없습니다.')
+    }
+    if (snapshot.data().isSaved !== isSaved) {
+      transaction.update(recommendationRef, { isSaved })
+    }
+  })
+  return { recommendationId, isSaved }
+})
+
 exports.recommendJajak =
   onCall(
     recommendationOptions,

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import {
   collection,
   getDocs,
+  onSnapshot,
   query,
   where,
 } from 'firebase/firestore'
@@ -21,12 +22,43 @@ import { getCollection } from '../../firebase/firestore'
 import { db } from '../../firebase/firebase'
 
 import StatusBadge from '../../components/mypage/StatusBadge'
+import { PATHS } from '../../routes/paths'
+import { cancelSavedRecommendation } from '../../services/recommendationApi'
 
 import styles from './MyHome.module.scss'
 
 
 const formatNumber = (value) =>
   new Intl.NumberFormat('ko-KR').format(value)
+
+const tasteAxes = [
+  { key: 'sweetness', title: '단맛', options: ['dry', 'mild', 'sweet'], labels: ['깔끔한 맛', '은은한 단맛', '달콤한 맛'], empty: '아직 탐색 중' },
+  { key: 'acidity', legacy: 'sourness', title: '산미', options: ['low', 'medium', 'high'], labels: ['산미가 적은 맛', '은은하게 상큼한 맛', '새콤한 맛'], empty: '상관없어요' },
+  { key: 'bodyWeight', legacy: 'body', title: '무게감', options: ['light', 'medium', 'full'], labels: ['가볍고 깔끔한 술', '적당한 무게감의 술', '진하고 묵직한 술'], empty: '아직 탐색 중' },
+  { key: 'scentIntensity', legacy: 'aroma', title: '향', options: ['mild', 'medium', 'strong'], labels: ['은은한 향', '적당히 느껴지는 향', '뚜렷한 향'], empty: '상관없어요' },
+  { key: 'alcoholRange', legacy: 'abv', title: '도수', options: ['light', 'moderate', 'strong', 'veryStrong'], labels: ['10도 이하', '11~16도', '17~25도', '26도 이상'], empty: '상관없어요' },
+]
+
+const getTasteRows = (preference) => tasteAxes.map((axis) => {
+  const rawValue = preference?.[axis.key] ?? preference?.[axis.legacy]
+  const value = Array.isArray(rawValue) ? rawValue[0] : rawValue
+  let index = axis.options.indexOf(value)
+
+  if (axis.key === 'alcoholRange') {
+    if (value && typeof value === 'object') {
+      if (value.min >= 26) index = 3
+      else if (value.min >= 17) index = 2
+      else if (value.min >= 11) index = 1
+      else if (typeof value.max === 'number' && value.max <= 10) index = 0
+    } else if (typeof value === 'number' && Number.isFinite(value)) {
+      index = value <= 10 ? 0 : value <= 16 ? 1 : value <= 25 ? 2 : 3
+    }
+  } else if (typeof value === 'number' && value >= 1 && value <= 5) {
+    index = value <= 2 ? 0 : value >= 4 ? 2 : 1
+  }
+
+  return { ...axis, index, label: axis.labels[index] ?? axis.empty }
+})
 
 
 const formatDate = (date) => {
@@ -112,6 +144,58 @@ const BenefitIcon = ({ type }) => {
 
 const MyHome = () => {
   const { profileAvatar } = useOutletContext()
+  const [savedRecommendations, setSavedRecommendations] = useState([])
+  const [isAiLoading, setIsAiLoading] = useState(true)
+  const [aiLoadError, setAiLoadError] = useState('')
+  const [isCancellingSave, setIsCancellingSave] = useState(false)
+  const [cancelSaveMessage, setCancelSaveMessage] = useState('')
+  const handleCancelSave = async (id) => {
+    if (isCancellingSave) return
+    setIsCancellingSave(true)
+    setCancelSaveMessage('')
+    try {
+      await cancelSavedRecommendation(id)
+      setCancelSaveMessage('저장을 취소했어요. 전체 AI 추천 기록은 유지됩니다.')
+    } catch {
+      setCancelSaveMessage('저장 취소에 실패했어요. 잠시 후 다시 시도해주세요.')
+    } finally {
+      setIsCancellingSave(false)
+    }
+  }
+
+  useEffect(() => {
+    let unsubscribeRecommendations = () => {}
+    const unsubscribeAuth = subscribeToAuthState((user) => {
+      unsubscribeRecommendations()
+      setSavedRecommendations([])
+      setAiLoadError('')
+      if (!user || user.isAnonymous) {
+        setIsAiLoading(false)
+        return
+      }
+      setIsAiLoading(true)
+      unsubscribeRecommendations = onSnapshot(
+        query(collection(db, 'users', user.uid, 'recommendations'), where('isSaved', '==', true)),
+        (snapshot) => {
+          const records = snapshot.docs.map((record) => {
+            const data = record.data()
+            const createdAt = data.createdAt?.toDate?.() ?? new Date(data.createdAt ?? 0)
+            return { ...data, id: record.id, createdAtMs: Number.isNaN(createdAt.getTime()) ? 0 : createdAt.getTime() }
+          })
+          setSavedRecommendations(records.sort((a, b) => b.createdAtMs - a.createdAtMs).slice(0, 3))
+          setIsAiLoading(false)
+        },
+        () => {
+          setAiLoadError('저장한 AI 추천을 불러오지 못했어요. 추천 기록에서 다시 확인해주세요.')
+          setIsAiLoading(false)
+        }
+      )
+    })
+    return () => {
+      unsubscribeAuth()
+      unsubscribeRecommendations()
+    }
+  }, [])
 
   const [firebaseUser, setFirebaseUser] =
     useState(null)
@@ -361,13 +445,15 @@ const MyHome = () => {
     '회원'
 
 
-  const membership =
-    firebaseUser
-      ? userData?.role ===
-        'admin'
-        ? '관리자'
-        : '나으리님'
-      : '나으리님'
+  const preference = userData?.userPreference
+  const hasPreference = preference && tasteAxes.some((axis) =>
+    Object.hasOwn(preference, axis.key) || (axis.legacy && Object.hasOwn(preference, axis.legacy))
+  )
+  const tasteRows = getTasteRows(preference)
+  const tasteDescription = [
+    tasteRows.slice(0, 2).find((row) => row.index >= 0),
+    tasteRows[2].index >= 0 ? tasteRows[2] : null,
+  ].filter(Boolean).map((row) => row.label).join('과 ')
 
 
   const points =
@@ -500,6 +586,11 @@ const MyHome = () => {
               styles.profileCopy
             }
           >
+            {tasteDescription && (
+              <p className={styles.tasteGreeting}>
+                <strong>{tasteDescription}</strong>을 좋아하시는
+              </p>
+            )}
             <div
               className={
                 styles.greetingRow
@@ -510,16 +601,13 @@ const MyHome = () => {
               </strong>
 
               <span>
-                {membership},
-                환영합니다!
+                나으리님! 어서 오세요.
               </span>
             </div>
 
 
             <p>
-              오늘도 자작과 함께,
-              나만의 시간을
-              즐겨보세요!
+              오늘도 나으리의 입맛에 맞는 주안상을 찾아드릴게요.
             </p>
           </div>
         </header>
@@ -616,6 +704,46 @@ const MyHome = () => {
           )}
         </section>
 
+
+        <section className={styles.section} aria-labelledby="home-taste-title">
+          <div className={styles.sectionHeading}>
+            <div>
+              <h3 id="home-taste-title">나의 취향 분석</h3>
+              <p>취향 설문에서 알려주신 나으리의 입맛이에요.</p>
+            </div>
+          </div>
+          {hasPreference ? (
+            <div className={styles.tasteTable}>
+              <table>
+                <caption className={styles.srOnly}>저장된 설문 답변에 따른 취향 분석</caption>
+                <thead><tr><th scope="col">취향</th><th scope="col">선호 정도</th><th scope="col">나의 답변</th></tr></thead>
+                <tbody>
+                  {tasteRows.map((row) => (
+                    <tr key={row.key}>
+                      <th scope="row">{row.title}</th>
+                      <td>
+                        <div className={styles.tasteScale} aria-hidden="true">
+                          {row.options.map((option, index) => (
+                            <span key={option} className={index <= row.index ? styles.tasteSelected : undefined} />
+                          ))}
+                        </div>
+                      </td>
+                      <td>{row.label}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className={styles.emptyState}>아직 등록된 취향이 없어요. 나으리의 입맛을 알려주세요.</p>
+          )}
+          <div className={styles.tasteActions}>
+            <Link to={PATHS.preference} className={styles.moreLink}>
+              {hasPreference ? '취향 다시 설정하기' : '내 취향 알아보기'}
+            </Link>
+            <Link to={PATHS.ai} className={styles.recommendButton}>오늘의 주안상 추천받기</Link>
+          </div>
+        </section>
 
         {/* =========================
             최근 주문
@@ -808,11 +936,10 @@ const MyHome = () => {
               </h3>
 
               <p>
-                당신의 취향에 맞는
-                전통주를 다시
-                추천받아보세요
+                저장해 둔 나으리의 주안상을 다시 만나보세요.
               </p>
             </div>
+            <Link to="ai-history" className={styles.moreLink}>추천 기록 전체 보기 ›</Link>
           </div>
 
 
@@ -821,7 +948,23 @@ const MyHome = () => {
               styles.aiBox
             }
           >
-            <div
+            {isAiLoading ? (
+              <p className={styles.emptyState} role="status">저장한 추천을 불러오는 중이에요.</p>
+            ) : aiLoadError ? (
+              <p className={styles.emptyState} role="alert">{aiLoadError}</p>
+            ) : savedRecommendations.length > 0 ? savedRecommendations.map((record) => (
+              <article key={record.id} className={styles.aiItem}>
+                <div className={styles.aiCopy}>
+                  <strong>{record.createdAtMs ? `${formatDate(new Date(record.createdAtMs))}의 ` : ''}나만의 주안상</strong>
+                  <span>저장한 추천 · 주안상 {Array.isArray(record.recommendations) ? record.recommendations.length : 0}개</span>
+                </div>
+                <div className={styles.aiActions}>
+                  <Link to={`ai-history/${record.id}`} className={styles.recommendButton}>상세 보기</Link>
+                  <button type="button" className={styles.cancelSaveButton} disabled={isCancellingSave}
+                    onClick={() => handleCancelSave(record.id)}>저장 취소</button>
+                </div>
+              </article>
+            )) : <div
               className={
                 styles.aiEmpty
               }
@@ -840,15 +983,16 @@ const MyHome = () => {
 
 
               <Link
-                to="/ai"
+                to={PATHS.ai}
                 className={
                   styles.recommendButton
                 }
               >
                 추천받기
               </Link>
-            </div>
+            </div>}
           </div>
+          {cancelSaveMessage && <p role="status">{cancelSaveMessage}</p>}
 
         </section>
 

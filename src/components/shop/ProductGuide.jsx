@@ -17,6 +17,9 @@ import styles from './ProductGuide.module.scss'
 const HIDDEN_UNTIL_KEY = 'jajak_product_guide_hidden_until'
 const DAY_IN_MS = 24 * 60 * 60 * 1000
 
+export const canShowProductGuide = () =>
+  Number(localStorage.getItem(HIDDEN_UNTIL_KEY) || 0) <= Date.now()
+
 
 const GUIDE_STEPS = [
   {
@@ -607,100 +610,47 @@ const ProductGuide = ({
     setPhase('preparing')
 
     let attempts = 0
+    let hasOpened = false
 
 
-    const alignCardAndOpen = (
-      card,
-      attempt = 0
-    ) => {
-      if (!card) {
-        return
+    const alignCardAndOpen = (card) => {
+      if (!card) return
+      const targetTop = window.innerWidth <= 640 ? 76 : 112
+      const getDestination = () => clamp(
+        window.scrollY + card.getBoundingClientRect().top - targetTop,
+        0,
+        Math.max(0, document.documentElement.scrollHeight - window.innerHeight),
+      )
+      const destination = getDestination()
+      let previousY = window.scrollY
+      let stableSince = performance.now()
+      const startedAt = stableSince
+
+      // One scroll command; subsequent frames only observe its position.
+      window.scrollTo({ top: destination, behavior: 'smooth' })
+      const waitForScroll = (now) => {
+        const currentY = window.scrollY
+        if (Math.abs(currentY - previousY) > 0.1) stableSince = now
+        previousY = currentY
+        if (now - startedAt < 200 || now - stableSince < 160) {
+          alignFrameRef.current = window.requestAnimationFrame(waitForScroll)
+          return
+        }
+
+        // Layout may have shifted during travel. Correct once, without inheriting
+        // the global smooth-scroll rule, after movement has completely stopped.
+        const finalDestination = getDestination()
+        if (Math.abs(currentY - finalDestination) > 2) {
+          window.scrollTo({ top: finalDestination, behavior: 'instant' })
+        }
+        secondAlignFrameRef.current = window.requestAnimationFrame(() => {
+          hasOpened = true
+          setStep(0)
+          setPhase('open')
+        })
       }
-
-      const targetTop =
-        window.innerWidth <= 640
-          ? 76
-          : 112
-
-      card.scrollIntoView({
-        behavior: 'auto',
-        block: 'start',
-        inline: 'nearest',
-      })
-
-      alignFrameRef.current =
-        window.requestAnimationFrame(
-          () => {
-            const firstRect =
-              card.getBoundingClientRect()
-
-            const firstDifference =
-              firstRect.top
-              - targetTop
-
-            if (
-              Math.abs(
-                firstDifference
-              ) > 3
-            ) {
-              window.scrollBy({
-                top:
-                  firstDifference,
-
-                left: 0,
-
-                behavior: 'auto',
-              })
-            }
-
-            secondAlignFrameRef.current =
-              window.requestAnimationFrame(
-                () => {
-                  const finalRect =
-                    card.getBoundingClientRect()
-
-                  const difference =
-                    finalRect.top
-                    - targetTop
-
-                  if (
-                    Math.abs(
-                      difference
-                    ) > 10
-                    && attempt < 8
-                  ) {
-                    alignTimerRef.current =
-                      window.setTimeout(
-                        () => {
-                          alignCardAndOpen(
-                            card,
-                            attempt + 1
-                          )
-                        },
-                        80
-                      )
-
-                    return
-                  }
-
-                  window.clearTimeout(
-                    openTimerRef.current
-                  )
-
-                  openTimerRef.current =
-                    window.setTimeout(
-                      () => {
-                        setStep(0)
-                        setPhase('open')
-                      },
-                      80
-                    )
-                }
-              )
-          }
-        )
+      alignFrameRef.current = window.requestAnimationFrame(waitForScroll)
     }
-
 
     const prepare = () => {
       const card =
@@ -755,6 +705,13 @@ const ProductGuide = ({
 
 
     return () => {
+      // A cancelled preparation must be restartable (including StrictMode).
+      if (!hasOpened) {
+        startedRef.current = false
+        targetCardRef.current?.removeAttribute('data-product-guide-active')
+        targetCardRef.current = null
+        setPhase('idle')
+      }
       window.clearTimeout(
         prepareTimerRef.current
       )

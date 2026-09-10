@@ -37,7 +37,7 @@ $quiz-copy-delay: 0.35s;
 .quizShell {
   display: flex;
   flex-direction: column;
-  gap: clamp(16px, 3vh, 32px);
+  gap: clamp(#{$space-6}, 3.5vh, #{$space-8});
   width: 100%;
   max-width: 940px;
   margin: auto;
@@ -94,15 +94,15 @@ $quiz-copy-delay: 0.35s;
   animation: pointBurstFloat .9s ease-out both;
   pointer-events: none;
 }
-.rewardTrackRow { position: relative; width: 82%; max-width: 520px; margin-inline: auto; padding-top: 12px; }
-.rewardLine { position: absolute; top: 8px; left: 0; right: 0; height: 3px; overflow: hidden; background: rgba($color-white, .14); border-radius: $radius-pill; }
+.rewardTrackRow { --reward-track-inset: 12px; --reward-node-size: 16px; position: relative; width: 82%; max-width: 520px; margin-inline: auto; padding-top: var(--reward-track-inset); }
+.rewardLine { position: absolute; top: calc(var(--reward-track-inset) + var(--reward-node-size) / 2); transform: translateY(-50%); left: 0; right: 0; height: 3px; overflow: hidden; background: rgba($color-white, .14); border-radius: $radius-pill; }
 .rewardLine span { position: absolute; inset: 0; width: 0; background: linear-gradient(90deg, event.$color-reward, color-mix(in srgb, event.$color-reward 65%, $color-white)); border-radius: inherit; transition: width $quiz-slide-duration cubic-bezier(.22, 1, .36, 1); }
 .rewardMilestones { position: relative; z-index: 1; display: flex; list-style: none; margin: 0; padding: 0; }
 .rewardMilestone { display: flex; flex: 1; flex-direction: column; align-items: center; gap: 3px; min-width: 0; }
 .rewardNode {
   @include mixins.flex-center;
-  width: 16px;
-  height: 16px;
+  width: var(--reward-node-size);
+  height: var(--reward-node-size);
   color: transparent;
   font-size: 8px;
   font-weight: $font-weight-bold;
@@ -136,7 +136,6 @@ $quiz-copy-delay: 0.35s;
   grid-template-columns: minmax(160px, 36%) 1fr;
   width: 100%;
   min-height: clamp(200px, 29vh, 310px);
-  margin-top: clamp(-16px, -1.8vh, -6px);
   overflow: hidden;
   color: $color-text-primary;
   background: rgba($color-bg, 0.92);
@@ -153,11 +152,19 @@ $quiz-copy-delay: 0.35s;
   border-radius: $radius-pill;
   transition: filter $quiz-motion-duration ease;
 }
-.visualArea img { width: 100%; height: 100%; object-fit: cover; }
+.visualArea img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
 .isAnswered .visualArea { filter: brightness(.94) saturate(.94); }
 .copyArea {
   display: flex;
   flex-direction: column;
+  min-width: 0;
   min-height: 0;
   padding: clamp(20px, 4vh, 36px) clamp(24px, 4vw, 48px);
   opacity: 1;
@@ -171,7 +178,7 @@ $quiz-copy-delay: 0.35s;
 .feedbackMessage.isCorrect { color: $color-success; }
 .feedbackMessage.isWrong { color: $color-error; }
 .copyArea h1 { margin-top: $space-3; font-size: clamp(15px, 1.5vw, 19px); font-weight: $font-weight-bold; line-height: $line-height-relaxed; }
-.explanation { max-width: 620px; margin-top: $space-3; font-size: clamp(13px, 1.2vw, 16px); font-weight: $font-weight-medium; line-height: $line-height-relaxed; color: $color-text-secondary; }
+.explanation { max-width: 620px; margin-top: $space-3; margin-bottom: $space-4; font-size: clamp(13px, 1.2vw, 16px); font-weight: $font-weight-medium; line-height: $line-height-relaxed; color: $color-text-secondary; }
 .isAnswered .copyArea { animation: copyReveal $quiz-motion-duration ease $quiz-copy-delay both; }
 
 // --- O/X answer cards: medium, centered, not viewport-filling ---
@@ -181,7 +188,6 @@ $quiz-copy-delay: 0.35s;
   width: 100%;
   max-width: 720px;
   margin-inline: auto;
-  margin-top: clamp(8px, 1.6vh, 20px);
   gap: clamp(24px, 4.5vw, 46px);
 }
 .answerButton {
@@ -232,23 +238,21 @@ $quiz-copy-delay: 0.35s;
 .continueButton {
   align-self: flex-end;
   margin-top: auto;
-  padding-top: $space-4;
   display: flex;
   align-items: center;
-  gap: $space-2;
+  justify-content: center;
   padding-inline: $space-6;
   min-height: 48px;
   color: $color-bg;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
+  line-height: 1;
   background: $color-text-primary;
   border-radius: $radius-md;
   transition: background-color $quiz-motion-duration ease, transform $quiz-motion-duration ease;
   animation: copyReveal $quiz-motion-duration ease $quiz-copy-delay both;
 }
-.continueButton span { transition: transform $quiz-motion-duration ease; }
 .continueButton:hover { background: $color-text-secondary; transform: translateY(-2px); }
-.continueButton:hover span { transform: translateX(3px); }
 
 .modalBackdrop { @include event.modal-backdrop; animation: backdropIn $quiz-motion-duration ease both; }
 .resultModal { @include event.modal-box; animation: modalIn $quiz-motion-duration cubic-bezier(.22, 1, .36, 1) both; }
@@ -277,12 +281,11 @@ $quiz-copy-delay: 0.35s;
 
 @include mixins.mobile {
   .page { padding: clamp(12px, 2.5vh, 20px) clamp(12px, 4vw, 20px); }
-  .quizShell { gap: clamp(10px, 2vh, 18px); }
+  .quizShell { gap: clamp(#{$space-4}, 2.5vh, #{$space-6}); }
   .quitButton { font-size: $font-size-xs; }
 
-  .rewardTrackRow { width: 92%; max-width: none; padding-top: 15px; }
-  .rewardLine { top: 6px; }
-  .rewardNode { width: 13px; height: 13px; border-width: 1.5px; }
+  .rewardTrackRow { --reward-track-inset: 15px; --reward-node-size: 13px; width: 92%; max-width: none; }
+  .rewardNode { border-width: 1.5px; }
   .rewardMilestones { gap: 2px; }
   .rewardLabel { font-size: 8px; }
   .rewardSummary { font-size: 10px; }
@@ -292,7 +295,8 @@ $quiz-copy-delay: 0.35s;
   .visualArea { width: 100%; height: 100%; margin-left: 0; border-radius: 0 0 $radius-lg $radius-lg; }
   .copyArea { padding: $space-4 $space-5; }
   .feedbackHead { gap: $space-2; }
-  .continueButton { align-self: stretch; justify-content: center; padding-top: $space-3; }
+  .explanation { margin-bottom: $space-3; }
+  .continueButton { align-self: stretch; }
 
   .answerArea { flex-direction: column; max-width: 320px; margin-top: 0; gap: $space-3; }
   .answerButton { min-height: 88px; flex-direction: row; justify-content: flex-start; padding-inline: $space-6; gap: $space-4; border-radius: $radius-md; }

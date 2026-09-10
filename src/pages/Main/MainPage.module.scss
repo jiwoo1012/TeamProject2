@@ -342,22 +342,12 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      transition: opacity 0.35s ease;
     }
 
     .heroMoonIcon {
       opacity: 0;
     }
 
-    &[data-phase='moon'] {
-      .heroSunIcon {
-        opacity: 0;
-      }
-
-      .heroMoonIcon {
-        opacity: 1;
-      }
-    }
   }
 }
 .heroCaption {
@@ -1277,7 +1267,7 @@
 }
 .featureSection {
   position: relative;
-  z-index: auto;
+  z-index: 1;
   display: grid;
   width: 100%;
   min-height: 100svh;
@@ -1288,8 +1278,8 @@
   box-sizing: border-box;
   color: $color-text-primary;
   background: $color-bg;
-  isolation: auto;
-  overflow: visible;
+  isolation: isolate;
+  overflow: clip;
 
   &::before {
     position: absolute;
@@ -1568,7 +1558,7 @@
 }
 .featureImage .featurePourOverlay {
   position: absolute;
-  top: -15%;
+  top: calc(-15% + 24px);
   left: -12%;
   z-index: 101;
   width: calc(112% + 40px);
@@ -1580,7 +1570,7 @@
   will-change: opacity;
 
   @media (max-width: 767px) {
-    top: -5%;
+    top: calc(-5% + 24px);
     left: 25px;
     width: calc(100% + 5px);
   }

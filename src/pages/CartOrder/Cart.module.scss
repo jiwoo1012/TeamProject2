@@ -384,6 +384,11 @@
   font-size: v.$font-size-sm;
 }
 .pointInputRow button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  text-align: center;
   min-height: 40px;
   border: 1px solid v.$color-primary;
   border-radius: v.$radius-md;

@@ -15,7 +15,7 @@ import Pagination from '../../components/ui/Pagination/Pagination'
 
 import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 
-import ProductGuide from '../../components/shop/ProductGuide'
+import ProductGuide, { canShowProductGuide } from '../../components/shop/ProductGuide'
 
 import { fetchProducts, getManagedProducts } from '../../services/productCatalog'
 
@@ -29,11 +29,11 @@ import { getCollection, setDocument, deleteDocument } from '../../firebase/fires
 
 import { PATHS } from '../../routes/paths'
 
-import bannerOne from '../../assets/images/banner/eventBanner.png'
+import bannerOne from '../../assets/images/banner/shopBenner-1.png'
 
-import bannerTwo from '../../assets/images/banner/eventBanner-1.png'
+import bannerTwo from '../../assets/images/banner/shopBenner-2.png'
 
-import bannerThree from '../../assets/images/banner/eventBanner-5.png'
+import bannerThree from '../../assets/images/banner/shopBenner-3.png'
 
 import styles from './ProductList.module.scss'
 
@@ -123,11 +123,11 @@ const resolveHoverImage = (product) => {
 
 const banners = [
 
-  { image: bannerOne, to: `${PATHS.events}/roulette`, label: '막동이 룰렛 이벤트' },
+  { image: bannerOne, to: PATHS.aiTavern, label: '막동이 주막' },
 
   { image: bannerTwo, to: `${PATHS.eventReady}/ox-quiz`, label: '막동이 OX 퀴즈 이벤트' },
 
-  { image: bannerThree, to: `${PATHS.eventReady}/card-game`, label: '짝꿍 카드 이벤트' },
+  { image: bannerThree, to: PATHS.events, label: '이벤트 참여하기' },
 
 ]
 
@@ -528,6 +528,7 @@ const ProductList = () => {
         !targetUrl.search
 
       ) {
+        if (canShowProductGuide()) return
 
         window.scrollTo({
 
@@ -667,6 +668,13 @@ const ProductList = () => {
 
       )
 
+    // The guide owns entry scrolling whenever it can show a product target.
+    // Keep the ordinary entry behavior for hidden guides, search, and empty lists.
+    if (!search && canShowProductGuide()) {
+      if (!isCatalogReady) return undefined
+      if (document.querySelector('[data-product-guide-card="candidate"]')) return undefined
+    }
+
     const frameId =
 
       window.requestAnimationFrame(
@@ -707,7 +715,7 @@ const ProductList = () => {
 
       window.cancelAnimationFrame(frameId)
 
-  }, [location.key, mainCategories, searchParams])
+  }, [location.key, mainCategories, searchParams, isCatalogReady])
 
   const activeCategory =
 
@@ -1704,6 +1712,16 @@ const ProductList = () => {
 
   ) => {
 
+    if (!uid) {
+      showWishToast(
+        '로그인 후 장바구니에 담을 수 있어요.',
+        PATHS.login,
+        '로그인하러 가기',
+        true
+      )
+      return
+    }
+
     const cart = getCart()
 
     const existingItem =
@@ -2102,12 +2120,13 @@ const ProductList = () => {
       <MobileTopButton contentRef={pageRef} className={styles.productTopButton} />
 
       <ProductGuide
+        key={location.key}
         enabled={
           isCatalogReady &&
           visibleProducts.length > 0 &&
           currentPage === 1 &&
           location.pathname === '/shop' &&
-          !searchParams.toString()
+          !searchParams.get('search')?.trim()
         }
       />
 
@@ -2149,7 +2168,7 @@ const ProductList = () => {
 
               (banner, index) => (
 
-                <Link
+                <div
 
                   className={`${styles.bannerLink} ${
 
@@ -2163,21 +2182,33 @@ const ProductList = () => {
 
                   }`}
 
-                  to={banner.to}
-
-                  aria-label={`${banner.label} 페이지로 이동`}
-
                   aria-hidden={index !== bannerIndex}
-
-                  tabIndex={index === bannerIndex ? 0 : -1}
 
                   key={banner.image}
 
                 >
 
                   <img className={styles.banner} src={banner.image} alt={banner.label} />
+                  {banner.image === bannerOne && (
+                    <Link className={`${styles.bannerCta} ${styles.tavernBannerCta}`} to={banner.to} tabIndex={index === bannerIndex ? 0 : -1}>
+                      막동이 주막 가기 <span aria-hidden="true">→</span>
+                    </Link>
+                  )}
+                  {banner.image === bannerTwo && (
+                    <div className={styles.bannerCopy}>
+                      <h2>오늘은,<br />어떤 한잔이 생각나세요?</h2>
+                      <p>막동이가 골라드리는<br />당신의 오늘을 위한 우리술</p>
+                    </div>
+                  )}
+                  {banner.image === bannerThree && (
+                    <div className={`${styles.bannerCopy} ${styles.eventBannerCopy}`}>
+                      <h2>오늘의 행운,<br />놓치지 마세요!</h2>
+                      <p>룰렛부터 퀴즈까지,<br />참여하고 포인트도 받아가세요.</p>
+                      <Link className={styles.bannerCta} to={banner.to} tabIndex={index === bannerIndex ? 0 : -1}>이벤트 참여하기 <span aria-hidden="true">→</span></Link>
+                    </div>
+                  )}
 
-                </Link>
+                </div>
 
               )
 

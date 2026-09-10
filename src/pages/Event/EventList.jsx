@@ -5,10 +5,12 @@ import eventsData from '../../data/events.json'
 import { db } from '../../firebase/firebase'
 import { PATHS } from '../../routes/paths'
 import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
-import makdongImage from '../../assets/characters/M007_Poses03.png'
+import TavernShortcut from '../../components/ui/TavernShortcut/TavernShortcut'
+import eventBanner from '../../assets/images/banner/eventBanner-6.png'
 import rouletteCharacter from '../../assets/characters/M007_Poses09.png'
 import cardGameCharacter from '../../assets/characters/M007_Poses10.png'
 import oxQuizCharacter from '../../assets/characters/M007_Poses08.png'
+import useEventListReveal from './useEventListReveal'
 import styles from './EventList.module.scss'
 
 const bannerImages = import.meta.glob('../../assets/images/banner/eventBanner*.png', {
@@ -20,7 +22,7 @@ const gamePresentation = {
   roulette: {
     character: rouletteCharacter,
     benefit: '100% 당첨', title: '막동이 행운 룰렛',
-    description: '오늘의 운을 돌려보세요. 포인트와 특별한 경품이 기다리고 있어요.',
+    description: '매일 1회, 경품부터 포인트까지 100% 당첨! 1등부터 3등까지는 특별 선물, 4~6등은 포인트를 받아보세요.', 
     cta: '지금 룰렛 돌리기',
   },
   card: {
@@ -102,28 +104,19 @@ const EventList = () => {
   }, [events, activeFilter])
   const featuredEvent = visibleEvents.find((event) => event.isActive && getGameType(event.title) === 'roulette')
 
-  const handleShowActive = () => {
-    setActiveFilter('active')
-    eventGridRef.current?.scrollIntoView({
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-      block: 'start',
-    })
-    eventGridRef.current?.focus({ preventScroll: true })
-  }
+  useEventListReveal(eventGridRef, activeFilter + ':' + visibleEvents.length)
 
   return (
     <main className={styles.page}>
       <div className={styles.container}>
-        <section className={styles.hero} aria-labelledby="event-hero-title">
+        <section
+          className={styles.hero}
+          aria-labelledby="event-hero-title"
+          style={{ backgroundImage: `url(${eventBanner})` }}
+        >
           <div className={styles.heroText}>
-            <h1 id="event-hero-title">잘 왔어요!<br />막동이랑 한 판 놀다 가요.</h1>
-            <p className={styles.heroDescription}>룰렛도, 카드도 준비했어요.<br />오늘은 뭐부터 해볼까요?</p>
-            <button className={styles.heroLink} type="button" onClick={handleShowActive}>
-              진행 중인 이벤트 {activeCount}개 <span aria-hidden="true">→</span>
-            </button>
-          </div>
-          <div className={styles.makdongCrop}>
-            <img className={styles.makdong} src={makdongImage} alt="술잔을 머리에 얹고 인사하는 막동이" />
+            <h1 id="event-hero-title" className={styles.srOnly}>잘 왔어요! 막동이랑 한 판 놀다 가요.</h1>
+            <p className={styles.srOnly}>룰렛도, 카드도 준비했어요. 오늘은 뭐부터 해볼까요?</p>
           </div>
         </section>
 
@@ -201,6 +194,7 @@ const EventList = () => {
         </section>
       </div>
       <MobileTopButton contentRef={eventGridRef} />
+      <TavernShortcut attentionTargetRef={eventGridRef} />
     </main>
   )
 }
