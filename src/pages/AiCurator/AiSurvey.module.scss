@@ -141,6 +141,23 @@ $survey-ivory: #F2EDE4;
     &::placeholder { color: $color-text-muted; }
   }
 }
+
+// ========================================
+// 특정 과일 · 식물 원료 세부 목록
+// (otherInputArea 안에 들어가는 전용 그리드)
+// ========================================
+.plantOptionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: $space-2;
+}
+.plantOption {
+  min-height: $space-12;
+  padding: $space-3;
+  gap: $space-2;
+  font-size: $font-size-xs;
+}
+
 .buttonArea { display: flex; align-items: center; justify-content: space-between; gap: $space-4; margin-top: $space-8; padding-top: $space-6; border-top: 1px solid rgba($color-text-primary, .1); }
 .prevButton, .nextButton {
   display: flex; align-items: center; justify-content: center; gap: $space-3;
@@ -190,12 +207,15 @@ $survey-ivory: #F2EDE4;
   .selectIndicator { top: $space-3; right: $space-3; width: $space-5; height: $space-5; }
   .safetyOptionGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .safetyOption { padding: $space-3; gap: $space-2; }
+  .plantOptionsGrid { grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: $space-2; }
+  .plantOption { min-height: $space-10; padding: $space-2; }
   .buttonArea { gap: $space-2; margin-top: $space-6; }
   .prevButton { min-width: 0; padding-inline: $space-3; }
   .nextButton { flex: 1; min-width: 0; padding-inline: $space-3; gap: $space-2; }
 }
 @media (max-width: 379px) {
   .optionList, .safetyOptionGrid { grid-template-columns: minmax(0, 1fr); }
+  .plantOptionsGrid { grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); }
   .optionButton { min-height: 144px; }
   .prevButton, .nextButton { font-size: $font-size-xs; }
 }
