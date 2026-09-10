@@ -163,8 +163,80 @@
 .pairingArrow svg { width: $space-4; height: $space-4; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .pairingArrow:focus-visible { outline: 2px solid $color-primary; outline-offset: $space-1; }
 @include mixins.mobile {
-  .pairings { --pairing-control-size: #{$space-6}; --pairing-control-gap: #{$space-1}; margin-top: $space-6; }
+  .page { --detail-header-height: 58px; padding-top: $space-5; padding-bottom: $space-20; }
+  .layout { display: flex; flex-direction: column; width: calc(100% - (#{$side-margin-mobile} * 2)); }
+  .mainColumn { display: contents; }
+  .gallery { order: 1; width: 100%; height: auto; grid-template-columns: 1fr; }
+  .mainImage { width: 100%; aspect-ratio: 1; justify-self: center; }
+  .thumbnails { grid-template-columns: repeat(3, 1fr); grid-template-rows: none; gap: $space-2; }
+  .thumbnails img { aspect-ratio: 1; }
+
+  .purchasePanel { position: relative; top: auto; order: 2; width: 100%; height: auto; margin-top: $space-4; padding: $space-5; }
+  .purchaseActions { flex-direction: row; gap: $space-2; }
+  .purchaseActions .cartButton { margin-top: 0; }
+
+  .notice { bottom: calc(72px + #{$space-3}); grid-template-columns: auto minmax(0, 1fr); padding: $space-3 $space-4; }
+  .notice > a { grid-column: 2; padding: 0; font-size: $font-size-sm; }
+
+  .tabs { order: 3; width: 100%; justify-content: space-around; gap: 0; margin-top: $space-8; }
+  .tabs button { padding-inline: $space-3; font-size: $font-size-md; }
+
+  .detailContent, .reviewSection { order: 4; width: 100%; margin-top: $space-6; }
+  .detailContent { min-height: 420px; border-radius: $radius-md; }
+
+  .brandStory { min-height: 340px; padding: $space-12 $space-5; }
+  .brandStory img { width: min(48%, 160px); }
+  .brandStory h2 { font-size: $font-size-3xl; }
+  .brandStory p { font-size: $font-size-sm; line-height: $line-height-relaxed; }
+
+  .styledProduct { min-height: 480px; }
+  .styledCategory { top: $space-6; left: $space-5; font-size: $font-size-xs; }
+  .styledTitle { right: $space-5; bottom: $space-6; left: $space-5; display: flex; flex-direction: column; align-items: flex-start; gap: $space-4; }
+  .styledTitle h2 { width: 100%; font-size: $font-size-4xl; line-height: $line-height-tight; word-break: keep-all; }
+  .styledTitle p { width: 100%; padding: $space-3; font-size: $font-size-xs; line-height: $line-height-relaxed; }
+
+  .tastingSection { padding: $space-12 $space-4; }
+  .tastingSection h2 { font-size: $font-size-3xl; }
+  .tastingGrid { grid-template-columns: repeat(2, 1fr); gap: $space-6 $space-3; margin-top: $space-8; }
+  .tastingNote strong { width: 104px; font-size: $font-size-lg; }
+  .detailOrnament { width: calc(100% - (#{$space-8})); }
+
+  .faqSection {
+  grid-template-columns: 1fr;
+  margin-inline: 0;
+  padding: $space-10 $space-5;
 }
+  .faqSection > img { width: min(60%, 220px); margin-inline: auto; }
+  .faqSection h2 {
+  font-size: $font-size-3xl;
+  text-align: center;
+}
+  .faqSection dl { gap: $space-5; }
+  .faqSection dt {width: 100%; padding: $space-5 $space-6; margin: 0;}
+  .faqSection dd { font-size: $font-size-xs; }
+
+  .editorialSections { gap: $space-5; padding-bottom: $space-10; }
+  .editorialPanel, .editorialOverlay { min-height: 300px; }
+  .editorialOverlay { padding: $space-6; }
+  .editorialOverlay > p { font-size: $font-size-md; }
+  .editorialOverlay > h2 { font-size: $font-size-3xl; }
+  .editorialOverlay > span { font-size: $font-size-sm; }
+  .factEditorial > dl { grid-template-columns: 1fr; gap: $space-2; margin-top: $space-6; }
+
+  .gourmetMoment { padding: $space-12 $space-5; }
+  .gourmetMoment > h2 { font-size: $font-size-3xl; }
+  .gourmetMoment > div { grid-template-columns: 1fr; gap: $space-8; margin-top: $space-8; }
+  .gourmetMoment article > span { width: 84px; }
+
+  .cautionSection { padding: $space-12 $space-5; }
+  .cautionSection h2 { font-size: $font-size-3xl; }
+  .cautionSection ul { margin-top: $space-8; }
+
+  .reviewForm { padding: $space-5; }
+  .recommendedFoods { order: 5; width: 100%; padding-top: $space-12; }
+  .foodGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-6 $space-3; }
+}
+
 .pairingArrow:hover { color: $color-primary; transform: scale(1.12); }
 .miniGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-2; animation: pairingPage .45s cubic-bezier(.22, 1, .36, 1) both; }
 .miniCard { display: flex; overflow: hidden; flex-direction: column; min-width: 0; background: $color-white; border: 1px solid $color-border; border-radius: $radius-md; }
@@ -212,7 +284,7 @@
   .brandStory img { width: min(48%, 180px); }
   .brandStory h2 { font-size: $font-size-3xl; }
   .brandStory p { font-size: $font-size-sm; }
-  .styledProduct { min-height: 520px; }
+  .styledProduct { min-height: 420px; }
   .styledCategory { top: $space-8; left: $space-8; font-size: $font-size-sm; }
   .styledTitle { right: $space-8; bottom: $space-8; left: $space-8; }
   .styledTitle h2 { font-size: $font-size-4xl; }
@@ -231,9 +303,20 @@
   .editorialOverlay > h2 { font-size: $font-size-3xl; }
   .editorialOverlay > span { font-size: $font-size-sm; }
   .factEditorial > dl { grid-template-columns: 1fr; gap: $space-2; margin-top: $space-6; }
-  .gourmetMoment { padding: $space-16 $space-24; }
+  .gourmetMoment { padding: $space-16 $space-5 }
   .gourmetMoment > h2 { font-size: $font-size-3xl; }
   .gourmetMoment > div { grid-template-columns: 1fr; gap: $space-8; margin-top: $space-8; }
+  .gourmetMoment article {
+  text-align: center;
+}
+
+.gourmetMoment article p {
+  width: 80%;
+  margin: 0;
+  text-align: left;
+  line-height: $line-height-relaxed;
+  word-break: keep-all;
+}
   .gourmetMoment article > span { width: 84px; }
   .cautionSection { padding: $space-16 $space-8; }
   .cautionSection h2 { font-size: $font-size-3xl; }
