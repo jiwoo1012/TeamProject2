@@ -6,19 +6,19 @@ import { getEventParticipationAvailability, saveEventParticipation } from '../..
 import { PATHS } from '../../routes/paths'
 import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 import eventsData from '../../data/events.json'
-import rouletteBack from '../../assets/images/eventPage/roulette3.png'
-import rouletteFront from '../../assets/images/eventPage/roulette1.png'
-import makdong from '../../assets/characters/M007_Poses07.png'
-import running2 from '../../assets/images/eventPage/running2.png'
-import running3 from '../../assets/images/eventPage/running3.png'
-import giftIcon from '../../assets/icons/gift.png'
-import fallbackGift from '../../assets/images/products/product24.png'
-import fallbackLiquor from '../../assets/images/products/product2.png'
-import fallbackFood from '../../assets/images/products/product19.png'
+import rouletteBack from '../../assets/webpImages/images/eventPage/roulette3.webp'
+import rouletteFront from '../../assets/webpImages/images/eventPage/roulette1.webp'
+import makdong from '../../assets/webpImages/characters/M007_Poses07.webp'
+import running2 from '../../assets/webpImages/images/eventPage/running2.webp'
+import running3 from '../../assets/webpImages/images/eventPage/running3.webp'
+import giftIcon from '../../assets/webpImages/icons/gift.webp'
+import fallbackGift from '../../assets/webpImages/images/products/product24.webp'
+import fallbackLiquor from '../../assets/webpImages/images/products/product2.webp'
+import fallbackFood from '../../assets/webpImages/images/products/product19.webp'
 import styles from './RouletteEvent.module.scss'
 
 const productImages = import.meta.glob(
-  '../../assets/images/products/product*.png',
+  '../../assets/webpImages/images/products/product*.webp',
   { eager: true, import: 'default' }
 )
 
@@ -101,7 +101,7 @@ const wheelSegments = PRIZES.map((prize) => {
 
 const resolveProductImage = (imageUrl) =>
   Object.entries(productImages).find(([path]) =>
-    path.endsWith(`/${imageUrl}`)
+    (path.endsWith(`/${imageUrl}`) || path.endsWith((`/${imageUrl}`).replace(/\.(png|jpe?g)$/i, '.webp')))
   )?.[1]
 
 const drawPrize = () => {

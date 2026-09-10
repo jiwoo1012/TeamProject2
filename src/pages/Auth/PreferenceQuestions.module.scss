@@ -1,6 +1,12 @@
 @use '../../styles/variables' as *;
 
 
+// Overrides only the font-family from the shared AiSurvey.module.scss
+// .questionTitle (which is 'Batang'/serif) — this page's 5 question
+// headings should use the project's Arirang display font instead, without
+// touching the shared class so the AI Curator survey keeps its own font.
+.questionTitle { font-family: $font-family-display; }
+
 .skipArea { display: flex; justify-content: flex-end; margin-bottom: $space-4; }
 .skipButton { display: inline-flex; align-items: center; gap: $space-2; min-height: 36px; color: $color-text-secondary; font-size: $font-size-xs; cursor: pointer; }
 .skipButton:focus-visible { outline: 2px solid $color-text-secondary; outline-offset: $space-1; }

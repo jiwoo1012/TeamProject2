@@ -20,7 +20,7 @@ import styles from './WishList.module.scss'
 
 
 const productImages = import.meta.glob(
-  '../../assets/images/products/product*.png',
+  '../../assets/webpImages/images/products/product*.webp',
   {
     eager: true,
     import: 'default',
@@ -31,7 +31,7 @@ const productImages = import.meta.glob(
 const resolveImage = (imageUrl) =>
   Object.entries(productImages).find(
     ([path]) =>
-      path.endsWith(`/${imageUrl}`)
+      (path.endsWith(`/${imageUrl}`) || path.endsWith((`/${imageUrl}`).replace(/\.(png|jpe?g)$/i, '.webp')))
   )?.[1]
 
 

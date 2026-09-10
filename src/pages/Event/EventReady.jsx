@@ -6,11 +6,11 @@ import { getEventParticipationAvailability } from '../../services/eventParticipa
 import eventsData from '../../data/events.json'
 import { PATHS } from '../../routes/paths'
 import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
-import cardsImage from '../../assets/images/eventPage/cards.png'
-import oImage from '../../assets/images/eventPage/o.png'
-import xImage from '../../assets/images/eventPage/x.png'
-import cardMakdong from '../../assets/characters/M007_Poses02.png'
-import quizMakdong from '../../assets/characters/M007_Poses04.png'
+import cardsImage from '../../assets/webpImages/images/eventPage/cards.webp'
+import oImage from '../../assets/webpImages/images/eventPage/o.webp'
+import xImage from '../../assets/webpImages/images/eventPage/x.webp'
+import cardMakdong from '../../assets/webpImages/characters/M007_Poses02.webp'
+import quizMakdong from '../../assets/webpImages/characters/M007_Poses04.webp'
 import styles from './EventReady.module.scss'
 
 const EVENT_READY_CONFIG = {

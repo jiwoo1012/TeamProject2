@@ -12,15 +12,15 @@ import { db } from '../../firebase/firebase'
 import { getCart, saveCart } from '../../utils/cartStorage'
 import { PATHS } from '../../routes/paths'
 import jajakLogo from '../../assets/logos/jajakLogo.png'
-import faqMakdong from '../../assets/characters/M007_Poses04.png'
-import pattern2 from '../../assets/images/eventPage/pattern2.png'
-import dojagiIcon from '../../assets/icons/dojagi.png'
-import drinkIcon from '../../assets/icons/drink.png'
-import moonIcon from '../../assets/icons/moon.png'
+import faqMakdong from '../../assets/webpImages/characters/M007_Poses04.webp'
+import pattern2 from '../../assets/webpImages/images/eventPage/pattern2.webp'
+import dojagiIcon from '../../assets/webpImages/icons/dojagi.webp'
+import drinkIcon from '../../assets/webpImages/icons/drink.webp'
+import moonIcon from '../../assets/webpImages/icons/moon.webp'
 import styles from './ProductDetail.module.scss'
 
 const productImages = import.meta.glob(
-  '../../assets/images/products/product*.png',
+  '../../assets/webpImages/images/products/product*.webp',
   {
     eager: true,
     import: 'default',
@@ -30,7 +30,7 @@ const productImages = import.meta.glob(
 const MAX_WISHLIST_COUNT = 100
 
 const detailImages = import.meta.glob(
-  '../../assets/images/products/productDetail/**/*.{png,jpg,jpeg,webp}',
+  '../../assets/webpImages/images/products/productDetail/**/*.webp',
   {
     eager: true,
     import: 'default',
@@ -38,7 +38,7 @@ const detailImages = import.meta.glob(
 )
 
 const stylingImages = import.meta.glob(
-  '../../assets/images/products/stylingProduct/**/*.{png,jpg,jpeg,webp}',
+  '../../assets/webpImages/images/products/stylingProduct/**/*.webp',
   { eager: true, import: 'default' }
 )
 
@@ -46,7 +46,7 @@ const resolveProductImage = (imageUrl) =>
   /^(data:|https?:\/\/)/.test(imageUrl ?? '')
     ? imageUrl
     : Object.entries(productImages).find(([path]) =>
-    path.endsWith(`/${imageUrl}`)
+    (path.endsWith(`/${imageUrl}`) || path.endsWith((`/${imageUrl}`).replace(/\.(png|jpe?g)$/i, '.webp')))
   )?.[1]
 
 const getFolderName = (imageUrl = '') =>

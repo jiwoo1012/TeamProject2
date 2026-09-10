@@ -38,7 +38,7 @@ import styles from './AiHistoryDetail.module.scss'
 
 const productImages =
   import.meta.glob(
-    '../../assets/images/products/**/*.{png,jpg,jpeg,webp,avif}',
+    '../../assets/webpImages/images/products/**/*.webp',
     {
       eager: true,
       import: 'default',
@@ -92,9 +92,9 @@ const resolveProductImage = (
       productImages
     ).find(
       ([path]) =>
-        path.endsWith(
+        (path.endsWith(
           `/${fileName}`
-        )
+        ) || path.endsWith((`/${fileName}`).replace(/\.(png|jpe?g)$/i, '.webp')))
     )?.[1]
 
 

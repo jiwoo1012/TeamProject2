@@ -4,7 +4,7 @@ import { getCurrentUserData, subscribeToAuthState } from '../../firebase/auth'
 import { saveEventParticipation } from '../../services/eventParticipation'
 import quizData from '../../data/quizs.json'
 import { PATHS } from '../../routes/paths'
-import knotPattern from '../../assets/images/eventPage/pattern.png'
+import knotPattern from '../../assets/webpImages/images/eventPage/pattern.webp'
 import styles from './OxQuizEvent.module.scss'
 
 const EVENT_ID = 'event-3'
@@ -12,14 +12,14 @@ const EVENT_TITLE = '술술 풀리는 막동이 OX 퀴즈'
 const POINTS_PER_ANSWER = 500
 const REWARD_MILESTONE_COUNT = 5
 
-const quizImages = import.meta.glob('../../assets/images/products/explain/*.png', {
+const quizImages = import.meta.glob('../../assets/webpImages/images/products/explain/*.webp', {
   eager: true,
   import: 'default',
 })
 
 const resolveQuizImage = (imageUrl) => {
   const fileName = imageUrl?.split('/').pop()
-  return Object.entries(quizImages).find(([path]) => path.endsWith(`/${fileName}`))?.[1]
+  return Object.entries(quizImages).find(([path]) => (path.endsWith(`/${fileName}`) || path.endsWith((`/${fileName}`).replace(/\.(png|jpe?g)$/i, '.webp'))))?.[1]
 }
 
 const formatDate = () => new Intl.DateTimeFormat('ko-KR', {
@@ -221,7 +221,6 @@ const OxQuizEvent = () => {
                 <p className={styles.explanation}>{currentQuiz.explanation}</p>
                 <button className={styles.continueButton} type="button" onClick={handleContinue}>
                   {isLastQuiz ? '결과 보기' : '다음 문제'}
-                  <span aria-hidden="true">→</span>
                 </button>
               </>
             ) : (

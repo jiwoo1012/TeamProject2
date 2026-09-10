@@ -12,7 +12,6 @@ const useMainSectionWheel = ({
   bestSellerTransitionRef,
   heroSunPlayRef,
   heroSunResetRef,
-  isHeroSunCompleteRef,
   isHeroDismissed,
   onHeroExit,
 }) => {
@@ -65,21 +64,19 @@ const useMainSectionWheel = ({
       let targetTop
 
       const isAtSunStage = Math.abs(currentScroll - heroSunStageStop) <= 2
-      if (isAtSunStage && direction < 0 && isHeroSunCompleteRef.current) {
+      if (isAtSunStage && direction < 0 && heroSunResetRef.current?.()) {
         event.preventDefault()
-        heroSunResetRef.current?.()
         return
       }
 
       if (isAtSunStage && direction > 0) {
         event.preventDefault()
 
-        if (!isHeroSunCompleteRef.current) {
-          heroSunPlayRef.current?.()
+        if (heroSunPlayRef.current?.()) {
           return
         }
 
-        targetTop = firstSectionTop
+        targetTop = heroExitStop
       }
 
       if (hasBestSellerSteps && (
@@ -182,7 +179,6 @@ const useMainSectionWheel = ({
     featureSectionRef,
     heroSunPlayRef,
     heroSunResetRef,
-    isHeroSunCompleteRef,
     isHeroDismissed,
     mainContentRef,
     makdongSectionRef,

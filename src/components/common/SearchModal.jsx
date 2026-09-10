@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
-import searchIcon from '../../assets/icons/searchIcon.png'
+import searchIcon from '../../assets/webpImages/icons/searchIcon.webp'
 
 import styles from './SearchModal.module.scss'
 

@@ -1,7 +1,7 @@
 # JAJAK AGENTS.md
 
-> Version: 1.8
-> Last updated: 2026-09-08
+> Version: 1.9
+> Last updated: 2026-09-10
 > Purpose: JAJAK 팀 프로젝트의 프론트엔드 아키텍처, 데이터 계약, 개발 컨벤션과 협업 규칙을 Codex 및 모든 팀원이 동일하게 따르기 위한 공통 지침이다.  
 > 이 문서는 코드 작성 전 우선 확인한다. 확정된 팀 규칙과 충돌하는 임의 구현은 하지 않는다.
 
@@ -17,6 +17,7 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 - 성인인증
 - 전통주 / 안주 / 주류용품 상품 조회
 - AI 주안상 큐레이션
+- 막둥이 주막 체험형 콘텐츠
 - 찜
 - 장바구니
 - Mock 결제 / 주문
@@ -97,10 +98,11 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 ### 소유 경로
 
 - 공통 UI: `src/components/common/{Header,DesktopHeader,MobileHeader,MobileBottomNav,SearchModal,MobileSearchModal,SiteLayout,Footer,ScrollToTop,AdultModal}*`
-- 관리자 공통 Header / Footer: `src/components/admin/{AdminHeader,AdminFooter}*`
+- 관리자 공통 UI: `src/components/admin/*`, `src/styles/admin/*`
+- 마이페이지 공통 UI 통합: `src/components/mypage/*`
 - Preference: `src/pages/Auth/Preference*`, `src/constants/{preferenceSurvey,tasteAxis}.js`
 - AI: `src/pages/AiCurator/*`, `src/components/ai/*`, `src/hooks/{useAiSurvey,useAdultCheck}.js`, `src/constants/aiSurvey.js`
-- AI 기록·관리: `src/pages/MyPage/{AiHistory,AiPreference}*`, `src/pages/Admin/AiLogManage*`
+- AI 기록·관리: `src/pages/MyPage/{AiHistory,AiHistoryDetail,AiPreference}*`, `src/pages/Admin/AiLogManage*`
 - Functions: `functions/src/*`
 - Routing: `src/App.jsx`, `src/routes/*`
 
@@ -108,7 +110,7 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 
 - Header·Footer·검색·GNB와 전체 Route / nested routing
 - Preference 단계와 `users/{uid}.userPreference` 계약
-- 회원·비회원 AI 설문, 추천, 기록, OpenAI / Functions 연동
+- 회원·비회원 AI 설문, 추천, 기록, 막둥이 주막, OpenAI / Functions 연동
 - 관리자 공통 UI·반응형 통합과 Dashboard Firestore 집계 연동
 - 최종 페이지·사용자 흐름·공통 용어·`dev` 통합본 점검
 
@@ -116,6 +118,7 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 
 - Auth 성공 후 `/preference` 진입까지는 이영기, 이후 Preference 흐름은 김지우가 담당한다.
 - AdminLayout 기본 구조와 개별 관리 기능은 기존 담당자가 유지하며 김지우는 공통 UI·Routing·디자인 통합을 담당한다.
+- `src/components/mypage/*`는 여러 담당자의 MyPage 화면이 공유하는 통합 UI이며 기능·데이터 책임은 각 화면 담당자가 유지한다.
 - Dashboard 초기 UI는 백현정, Firestore 집계와 상세 경로 연결은 김지우가 담당한다.
 - `useAdultCheck.js`와 익명 인증 연결은 목표 구조이며 현재 placeholder / 미연결 상태다.
 
@@ -124,7 +127,7 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 ### 소유 경로
 
 - 상품 데이터: `src/data/products/*`, `src/data/pairings.json`, `src/services/productCatalog.js`
-- 상품 UI: `src/components/ui/ProductCard/*`, `src/pages/Shop/*`
+- 상품 UI: `src/components/ui/ProductCard/*`, `src/components/shop/*`, `src/pages/Shop/*`
 - 상품 관리: `src/pages/Admin/ProductManage*`
 - 이벤트: `src/pages/Event/*`, `src/data/{events,quizs}.json`, `src/constants/eventStatus.js`
 - 이벤트 데이터: `src/services/eventParticipation.js`
@@ -153,7 +156,7 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 
 ### 소유 경로
 
-- Main: `src/pages/Main/*`
+- Main: `src/pages/Main/*`, `src/components/ui/MainSectionNav/*`
 - Brand: `src/pages/Brand/*`
 - Dashboard UI: `src/pages/Admin/Dashboard*`
 - 예외 화면: `src/pages/NotFound/*`
@@ -242,6 +245,18 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 - `src/components/admin/AdminHeader.module.scss`
 - `src/components/admin/AdminFooter.jsx`
 - `src/components/admin/AdminFooter.module.scss`
+- `src/components/admin/AdminEmptyState.jsx`
+- `src/components/admin/AdminEmptyState.module.scss`
+- `src/components/admin/AdminFilterBar.jsx`
+- `src/components/admin/AdminFilterBar.module.scss`
+- `src/components/admin/AdminPageHeader.jsx`
+- `src/components/admin/AdminPageHeader.module.scss`
+- `src/components/admin/AdminPanel.jsx`
+- `src/components/admin/AdminPanel.module.scss`
+- `src/components/admin/AdminStatusBadge.jsx`
+- `src/components/admin/AdminStatusBadge.module.scss`
+- `src/components/admin/AdminSummaryCard.jsx`
+- `src/components/admin/AdminSummaryCard.module.scss`
 - `src/components/common/Header.jsx`
 - `src/components/common/DesktopHeader.jsx`
 - `src/components/common/MobileHeader.jsx`
@@ -261,6 +276,7 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 - `src/pages/Admin/AdminLayout.module.scss`
 - `src/pages/Admin/AdminErrorContent.jsx`
 - `src/pages/Admin/AdminErrorContent.module.scss`
+- `src/components/mypage/*`
 - `src/App.jsx`
 - `src/routes/*`
 
@@ -290,9 +306,12 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 - `src/data/events.json`
 - `src/data/pairings.json`
 - `src/data/quizs.json`
+- `src/data/tavernGame.js`
 - `src/services/eventParticipation.js`
 - `src/services/productCatalog.js`
 - `src/services/recommendationApi.js`
+- `src/components/shop/*`
+- `src/components/ui/MainSectionNav/*`
 - `src/constants/*`
 - `src/utils/cartStorage.js`
 - `vite.config.js`
@@ -344,54 +363,49 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 
 ```text
 jajak/
+│
 ├── .env.example
 ├── .env.local
 ├── .firebaserc
 ├── .gitignore
 ├── .oxlintrc.json
 ├── AGENTS.md
-├── README.md
-├── event-review.mjs
 ├── firebase.json
 ├── firestore.indexes.json
 ├── firestore.rules
+├── event-review.mjs
 ├── index.html
 ├── package.json
 ├── package-lock.json
+├── README.md
 ├── vercel.json
 ├── vite.config.js
 │
 ├── docs/
 │   └── images/
 │       ├── design/
-│       │   └── .gitkeep
 │       └── screenshots/
-│           └── .gitkeep
 │
 ├── functions/
-│   ├── .env.local
+│   ├── src/
+│   │   ├── utils/
+│   │   │   ├── buildCandidateTables.js
+│   │   │   └── filterProducts.js
+│   │   ├── index.js
+│   │   └── recommendation.js
 │   ├── .gitignore
-│   ├── .secret.local
 │   ├── package.json
-│   ├── package-lock.json
-│   └── src/
-│       ├── index.js
-│       ├── recommendation.js
-│       └── utils/
-│           ├── buildCandidateTables.js
-│           └── filterProducts.js
+│   └── package-lock.json
 │
 ├── public/
 │   └── favicon.png
 │
 └── src/
-    ├── App.jsx
-    ├── main.jsx
-    │
     ├── assets/
     │   ├── characters/
     │   ├── fonts/
     │   ├── icons/
+    │   │   └── preferenceQuestions/
     │   ├── images/
     │   │   ├── admin/
     │   │   ├── ai/
@@ -402,7 +416,6 @@ jajak/
     │   │   ├── main/
     │   │   ├── mypage/
     │   │   ├── products/
-    │   │   ├── shop/
     │   │   └── splash/
     │   ├── logos/
     │   └── videos/
@@ -413,10 +426,10 @@ jajak/
     │   │   ├── AdminEmptyState.module.scss
     │   │   ├── AdminFilterBar.jsx
     │   │   ├── AdminFilterBar.module.scss
-    │   │   ├── AdminFooter.jsx
-    │   │   ├── AdminFooter.module.scss
     │   │   ├── AdminHeader.jsx
     │   │   ├── AdminHeader.module.scss
+    │   │   ├── AdminFooter.jsx
+    │   │   ├── AdminFooter.module.scss
     │   │   ├── AdminPageHeader.jsx
     │   │   ├── AdminPageHeader.module.scss
     │   │   ├── AdminPanel.jsx
@@ -470,41 +483,17 @@ jajak/
     │   │
     │   └── ui/
     │       ├── Badge/
-    │       │   ├── Badge.jsx
-    │       │   └── Badge.module.scss
     │       ├── Button/
-    │       │   ├── Button.jsx
-    │       │   └── Button.module.scss
     │       ├── EmptyState/
-    │       │   ├── EmptyState.jsx
-    │       │   └── EmptyState.module.scss
     │       ├── ErrorState/
-    │       │   ├── ErrorState.jsx
-    │       │   └── ErrorState.module.scss
     │       ├── Loading/
-    │       │   ├── Loading.jsx
-    │       │   └── Loading.module.scss
     │       ├── MainSectionNav/
-    │       │   ├── MainSectionNav.jsx
-    │       │   └── MainSectionNav.module.scss
     │       ├── MobileTopButton/
-    │       │   ├── MobileTopButton.jsx
-    │       │   └── MobileTopButton.module.scss
     │       ├── Modal/
-    │       │   ├── Modal.jsx
-    │       │   └── Modal.module.scss
     │       ├── Pagination/
-    │       │   ├── Pagination.jsx
-    │       │   └── Pagination.module.scss
     │       ├── ProductCard/
-    │       │   ├── ProductCard.jsx
-    │       │   └── ProductCard.module.scss
     │       ├── QuestionCard/
-    │       │   ├── QuestionCard.jsx
-    │       │   └── QuestionCard.module.scss
     │       └── Tabs/
-    │           ├── Tabs.jsx
-    │           └── Tabs.module.scss
     │
     ├── constants/
     │   ├── aiSurvey.js
@@ -515,16 +504,16 @@ jajak/
     │   └── userRole.js
     │
     ├── data/
+    │   ├── products/
+    │   │   ├── foods.json
+    │   │   ├── gifts.json
+    │   │   ├── glasses.json
+    │   │   ├── index.js
+    │   │   └── liquors.json
     │   ├── events.json
     │   ├── pairings.json
     │   ├── quizs.json
-    │   ├── tavernGame.js
-    │   └── products/
-    │       ├── foods.json
-    │       ├── gifts.json
-    │       ├── glasses.json
-    │       ├── index.js
-    │       └── liquors.json
+    │   └── tavernGame.js
     │
     ├── firebase/
     │   ├── auth.js
@@ -576,16 +565,16 @@ jajak/
     │   ├── Auth/
     │   │   ├── Login.jsx
     │   │   ├── Login.module.scss
-    │   │   ├── PreferenceComplete.jsx
-    │   │   ├── PreferenceComplete.module.scss
-    │   │   ├── PreferenceQuestions.jsx
-    │   │   ├── PreferenceQuestions.module.scss
-    │   │   ├── PreferenceSafety.jsx
-    │   │   ├── PreferenceSafety.module.scss
-    │   │   ├── PreferenceSafetyIntro.jsx
-    │   │   ├── PreferenceSafetyIntro.module.scss
     │   │   ├── PreferenceSurvey.jsx
     │   │   ├── PreferenceSurvey.module.scss
+    │   │   ├── PreferenceSafetyIntro.jsx
+    │   │   ├── PreferenceSafetyIntro.module.scss
+    │   │   ├── PreferenceSafety.jsx
+    │   │   ├── PreferenceSafety.module.scss
+    │   │   ├── PreferenceQuestions.jsx
+    │   │   ├── PreferenceQuestions.module.scss
+    │   │   ├── PreferenceComplete.jsx
+    │   │   ├── PreferenceComplete.module.scss
     │   │   ├── Signup.jsx
     │   │   └── Signup.module.scss
     │   │
@@ -625,13 +614,13 @@ jajak/
     │   │   ├── JourneySection.module.scss
     │   │   ├── MainPage.jsx
     │   │   ├── MainPage.module.scss
-    │   │   ├── README.md
     │   │   ├── SplashIntro.jsx
     │   │   ├── SplashIntro.module.scss
     │   │   ├── useHeroReveal.js
     │   │   ├── useLogoScrollReset.js
     │   │   ├── useMainSectionWheel.js
-    │   │   └── useSectionReveals.js
+    │   │   ├── useSectionReveals.js
+    │   │   └── README.md
     │   │
     │   ├── MyPage/
     │   │   ├── AddressBook.jsx
@@ -652,10 +641,10 @@ jajak/
     │   │   ├── FrequentPurchase.module.scss
     │   │   ├── InquiryHistory.jsx
     │   │   ├── InquiryHistory.module.scss
-    │   │   ├── MyHome.jsx
-    │   │   ├── MyHome.module.scss
     │   │   ├── MyPageErrorContent.jsx
     │   │   ├── MyPageErrorContent.module.scss
+    │   │   ├── MyHome.jsx
+    │   │   ├── MyHome.module.scss
     │   │   ├── MyPageLayout.jsx
     │   │   ├── MyPageLayout.module.scss
     │   │   ├── OrderDetail.jsx
@@ -701,19 +690,23 @@ jajak/
     │   └── recommendationApi.js
     │
     ├── styles/
+    │   ├── admin/
+    │   │   ├── _adminCommon.scss
+    │   │   ├── _adminMixins.scss
+    │   │   └── _adminVariables.scss
+    │   ├── global.scss
     │   ├── _mixins.scss
     │   ├── _reset.scss
-    │   ├── _variables.scss
-    │   ├── global.scss
-    │   └── admin/
-    │       ├── _adminCommon.scss
-    │       ├── _adminMixins.scss
-    │       └── _adminVariables.scss
+    │   └── _variables.scss
     │
-    └── utils/
-        ├── cartStorage.js
-        ├── format.js
-        └── validation.js
+    ├── utils/
+    │   ├── cartStorage.js
+    │   ├── format.js
+    │   └── validation.js
+    │
+    ├── App.jsx
+    └── main.jsx
+```
 
 ## Structure Rules
 
@@ -760,6 +753,7 @@ pairings
 orders
 events
 recommendations
+aiRecommendationLogs
 guestSessions
 aiRequestGuards
 inquiries
@@ -853,6 +847,15 @@ Radius       : 4 / 8 / 12 / 20 / pill
 - Tabs
 - ProductCard
 - QuestionCard
+- MainSectionNav
+- MyPageHeader
+- StatusBadge
+- AdminPageHeader
+- AdminSummaryCard
+- AdminFilterBar
+- AdminPanel
+- AdminStatusBadge
+- AdminEmptyState
 
 동일 목적의 컴포넌트를 다른 이름으로 중복 생성하지 않는다.
 
@@ -1824,8 +1827,10 @@ Cloud Functions에서 관리자 여부 확인이 필요한 경우:
 ## AiLogManage
 
 - 현재 `AiLogManage.jsx`는 시연용 `mockLogs`를 사용한다.
-- Firestore 연결이 완료되기 전까지 실제 전체 추천 로그를 조회한다고 문서화하지 않는다.
-- 실제 연결 시 collection group query, 관리자 권한, 페이지네이션, 필요한 index를 함께 검토한다.
+- `recommendJajak` Function은 회원·비회원 요청마다 `aiRecommendationLogs/{logId}`를 생성하고 `pending`에서 `success` 또는 `failed`로 상태를 갱신한다.
+- `aiRecommendationLogs`의 client read는 관리자에게만 허용하며 create/update/delete는 금지한다.
+- 관리 화면이 이 collection을 아직 조회하지 않으므로 실제 로그 화면이라고 문서화하지 않는다.
+- 실제 UI 연결 시 관리자 권한, 페이지네이션, 필요한 index를 함께 검토한다.
 
 ## Role Protection
 
@@ -2195,6 +2200,7 @@ constants/eventStatus.js
 | AiIntro | `/ai` | 전체 |
 | AiSurvey | `/ai/survey` | 성인인증 완료 사용자 |
 | AiResult | `/ai/result` | 정상 추천 완료 + 성인인증 사용자 |
+| MakdongTavern | `/ai/tavern` | 전체 |
 
 규칙:
 
@@ -2204,6 +2210,7 @@ constants/eventStatus.js
 - 로그인 회원 결과는 Firestore 저장
 - 비회원 결과는 React 임시 상태
 - 추천 결과 없이 `/ai/result` 직접 접근 시 `/ai` 또는 `/ai/survey` 이동
+- 막둥이 주막은 `src/data/tavernGame.js`와 전용 에셋을 사용하는 체험형 콘텐츠다.
 
 ## Cart / Order
 
@@ -2234,6 +2241,7 @@ constants/eventStatus.js
 | ClaimHistory | `/mypage/claims` | 로그인 회원 |
 | InquiryHistory | `/mypage/inquiries` | 로그인 회원 |
 | AiHistory | `/mypage/ai-history` | 로그인 회원 |
+| AiHistoryDetail | `/mypage/ai-history/:recommendationId` | 로그인 회원 |
 | AiPreference | `/mypage/preference` | 로그인 회원 |
 | EventHistory | `/mypage/events` | 로그인 회원 |
 | EventWinningHistory | `/mypage/event-winnings` | 로그인 회원 |
@@ -2314,7 +2322,7 @@ src/pages/MyPage/MyPageErrorContent.jsx
 
 - `SplashIntro.jsx`는 초기 진입 연출과 `/intro` Route에서 사용한다.
 - `ScrollToTop.jsx`는 공통 Routing 영역에서 라우트 이동 시 스크롤 위치를 초기화한다.
-- 동적 route의 `:productId`, `:orderId`, `:noticeId`에는 실제 데이터 ID 사용
+- 동적 route의 `:productId`, `:orderId`, `:noticeId`, `:recommendationId`에는 실제 데이터 ID 사용
 - `ProtectedRoute.jsx`와 `AdminRoute.jsx`는 현재 placeholder이며 `App.jsx` Route에 연결되지 않았다.
 - 로그인 회원 전용 페이지와 관리자 페이지의 Route guard 연결은 남은 필수 작업이다.
 - guard 연결 전에도 각 화면의 Firebase 사용자 확인과 Firestore Rules를 유지한다.
@@ -2380,6 +2388,7 @@ AI 오류는 공통 Error Code를 기준으로 사용자용 메시지로 변환�
 - 일반 회원은 본인 추천 기록만 조회한다.
 - 추천 기록 client create/update 금지
 - AI 추천 기록 생성은 Cloud Functions
+- 관리자 AI 이용 로그 생성·수정은 Cloud Functions Admin SDK만 허용
 - Admin 권한은 `users/{uid}.role === "admin"`
 - 관리자 전용 데이터는 동일 role 기준으로 보호
 - `guestSessions`와 `aiRequestGuards`를 도입하는 경우 client direct write를 허용하지 않는다.
@@ -2419,6 +2428,7 @@ AI 오류는 공통 Error Code를 기준으로 사용자용 메시지로 변환�
 | 이벤트 상태 | `constants/eventStatus.js` |
 | 관리자 실제 권한 | `users/{uid}.role` + Firestore Rules / server validation |
 | AI 추천 기록 | Firestore `users/{uid}/recommendations/{recommendationId}` |
+| 관리자 AI 이용 로그 | Firestore `aiRecommendationLogs/{logId}` / 현재 관리 UI는 `mockLogs` |
 | 리뷰 | Firestore `reviews/{reviewId}` |
 | 디자인 Token | `src/styles/_variables.scss` |
 | Git 통합 기준 | `dev` |
@@ -2620,7 +2630,12 @@ Codex는 다음 순서와 규칙을 따른다.
 - 이벤트 준비 화면 → `/events/ready/:eventType`
 - 이벤트 참여 저장 → `eventParticipations/{eventId}_{uid}` 공통 사용
 - AI 추천 저장 → `users/{uid}/recommendations/{recommendationId}`
-- 관리자 AI 로그 → 현재 시연용 `mockLogs`
+- 막둥이 주막 → `/ai/tavern` + `src/data/tavernGame.js`
+- AI 추천 기록 상세 → `/mypage/ai-history/:recommendationId`
+- 관리자 AI 이용 로그 → Functions가 `aiRecommendationLogs/{logId}` 저장 / `AiLogManage` 화면은 현재 `mockLogs`
+- 관리자·마이페이지 공통 UI → `src/components/admin/*`, `src/components/mypage/*`
+- `MyPageCard*`, `MyPageEmpty*` → 현재 빈 placeholder 파일
+- 상품 안내·액션 공통 UI → `src/components/shop/*`
 - `ProtectedRoute` / `AdminRoute` → placeholder 상태이며 Route guard 연결 필요
 
 기존 핵심 데이터 계약:
@@ -2639,6 +2654,17 @@ Codex는 다음 순서와 규칙을 따른다.
 ---
 
 # 36. Version History
+
+## v1.9 — 2026-09-10
+
+- 최신 `origin/dev` 통합본 `25d7631` 기준으로 실제 구조 재점검
+- 막둥이 주막 `MakdongTavern`, `tavernGame.js`, `/ai/tavern` Route 반영
+- `AiHistoryDetail`과 `/mypage/ai-history/:recommendationId` Route 반영
+- 관리자·마이페이지·상품·메인 공통 컴포넌트와 관리자 전용 스타일 폴더 반영
+- `MyPageCard*`, `MyPageEmpty*`의 빈 placeholder 상태 명시
+- Functions의 `aiRecommendationLogs/{logId}` 저장 및 관리자 전용 read Rules 반영
+- `AiLogManage`는 실제 collection에 아직 연결되지 않고 `mockLogs`를 표시하는 상태로 구분
+- README용 `docs/images/*` 폴더와 `event-review.mjs`를 실제 루트 구조에 반영
 
 ## v1.8 — 2026-09-08
 

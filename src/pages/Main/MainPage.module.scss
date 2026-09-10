@@ -342,22 +342,12 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      transition: opacity 0.35s ease;
     }
 
     .heroMoonIcon {
       opacity: 0;
     }
 
-    &[data-phase='moon'] {
-      .heroSunIcon {
-        opacity: 0;
-      }
-
-      .heroMoonIcon {
-        opacity: 1;
-      }
-    }
   }
 }
 .heroCaption {
@@ -499,7 +489,7 @@
   padding: 100px 20px 72px;
   box-sizing: border-box;
   color: $color-text-primary;
-  background: $color-bg url('../../assets/images/main/ai-recommendation/main-ai-bg.webp') center / cover no-repeat;
+  background: $color-bg url('../../assets/webpImages/images/main/ai-recommendation/main-ai-bg.webp') center / cover no-repeat;
   text-align: center;
 
   @media (max-width: 767px) {
@@ -511,7 +501,7 @@
     // 배경 이미지와 같은 레이어에서 페이드 처리해 경계의 얇은 잔상을 막습니다.
     background-image:
       linear-gradient(0deg, $color-bg 0 $space-4, rgba($color-bg, 0.72) 50px, rgba($color-bg, 0) 120px),
-      url('../../assets/images/main/ai-recommendation/main-ai-bg.webp');
+      url('../../assets/webpImages/images/main/ai-recommendation/main-ai-bg.webp');
 
     &::before {
       position: absolute;
@@ -1277,7 +1267,7 @@
 }
 .featureSection {
   position: relative;
-  z-index: auto;
+  z-index: 1;
   display: grid;
   width: 100%;
   min-height: 100svh;
@@ -1288,8 +1278,8 @@
   box-sizing: border-box;
   color: $color-text-primary;
   background: $color-bg;
-  isolation: auto;
-  overflow: visible;
+  isolation: isolate;
+  overflow: clip;
 
   &::before {
     position: absolute;
@@ -1568,7 +1558,7 @@
 }
 .featureImage .featurePourOverlay {
   position: absolute;
-  top: -15%;
+  top: calc(-15% + 24px);
   left: -12%;
   z-index: 101;
   width: calc(112% + 40px);
@@ -1580,7 +1570,7 @@
   will-change: opacity;
 
   @media (max-width: 767px) {
-    top: -5%;
+    top: calc(-5% + 24px);
     left: 25px;
     width: calc(100% + 5px);
   }
@@ -1903,7 +1893,7 @@
   border: 1px solid rgba(44, 35, 27, 0.08);
   border-radius: 5px;
   color: $color-text-primary;
-  background: #fff url('../../assets/images/main/best-seller/main-frame-bg.webp') center / cover no-repeat;
+  background: #fff url('../../assets/webpImages/images/main/best-seller/main-frame-bg.webp') center / cover no-repeat;
   box-shadow: 0 14px 32px rgba(44, 35, 27, 0.13);
   cursor: pointer;
   text-decoration: none;

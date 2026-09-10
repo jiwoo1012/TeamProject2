@@ -14,10 +14,10 @@
 .thumbnails img:hover, .thumbnails img:focus-visible { filter: brightness(.9); transform: scale(.98); }
 .thumbnails { display: grid; grid-template-rows: repeat(3, 1fr); gap: $space-3; min-height: 0; }
 .tabs { position: relative; display: flex; gap: $space-16; margin-top: $space-16; padding-bottom: calc(100% * 47 / 1053); }
-.tabs::after { position: absolute; bottom: 0; left: 0; width: 100%; aspect-ratio: 1624 / 73; content: ''; background: url('../../assets/images/eventPage/pattern2.png') center / contain no-repeat; }
+.tabs::after { position: absolute; bottom: 0; left: 0; width: 100%; aspect-ratio: 1624 / 73; content: ''; background: url('../../assets/webpImages/images/eventPage/pattern2.webp') center / contain no-repeat; }
 .tabs button { position: relative; z-index: 1; padding: 0 $space-8 $space-4; color: $color-primary; font-size: $font-size-lg; font-weight: $font-weight-medium; transition: color $transition-base ease; }
 .tabs .activeTab { color: $color-surface; }
-.detailContent { min-height: 900px; margin-top: $space-16; overflow: hidden; color: $color-text-primary; background-color: $color-bg; background-image: url('../../assets/images/eventPage/background2.jpg'); background-repeat: repeat; background-position: top center; background-size: 60% auto; border-radius: $radius-lg; }
+.detailContent { min-height: 900px; margin-top: $space-16; overflow: hidden; color: $color-text-primary; background-color: $color-bg; background-image: url('../../assets/webpImages/images/eventPage/background2.webp'); background-repeat: repeat; background-position: top center; background-size: 60% auto; border-radius: $radius-lg; }
 .detailContent img { display: block; width: 100%; }
 .brandStory { @include mixins.flex-center; flex-direction: column; min-height: 520px; padding: $space-4 $space-10; text-align: center; background: radial-gradient(circle at center, transparent 24%, rgba($color-taupe, .12) 58%, rgba($color-text-primary, .52) 100%); }
 .brandStory img { width: min(34%, 240px); height: auto; object-fit: contain; }

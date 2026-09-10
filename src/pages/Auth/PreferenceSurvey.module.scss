@@ -19,7 +19,7 @@
     position: absolute;
     z-index: -1;
     inset: 8% -10%;
-    background: url('../../assets/images/common/header-hanji2.webp') center / 100% 100% no-repeat;
+    background: url('../../assets/webpImages/images/common/header-hanji2.webp') center / 100% 100% no-repeat;
     opacity: .65;
     pointer-events: none;
   }
@@ -103,7 +103,7 @@
 .clockIcon { font-size: $font-size-xl; line-height: 1; }
 .title {
   margin: 0;
-  font-family: 'Batang', 'Noto Serif KR', serif;
+  font-family: $font-family-display;
   font-size: clamp(32px, 3.1vw, 48px);
   font-weight: $font-weight-bold;
   line-height: 1.4;

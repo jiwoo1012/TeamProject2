@@ -1190,7 +1190,7 @@
     min-height: auto;
     padding: $space-6 $space-4;
     grid-template-rows: auto;
-    background: $color-bg url('../../assets/images/mypage/orderCompleteHanji.png') center / cover;
+    background: $color-bg url('../../assets/webpImages/images/mypage/orderCompleteHanji.webp') center / cover;
     border-radius: $radius-xl;
   }
 
@@ -1306,11 +1306,11 @@
   .characterStory,
   .outro {
     background-color: $color-bg;
-    background-image: linear-gradient(rgba($color-primary, 0.12), rgba($color-primary, 0.12)), url('../../assets/images/mypage/orderCompleteHanji.png');
+    background-image: linear-gradient(rgba($color-primary, 0.12), rgba($color-primary, 0.12)), url('../../assets/webpImages/images/mypage/orderCompleteHanji.webp');
     background-size: auto, 900px auto;
   }
 
-  .blankIntro { background-image: radial-gradient(ellipse at 50% 85%, rgba($color-primary-light, 0.26), transparent 65%), url('../../assets/images/mypage/orderCompleteHanji.png'); }
+  .blankIntro { background-image: radial-gradient(ellipse at 50% 85%, rgba($color-primary-light, 0.26), transparent 65%), url('../../assets/webpImages/images/mypage/orderCompleteHanji.webp'); }
   .blankIntroWord,
   .characterGuideTitle,
   .blankCharacterSection h2 {
@@ -1348,7 +1348,7 @@
   .profileCards dd { font-size: $font-size-md; }
 
   .guideBoard {
-    background: $color-bg url('../../assets/images/mypage/orderCompleteHanji.png') center / 760px auto;
+    background: $color-bg url('../../assets/webpImages/images/mypage/orderCompleteHanji.webp') center / 760px auto;
     border: 0;
     border-radius: 32px 12px 40px 16px;
     box-shadow: 0 12px 32px rgba($color-primary, 0.12);
@@ -1362,13 +1362,13 @@
   .tailSecret { border-top: 0; padding: $space-4; border-radius: $radius-xl; background: rgba($color-primary, 0.08); }
   .propCard { border: 0; border-radius: 28px 16px 24px 32px; background: rgba($color-bg, 0.85); }
 
-  .characterStory { background-color: $color-primary; background-image: linear-gradient(rgba($color-primary, 0.92), rgba($color-primary, 0.92)), url('../../assets/images/mypage/orderCompleteHanji.png'); }
+  .characterStory { background-color: $color-primary; background-image: linear-gradient(rgba($color-primary, 0.92), rgba($color-primary, 0.92)), url('../../assets/webpImages/images/mypage/orderCompleteHanji.webp'); }
   .characterStoryVisual { background: transparent; min-height: 660px; overflow: visible; }
   .characterStoryCopy { padding-top: calc(#{$space-24} + 30px); }
   .characterStoryVisual img { width: 115%; max-width: none; max-height: 780px; filter: drop-shadow(0 18px 28px rgba($color-text-primary, 0.12)); }
   .characterStoryHeader h2 { color: $color-bg; }
   .characterStoryHeader > p:last-child { color: $color-bg; font-size: $font-size-lg; line-height: 1.9; }
-  .characterPurpose { margin-top: 0; border: 0; border-radius: 32px 16px 40px 20px; background: $color-bg url('../../assets/images/mypage/orderCompleteHanji.png') center / cover; }
+  .characterPurpose { margin-top: 0; border: 0; border-radius: 32px 16px 40px 20px; background: $color-bg url('../../assets/webpImages/images/mypage/orderCompleteHanji.webp') center / cover; }
   .curationIntro > p, .curationIntro h3, .dialogueDemo h3 { color: $color-bg; }
   .traitCards li { border: 0; border-radius: 28px 16px 32px 20px; }
   .speechBubble { background: $color-bg; }

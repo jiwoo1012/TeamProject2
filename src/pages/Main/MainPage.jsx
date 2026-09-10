@@ -10,28 +10,28 @@ import useHeroReveal from './useHeroReveal'
 import useLogoScrollReset from './useLogoScrollReset'
 import useMainSectionWheel from './useMainSectionWheel'
 import useSectionReveals from './useSectionReveals'
-import heroImage from '../../assets/images/main/hero/main-hero-table.webp'
-import heroSunsetImage from '../../assets/images/main/hero/main-hero-table-sunset.webp'
-import heroSunIcon from '../../assets/images/main/hero/hero-sun.png'
-import heroMoonIcon from '../../assets/images/main/hero/hero-moon.png'
-import tornPaperFrame from '../../assets/images/main/ai-recommendation/main-torn-paper.png'
-import peekFaceDefault from '../../assets/images/main/ai-recommendation/peek-face-default.webp'
-import peekFaceSmile from '../../assets/images/main/ai-recommendation/peek-face-smile.webp'
-import peekFaceUp from '../../assets/images/main/ai-recommendation/peek-face-up.webp'
-import happyDayFood from '../../assets/images/main/ai-recommendation/happy-day-grilled-pollock.png'
-import happyDayLiquor from '../../assets/images/main/ai-recommendation/happy-day-black-liquor.png'
-import happyDayCup from '../../assets/images/main/ai-recommendation/happy-day-black-cup.png'
-import rainyDayFood from '../../assets/images/main/ai-recommendation/rainy-day-kimchi-pancake.png'
-import rainyDayLiquor from '../../assets/images/main/ai-recommendation/rainy-day-blue-liquor.png'
-import rainyDayCup from '../../assets/images/main/ai-recommendation/rainy-day-blue-cup.png'
-import sweetDayFood from '../../assets/images/main/ai-recommendation/sweet-craving-yakgwa.png'
-import sweetDayLiquor from '../../assets/images/main/ai-recommendation/sweet-craving-orange-liquor.png'
-import sweetDayCup from '../../assets/images/main/ai-recommendation/sweet-craving-orange-cup.png'
-import brandStoryImage from '../../assets/images/main/brand-story/brand-story-pouring.webp'
-import brandStoryPourBefore from '../../assets/images/main/brand-story/brand-story-pour-before.png'
-import brandStoryPourAfter from '../../assets/images/main/brand-story/brand-story-pour-after.png'
-import brandStoryCup from '../../assets/images/main/brand-story/brand-story-cup.png'
-import makdongCharacter from '../../assets/characters/M007_Poses01.png'
+import heroImage from '../../assets/webpImages/images/main/hero/main-hero-table.webp'
+import heroSunsetImage from '../../assets/webpImages/images/main/hero/main-hero-table-sunset.webp'
+import heroSunIcon from '../../assets/webpImages/images/main/hero/hero-sun.webp'
+import heroMoonIcon from '../../assets/webpImages/images/main/hero/hero-moon.webp'
+import tornPaperFrame from '../../assets/webpImages/images/main/ai-recommendation/main-torn-paper.webp'
+import peekFaceDefault from '../../assets/webpImages/images/main/ai-recommendation/peek-face-default.webp'
+import peekFaceSmile from '../../assets/webpImages/images/main/ai-recommendation/peek-face-smile.webp'
+import peekFaceUp from '../../assets/webpImages/images/main/ai-recommendation/peek-face-up.webp'
+import happyDayFood from '../../assets/webpImages/images/main/ai-recommendation/happy-day-grilled-pollock.webp'
+import happyDayLiquor from '../../assets/webpImages/images/main/ai-recommendation/happy-day-black-liquor.webp'
+import happyDayCup from '../../assets/webpImages/images/main/ai-recommendation/happy-day-black-cup.webp'
+import rainyDayFood from '../../assets/webpImages/images/main/ai-recommendation/rainy-day-kimchi-pancake.webp'
+import rainyDayLiquor from '../../assets/webpImages/images/main/ai-recommendation/rainy-day-blue-liquor.webp'
+import rainyDayCup from '../../assets/webpImages/images/main/ai-recommendation/rainy-day-blue-cup.webp'
+import sweetDayFood from '../../assets/webpImages/images/main/ai-recommendation/sweet-craving-yakgwa.webp'
+import sweetDayLiquor from '../../assets/webpImages/images/main/ai-recommendation/sweet-craving-orange-liquor.webp'
+import sweetDayCup from '../../assets/webpImages/images/main/ai-recommendation/sweet-craving-orange-cup.webp'
+import brandStoryImage from '../../assets/webpImages/images/main/brand-story/brand-story-pouring.webp'
+import brandStoryPourBefore from '../../assets/webpImages/images/main/brand-story/brand-story-pour-before.webp'
+import brandStoryPourAfter from '../../assets/webpImages/images/main/brand-story/brand-story-pour-after.webp'
+import brandStoryCup from '../../assets/webpImages/images/main/brand-story/brand-story-cup.webp'
+import makdongCharacter from '../../assets/webpImages/characters/M007_Poses01.webp'
 import eventsData from '../../data/events.json'
 import { getCollection } from '../../firebase/firestore'
 import styles from './MainPage.module.scss'
@@ -42,14 +42,14 @@ gsap.registerPlugin(ScrollTrigger)
 
 const IS_JOURNEY_ENABLED = true
 const HERO_DISMISSED_KEY = 'jajak_main_hero_dismissed'
-const eventBannerImages = import.meta.glob('../../assets/images/banner/eventBanner*.png', {
+const eventBannerImages = import.meta.glob(['../../assets/webpImages/images/banner/eventBanner*.webp', '../../assets/images/banner/eventBanner-6.png'], {
   eager: true,
   import: 'default',
 })
 
 const resolveEventBanner = (bannerUrl) => {
   const fileName = bannerUrl?.split('/').pop()
-  return Object.entries(eventBannerImages).find(([path]) => path.endsWith(`/${fileName}`))?.[1]
+  return Object.entries(eventBannerImages).find(([path]) => (path.endsWith(`/${fileName}`) || path.endsWith((`/${fileName}`).replace(/\.(png|jpe?g)$/i, '.webp'))))?.[1]
 }
 
 const mainEvents = eventsData.map(({ event }, index) => ({
@@ -333,7 +333,7 @@ const MainPage = () => {
                   aria-hidden="true"
                 />
               </figure>
-              <span ref={heroSunRef} className={styles.heroSun} data-phase="sun" aria-hidden="true">
+              <span ref={heroSunRef} className={styles.heroSun} aria-hidden="true">
                 <img className={styles.heroSunIcon} src={heroSunIcon} alt="" />
                 <img className={styles.heroMoonIcon} src={heroMoonIcon} alt="" />
               </span>

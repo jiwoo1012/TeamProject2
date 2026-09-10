@@ -4,12 +4,12 @@ import { useNavigate, Link } from 'react-router-dom'
 import { signup, subscribeToAuthState } from '../../firebase/auth'
 import { PATHS } from '../../routes/paths'
 
-import checkIconImage from '../../assets/icons/checkIcon.png'
-import eyeIconImage from '../../assets/icons/eye.png'
-import eyeNoIconImage from '../../assets/icons/eyeNO.png'
-import clipboardIconImage from '../../assets/icons/clipboardIcon.png'
-import closeIconImage from '../../assets/icons/closeIcon.png'
-import makdongImage from '../../assets/characters/M007_Poses03.png'
+import checkIconImage from '../../assets/webpImages/icons/checkIcon.webp'
+import eyeIconImage from '../../assets/webpImages/icons/eye.webp'
+import eyeNoIconImage from '../../assets/webpImages/icons/eyeNO.webp'
+import clipboardIconImage from '../../assets/webpImages/icons/clipboardIcon.webp'
+import closeIconImage from '../../assets/webpImages/icons/closeIcon.webp'
+import makdongImage from '../../assets/webpImages/characters/M007_Poses03.webp'
 
 import styles from './Signup.module.scss'
 
