@@ -190,6 +190,19 @@ const DesktopHeader = () => {
       '/mypage/ai-history'
     )
 
+  const isFaqActive =
+    location.pathname === '/faq'
+
+  const isInquiryActive =
+    location.pathname.startsWith(
+      '/inquiry'
+    )
+
+  const isNoticesActive =
+    location.pathname.startsWith(
+      '/notices'
+    )
+
   const shopSearchParams =
     new URLSearchParams(location.search)
 
@@ -734,6 +747,29 @@ const DesktopHeader = () => {
                 }
               >
                 이벤트
+              </Link>
+            </div>
+
+
+            {/* 고객센터 */}
+
+            <div
+              className={
+                styles.gnbItem
+              }
+              onMouseEnter={() =>
+                openMegaMenu(
+                  'customerService'
+                )
+              }
+            >
+              <Link
+                to="/faq"
+                className={
+                  styles.gnbLink
+                }
+              >
+                고객센터
               </Link>
             </div>
 
@@ -1380,6 +1416,84 @@ const DesktopHeader = () => {
           </section>
 
 
+          {/* 고객센터 */}
+          <section
+            className={
+              styles.allMenuSection
+            }
+          >
+            <button
+              type="button"
+              className={
+                styles.allMenuTrigger
+              }
+              aria-expanded={
+                openAllMenuSection === 'customerService'
+              }
+              onClick={() =>
+                toggleAllMenuSection('customerService')
+              }
+            >
+              <span>
+                <strong>고객센터</strong>
+              </span>
+
+              <i
+                className={`${styles.accordionIcon} ${
+                  openAllMenuSection === 'customerService'
+                    ? styles.accordionIconOpen
+                    : ''
+                }`}
+                aria-hidden="true"
+              />
+            </button>
+
+            <div
+              className={`${styles.allMenuPanel} ${
+                openAllMenuSection === 'customerService'
+                  ? styles.allMenuPanelOpen
+                  : ''
+              }`}
+            >
+              <div
+                className={
+                  styles.allMenuPanelInner
+                }
+              >
+                <Link
+                  to="/faq"
+                  className={
+                    styles.drawerLink
+                  }
+                  onClick={closeAllMenu}
+                >
+                  자주 묻는 질문
+                </Link>
+
+                <Link
+                  to="/inquiry"
+                  className={
+                    styles.drawerLink
+                  }
+                  onClick={closeAllMenu}
+                >
+                  1:1 문의하기
+                </Link>
+
+                <Link
+                  to="/notices"
+                  className={
+                    styles.drawerLink
+                  }
+                  onClick={closeAllMenu}
+                >
+                  공지사항
+                </Link>
+              </div>
+            </div>
+          </section>
+
+
           {/* MY JAJAK */}
           <section
             className={
@@ -1961,6 +2075,76 @@ const DesktopHeader = () => {
               )}
             </div>
           </div>
+        </div>
+      </div>
+
+
+      {/* ========================================
+          고객센터 MEGA MENU
+      ======================================== */}
+
+      <div
+        className={`${styles.megaMenu} ${styles.customerServiceMegaMenu} ${
+          openMenu === 'customerService'
+            ? styles.megaMenuOpen
+            : ''
+        }`}
+      >
+        <div
+          className={`${styles.megaContainer} ${styles.customerServiceMegaContainer}`}
+        >
+          <div className={styles.megaSectionTitle}>
+            <h2>
+              고객센터
+            </h2>
+          </div>
+
+          <nav
+            className={styles.customerServiceSnb}
+            aria-label="고객센터 메뉴"
+          >
+            <Link
+              to="/faq"
+              className={`${styles.snbNavLink} ${
+                isFaqActive
+                  ? styles.snbNavLinkActive
+                  : ''
+              }`}
+              onClick={closeMegaMenu}
+            >
+              <span>
+                자주 묻는 질문
+              </span>
+            </Link>
+
+            <Link
+              to="/inquiry"
+              className={`${styles.snbNavLink} ${
+                isInquiryActive
+                  ? styles.snbNavLinkActive
+                  : ''
+              }`}
+              onClick={closeMegaMenu}
+            >
+              <span>
+                1:1 문의하기
+              </span>
+            </Link>
+
+            <Link
+              to="/notices"
+              className={`${styles.snbNavLink} ${
+                isNoticesActive
+                  ? styles.snbNavLinkActive
+                  : ''
+              }`}
+              onClick={closeMegaMenu}
+            >
+              <span>
+                공지사항
+              </span>
+            </Link>
+          </nav>
         </div>
       </div>
 
