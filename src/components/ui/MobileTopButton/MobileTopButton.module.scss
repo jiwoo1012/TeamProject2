@@ -35,6 +35,17 @@
   }
 }
 
+@media (min-width: 1200px) {
+  :global(body:has([data-main-page])) .button {
+    width: $space-16;
+    height: $space-16;
+    gap: $space-1;
+    font-size: calc(#{$font-size-xs} * 8 / 9);
+
+    svg { width: $space-5; height: $space-5; }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .button, .button svg { transition: none; }
   .button:hover svg { transform: none; }

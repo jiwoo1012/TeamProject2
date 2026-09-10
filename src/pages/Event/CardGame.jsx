@@ -14,7 +14,7 @@ import styles from './CardGame.module.scss'
 
 const EVENT_ID = 'event-2'
 const EVENT_TITLE = '짝꿍 카드를 찾아라!'
-const PREVIEW_SECONDS = 10
+const PREVIEW_SECONDS = 6
 const GAME_SECONDS = 30
 
 const CARD_PAIRS = [
@@ -218,7 +218,7 @@ const CardGame = () => {
 
   return (
     <main className={`${styles.page} ${isQuitOpen ? styles.isPaused : ''}`}>
-      {phase === 'intro' && <p className={styles.introMessage}>10초 안에 같은 그림의 위치를 외우세요!</p>}
+      {phase === 'intro' && <p className={styles.introMessage}>{PREVIEW_SECONDS}초 안에 같은 그림의 위치를 외우세요!</p>}
 
       <div className={`${styles.gameShell} ${phase === 'intro' ? styles.isIntro : ''} ${phase === 'dealing' ? styles.isDealing : ''} ${phase === 'preview' ? styles.isPreview : ''} ${phase === 'starting' ? styles.isStarting : ''} ${isGameUiVisible ? styles.isPlaying : ''}`}>
         <div className={styles.topLine}>

@@ -29,6 +29,14 @@
 .spinButton { @include mixins.flex-center; position: absolute; z-index: 6; top: 31.17%; left: 28.06%; width: 36.29%; height: 37.89%; padding: 0; color: $color-white; font-family: $font-family-display; font-size: $font-size-5xl; background: transparent; border-radius: 50%; transition: color $transition-fast ease, scale $transition-fast ease; }
 .spinButton:not(:disabled):hover { color: $color-primary-light; scale: 1.1; }
 .spinButton:disabled { cursor: default; }
+.spinLabel { display: inline-block; }
+@media (prefers-reduced-motion: no-preference) {
+  .spinButton:not(:disabled) .spinLabel { animation: clickPromptPulse 1s ease-in-out infinite; }
+}
+@keyframes clickPromptPulse {
+  0%, 100% { opacity: .78; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
 .makdong { position: absolute; z-index: 7; bottom: 0; left: -$space-4; width: 36%; max-height: 300px; object-fit: contain; object-position: bottom; transition: opacity $transition-base ease; pointer-events: none; }
 .eventCard { position: relative; z-index: 8; display: flex; flex-direction: column; box-sizing: border-box; width: 100%; min-width: 0; padding: $space-8; background: $color-bg; border: 1px solid rgba($color-border, .8); border-radius: $radius-lg; box-shadow: $shadow-sm; transition: opacity $transition-base ease; }
 .chanceRibbon { align-self: center; padding: $space-2 $space-10; font-size: $font-size-sm; @include event.chance-ribbon; }
@@ -150,7 +158,8 @@
 }
 
 @include mixins.mobile {
-  .page { --roulette-runner-width: 150px; padding: $space-5 0 $space-20; }
+  :global(main):has(> .page) { padding-bottom: 0; }
+  .page { --roulette-runner-width: 150px; padding: $space-5 0 0; }
   .hero { width: calc(100% - (#{$side-margin-mobile} * 2)); grid-template-columns: minmax(0, 1fr); gap: $space-6; }
   .gameArea { padding-top: $space-8; }
   .rouletteStage { width: 100%; }
@@ -166,18 +175,25 @@
   .description { margin-top: $space-6; font-size: $font-size-sm; }
   .eventMeta { padding-inline: $space-3; }
   .eventMeta div { grid-template-columns: 105px 1fr; gap: $space-2; }
-  .prizeSection { margin-top: $space-12; padding: $space-10 $side-margin-mobile; }
+  .prizeSection { margin-top: $space-6; padding: $space-6 $side-margin-mobile; }
   .prizeSection h2 { font-size: $font-size-2xl; }
-  .prizeGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-8 $space-3; margin-top: $space-10; }
-  .prizeCard { padding: $space-4; }
-  .grandPrize { grid-column: 1 / -1; }
-  .grandPrize h3 { font-size: $font-size-xl; }
-  .pointGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-3; }
-  .pointReward { padding: $space-4; }
-  .pointAmount { flex-wrap: wrap; gap: $space-2; }
-  .pointAmount h4 { font-size: $font-size-md; }
-  .prizeCard h3 { font-size: $font-size-md; }
-  .prizeImage { width: min(100%, 160px); }
+  .prizeGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: $space-2; margin-top: $space-4; }
+  .prizeCard { gap: $space-2; padding: $space-2; border-radius: $radius-lg; }
+  .grandPrize { grid-column: auto; }
+  .rank { align-self: center; min-width: 0; padding: $space-1 $space-2; font-size: $font-size-xs; }
+  .prizeCard h3 { order: 2; min-height: 0; margin-top: 0; font-size: $font-size-xs; overflow-wrap: anywhere; }
+  .prizeImage, .grandPrize .prizeImage { width: min(100%, #{$space-16}); margin-top: 0; border-radius: $radius-md; }
+  .prizeCard > p { display: none; }
+  .pointRewards { margin-top: $space-4; padding-top: $space-4; }
+  .pointRewards > h3 { margin-bottom: $space-2; font-size: $font-size-sm; }
+  .pointGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: $space-2; }
+  .pointReward { padding: $space-2; text-align: center; }
+  .pointRank { padding: $space-1 $space-2; }
+  .pointAmount { justify-content: center; gap: $space-1; margin-top: $space-1; }
+  .pointAmount .pointIcon { width: $space-4; font-size: $font-size-xs; border-width: 1px; box-shadow: none; }
+  .pointAmount h4 { font-size: $font-size-xs; overflow-wrap: anywhere; }
+  .pointReward > p { display: none; }
+  .pointNote { margin-top: $space-3; }
   .resultModal { padding: $space-12 $space-5 $space-8; }
   .resultPrize { grid-template-columns: 96px 1fr; gap: $space-4; padding: $space-4; }
   .resultPrize img, .resultPoint { width: 96px; }
