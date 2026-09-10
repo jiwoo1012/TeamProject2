@@ -806,43 +806,198 @@ const MyHome = () => {
         </section>
 
 
-        <section className={styles.section} aria-labelledby="home-taste-title">
+        {/* =========================
+            나의 취향 분석 - PC
+        ========================= */}
+
+        <section
+          className={`${styles.section} ${styles.desktopTasteSection}`}
+          aria-labelledby="home-taste-title"
+        >
           <div className={styles.sectionHeading}>
             <div>
               <h3 id="home-taste-title">나의 취향 분석</h3>
             </div>
           </div>
+
           {hasPreference ? (
             <div className={styles.tasteTable}>
               <table>
-                <caption className={styles.srOnly}>저장된 설문 답변에 따른 취향 분석</caption>
-                <thead><tr><th scope="col">취향</th><th scope="col">선호 정도</th><th scope="col">나의 답변</th></tr></thead>
+                <caption className={styles.srOnly}>
+                  저장된 설문 답변에 따른 취향 분석
+                </caption>
+
+                <thead>
+                  <tr>
+                    <th scope="col">취향</th>
+                    <th scope="col">선호 정도</th>
+                    <th scope="col">나의 답변</th>
+                  </tr>
+                </thead>
+
                 <tbody>
                   {tasteRows.map((row) => (
                     <tr key={row.key}>
-                      <th scope="row">{row.title}</th>
+                      <th scope="row">
+                        {row.title}
+                      </th>
+
                       <td>
-                        <div className={styles.tasteScale} aria-hidden="true">
-                          {row.options.map((option, index) => (
-                            <span key={option} className={index <= row.index ? styles.tasteSelected : undefined} />
-                          ))}
+                        <div
+                          className={styles.tasteScale}
+                          aria-hidden="true"
+                        >
+                          {row.options.map(
+                            (option, index) => (
+                              <span
+                                key={option}
+                                className={
+                                  index <= row.index
+                                    ? styles.tasteSelected
+                                    : undefined
+                                }
+                              />
+                            )
+                          )}
                         </div>
                       </td>
-                      <td>{row.label}</td>
+
+                      <td>
+                        {row.label}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           ) : (
-            <p className={styles.emptyState}>아직 등록된 취향이 없어요. 나으리의 입맛을 알려주세요.</p>
+            <p className={styles.emptyState}>
+              아직 등록된 취향이 없어요. 나으리의 입맛을 알려주세요.
+            </p>
           )}
+
           <div className={styles.tasteActions}>
-            <Link to={PATHS.preference} className={styles.moreLink}>
-              {hasPreference ? '취향 다시 설정하기' : '내 취향 알아보기'}
+            <Link
+              to={PATHS.preference}
+              className={styles.moreLink}
+            >
+              {hasPreference
+                ? '취향 다시 설정하기'
+                : '내 취향 알아보기'}
             </Link>
-            <Link to={PATHS.ai} className={styles.recommendButton}>오늘의 주안상 추천받기</Link>
+
+            <Link
+              to={PATHS.ai}
+              className={styles.recommendButton}
+            >
+              오늘의 주안상 추천받기
+            </Link>
           </div>
+        </section>
+
+
+        {/* =========================
+            나의 취향 분석 - MOBILE
+        ========================= */}
+
+        <section
+          className={styles.mobileTasteSection}
+          aria-labelledby="mobile-home-taste-title"
+        >
+          <div className={styles.mobileTasteHeading}>
+            <div>
+              <h3 id="mobile-home-taste-title">
+                나의 취향
+              </h3>
+
+              <p>
+                막동이가 기억하고 있는 나리의 취향이에요.
+              </p>
+            </div>
+          </div>
+
+          {hasPreference ? (
+            <div className={styles.mobileTasteCard}>
+              <div className={styles.mobileTasteIntro}>
+                <span>
+                  막동이가 기억한 취향
+                </span>
+
+                <strong>
+                  {tasteDescription
+                    ? `${tasteDescription}을 좋아하시네요!`
+                    : '나리의 취향을 차곡차곡 기억하고 있어요.'}
+                </strong>
+              </div>
+
+              <div className={styles.mobileTasteList}>
+                {tasteRows.map((row) => (
+                  <div
+                    key={row.key}
+                    className={styles.mobileTasteRow}
+                  >
+                    <span className={styles.mobileTasteLabel}>
+                      {row.title}
+                    </span>
+
+                    <div
+                      className={styles.mobileTasteScale}
+                      aria-hidden="true"
+                    >
+                      {row.options.map(
+                        (option, index) => (
+                          <span
+                            key={option}
+                            className={
+                              index <= row.index
+                                ? styles.mobileTasteSelected
+                                : undefined
+                            }
+                          />
+                        )
+                      )}
+                    </div>
+
+                    <span className={styles.mobileTasteAnswer}>
+                      {row.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <Link
+                to={PATHS.preference}
+                className={styles.mobileTasteLink}
+              >
+                내 취향 자세히 보기
+
+                <span aria-hidden="true">
+                  ›
+                </span>
+              </Link>
+            </div>
+          ) : (
+            <div className={styles.mobileTasteEmpty}>
+              <strong>
+                아직 등록된 취향이 없어요.
+              </strong>
+
+              <p>
+                몇 가지 질문에 답하고 나리의 취향을 알려주세요.
+              </p>
+
+              <Link
+                to={PATHS.preference}
+                className={styles.mobileTasteLink}
+              >
+                내 취향 알아보기
+
+                <span aria-hidden="true">
+                  ›
+                </span>
+              </Link>
+            </div>
+          )}
         </section>
 
         {/* =========================

@@ -1277,6 +1277,11 @@ const AiPreference = () => {
     setErrorMessage,
   ] = useState('')
 
+  const [
+    memberName,
+    setMemberName,
+  ] = useState('회원')
+
 
   // ========================================
   // Firestore 취향 조회
@@ -1301,6 +1306,10 @@ const AiPreference = () => {
 
             setAnalyzedAt(
               ''
+            )
+
+            setMemberName(
+              '회원'
             )
 
             setLoading(
@@ -1342,12 +1351,37 @@ const AiPreference = () => {
                 null
               )
 
+              setMemberName(
+                currentUser
+                  .displayName ||
+                currentUser
+                  .email
+                  ?.split(
+                    '@'
+                  )[0] ||
+                '회원'
+              )
+
               return
             }
 
 
             const userData =
               userSnap.data()
+
+
+            setMemberName(
+              userData
+                ?.nickname ||
+              currentUser
+                .displayName ||
+              currentUser
+                .email
+                ?.split(
+                  '@'
+                )[0] ||
+              '회원'
+            )
 
 
             const rawPreference =
@@ -1977,7 +2011,7 @@ const AiPreference = () => {
 
 
             <h2>
-              나으리님은 이런 전통주를
+              {memberName} 나으리님은 이런 전통주를{' '}
               <br />
               좋아하는 것 같아요!
             </h2>
@@ -2030,10 +2064,6 @@ const AiPreference = () => {
             <h2>
               취향 지표
             </h2>
-
-            <p>
-              회원가입 시 선택한 답변을 기준으로 분석했어요.
-            </p>
           </div>
 
 
@@ -2157,9 +2187,6 @@ const AiPreference = () => {
               잘 맞는 전통주 스타일
             </h2>
 
-            <p>
-              현재 취향을 기준으로 잘 맞을 가능성이 높은 스타일이에요.
-            </p>
           </div>
 
 

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import styles from './GuestChoiceModal.module.scss'
 
+import makdongFace from '../../assets/webpImages/characters/Mhead.webp'
 const GuestChoiceModal = ({
   isOpen,
   onLogin,
@@ -17,14 +18,22 @@ const GuestChoiceModal = ({
       }
     }
 
-    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener(
+      'keydown',
+      handleKeyDown
+    )
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener(
+        'keydown',
+        handleKeyDown
+      )
     }
   }, [isOpen, onClose])
 
+
   if (!isOpen) return null
+
 
   return (
     <div
@@ -47,12 +56,16 @@ const GuestChoiceModal = ({
           ×
         </button>
 
-        {/* 아이콘 */}
+
+        {/* 막동이 얼굴 */}
         <div className={styles.iconBox}>
-          <span className={styles.checkIcon}>
-            ✓
-          </span>
+          <img
+            src={makdongFace}
+            alt="막동이"
+            className={styles.makdongFace}
+          />
         </div>
+
 
         {/* 제목 */}
         <h2
@@ -62,6 +75,7 @@ const GuestChoiceModal = ({
           자작의 회원이신가요?
         </h2>
 
+
         {/* 안내 */}
         <p className={styles.description}>
           로그인하면 저장된 취향과 정보를 바탕으로
@@ -69,7 +83,9 @@ const GuestChoiceModal = ({
           더 쉽고, 더 나에게 맞는 추천을 받을 수 있어요!
         </p>
 
+
         <div className={styles.divider} />
+
 
         {/* 버튼 영역 */}
         <div className={styles.buttonGroup}>
@@ -90,6 +106,7 @@ const GuestChoiceModal = ({
           </button>
         </div>
 
+
         {/* 안내 문구 */}
         <p className={styles.notice}>
           <span className={styles.noticeIcon}>
@@ -102,5 +119,6 @@ const GuestChoiceModal = ({
     </div>
   )
 }
+
 
 export default GuestChoiceModal
