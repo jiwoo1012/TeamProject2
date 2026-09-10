@@ -20,7 +20,7 @@ const gamePresentation = {
   roulette: {
     character: rouletteCharacter,
     benefit: '100% 당첨', title: '막동이 행운 룰렛',
-    description: '오늘의 운을 돌려보세요. 포인트와 특별한 경품이 기다리고 있어요.',
+    description: '매일 1회, 경품부터 포인트까지 100% 당첨! 1등부터 3등까지는 특별 선물, 4~6등은 포인트를 받아보세요.', 
     cta: '지금 룰렛 돌리기',
   },
   card: {

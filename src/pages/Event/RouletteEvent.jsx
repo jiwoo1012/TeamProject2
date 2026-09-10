@@ -339,7 +339,9 @@ const RouletteEvent = () => {
               disabled={isSpinning || isSaving || isAvailabilityLoading || hasParticipated}
               aria-label="룰렛 돌리기"
             >
-              {isSpinning || isSaving ? '추첨중...' : hasParticipated ? '참여 완료' : '클릭!'}
+              <span className={styles.spinLabel}>
+                {isSpinning || isSaving ? '추첨중...' : hasParticipated ? '참여 완료' : '클릭!'}
+              </span>
             </button>
           </div>
         </div>
