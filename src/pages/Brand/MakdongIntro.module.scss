@@ -1088,11 +1088,17 @@
   }
 
   .blankCharacterSection {
-    min-height: calc(100svh - var(--makdong-header-height) - var(--makdong-tabbar-space));
+    min-height: calc(100svh - var(--makdong-header-height));
+    min-height: calc(100dvh - var(--makdong-header-height));
     box-sizing: border-box;
     padding: $space-16 $space-5 $space-6;
     scroll-margin-top: var(--makdong-header-height);
     background: $color-primary;
+  }
+
+  .blankCharacterSection > picture {
+    display: block;
+    margin-top: $space-6;
   }
 
   .blankCharacterSection h2 {
@@ -1132,10 +1138,12 @@
   }
 
   .transitionMakdong {
-    right: 5%;
-    bottom: $space-6;
-    width: 90%;
-    height: 58%;
+    position: relative;
+    display: block;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    height: auto;
     max-height: none;
     object-fit: contain;
   }

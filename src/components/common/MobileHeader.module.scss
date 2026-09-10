@@ -123,8 +123,9 @@
 
     img {
       display: block;
-      width: 25px;
-      height: 25px;
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
       object-fit: contain;
     }
   }
@@ -150,7 +151,7 @@
       position: absolute;
       left: 50%;
 
-      width: 15px;
+      width: 17px;
       height: 1px;
 
       background: $color-text-primary;
@@ -162,11 +163,11 @@
     }
 
     span:first-child {
-      top: 7px;
+      top: 6.5px;
     }
 
     span:last-child {
-      top: 13px;
+      top: 13.5px;
     }
   }
 

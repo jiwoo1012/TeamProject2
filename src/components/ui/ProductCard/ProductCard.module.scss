@@ -40,12 +40,12 @@
 @media (max-width: 767px) {
   .actions { padding: $space-2; opacity: 1; background: none; }
   .cartButton {
-    width: calc(100% - #{$space-3}); min-width: 0; min-height: $space-6; box-sizing: border-box;
-    margin-inline: auto;
-    margin-bottom: $space-1;
-    padding: calc(#{$space-1} / 2) $space-1; align-self: center;
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; min-width: 0; min-height: 34px; box-sizing: border-box;
+    margin: $space-2 0 0;
+    padding: $space-1 $space-3;
     color: $color-white; background: $color-primary;
-    border: 1px solid $color-primary; border-radius: $radius-md;
+    border: 1px solid $color-primary; border-radius: 6px;
     font-size: $font-size-xs; line-height: $line-height-base;
     white-space: normal; word-break: keep-all; overflow-wrap: anywhere;
   }
@@ -53,6 +53,7 @@
   .soldOutOverlay { font-size: $font-size-lg; line-height: $line-height-base; }
   .iconButton { flex-shrink: 0; background: rgba($color-text-primary, .55); }
   .info { padding: $space-3 $space-1 0; }
+  .cartButton + .info { padding-top: $space-2; }
   .priceRow { width: 100%; gap: $space-1; }
   .priceRow strong { flex-basis: 100%; }
 }
