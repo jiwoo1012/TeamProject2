@@ -19,6 +19,9 @@ import customerManSeat from '../../assets/images/ai/tavern/customers/customer-ma
 import customerWomanEnter from '../../assets/images/ai/tavern/customers/customer-woman-enter.png'
 import customerWomanSeat from '../../assets/images/ai/tavern/customers/customer-woman-seat.png'
 
+import customerManPortrait from '../../assets/images/ai/tavern/portraits/customer-man-portrait.png'
+import customerWomanPortrait from '../../assets/images/ai/tavern/portraits/customer-woman-portrait.png'
+
 import liquorStorageSign from '../../assets/images/ai/tavern/signs/sign-liquor-storage.png'
 import kitchenSign from '../../assets/images/ai/tavern/signs/sign-kitchen.png'
 import glassDisplaySign from '../../assets/images/ai/tavern/signs/sign-glass-display.png'
@@ -35,11 +38,13 @@ const CUSTOMER_IMAGES = {
   man: {
     enter: customerManEnter,
     seat: customerManSeat,
+    portrait: customerManPortrait,
   },
 
   woman: {
     enter: customerWomanEnter,
     seat: customerWomanSeat,
+    portrait: customerWomanPortrait,
   },
 }
 
@@ -63,6 +68,8 @@ const INTERACTION_DISTANCE = 100
 const CAMERA_FOCUS_RATIO = 0.38
 
 const TYPE_SPEED = 27
+
+const CUSTOMER_APPEAR_DELAY = 1800
 
 
 const WORLD_OBJECTS = {
@@ -205,6 +212,10 @@ const MakdongTavern = () => {
     useRef(false)
 
 
+  const isCustomerVisibleRef =
+    useRef(false)
+
+
   const typingTimerRef =
     useRef(null)
 
@@ -220,6 +231,10 @@ const MakdongTavern = () => {
     setGameStarted,
   ] = useState(false)
 
+  const [
+    isCustomerVisible,
+    setIsCustomerVisible,
+  ] = useState(false)
 
   const [
     characterX,
@@ -416,6 +431,41 @@ const MakdongTavern = () => {
 
 
   useEffect(() => {
+    isCustomerVisibleRef.current =
+      isCustomerVisible
+  }, [isCustomerVisible])
+
+
+  useEffect(() => {
+    if (!gameStarted) {
+      setIsCustomerVisible(false)
+
+      return undefined
+    }
+
+
+    setIsCustomerVisible(false)
+
+
+    const timer =
+      window.setTimeout(
+        () => {
+          setIsCustomerVisible(true)
+        },
+        CUSTOMER_APPEAR_DELAY
+      )
+
+
+    return () => {
+      window.clearTimeout(timer)
+    }
+  }, [
+    gameStarted,
+    customerIndex,
+  ])
+
+
+  useEffect(() => {
     if (!gameStarted) {
       return undefined
     }
@@ -535,6 +585,11 @@ const MakdongTavern = () => {
 
 
   const resetCurrentCustomer = () => {
+    setIsCustomerVisible(
+      false
+    )
+
+
     setGameStage(
       'talk'
     )
@@ -1122,6 +1177,14 @@ const MakdongTavern = () => {
   const handleInteraction = () => {
     if (
       !isNearTargetRef.current
+    ) {
+      return
+    }
+
+
+    if (
+      gameStageRef.current === 'talk' &&
+      !isCustomerVisibleRef.current
     ) {
       return
     }
@@ -1874,6 +1937,7 @@ const MakdongTavern = () => {
 
 
             <div
+              key={`${currentCustomer.id}-${customerAtTable ? 'seat' : 'enter'}`}
               className={`${styles.customer} ${
                 customerAtTable
                   ? styles.customerSeated
@@ -1882,6 +1946,26 @@ const MakdongTavern = () => {
               style={{
                 left:
                   `${customerWorldX}px`,
+
+                opacity:
+                  isCustomerVisible
+                    ? 1
+                    : 0,
+
+                transform:
+                  `translateX(-50%) translateY(${
+                    isCustomerVisible
+                      ? '0px'
+                      : '18px'
+                  })`,
+
+                filter:
+                  isCustomerVisible
+                    ? 'blur(0px)'
+                    : 'blur(4px)',
+
+                transition:
+                  'left 1.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease, transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s ease',
               }}
             >
               <img
@@ -1954,7 +2038,11 @@ const MakdongTavern = () => {
 
 
           {isNearTarget &&
-            !movementBlocked && (
+            !movementBlocked &&
+            (
+              gameStage !== 'talk' ||
+              isCustomerVisible
+            ) && (
               <div
                 className={
                   styles.worldPrompt
@@ -2001,18 +2089,14 @@ const MakdongTavern = () => {
                   >
                     <img
                       src={
-                        currentCustomerImages.enter
+                        currentCustomerImages.portrait
                       }
-                      alt=""
+                      alt={`${currentCustomer.name} 프로필`}
                     />
                   </div>
 
 
                   <div>
-                    <span>
-                      손님
-                    </span>
-
                     <strong>
                       {
                         currentCustomer.name
