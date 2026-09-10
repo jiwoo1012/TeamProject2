@@ -173,7 +173,7 @@ const MobileHeader = () => {
                   브랜드 소개
                 </Link>
                 <Link to="/brand/makdong" onClick={closeMenu} className={styles.subMenuLink}>
-                  막둥이 소개
+                  막동이 소개
                 </Link>
               </div>
             </div>

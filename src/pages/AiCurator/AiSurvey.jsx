@@ -69,7 +69,7 @@ const MEMBER_QUESTIONS = [
     type: 'single',
     title: '오늘은 어떤 한 잔을 원하시나요?',
     description:
-      '오늘의 시간을 알려주시면 막둥이가 분위기까지 맞춰볼게요!',
+      '오늘의 시간을 알려주시면 막동이가 분위기까지 맞춰볼게요!',
     options: [
       {
         value: 'refresh',
@@ -99,7 +99,7 @@ const MEMBER_QUESTIONS = [
       {
         value: 'random',
         emoji: '🎲',
-        label: '오늘은 막둥이에게 맡길래요',
+        label: '오늘은 막동이에게 맡길래요',
       },
     ],
   },
@@ -349,7 +349,7 @@ const GUEST_QUESTIONS = [
       {
         value: 'random',
         emoji: '🎲',
-        label: '오늘은 막둥이에게 맡길래요',
+        label: '오늘은 막동이에게 맡길래요',
       },
     ],
   },
@@ -389,7 +389,7 @@ const GUEST_QUESTIONS = [
     type: 'multiple',
     title: '마지막 안전 확인. 피해야 하는 재료가 있나요?',
     description:
-      '막둥이가 안전하게 골라드릴 수 있도록 꼭 확인해주세요.',
+      '막동이가 안전하게 골라드릴 수 있도록 꼭 확인해주세요.',
     hint: '복수 선택 · 필수 응답',
     isSafety: true,
     options: [
@@ -1289,7 +1289,7 @@ const AiSurvey = () => {
             ? '저장된 취향과 오늘의 답변을 함께 살펴보고 있어요.'
             : currentQuestion.isSafety
               ? '안전 확인 정보는 추천 상품을 제외하는 데 사용돼요.'
-              : '조금만 더 알려주시면 막둥이가 오늘의 주안상을 골라드릴게요.'}
+              : '조금만 더 알려주시면 막동이가 오늘의 주안상을 골라드릴게요.'}
         </p>
 
       </div>

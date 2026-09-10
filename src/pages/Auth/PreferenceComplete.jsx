@@ -65,7 +65,7 @@ const PreferenceComplete = () => {
         <div className={styles.textArea}>
 
           <h1 className={styles.title}>
-            막둥이가 취향을 기억했어요!
+            막동이가 취향을 기억했어요!
           </h1>
 
           <p className={styles.description}>
@@ -77,7 +77,7 @@ const PreferenceComplete = () => {
         </div>
 
 
-        {/* 막둥이 */}
+        {/* 막동이 */}
         <div className={styles.characterArea}>
 
           <span
@@ -106,7 +106,7 @@ const PreferenceComplete = () => {
 
           <img
             src={makdongImg}
-            alt="취향을 기억한 막둥이"
+            alt="취향을 기억한 막동이"
             className={styles.character}
           />
 

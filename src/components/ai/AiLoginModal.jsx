@@ -62,11 +62,11 @@ const AiLoginModal = ({
         onClick={handleModalClick}
       >
 
-        {/* 막둥이 */}
+        {/* 막동이 */}
         <div className={styles.characterWrap}>
           <img
             src={makdongImage}
-            alt="막둥이"
+            alt="막동이"
             className={styles.character}
           />
         </div>
@@ -83,7 +83,7 @@ const AiLoginModal = ({
 
         {/* 설명 */}
         <p className={styles.description}>
-          막둥이와 다양한 서비스를
+          막동이와 다양한 서비스를
           즐기고 싶다면
           <br />
           로그인으로 진행해주세요.

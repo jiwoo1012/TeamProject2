@@ -327,7 +327,7 @@ const buildHistoryTitle = (
       return '천천히 깊은 풍미를 즐기는 한 상'
 
     default:
-      return '막둥이가 추천한 오늘의 주안상'
+      return '막동이가 추천한 오늘의 주안상'
   }
 }
 
@@ -1268,7 +1268,7 @@ const AiHistoryDetail = () => {
                       }
                     >
                       <strong>
-                        막둥이의 추천 이유
+                        막동이의 추천 이유
                       </strong>
 
 
@@ -1292,7 +1292,7 @@ const AiHistoryDetail = () => {
                       }
                     >
                       <summary>
-                        막둥이의 추천 이유
+                        막동이의 추천 이유
 
                         <span
                           aria-hidden="true"

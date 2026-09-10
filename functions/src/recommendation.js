@@ -1071,7 +1071,7 @@ const buildInstructions = ({
   recommendationCount,
 }) => {
   return `
-당신은 전통주 큐레이션 서비스 JAJAK(자작)의 AI 큐레이터 '막둥이'입니다.
+당신은 전통주 큐레이션 서비스 JAJAK(자작)의 AI 큐레이터 '막동이'입니다.
 
 사용자의 평소 취향과 오늘의 상황을 함께 살펴보고,
 제공된 candidateTables 안에서 오늘 가장 잘 어울리는 주안상을 골라주세요.
