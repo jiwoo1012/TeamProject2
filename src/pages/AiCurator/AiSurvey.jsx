@@ -60,6 +60,24 @@ const TASTE_NOTES = {
 }
 
 // ========================================
+// 특정 과일 · 식물 원료 세부 목록
+// (PreferenceSafety.jsx의 PLANT_OPTIONS와 동일한 구성)
+// ========================================
+
+const PLANT_OPTIONS = [
+  { value: 'apple', label: '사과' },
+  { value: 'plum', label: '매실' },
+  { value: 'mulberry', label: '오디' },
+  { value: 'grape', label: '머루' },
+  { value: 'citrus', label: '감귤' },
+  { value: 'cornelianCherry', label: '산수유' },
+  { value: 'ginseng', label: '인삼' },
+  { value: 'chrysanthemum', label: '국화' },
+  { value: 'etcPlant', label: '기타' },
+  { value: 'pineNeedle', label: '솔잎' },
+]
+
+// ========================================
 // 로그인 회원용 질문
 // ========================================
 
@@ -67,7 +85,7 @@ const MEMBER_QUESTIONS = [
   {
     id: 'mood',
     type: 'single',
-    title: '오늘은 어떤 한 잔을 원하시나요?',
+    title: '1. 오늘은 어떤 한 잔을 원하시나요?',
     description:
       '오늘의 시간을 알려주시면 막동이가 분위기까지 맞춰볼게요!',
     options: [
@@ -107,7 +125,7 @@ const MEMBER_QUESTIONS = [
   {
     id: 'taste',
     type: 'single',
-    title: '오늘은 어떤 느낌의 술이 끌리나요?',
+    title: '2. 오늘은 어떤 느낌의 술이 끌리나요?',
     description:
       '평소 취향과 달라도 괜찮아요. 오늘 당기는 쪽을 골라주세요.',
     options: [
@@ -152,7 +170,7 @@ const MEMBER_QUESTIONS = [
   {
     id: 'alcohol',
     type: 'single',
-    title: '오늘은 어느 정도 도수가 좋나요?',
+    title: '3. 오늘은 어느 정도 도수가 좋나요?',
     description:
       '평소와 다른 느낌이 당긴다면 오늘 기준으로 알려주세요.',
     options: [
@@ -196,7 +214,7 @@ const MEMBER_QUESTIONS = [
   {
     id: 'food',
     type: 'single',
-    title: '오늘은 어떤 안주가 당기나요?',
+    title: '4. 오늘은 어떤 안주가 당기나요?',
     description:
       '술과 함께 놓일 한 접시도 골라볼까요?',
     options: [
@@ -234,7 +252,7 @@ const GUEST_QUESTIONS = [
     id: 'taste',
     type: 'multiple',
     maxSelections: 2,
-    title: '오늘은 어떤 맛의 술이 끌리나요?',
+    title: '1. 오늘은 어떤 맛의 술이 끌리나요?',
     description:
       '처음이어도 괜찮아요! 오늘 당기는 맛을 골라주세요.',
     hint: '복수 선택 · 최대 2개',
@@ -276,7 +294,7 @@ const GUEST_QUESTIONS = [
   {
     id: 'alcohol',
     type: 'single',
-    title: '오늘은 어느 정도의 술이 편한가요?',
+    title: '2. 오늘은 어느 정도의 술이 편한가요?',
     description:
       '가볍게 한잔할지, 진하게 즐길지 알려주세요.',
     hint: '단일 선택',
@@ -316,7 +334,7 @@ const GUEST_QUESTIONS = [
   {
     id: 'mood',
     type: 'single',
-    title: '오늘은 어떤 시간을 보내고 싶나요?',
+    title: '3. 오늘은 어떤 시간을 보내고 싶나요?',
     description:
       '오늘의 한 잔이 어떤 시간이 되었으면 좋을까요?',
     hint: '단일 선택',
@@ -357,7 +375,7 @@ const GUEST_QUESTIONS = [
   {
     id: 'food',
     type: 'single',
-    title: '오늘은 어떤 안주와 함께하고 싶나요?',
+    title: '4. 오늘은 어떤 안주와 함께하고 싶나요?',
     description:
       '한 잔 옆에 어떤 한 접시를 놓아볼까요?',
     options: [
@@ -387,7 +405,7 @@ const GUEST_QUESTIONS = [
   {
     id: 'avoidIngredients',
     type: 'multiple',
-    title: '마지막 안전 확인. 피해야 하는 재료가 있나요?',
+    title: '피해야 하는 재료가 있나요?',
     description:
       '막동이가 안전하게 골라드릴 수 있도록 꼭 확인해주세요.',
     hint: '복수 선택 · 필수 응답',
@@ -474,6 +492,11 @@ const AiSurvey = () => {
   const [currentStep, setCurrentStep] = useState(0)
   const [answers, setAnswers] = useState({})
   const [otherIngredient, setOtherIngredient] = useState('')
+
+  // ========================================
+  // 특정 과일 · 식물 원료 세부 선택
+  // ========================================
+  const [selectedPlants, setSelectedPlants] = useState([])
 
 
   // ========================================
@@ -569,6 +592,7 @@ const AiSurvey = () => {
     setCurrentStep(0)
     setAnswers({})
     setOtherIngredient('')
+    setSelectedPlants([])
   }
 
 
@@ -636,6 +660,11 @@ const AiSurvey = () => {
         setOtherIngredient('')
       }
 
+      // 특정 과일·식물 원료 해제 시 세부 선택도 초기화
+      if (option.value === 'fruitPlant') {
+        setSelectedPlants([])
+      }
+
       return
     }
 
@@ -650,6 +679,7 @@ const AiSurvey = () => {
       }))
 
       setOtherIngredient('')
+      setSelectedPlants([])
 
       return
     }
@@ -693,6 +723,20 @@ const AiSurvey = () => {
         option.value,
       ],
     }))
+  }
+
+
+  // ========================================
+  // 특정 과일 · 식물 원료 세부 항목 토글
+  // ========================================
+  const handleSelectPlant = (value) => {
+    setSelectedPlants((prev) => {
+      if (prev.includes(value)) {
+        return prev.filter((item) => item !== value)
+      }
+
+      return [...prev, value]
+    })
   }
 
 
@@ -754,6 +798,16 @@ const AiSurvey = () => {
         return false
       }
 
+      // 특정 과일·식물 원료 선택 시 세부 항목 1개 이상 필수
+      if (
+        currentQuestion.id ===
+          'avoidIngredients' &&
+        answer.includes('fruitPlant') &&
+        selectedPlants.length === 0
+      ) {
+        return false
+      }
+
       return true
     }
 
@@ -786,6 +840,16 @@ const AiSurvey = () => {
       ) {
         finalAnswers.otherIngredient =
           otherIngredient.trim()
+      }
+
+      if (
+        !isMember &&
+        answers.avoidIngredients?.includes(
+          'fruitPlant'
+        )
+      ) {
+        finalAnswers.plantIngredients =
+          selectedPlants
       }
 
       navigate('/ai/result', {
@@ -1190,6 +1254,79 @@ const AiSurvey = () => {
                     </div>
                   )
                 }
+              )}
+
+
+              {/* 특정 과일 · 식물 원료 세부 목록 */}
+              {(
+                selectedAnswer ||
+                []
+              ).includes('fruitPlant') && (
+                <div
+                  className={
+                    styles.otherInputArea
+                  }
+                >
+                  <label>
+                    피해야 하는 과일·식물 원료를
+                    선택해주세요.
+                  </label>
+
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns:
+                        'repeat(auto-fill, minmax(96px, 1fr))',
+                      gap: '8px',
+                    }}
+                  >
+                    {PLANT_OPTIONS.map(
+                      (plantOption) => {
+                        const isPlantSelected =
+                          selectedPlants.includes(
+                            plantOption.value
+                          )
+
+                        return (
+                          <button
+                            key={
+                              plantOption.value
+                            }
+                            type="button"
+                            className={`${styles.safetyOption} ${
+                              isPlantSelected
+                                ? styles.safetySelected
+                                : ''
+                            }`}
+                            onClick={() =>
+                              handleSelectPlant(
+                                plantOption.value
+                              )
+                            }
+                            aria-pressed={
+                              isPlantSelected
+                            }
+                          >
+                            <span
+                              className={
+                                styles.checkbox
+                              }
+                            >
+                              {isPlantSelected &&
+                                '✓'}
+                            </span>
+
+                            <span>
+                              {
+                                plantOption.label
+                              }
+                            </span>
+                          </button>
+                        )
+                      }
+                    )}
+                  </div>
+                </div>
               )}
 
 

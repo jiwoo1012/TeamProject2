@@ -28,6 +28,107 @@ import { cancelSavedRecommendation } from '../../services/recommendationApi'
 import styles from './MyHome.module.scss'
 
 
+/* =========================
+   상품 이미지
+   - 기존 주문 데이터에 .png가 남아 있어도
+     현재 .webp 파일을 확장자와 무관하게 찾아줍니다.
+========================= */
+
+const productImages = import.meta.glob(
+  '../../assets/images/products/**/*.{webp,png,jpg,jpeg,avif}',
+  {
+    eager: true,
+    import: 'default',
+  }
+)
+
+const normalizeImageFileName = (value = '') => {
+  const normalizedPath = String(value)
+    .split('?')[0]
+    .split('#')[0]
+    .replace(/\\/g, '/')
+
+  const fileName =
+    normalizedPath
+      .split('/')
+      .pop() || ''
+
+  try {
+    return decodeURIComponent(fileName).toLowerCase()
+  } catch {
+    return fileName.toLowerCase()
+  }
+}
+
+const removeImageExtension = (fileName = '') =>
+  fileName.replace(/\.[^.]+$/, '')
+
+const productImageEntries =
+  Object.entries(productImages).map(
+    ([path, src]) => {
+      const fileName =
+        normalizeImageFileName(path)
+
+      return {
+        src,
+        fileName,
+        stem:
+          removeImageExtension(
+            fileName
+          ),
+      }
+    }
+  )
+
+const resolveProductImage = (imageUrl) => {
+  if (!imageUrl) return ''
+
+  const rawUrl =
+    String(imageUrl).trim()
+
+  if (
+    /^(https?:\/\/|data:|blob:)/i.test(
+      rawUrl
+    )
+  ) {
+    return rawUrl
+  }
+
+  const targetFileName =
+    normalizeImageFileName(
+      rawUrl
+    )
+
+  if (!targetFileName) {
+    return ''
+  }
+
+  const exactMatch =
+    productImageEntries.find(
+      (image) =>
+        image.fileName ===
+        targetFileName
+    )
+
+  if (exactMatch) {
+    return exactMatch.src
+  }
+
+  const targetStem =
+    removeImageExtension(
+      targetFileName
+    )
+
+  const stemMatch =
+    productImageEntries.find(
+      (image) =>
+        image.stem === targetStem
+    )
+
+  return stemMatch?.src || ''
+}
+
+
 const formatNumber = (value) =>
   new Intl.NumberFormat('ko-KR').format(value)
 
@@ -709,7 +810,6 @@ const MyHome = () => {
           <div className={styles.sectionHeading}>
             <div>
               <h3 id="home-taste-title">나의 취향 분석</h3>
-              <p>취향 설문에서 알려주신 나으리의 입맛이에요.</p>
             </div>
           </div>
           {hasPreference ? (
@@ -768,11 +868,6 @@ const MyHome = () => {
                 최근 주문
               </h3>
 
-              <p>
-                최근 구매한 상품과
-                배송 상태를 확인할 수
-                있어요
-              </p>
             </div>
 
 
@@ -841,10 +936,12 @@ const MyHome = () => {
                         styles.productThumb
                       }
                     >
-                      {order.imageUrl ? (
+                      {resolveProductImage(order.imageUrl) ? (
                         <img
                           src={
-                            order.imageUrl
+                            resolveProductImage(
+                              order.imageUrl
+                            )
                           }
                           alt=""
                         />
@@ -935,9 +1032,6 @@ const MyHome = () => {
                 AI 추천
               </h3>
 
-              <p>
-                저장해 둔 나으리의 주안상을 다시 만나보세요.
-              </p>
             </div>
             <Link to="ai-history" className={styles.moreLink}>추천 기록 전체 보기 ›</Link>
           </div>

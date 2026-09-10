@@ -17,6 +17,114 @@ import StatusBadge from '../../components/mypage/StatusBadge'
 import styles from './OrderDetail.module.scss'
 
 
+/* =========================
+   PRODUCT IMAGE
+========================= */
+
+const productImages = import.meta.glob(
+  '../../assets/webpImages/images/products/product*.webp',
+  {
+    eager: true,
+    import: 'default',
+  }
+)
+
+
+const normalizeImageFileName = (
+  value = ''
+) => {
+  const normalizedPath =
+    String(value)
+      .split('?')[0]
+      .split('#')[0]
+      .replace(/\\/g, '/')
+
+  const fileName =
+    normalizedPath
+      .split('/')
+      .pop() || ''
+
+  try {
+    return decodeURIComponent(
+      fileName
+    ).toLowerCase()
+  } catch {
+    return fileName.toLowerCase()
+  }
+}
+
+
+const toWebpFileName = (
+  fileName = ''
+) => {
+  if (!fileName) return ''
+
+  return /\.[^.]+$/.test(fileName)
+    ? fileName.replace(
+        /\.[^.]+$/,
+        '.webp'
+      )
+    : `${fileName}.webp`
+}
+
+
+const productImageMap =
+  Object.entries(
+    productImages
+  ).reduce(
+    (map, [path, src]) => {
+      const fileName =
+        normalizeImageFileName(
+          path
+        )
+
+      map.set(
+        fileName,
+        src
+      )
+
+      return map
+    },
+    new Map()
+  )
+
+
+const resolveImage = (
+  imageUrl
+) => {
+  if (!imageUrl) return ''
+
+  const rawUrl =
+    String(imageUrl).trim()
+
+  if (
+    /^(data:|blob:|https?:\/\/)/i.test(
+      rawUrl
+    )
+  ) {
+    return rawUrl
+  }
+
+  const fileName =
+    normalizeImageFileName(
+      rawUrl
+    )
+
+  if (!fileName) {
+    return ''
+  }
+
+  return (
+    productImageMap.get(
+      toWebpFileName(
+        fileName
+      )
+    ) ||
+    ''
+  )
+}
+
+
 const orderStepItems = [
   {
     key: 'received',
@@ -270,8 +378,10 @@ const OrderDetail = () => {
                         ),
 
                       imageUrl:
-                        item.imageUrl ||
-                        '',
+                        resolveImage(
+                          item.imageUrl ||
+                          ''
+                        ),
 
                       type:
                         getProductType(
