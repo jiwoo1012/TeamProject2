@@ -152,11 +152,19 @@ $quiz-copy-delay: 0.35s;
   border-radius: $radius-pill;
   transition: filter $quiz-motion-duration ease;
 }
-.visualArea img { width: 100%; height: 100%; object-fit: cover; }
+.visualArea img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
 .isAnswered .visualArea { filter: brightness(.94) saturate(.94); }
 .copyArea {
   display: flex;
   flex-direction: column;
+  min-width: 0;
   min-height: 0;
   padding: clamp(20px, 4vh, 36px) clamp(24px, 4vw, 48px);
   opacity: 1;
@@ -170,7 +178,7 @@ $quiz-copy-delay: 0.35s;
 .feedbackMessage.isCorrect { color: $color-success; }
 .feedbackMessage.isWrong { color: $color-error; }
 .copyArea h1 { margin-top: $space-3; font-size: clamp(15px, 1.5vw, 19px); font-weight: $font-weight-bold; line-height: $line-height-relaxed; }
-.explanation { max-width: 620px; margin-top: $space-3; font-size: clamp(13px, 1.2vw, 16px); font-weight: $font-weight-medium; line-height: $line-height-relaxed; color: $color-text-secondary; }
+.explanation { max-width: 620px; margin-top: $space-3; margin-bottom: $space-4; font-size: clamp(13px, 1.2vw, 16px); font-weight: $font-weight-medium; line-height: $line-height-relaxed; color: $color-text-secondary; }
 .isAnswered .copyArea { animation: copyReveal $quiz-motion-duration ease $quiz-copy-delay both; }
 
 // --- O/X answer cards: medium, centered, not viewport-filling ---
@@ -230,23 +238,21 @@ $quiz-copy-delay: 0.35s;
 .continueButton {
   align-self: flex-end;
   margin-top: auto;
-  padding-top: $space-4;
   display: flex;
   align-items: center;
-  gap: $space-2;
+  justify-content: center;
   padding-inline: $space-6;
   min-height: 48px;
   color: $color-bg;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
+  line-height: 1;
   background: $color-text-primary;
   border-radius: $radius-md;
   transition: background-color $quiz-motion-duration ease, transform $quiz-motion-duration ease;
   animation: copyReveal $quiz-motion-duration ease $quiz-copy-delay both;
 }
-.continueButton span { transition: transform $quiz-motion-duration ease; }
 .continueButton:hover { background: $color-text-secondary; transform: translateY(-2px); }
-.continueButton:hover span { transform: translateX(3px); }
 
 .modalBackdrop { @include event.modal-backdrop; animation: backdropIn $quiz-motion-duration ease both; }
 .resultModal { @include event.modal-box; animation: modalIn $quiz-motion-duration cubic-bezier(.22, 1, .36, 1) both; }
@@ -289,7 +295,8 @@ $quiz-copy-delay: 0.35s;
   .visualArea { width: 100%; height: 100%; margin-left: 0; border-radius: 0 0 $radius-lg $radius-lg; }
   .copyArea { padding: $space-4 $space-5; }
   .feedbackHead { gap: $space-2; }
-  .continueButton { align-self: stretch; justify-content: center; padding-top: $space-3; }
+  .explanation { margin-bottom: $space-3; }
+  .continueButton { align-self: stretch; }
 
   .answerArea { flex-direction: column; max-width: 320px; margin-top: 0; gap: $space-3; }
   .answerButton { min-height: 88px; flex-direction: row; justify-content: flex-start; padding-inline: $space-6; gap: $space-4; border-radius: $radius-md; }
