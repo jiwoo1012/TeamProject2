@@ -408,6 +408,7 @@
 
     width: min(280px, calc(100vw - 56px));
     height: 100dvh;
+    min-height: 0;
 
     padding:
       64px
@@ -428,6 +429,9 @@
       visibility 0.28s ease;
     pointer-events: none;
     box-shadow: -12px 0 30px rgba(28, 56, 53, 0.18);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .sidebarOpen {
@@ -521,6 +525,7 @@
     display: grid;
     gap: 10px;
     margin-top: 20px;
+    margin-bottom: 18px;
     padding-top: 18px;
     border-top: 1px solid rgba(255, 255, 255, 0.24);
   }
@@ -553,15 +558,13 @@
   }
 
   .mobileLogoutButton {
-    position: absolute;
-    right: 18px;
-    bottom: 76px;
-    left: 18px;
+    position: static;
+    width: 100%;
     min-height: 38px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
+    gap: 7px; margin-top: 15px;
     border: 1px solid rgba(255, 255, 255, 0.34);
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.1);
@@ -586,6 +589,11 @@
     padding: 0 18px;
 
     justify-content: flex-start;
+  }
+
+  .accountArea {
+    margin-top: 0;
+    padding-top: 0;
   }
 
   .menuLabel {
