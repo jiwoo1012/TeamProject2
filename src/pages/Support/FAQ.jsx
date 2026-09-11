@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom'
 import { PATHS } from '../../routes/paths'
 import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 import styles from './FAQ.module.scss'
-import searchIconImage from '../../assets/icons/searchIcon.png'
-import inquiryIconImage from '../../assets/icons/inquiryIcon.png'
+import searchIconImage from '../../assets/webpImages/icons/searchIcon.webp'
+import inquiryIconImage from '../../assets/webpImages/icons/inquiryIcon.webp'
 
 const FAQ_ITEMS = [
     {

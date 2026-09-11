@@ -13,7 +13,7 @@ import {
   subscribeToAuthState,
 } from '../../firebase/auth'
 
-import AiLoginModal from '../../components/ai/AiLoginModal'
+import GuestChoiceModal from './GuestChoiceModal'
 
 import styles from './AiIntro.module.scss'
 
@@ -32,7 +32,7 @@ const CARD_COUNT = 16
 // ========================================
 
 const productImages = import.meta.glob(
-  '../../assets/images/products/**/*.{png,jpg,jpeg,webp}',
+  '../../assets/webpImages/images/products/**/*.webp',
   {
     eager: true,
     import: 'default',
@@ -68,9 +68,9 @@ const resolveProductImage = (
       productImages
     ).find(
       ([path]) =>
-        path.endsWith(
+        (path.endsWith(
           `/${fileName}`
-        )
+        ) || path.endsWith((`/${fileName}`).replace(/\.(png|jpe?g)$/i, '.webp')))
     )
 
   return matchedImage?.[1] || ''
@@ -443,7 +443,7 @@ const AiIntro = () => {
           비로그인 사용자용 로그인 안내 모달
       ======================================== */}
 
-      <AiLoginModal
+      <GuestChoiceModal
         isOpen={
           isLoginModalOpen
         }

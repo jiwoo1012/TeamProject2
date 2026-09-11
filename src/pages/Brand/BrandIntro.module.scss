@@ -256,7 +256,7 @@
   aspect-ratio: 1831 / 925;
   margin-inline: 0.08em 0.12em;
   align-items: stretch;
-  background-image: url('../../assets/images/brand/brand-five-circle.png');
+  background-image: url('../../assets/webpImages/images/brand/brand-five-circle.webp');
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -304,11 +304,11 @@
   aspect-ratio: 1.55 / 1;
   overflow: hidden;
   background: $color-surface;
-  mask-image: url('../../assets/images/brand/image-brush-mask.png');
+  mask-image: url('../../assets/webpImages/images/brand/image-brush-mask.webp');
   mask-repeat: no-repeat;
   mask-position: center;
   mask-size: 100% 100%;
-  -webkit-mask-image: url('../../assets/images/brand/image-brush-mask.png');
+  -webkit-mask-image: url('../../assets/webpImages/images/brand/image-brush-mask.webp');
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
   -webkit-mask-size: 100% 100%;
@@ -340,6 +340,10 @@
   column-gap: $space-3;
   align-items: center;
   align-content: start;
+}
+
+.senseText > .senseTextSizer {
+  display: none;
 }
 
 .senseText > span {
@@ -761,35 +765,46 @@
 
   // Senses: 모든 감각 카드를 1열로 변경
   .senses {
-    // 고정 헤더 80px와 하단 메뉴 영역 80px를 제외한 가용 높이.
-    min-height: calc(100svh - 160px);
+    --senses-background: #f2ede4;
+    min-height: 0;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-block: $space-4;
+    display: block;
+    padding-block: $space-8 $space-6;
+    background-color: var(--senses-background);
   }
-  .sensesHeading { margin-bottom: $space-3; transform: none; }
+  .sensesHeading { margin-bottom: $space-4; transform: none; }
   .sensesHeading h2 {
     font-size: clamp($font-size-2xl, 7vw, $font-size-3xl);
     white-space: normal;
   }
-  .sensesHeading > p { margin-top: $space-3; font-size: $font-size-sm; line-height: 1.6; }
+  .sensesHeading > p { margin-top: $space-3; font-size: $font-size-md; line-height: 1.6; }
   .senseCards { gap: $space-3; }
-  .senseCard { grid-template-columns: minmax(0, 1fr); gap: $space-3; }
+  .senseCard { grid-template-columns: minmax(0, 1fr); gap: $space-4; }
   .senseImageFrame {
     width: 100%;
+    max-width: none;
     height: auto;
     aspect-ratio: 1.55 / 1;
+    justify-self: center;
   }
-  .senseText { padding-bottom: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: $space-2 $space-3; align-items: center; padding-top: 0; }
+  .senseText { padding-bottom: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: $space-2; align-items: center; padding-top: 0; }
   .senseText > span { font-size: $font-size-5xl; }
   .senseText h3 { margin: 0; font-size: $font-size-xl; line-height: $line-height-base; }
-  .senseText p { grid-column: 1 / -1; margin: 0; font-size: $font-size-sm; line-height: 1.65; }
+  .senseText p { grid-column: 1 / -1; margin: 0; font-size: $font-size-md; line-height: 1.65; }
+  .senseText > span { grid-area: 1 / 1; }
+  .senseText > h3 { grid-area: 1 / 2; }
+  .senseText > p { grid-area: 2 / 1 / 3 / -1; align-self: start; }
+  .senseText > .senseTextSizer {
+    display: block;
+    visibility: hidden;
+    pointer-events: none;
+    user-select: none;
+  }
   .senseControlButtons {
+    grid-row: 3;
     position: static;
     width: 100%;
-    margin-top: 0;
+    margin-top: $space-1;
     justify-content: center;
     gap: $space-3;
   }
@@ -803,32 +818,47 @@
   @media (max-height: 740px) {
     // 낮은 화면에서는 반복 안내만 생략하고 감각 설명과 조작 버튼은 유지한다.
     .sensesHeading > p { display: none; }
-    .sensesHeading h2 { font-size: $font-size-xl; }
+    .sensesHeading h2 { font-size: $font-size-2xl; }
     .sensesAccent { width: 3em; }
-    .senseImageFrame {
-      width: auto;
-      height: clamp(120px, calc(100svh - 510px), 180px);
-      max-width: 100%;
-      justify-self: center;
-    }
     .senseText > span { font-size: $font-size-3xl; }
-    .senseText h3 { font-size: $font-size-lg; }
+    .senseText h3 { font-size: $font-size-xl; }
     .senseText p { line-height: 1.6; }
   }
 
   // Message: 모바일 화면에 맞춰 높이와 글자 크기를 축소
-  .message { min-height: auto; padding-block: $space-20; }
+  .message {
+    min-height: auto;
+    padding-block: $space-20;
+    // Blend within the existing top padding, without a separate gradient spacer.
+    background-image: linear-gradient(#f2ede4, rgba($color-primary, 0) $space-12, rgba($color-primary, 0) calc(100% - #{$space-16}), $color-bg);
+  }
   .messageBottle { width: 44%; height: 60%; right: $side-margin-mobile; opacity: 0.1; }
+  .messageInner > h2,
+  .messageDescription {
+    width: 100%;
+    max-width: none;
+    text-align: left;
+  }
   .message h2 { font-size: clamp($font-size-2xl, 6.5vw, $font-size-3xl); line-height: 1.65; text-wrap: balance; }
   .messageBrand { font-size: 1.35em; }
-  .messageDescription { margin-top: $space-8; font-size: $font-size-md; line-height: 1.8; color: $color-white; }
-  .messageDescription .desktopBreak { display: initial; }
+  .messageDescription { margin-top: $space-6; font-size: $font-size-md; line-height: 1.8; color: $color-white; }
+  .messageDescription .desktopBreak { display: none; }
 
   .values { padding-block: $space-16; }
   .values h2 { margin-bottom: $space-8; font-size: $font-size-2xl; text-wrap: balance; }
   .closing { padding-block: 0 $space-12; }
   .closingInner { grid-template-columns: 1fr; gap: $space-6; padding-top: $space-8; text-align: center; }
   .closingIntro h2 { font-size: $font-size-2xl; }
+  .closing .shopLink {
+    justify-content: center;
+    padding: $space-3 $space-6;
+    border-radius: $radius-pill;
+    background-color: $color-primary;
+    color: $color-white;
+
+    > span[aria-hidden='true'] { display: none; }
+    &:hover { text-decoration: none; }
+  }
   .makdongVisual { width: 140px; margin-inline: auto; }
   .makdongCharacter { height: 160px; }
   .closingValues { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-3; }

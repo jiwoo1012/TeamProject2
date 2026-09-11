@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { PATHS } from '../../../routes/paths'
-import makdongIcon from '../../../assets/characters/Mhead.png'
+import makdongIcon from '../../../assets/webpImages/characters/Mhead.webp'
 import styles from './TavernShortcut.module.scss'
 
 gsap.registerPlugin(ScrollTrigger)

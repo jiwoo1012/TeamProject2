@@ -5,7 +5,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../../firebase/firebase'
 import Pagination from '../../components/ui/Pagination/Pagination'
 import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
-import searchIconImage from '../../assets/icons/searchIcon.png'
+import searchIconImage from '../../assets/webpImages/icons/searchIcon.webp'
 import styles from './NoticeList.module.scss'
 
 const formatDate = (timestamp) => {

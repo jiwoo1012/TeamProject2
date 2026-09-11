@@ -19,13 +19,13 @@ import AdminStatusBadge from '../../components/admin/AdminStatusBadge'
 import AdminSummaryCard from '../../components/admin/AdminSummaryCard'
 
 
-import totalIcon from '../../assets/icons/box.png'
+import totalIcon from '../../assets/webpImages/icons/box.webp'
 
-import sellingIcon from '../../assets/icons/shopping.png'
+import sellingIcon from '../../assets/webpImages/icons/shopping.webp'
 
-import lowStockIcon from '../../assets/icons/alert.png'
+import lowStockIcon from '../../assets/webpImages/icons/alert.webp'
 
-import hiddenIcon from '../../assets/icons/X.png'
+import hiddenIcon from '../../assets/webpImages/icons/X.webp'
 
 import { products as productData } from '../../data/products'
 
@@ -53,9 +53,9 @@ ChartJS.register(
 
 // ========================================
 
-const productImages = import.meta.glob('../../assets/images/products/*.{png,jpg,jpeg,webp}', { eager: true, import: 'default' })
+const productImages = import.meta.glob('../../assets/webpImages/images/products/*.webp', { eager: true, import: 'default' })
 
-const productDetailImages = import.meta.glob('../../assets/images/products/productDetail/**/*.{png,jpg,jpeg,webp}', { eager: true, import: 'default' })
+const productDetailImages = import.meta.glob('../../assets/webpImages/images/products/productDetail/**/*.webp', { eager: true, import: 'default' })
 
 const PRODUCT_OVERRIDES_KEY = 'jajak_admin_product_overrides'
 
@@ -83,7 +83,7 @@ const resolveProductImage = (imageUrl) => {
 
   const fileName = imageUrl?.split('/').pop()
 
-  return Object.entries(productImages).find(([path]) => path.endsWith(`/${fileName}`))?.[1]
+  return Object.entries(productImages).find(([path]) => (path.endsWith(`/${fileName}`) || path.endsWith((`/${fileName}`).replace(/\.(png|jpe?g)$/i, '.webp'))))?.[1]
 
 }
 

@@ -3,7 +3,7 @@
 @use 'sass:color';
 
 .page {
-  background: $color-bg url('../../assets/images/mypage/orderCompleteHanji.png') center / 900px auto;
+  background: $color-bg url('../../assets/webpImages/images/mypage/orderCompleteHanji.webp') center / 900px auto;
   color: $color-text-primary;
   font-family: $font-family-base;
   word-break: keep-all;
@@ -30,7 +30,7 @@
     inset: $space-6 0 0;
     z-index: -1;
     border-radius: 48% 48% $radius-xl $radius-xl;
-    background: linear-gradient(rgba($color-primary, 0.88), rgba($color-primary, 0.88)), url('../../assets/images/mypage/orderCompleteHanji.png') center / cover;
+    background: linear-gradient(rgba($color-primary, 0.88), rgba($color-primary, 0.88)), url('../../assets/webpImages/images/mypage/orderCompleteHanji.webp') center / cover;
   }
   img { width: 100%; height: 340px; object-fit: contain; filter: drop-shadow(0 12px 12px rgba($color-text-primary, 0.1)); }
 }

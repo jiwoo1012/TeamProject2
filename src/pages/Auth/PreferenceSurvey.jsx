@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import makdongImg from '../../assets/characters/M007_Poses06.png'
+import makdongImg from '../../assets/webpImages/characters/M007_Poses06.webp'
 
 import styles from './PreferenceSurvey.module.scss'
 

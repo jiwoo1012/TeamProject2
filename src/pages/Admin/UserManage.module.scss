@@ -416,6 +416,15 @@
 
 
 // ========================================
+// MOBILE MEMBER LIST
+// ========================================
+
+.mobileMemberList {
+  display: none;
+}
+
+
+// ========================================
 // PAGINATION
 // ========================================
 
@@ -1588,4 +1597,291 @@
 
     gap: 12px;
   }
+
+
+  // ========================================
+  // MOBILE MEMBER LIST
+  // ========================================
+
+  .selectField {
+    min-width: 0;
+
+    select {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
+
+  .desktopMemberTable {
+    display: none;
+  }
+
+
+  .tableWrap {
+    overflow: visible;
+
+    border: 0;
+    border-radius: 0;
+
+    background: transparent;
+  }
+
+
+  .mobileMemberList {
+    display: grid;
+
+    gap: 10px;
+  }
+
+
+  .mobileMemberCard {
+    min-width: 0;
+
+    padding: 14px;
+
+    border:
+      1px solid
+      $admin-border;
+
+    border-radius:
+      $admin-radius-md;
+
+    background:
+      $admin-surface;
+
+    box-shadow:
+      0
+      3px
+      12px
+      rgba(42, 65, 61, 0.04);
+  }
+
+
+  .mobileMemberCardSelected {
+    border-color:
+      rgba(
+        86,
+        138,
+        128,
+        0.55
+      );
+
+    background:
+      rgba(
+        86,
+        138,
+        128,
+        0.04
+      );
+  }
+
+
+  .mobileMemberTop {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 10px;
+  }
+
+
+  .mobileMemberIdentity {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    > .avatar {
+      width: 38px;
+      height: 38px;
+
+      flex:
+        0
+        0
+        38px;
+
+      font-size: 14px;
+    }
+
+    > div {
+      min-width: 0;
+    }
+
+    strong,
+    span {
+      display: block;
+    }
+
+    strong {
+      margin-bottom: 3px;
+
+      color:
+        $admin-text-primary;
+
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    span {
+      overflow: hidden;
+
+      max-width: 150px;
+
+      color:
+        $admin-text-muted;
+
+      font-size: 10px;
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+
+  .mobileMemberBadges {
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+
+    gap: 5px;
+  }
+
+
+  .mobileMemberMeta {
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap:
+      10px
+      12px;
+
+    margin:
+      14px
+      0
+      0;
+
+    padding:
+      12px
+      0;
+
+    border-top:
+      1px solid
+      $admin-border;
+
+    border-bottom:
+      1px solid
+      $admin-border;
+
+    > div {
+      min-width: 0;
+    }
+
+    > div:first-child {
+      grid-column:
+        1 / -1;
+    }
+
+    dt {
+      margin-bottom: 3px;
+
+      color:
+        $admin-text-muted;
+
+      font-size: 9px;
+      font-weight: 600;
+    }
+
+    dd {
+      overflow: hidden;
+
+      margin: 0;
+
+      color:
+        $admin-text-primary;
+
+      font-size: 11px;
+      font-weight: 600;
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+
+  .mobileViewButton {
+    width: 100%;
+    min-height: 36px;
+
+    margin-top: 10px;
+    padding:
+      0
+      12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border:
+      1px solid
+      rgba(
+        86,
+        138,
+        128,
+        0.26
+      );
+
+    border-radius:
+      $admin-radius-sm;
+
+    background:
+      $admin-primary-light;
+
+    color:
+      $admin-primary-dark;
+
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    span {
+      font-size: 17px;
+      font-weight: 400;
+      line-height: 1;
+    }
+  }
+
+
+  .analyticsColumn {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .pagination {
+    margin-top: 12px;
+
+    border:
+      1px solid
+      $admin-border;
+
+    border-radius:
+      $admin-radius-md;
+
+    background:
+      $admin-surface;
+  }
+
 }

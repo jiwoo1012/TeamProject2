@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import makdongImage from  '../../assets/characters/Mhead.png'
+import makdongImage from  '../../assets/webpImages/characters/Mhead.webp'
 
 import styles from './AiLoginModal.module.scss'
 

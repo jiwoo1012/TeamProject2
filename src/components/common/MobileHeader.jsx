@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import jajakLogo from '../../assets/logos/jajakLogo.png'
-import cartIcon from '../../assets/icons/cartIcon.png'
-import searchIcon from '../../assets/icons/searchIcon.png'
+import cartIcon from '../../assets/webpImages/icons/cartIcon.webp'
+import searchIcon from '../../assets/webpImages/icons/searchIcon.webp'
 
 import MobileSearchModal from './MobileSearchModal'
 import { subscribeToAuthState } from '../../firebase/auth'
@@ -77,7 +77,7 @@ const MobileHeader = () => {
   }
 
   return (
-    <div className={styles.mobileHeader}>
+    <div className={styles.mobileHeader} data-mobile-menu-open={isMenuOpen}>
       {/* ==============================
           모바일 상단 헤더
       ============================== */}
@@ -262,6 +262,34 @@ const MobileHeader = () => {
               <span>이벤트</span>
               <span className={styles.arrow}>+</span>
             </Link>
+          </div>
+
+          {/* 고객센터 */}
+          <div className={styles.menuGroup}>
+            <button
+              type="button"
+              className={styles.menuTitle}
+              onClick={() => toggleAccordion('customerService')}
+            >
+              <span>고객센터</span>
+              <span className={styles.arrow}>{openAccordion === 'customerService' ? '−' : '+'}</span>
+            </button>
+
+            <div
+              className={`${styles.subMenu} ${openAccordion === 'customerService' ? styles.subMenuOpen : ''}`}
+            >
+              <div className={styles.subMenuInner}>
+                <Link to="/faq" onClick={closeMenu} className={styles.subMenuLink}>
+                  자주 묻는 질문
+                </Link>
+                <Link to="/inquiry" onClick={closeMenu} className={styles.subMenuLink}>
+                  1:1 문의하기
+                </Link>
+                <Link to="/notices" onClick={closeMenu} className={styles.subMenuLink}>
+                  공지사항
+                </Link>
+              </div>
+            </div>
           </div>
 
           {/* 마이 자작 */}

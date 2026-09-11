@@ -1,13 +1,13 @@
-import profileAvatarMakdongDefault from '../../assets/images/mypage/profileAvatar-makdong-default.png'
-import profileAvatarMakdongCheers from '../../assets/images/mypage/profileAvatar-makdong-cheers.png'
-import profileAvatarMakdongJeon from '../../assets/images/mypage/profileAvatar-makdong-jeon.png'
-import profileAvatarMakdongPouch from '../../assets/images/mypage/profileAvatar-makdong-pouch.png'
-import profileAvatarMakdongTipsy from '../../assets/images/mypage/profileAvatar-makdong-tipsy.png'
-import profileAvatarMakdongSleepy from '../../assets/images/mypage/profileAvatar-makdong-sleepy.png'
-import profileAvatarMakdongServing from '../../assets/images/mypage/profileAvatar-makdong-serving.png'
-import profileAvatarMakdongRainy from '../../assets/images/mypage/profileAvatar-makdong-rainy.png'
-import profileAvatarMakdongLetter from '../../assets/images/mypage/profileAvatar-makdong-letter.png'
-import profileAvatarMakdongWave from '../../assets/images/mypage/profileAvatar-makdong-wave.png'
+import profileAvatarMakdongDefault from '../../assets/webpImages/images/mypage/profileAvatar-makdong-default.webp'
+import profileAvatarMakdongCheers from '../../assets/webpImages/images/mypage/profileAvatar-makdong-cheers.webp'
+import profileAvatarMakdongJeon from '../../assets/webpImages/images/mypage/profileAvatar-makdong-jeon.webp'
+import profileAvatarMakdongPouch from '../../assets/webpImages/images/mypage/profileAvatar-makdong-pouch.webp'
+import profileAvatarMakdongTipsy from '../../assets/webpImages/images/mypage/profileAvatar-makdong-tipsy.webp'
+import profileAvatarMakdongSleepy from '../../assets/webpImages/images/mypage/profileAvatar-makdong-sleepy.webp'
+import profileAvatarMakdongServing from '../../assets/webpImages/images/mypage/profileAvatar-makdong-serving.webp'
+import profileAvatarMakdongRainy from '../../assets/webpImages/images/mypage/profileAvatar-makdong-rainy.webp'
+import profileAvatarMakdongLetter from '../../assets/webpImages/images/mypage/profileAvatar-makdong-letter.webp'
+import profileAvatarMakdongWave from '../../assets/webpImages/images/mypage/profileAvatar-makdong-wave.webp'
 
 export const profileAvatars = [
   { id: 'profile-makdong-default', src: profileAvatarMakdongDefault, label: '기본 막동이' },

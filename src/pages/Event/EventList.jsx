@@ -7,13 +7,13 @@ import { PATHS } from '../../routes/paths'
 import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 import TavernShortcut from '../../components/ui/TavernShortcut/TavernShortcut'
 import eventBanner from '../../assets/images/banner/eventBanner-6.png'
-import rouletteCharacter from '../../assets/characters/M007_Poses09.png'
-import cardGameCharacter from '../../assets/characters/M007_Poses10.png'
-import oxQuizCharacter from '../../assets/characters/M007_Poses08.png'
+import rouletteCharacter from '../../assets/webpImages/characters/M007_Poses09.webp'
+import cardGameCharacter from '../../assets/webpImages/characters/M007_Poses10.webp'
+import oxQuizCharacter from '../../assets/webpImages/characters/M007_Poses08.webp'
 import useEventListReveal from './useEventListReveal'
 import styles from './EventList.module.scss'
 
-const bannerImages = import.meta.glob('../../assets/images/banner/eventBanner*.png', {
+const bannerImages = import.meta.glob(['../../assets/webpImages/images/banner/eventBanner*.webp', '../../assets/images/banner/eventBanner-6.png'], {
   eager: true, import: 'default',
 })
 
@@ -45,7 +45,7 @@ const getGameType = (title = '') => {
 const resolveBanner = (bannerUrl) => {
   if (/^(data:|https?:\/\/)/.test(bannerUrl ?? '')) return bannerUrl
   const fileName = bannerUrl?.split('/').pop()
-  return Object.entries(bannerImages).find(([path]) => path.endsWith('/' + fileName))?.[1]
+  return Object.entries(bannerImages).find(([path]) => (path.endsWith('/' + fileName) || path.endsWith(('/' + fileName).replace(/\.(png|jpe?g)$/i, '.webp'))))?.[1]
 }
 
 const normalizeEvent = (source, fallbackId) => {

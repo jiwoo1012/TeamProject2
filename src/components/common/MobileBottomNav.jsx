@@ -1,9 +1,9 @@
 import { NavLink } from 'react-router-dom'
 
-import homeIcon from '../../assets/icons/homeIcon.png'
-import categoryIcon from '../../assets/icons/categoryIcon.png'
-import wishlistIcon from '../../assets/icons/wishIcon.png'
-import loginIcon from '../../assets/icons/loginIcon.png'
+import homeIcon from '../../assets/webpImages/icons/homeIcon.webp'
+import categoryIcon from '../../assets/webpImages/icons/categoryIcon.webp'
+import wishlistIcon from '../../assets/webpImages/icons/wishIcon.webp'
+import loginIcon from '../../assets/webpImages/icons/loginIcon.webp'
 
 import styles from './MobileBottomNav.module.scss'
 

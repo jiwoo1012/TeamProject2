@@ -31,9 +31,9 @@ import {
 
 import pairings from '../../data/pairings.json'
 
-import trayImage from '../../assets/images/ai/tray.png'
-import backgroundImage from '../../assets/images/ai/background.png'
-import makdongImage from '../../assets/characters/M007_Poses03.png'
+import trayImage from '../../assets/webpImages/images/ai/tray.webp'
+import backgroundImage from '../../assets/webpImages/images/ai/background.webp'
+import makdongImage from '../../assets/webpImages/characters/M007_Poses03.webp'
 
 import styles from './AiResult.module.scss'
 
@@ -45,7 +45,7 @@ gsap.registerPlugin(ScrollTrigger)
 // ========================================
 
 const productImages = import.meta.glob(
-  '../../assets/images/products/product*.png',
+  '../../assets/webpImages/images/products/product*.webp',
   {
     eager: true,
     import: 'default',
@@ -55,7 +55,7 @@ const productImages = import.meta.glob(
 
 // AI 추천 구성용 누끼 이미지
 const aiAssetImages = import.meta.glob(
-  '../../assets/images/ai/*.png',
+  '../../assets/webpImages/images/ai/*.webp',
   {
     eager: true,
     import: 'default',
@@ -71,9 +71,9 @@ const resolveImage = (imageUrl) => {
   return Object.entries(
     productImages
   ).find(([path]) =>
-    path.endsWith(
+    (path.endsWith(
       `/${imageUrl}`
-    )
+    ) || path.endsWith((`/${imageUrl}`).replace(/\.(png|jpe?g)$/i, '.webp')))
   )?.[1] || ''
 }
 
@@ -86,9 +86,9 @@ const resolveAiImage = (imageUrl) => {
   return Object.entries(
     aiAssetImages
   ).find(([path]) =>
-    path.endsWith(
+    (path.endsWith(
       `/${imageUrl}`
-    )
+    ) || path.endsWith((`/${imageUrl}`).replace(/\.(png|jpe?g)$/i, '.webp')))
   )?.[1] || ''
 }
 
@@ -1575,7 +1575,7 @@ const AiResult = () => {
                   }
                   onClick={() =>
                     navigate(
-                      `/product/${liquor.productId}`
+                       `/shop/${liquor.productId}`
                     )
                   }
                 >
@@ -1670,7 +1670,7 @@ const AiResult = () => {
                   }
                   onClick={() =>
                     navigate(
-                      `/product/${food.productId}`
+                      `/shop/${food.productId}`
                     )
                   }
                 >
@@ -1765,7 +1765,7 @@ const AiResult = () => {
                   }
                   onClick={() =>
                     navigate(
-                      `/product/${glass.productId}`
+                      `/shop/${glass.productId}`
                     )
                   }
                 >

@@ -698,7 +698,6 @@
 
   .filterButton {
     min-width: auto;
-
     height: 32px;
 
     padding:
@@ -714,53 +713,85 @@
   }
 
 
+  /* 상품 3개씩 */
   .productGrid {
     grid-template-columns:
       repeat(
-        2,
+        3,
         minmax(0, 1fr)
       );
 
-    gap:
-      26px
-      12px;
+    column-gap: 8px;
+    row-gap: 24px;
   }
 
 
   .imageArea {
-    border-radius: 10px;
+    border-radius: 9px;
   }
 
 
   .heartButton {
-    top: 8px;
-    right: 8px;
+    top: 6px;
+    right: 6px;
 
-    width: 31px;
-    height: 31px;
+    width: 28px;
+    height: 28px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
   }
 
 
   .productContent {
-    padding-top: 9px;
+    padding:
+      8px
+      1px
+      0;
+  }
+
+
+  .categoryLabel {
+    margin-bottom: 4px;
+
+    font-size: 10px;
   }
 
 
   .productName {
-    min-height: 39px;
+    min-height: 36px;
 
-    font-size: 13px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+
+  .productBottom {
+    min-height: 32px;
+
+    gap: 4px;
+
+    margin-top: 4px;
   }
 
 
   .productPrice {
-    font-size: 12px;
+    font-size: 11px;
+
+    white-space: nowrap;
   }
 
 
   .cartButton {
-    width: 32px;
-    height: 32px;
+    width: 29px;
+    height: 29px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
   }
 
 

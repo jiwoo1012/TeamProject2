@@ -512,16 +512,11 @@
   }
 
   .orbitScale {
-    top: 50%;
+    top: 5%;
   }
 
   .card {
-    --radius:
-      clamp(
-        230px,
-        68vw,
-        330px
-      );
+    --radius:400px;
 
     width:
       clamp(
@@ -533,6 +528,10 @@
     border-radius: 18px;
   }
 
+  .content {
+  transform: translateY(160px);
+}
+
   .title {
     font-size:
       clamp(
@@ -541,9 +540,12 @@
         48px
       );
   }
+  .subCopy {
+    margin-top: 20px;
+  }
 
   .surveyButton {
-    margin-top: 44px;
+    margin-top: 20px;
 
     min-width: 230px;
 
@@ -554,7 +556,34 @@
     font-size: 17px;
   }
 }
+.modal {
+    width: min(82vw, 320px);
+    padding: 28px 20px 24px;
+  }
 
+  .iconArea {
+    margin-bottom: 18px;
+  }
+
+  .title {
+    margin-bottom: 14px;
+  }
+
+  .description {
+    margin-bottom: 24px;
+  }
+
+  .buttonArea {
+    gap: 10px;
+  }
+
+  .buttonArea button {
+    min-height: 46px;
+  }
+
+  .notice {
+    margin-top: 18px;
+  }
 
 /* ========================================
    접근성

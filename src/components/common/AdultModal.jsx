@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import styles from './AdultModal.module.scss'
 
-import makdongImg from '../../assets/characters/M007_Poses05.png'
+import makdongImg from '../../assets/webpImages/characters/M007_Poses05.webp'
 
 
 const AdultModal = ({

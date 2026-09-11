@@ -125,6 +125,11 @@
 }
 
 
+.mobileTasteGreeting {
+  display: none;
+}
+
+
 .mobileWelcome {
   display: none;
 }
@@ -160,6 +165,7 @@
   gap: 10px;
 
   margin-top: 18px;
+  margin-left: 78px;
 }
 
 
@@ -396,6 +402,16 @@
   font-weight: 600;
 }
 
+/* =========================
+   MOBILE TASTE
+   PC에서는 숨김
+========================= */
+
+.mobileTasteSection {
+  display: none;
+}
+
+
 
 /* =========================
    MOBILE EVENT
@@ -537,6 +553,11 @@
   }
 
 
+  .membershipInfo {
+    margin-left: 70px;
+  }
+
+
   .userName {
     font-size: 18px;
   }
@@ -644,6 +665,22 @@
   }
 
 
+  .mobileTasteGreeting {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #4d7e7b;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    line-height: 1.45;
+
+    word-break: keep-all;
+  }
+
+
   .mobileWelcome {
     display: block;
 
@@ -672,6 +709,7 @@
 
   .membershipInfo {
     margin-top: 17px;
+    margin-left: 74px;
   }
 
 
@@ -816,6 +854,273 @@
 
     white-space: nowrap;
   }
+
+  /* =====================
+     MOBILE TASTE
+  ===================== */
+
+  .mobileTasteSection {
+    display: block;
+
+    padding:
+      28px
+      0;
+
+    border-bottom:
+      1px
+      solid
+      #eeeae3;
+  }
+
+
+  .mobileTasteHeader {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-bottom: 14px;
+
+    h2 {
+      margin:
+        0
+        0
+        5px;
+
+      color: #292621;
+
+      font-size: 17px;
+      font-weight: 700;
+
+      line-height: 1.35;
+    }
+
+
+    p {
+      margin: 0;
+
+      color: #aaa59d;
+
+      font-size: 11px;
+
+      line-height: 1.45;
+
+      word-break: keep-all;
+    }
+  }
+
+
+  .mobileTasteCard,
+  .mobileTasteEmpty {
+    overflow: hidden;
+
+    border:
+      1px
+      solid
+      #e3ddd4;
+
+    border-radius: 16px;
+
+    background: #fbfaf7;
+  }
+
+
+  .mobileTasteCard {
+    padding:
+      16px
+      16px
+      8px;
+  }
+
+
+  .mobileTasteIntro {
+    padding-bottom: 14px;
+
+    border-bottom:
+      1px
+      solid
+      #ece6dc;
+
+    span,
+    strong {
+      display: block;
+    }
+
+
+    span {
+      margin-bottom: 5px;
+
+      color: #4d7e7b;
+
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+
+    strong {
+      color: #302b26;
+
+      font-size: 14px;
+      font-weight: 700;
+
+      line-height: 1.45;
+
+      word-break: keep-all;
+    }
+  }
+
+
+  .mobileTasteList {
+    display: grid;
+
+    gap: 0;
+
+    padding:
+      8px
+      0
+      6px;
+  }
+
+
+  .mobileTasteRow {
+    min-height: 39px;
+
+    display: grid;
+
+    grid-template-columns:
+      42px
+      minmax(82px, 1fr)
+      minmax(84px, 1.05fr);
+
+    align-items: center;
+
+    gap: 10px;
+
+    & + & {
+      border-top:
+        1px
+        solid
+        #f0ece5;
+    }
+  }
+
+
+  .mobileTasteLabel {
+    color: #5d554c;
+
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+
+  .mobileTasteScale {
+    display: flex;
+
+    gap: 4px;
+
+    span {
+      flex: 1;
+
+      height: 6px;
+
+      border-radius: 999px;
+
+      background: #e3ded5;
+    }
+
+
+    .mobileTasteSelected {
+      background: #519888;
+    }
+  }
+
+
+  .mobileTasteAnswer {
+    overflow: hidden;
+
+    color: #7b6c5e;
+
+    font-size: 10px;
+    font-weight: 500;
+
+    line-height: 1.35;
+
+    text-align: right;
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+  }
+
+
+  .mobileTasteLink {
+    min-height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin-top: 8px;
+    padding:
+      0
+      2px;
+
+    border-top:
+      1px
+      solid
+      #ece6dc;
+
+    color: #4d7e7b;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    span {
+      color: #8aa19c;
+
+      font-size: 18px;
+      font-weight: 300;
+
+      line-height: 1;
+    }
+  }
+
+
+  .mobileTasteEmpty {
+    display: grid;
+
+    gap: 6px;
+
+    padding: 16px;
+
+    strong {
+      color: #302b26;
+
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+
+    p {
+      margin: 0;
+
+      color: #91887e;
+
+      font-size: 11px;
+
+      line-height: 1.5;
+    }
+
+
+    .mobileTasteLink {
+      margin-top: 5px;
+    }
+  }
+
 
 
   /* =====================
@@ -970,6 +1275,21 @@
       display: block;
 
       object-fit: cover;
+    }
+  }
+
+
+  .tavernEventCard {
+    background: #f1f6f3;
+  }
+
+
+  .tavernEventImage {
+    background: #e6f0eb;
+
+    img {
+      object-fit: contain;
+      padding: 3px;
     }
   }
 

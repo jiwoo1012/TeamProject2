@@ -5,9 +5,9 @@ import { subscribeToAuthState } from '../../firebase/auth'
 import { PATHS } from '../../routes/paths'
 import styles from './InquiryQnA.module.scss'
 import { serverTimestamp } from 'firebase/firestore'
-import checkIcon from '../../assets/icons/checkIcon.png'
-import clipboardIcon from '../../assets/icons/clipboardIcon.png'
-import closeIcon from '../../assets/icons/closeIcon.png'
+import checkIcon from '../../assets/webpImages/icons/checkIcon.webp'
+import clipboardIcon from '../../assets/webpImages/icons/clipboardIcon.webp'
+import closeIcon from '../../assets/webpImages/icons/closeIcon.webp'
 
 // 문의 유형 (AGENTS.md 확정)
 const INQUIRY_CATEGORIES = [

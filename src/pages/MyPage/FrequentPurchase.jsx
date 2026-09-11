@@ -45,7 +45,7 @@ const CART_BAR_DURATION = 3200
 
 
 const productImages = import.meta.glob(
-  '../../assets/images/products/product*.png',
+  '../../assets/webpImages/images/products/product*.webp',
   {
     eager: true,
     import: 'default',
@@ -53,22 +53,101 @@ const productImages = import.meta.glob(
 )
 
 
-const resolveImage = (imageUrl) => {
+const normalizeImageFileName = (
+  value = ''
+) => {
+  const normalizedPath =
+    String(value)
+      .split('?')[0]
+      .split('#')[0]
+      .replace(/\\/g, '/')
+
+  const fileName =
+    normalizedPath
+      .split('/')
+      .pop() || ''
+
+  try {
+    return decodeURIComponent(
+      fileName
+    ).toLowerCase()
+  } catch {
+    return fileName.toLowerCase()
+  }
+}
+
+
+const toWebpFileName = (
+  fileName = ''
+) => {
+  if (!fileName) return ''
+
+  return /\.[^.]+$/.test(fileName)
+    ? fileName.replace(
+        /\.[^.]+$/,
+        '.webp'
+      )
+    : `${fileName}.webp`
+}
+
+
+const productImageMap =
+  Object.entries(
+    productImages
+  ).reduce(
+    (map, [path, src]) => {
+      const fileName =
+        normalizeImageFileName(
+          path
+        )
+
+      map.set(
+        fileName,
+        src
+      )
+
+      return map
+    },
+    new Map()
+  )
+
+
+const resolveImage = (
+  imageUrl
+) => {
   if (!imageUrl) return ''
 
+  const rawUrl =
+    String(imageUrl).trim()
+
   if (
-    /^(data:|https?:\/\/)/.test(
-      imageUrl
+    /^(data:|blob:|https?:\/\/)/i.test(
+      rawUrl
     )
   ) {
-    return imageUrl
+    return rawUrl
   }
 
-  return Object.entries(
-    productImages
-  ).find(([path]) =>
-    path.endsWith(`/${imageUrl}`)
-  )?.[1]
+  const fileName =
+    normalizeImageFileName(
+      rawUrl
+    )
+
+  if (!fileName) {
+    return ''
+  }
+
+  const webpFileName =
+    toWebpFileName(
+      fileName
+    )
+
+  return (
+    productImageMap.get(
+      webpFileName
+    ) ||
+    ''
+  )
 }
 
 
