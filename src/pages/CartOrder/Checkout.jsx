@@ -566,7 +566,9 @@ const Checkout = () => {
                     <span>{item.option}</span>
                   </div>
                 </div>
-                <span>{item.discount ? `-${formatPrice(item.discount)}` : '0원'}</span>
+                <span className={item.discount ? styles.discountPrice : undefined}>
+                  {item.discount ? `-${formatPrice(item.discount)}` : '0원'}
+                </span>
                 <span>{formatPrice((item.price - item.discount) * item.quantity)}</span>
                 <strong>{item.quantity}개</strong>
               </article>
@@ -684,7 +686,10 @@ const Checkout = () => {
           <h2><span>주문 금액</span><em>선택 {displayItems.length}개</em></h2>
           <dl className={styles.summaryList}>
             <div><dt>총 상품 금액</dt><dd>{formatPrice(productAmount)}</dd></div>
-            <div><dt>상품 할인</dt><dd>-{formatPrice(discountAmount)}</dd></div>
+            <div>
+              <dt>상품 할인</dt>
+              <dd className={discountAmount ? styles.discountPrice : undefined}>-{formatPrice(discountAmount)}</dd>
+            </div>
             <div><dt>배송비</dt><dd>{formatPrice(0)}</dd></div>
           </dl>
           <div className={styles.pointSection}>
