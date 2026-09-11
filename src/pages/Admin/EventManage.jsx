@@ -760,7 +760,7 @@ const EventManage = () => {
                   src={card.icon}
                   alt=""
                   className={styles.summaryIconImage}
-                />
+                 loading="lazy" decoding="async" />
               }
               label={card.label}
               value={String(card.value)}
@@ -1046,7 +1046,7 @@ const EventManage = () => {
                               ev.image
                             )}
                             alt=""
-                          />
+                           loading="lazy" decoding="async" />
                         )}
                       </div>
 
@@ -1287,7 +1287,7 @@ const EventManage = () => {
                     <img
                       src={newEvent.bannerUrl}
                       alt="등록할 이벤트 배너"
-                    />
+                     loading="lazy" decoding="async" />
                   ) : (
                     <span>
                       배너 이미지 선택
@@ -1547,7 +1547,7 @@ const EventManage = () => {
                   <img
                     src={draftBanner}
                     alt="이벤트 배너"
-                  />
+                   loading="lazy" decoding="async" />
                 )}
               </div>
 
@@ -1737,7 +1737,7 @@ const EventManage = () => {
                       <img
                         src={draftBanner}
                         alt="수정할 이벤트 배너"
-                      />
+                       loading="lazy" decoding="async" />
                     ) : (
                       <span>
                         배너 이미지 선택

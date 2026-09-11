@@ -97,7 +97,7 @@ const MiniPairingCard = ({
       <img
         src={product.imageSrc}
         alt={product.productName}
-      />
+       loading="lazy" decoding="async" />
     </Link>
 
     <div className={styles.miniInfo}>
@@ -745,7 +745,7 @@ const ProductDetail = () => {
               <img
                 src={product.imageSrc}
                 alt={product.productName}
-              />
+               loading="lazy" decoding="async" />
 
               {productDetailImages.slice(0, 3).map((image) => (
                 <img
@@ -756,7 +756,7 @@ const ProductDetail = () => {
                   alt=""
                   aria-hidden="true"
                   key={`preview-${image}`}
-                />
+                 loading="lazy" decoding="async" />
               ))}
             </div>
 
@@ -777,7 +777,7 @@ const ProductDetail = () => {
                     onFocus={() => setHoveredGalleryImage(image)}
                     onBlur={() => setHoveredGalleryImage(null)}
                     key={image}
-                  />
+                   loading="lazy" decoding="async" />
                 ))}
             </div>
           </section>
@@ -831,13 +831,13 @@ const ProductDetail = () => {
               aria-label="상품 상세 정보"
             >
               <section className={styles.brandStory}>
-                <img src={jajakLogo} alt="자작" />
+                <img src={jajakLogo} alt="자작"  loading="lazy" decoding="async" />
                 <h2>자작</h2>
                 <p>“방대한 정보 속에서 헤매던 나만의 취향을 찾아, 일상 속에 우리 술의 깊은 향기를 스며들게 하는 감성 전통주 큐레이션 플랫폼.”</p>
               </section>
 
               <section className={styles.styledProduct}>
-                <img src={stylingImageOne} alt={`${product.productName} 연출 이미지`} loading="lazy" />
+                <img src={stylingImageOne} alt={`${product.productName} 연출 이미지`} loading="lazy"  decoding="async" />
                 <div className={styles.styledCategory}>{product.productType} &gt; {product.liquorType ?? product.snackType ?? product.glassType ?? '추천 상품'}</div>
                 <div className={styles.styledTitle}>
                   <h2>{product.productName}</h2>
@@ -862,13 +862,13 @@ const ProductDetail = () => {
                   </section>
 
                   <div className={styles.detailOrnament} aria-hidden="true">
-                    <img src={pattern2} alt="" />
+                    <img src={pattern2} alt=""  loading="lazy" decoding="async" />
                   </div>
                 </>
               )}
 
               <section className={styles.faqSection}>
-                <img src={faqMakdong} alt="질문을 안내하는 막동이" loading="lazy" />
+                <img src={faqMakdong} alt="질문을 안내하는 막동이" loading="lazy"  decoding="async" />
                 <div>
                   <h2>자주 묻는 질문</h2>
                   <dl>
@@ -883,7 +883,7 @@ const ProductDetail = () => {
                 {isLiquor ? (
                   <>
                     <section className={styles.editorialPanel}>
-                      <img src={editorialImages[0]} alt={`${product.productName} 추천 시간 연출`} loading="lazy" />
+                      <img src={editorialImages[0]} alt={`${product.productName} 추천 시간 연출`} loading="lazy"  decoding="async" />
                       <div className={styles.editorialOverlay}>
                         <p>{timeRange}</p>
                         <h2>{product.timeOfDay ?? '추천 시간'}</h2>
@@ -892,7 +892,7 @@ const ProductDetail = () => {
                     </section>
 
                     <section className={styles.editorialPanel}>
-                      <img src={editorialImages[1]} alt={`${product.productName} 맛 연출`} loading="lazy" />
+                      <img src={editorialImages[1]} alt={`${product.productName} 맛 연출`} loading="lazy"  decoding="async" />
                       <div className={`${styles.editorialOverlay} ${styles.keywordEditorial}`}>
                         <h2>{(product.flavorKeywords ?? []).map((keyword) => `#${keyword}`).join('  ')}</h2>
                         <span>{product.productDescription}</span>
@@ -900,7 +900,7 @@ const ProductDetail = () => {
                     </section>
 
                     <section className={styles.editorialPanel}>
-                      <img src={editorialImages[2]} alt={`${product.productName} 상품 정보 연출`} loading="lazy" />
+                      <img src={editorialImages[2]} alt={`${product.productName} 상품 정보 연출`} loading="lazy"  decoding="async" />
                       <div className={`${styles.editorialOverlay} ${styles.factEditorial}`}>
                         <h2>상품 정보</h2>
                         <dl>
@@ -914,7 +914,7 @@ const ProductDetail = () => {
                 ) : (
                   <>
                     <section className={styles.editorialPanel}>
-                      <img src={editorialImages[0]} alt={`${product.productName} 브랜드 연출`} loading="lazy" />
+                      <img src={editorialImages[0]} alt={`${product.productName} 브랜드 연출`} loading="lazy"  decoding="async" />
                       <div className={styles.editorialOverlay}>
                         <p>{product.brandManufacturer}</p>
                         <h2>{productSubtype}</h2>
@@ -923,7 +923,7 @@ const ProductDetail = () => {
                     </section>
 
                     <section className={styles.editorialPanel}>
-                      <img src={editorialImages[1]} alt={`${product.productName} 상품 정보 연출`} loading="lazy" />
+                      <img src={editorialImages[1]} alt={`${product.productName} 상품 정보 연출`} loading="lazy"  decoding="async" />
                       <div className={`${styles.editorialOverlay} ${styles.factEditorial}`}>
                         <h2>상품 정보</h2>
                         <dl>
@@ -941,15 +941,15 @@ const ProductDetail = () => {
                 <h2>자작을 온전히 즐기는 미식의 순간</h2>
                 <div>
                   <article>
-                    <span><img src={dojagiIcon} alt="" aria-hidden="true" /></span>
+                    <span><img src={dojagiIcon} alt="" aria-hidden="true"  loading="lazy" decoding="async" /></span>
                     <p>손끝에 전해지는 잔의 질감과 은은한 디자인을 천천히 감상하며, 정성스레 빚어진 전통주를 차분히 따라 채워보세요.</p>
                   </article>
                   <article>
-                    <span><img src={drinkIcon} alt="" aria-hidden="true" /></span>
+                    <span><img src={drinkIcon} alt="" aria-hidden="true"  loading="lazy" decoding="async" /></span>
                     <p>은은하게 퍼지는 술의 향과 최적의 온도를 온전히 느끼며 첫 모금을 마시는 순간, 복잡했던 하루의 긴장이 부드럽게 풀립니다.</p>
                   </article>
                   <article>
-                    <span><img src={moonIcon} alt="" aria-hidden="true" /></span>
+                    <span><img src={moonIcon} alt="" aria-hidden="true"  loading="lazy" decoding="async" /></span>
                     <p>준비된 안주로 입안을 다듬고 맛의 여운을 길게 이어보세요. 어우러지는 맛과 향으로 지친 하루에 따뜻한 위로를 전해드립니다.</p>
                   </article>
                 </div>

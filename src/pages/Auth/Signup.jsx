@@ -222,7 +222,7 @@ const Signup = () => {
                   }
                   alt=""
                   className={styles.eyeIcon}
-                />
+                 loading="lazy" decoding="async" />
               </button>
             </div>
 
@@ -326,14 +326,14 @@ const Signup = () => {
               <img
                 src={closeIconImage}
                 alt=""
-              />
+               loading="lazy" decoding="async" />
             </button>
 
             <img
               src={checkIconImage}
               alt=""
               className={styles.checkIcon}
-            />
+             loading="lazy" decoding="async" />
 
             <h2>회원가입이 완료되었습니다!</h2>
 
@@ -348,7 +348,7 @@ const Signup = () => {
                 src={clipboardIconImage}
                 alt=""
                 className={styles.clipboardIcon}
-              />
+               loading="lazy" decoding="async" />
 
               <p>
                 간단한 5가지 질문에 답하면

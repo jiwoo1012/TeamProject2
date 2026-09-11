@@ -1689,7 +1689,7 @@ const DesktopHeader = () => {
               <img
                 src={brandSnbImage}
                 alt="자작 브랜드 소개"
-              />
+               loading="lazy" decoding="async" />
             </div>
 
             <div className={styles.brandText}>
@@ -1819,7 +1819,7 @@ const DesktopHeader = () => {
       <img
         src={tavernWorld}
         alt="막동이 주막"
-      />
+       loading="lazy" decoding="async" />
     </div>
 
     <div
@@ -2053,7 +2053,7 @@ const DesktopHeader = () => {
                           <img
                             src={imageSrc}
                             alt={productName}
-                          />
+                           loading="lazy" decoding="async" />
                         )}
                       </div>
 

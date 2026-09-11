@@ -1902,7 +1902,7 @@ const AiPreference = () => {
                   makdongImage
                 }
                 alt="막동이"
-              />
+               loading="lazy" decoding="async" />
             </div>
 
 
@@ -2039,7 +2039,7 @@ const AiPreference = () => {
                 makdongImage
               }
               alt="막동이"
-            />
+             loading="lazy" decoding="async" />
           </div>
 
 

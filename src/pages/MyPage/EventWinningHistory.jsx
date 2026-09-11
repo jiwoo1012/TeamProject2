@@ -1015,7 +1015,7 @@ const EventWinningHistory = () => {
                             item.bannerSrc
                           }
                           alt=""
-                        />
+                         loading="lazy" decoding="async" />
                       ) : (
                         <span
                           aria-hidden="true"

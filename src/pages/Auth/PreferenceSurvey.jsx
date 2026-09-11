@@ -108,7 +108,7 @@ const PreferenceSurvey = () => {
               src={makdongImg}
               alt="막동이"
               className={styles.character}
-            />
+             loading="lazy" decoding="async" />
           </div>
 
         </div>

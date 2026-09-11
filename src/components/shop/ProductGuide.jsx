@@ -1365,7 +1365,7 @@ const ProductGuide = ({
                   currentStep.character
                 }
                 alt=""
-              />
+               loading="lazy" decoding="async" />
             </div>
 
 

@@ -301,7 +301,7 @@ const PurchaseSteps =
           cartStepOrnament
         }
         alt=""
-      />
+       loading="lazy" decoding="async" />
 
       <span>
         주문서 작성 / 결제
@@ -315,7 +315,7 @@ const PurchaseSteps =
           cartStepOrnament
         }
         alt=""
-      />
+       loading="lazy" decoding="async" />
 
       <span>완료</span>
     </nav>
@@ -363,7 +363,7 @@ const ProductImage = ({
       <img
         src={imageUrl}
         alt={name}
-      />
+       loading="lazy" decoding="async" />
     ) : (
       <span>IMG</span>
     )}

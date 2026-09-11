@@ -392,11 +392,11 @@ const MainPage = () => {
           </p>
           <div className={styles.eyePlaceholder}>
             <div className={styles.faceViewport}>
-              <img className={styles.peekFaceDefault} src={peekFaceDefault} alt="살짝 얼굴을 내민 막동이" />
-              <img className={styles.peekFaceUp} src={peekFaceUp} alt="위를 바라보는 막동이" />
-              <img className={styles.peekFaceSmile} src={peekFaceSmile} alt="미소 짓는 막동이" />
+              <img className={styles.peekFaceDefault} src={peekFaceDefault} alt="살짝 얼굴을 내민 막동이"  loading="lazy" decoding="async" />
+              <img className={styles.peekFaceUp} src={peekFaceUp} alt="위를 바라보는 막동이"  loading="lazy" decoding="async" />
+              <img className={styles.peekFaceSmile} src={peekFaceSmile} alt="미소 짓는 막동이"  loading="lazy" decoding="async" />
             </div>
-            <img className={styles.tornPaperFrame} src={tornPaperFrame} alt="" aria-hidden="true" />
+            <img className={styles.tornPaperFrame} src={tornPaperFrame} alt="" aria-hidden="true"  loading="lazy" decoding="async" />
           </div>
           <p className={`${styles.moodLabel} ${styles.mirroredMood}`} aria-hidden="true">
             <span className={styles.moodHappy}>HAPPY</span>
@@ -430,7 +430,7 @@ const MainPage = () => {
               </div>
               <div className={styles.recommendCardVisual}>
                 {variants.map(({ mood, image, alt }) => (
-                  <img key={mood} className={styles[mood]} src={image} alt={alt} />
+                  <img key={mood} className={styles[mood]} src={image} alt={alt}  loading="lazy" decoding="async" />
                 ))}
               </div>
               <div className={styles.recommendCardDescription}>
@@ -471,11 +471,11 @@ const MainPage = () => {
 
         <div className={styles.featureImage} role="img" aria-label="AI 큐레이션 대표 이미지 영역">
           <div className={styles.featurePhotoFrame}>
-            <img className={styles.featureBackground} src={brandStoryImage} alt="전통주를 잔에 따르는 모습" />
+            <img className={styles.featureBackground} src={brandStoryImage} alt="전통주를 잔에 따르는 모습"  loading="lazy" decoding="async" />
           </div>
-          <img className={`${styles.featurePourOverlay} ${styles.featurePourBefore}`} src={brandStoryPourBefore} alt="술을 따르기 전 술병을 든 모습" />
-          <img className={`${styles.featurePourOverlay} ${styles.featurePourAfter}`} src={brandStoryPourAfter} alt="잔에 술을 따르는 모습" />
-          <img ref={featureCupRef} className={styles.featureCup} src={brandStoryCup} alt="" aria-hidden="true" />
+          <img className={`${styles.featurePourOverlay} ${styles.featurePourBefore}`} src={brandStoryPourBefore} alt="술을 따르기 전 술병을 든 모습"  loading="lazy" decoding="async" />
+          <img className={`${styles.featurePourOverlay} ${styles.featurePourAfter}`} src={brandStoryPourAfter} alt="잔에 술을 따르는 모습"  loading="lazy" decoding="async" />
+          <img ref={featureCupRef} className={styles.featureCup} src={brandStoryCup} alt="" aria-hidden="true"  loading="lazy" decoding="async" />
         </div>
       </section>
 
@@ -522,7 +522,7 @@ const MainPage = () => {
               >
                 <span className={styles.eventCardInner}>
                   <span className={styles.eventCardFront}>
-                    <img src={event.bannerSrc} alt="" />
+                    <img src={event.bannerSrc} alt=""  loading="lazy" decoding="async" />
                   </span>
                   <span className={styles.eventCardBack}>
                     <strong>{event.title}</strong>
@@ -543,7 +543,7 @@ const MainPage = () => {
         aria-labelledby="makdong-title"
       >
         <div className={styles.makdongVisual} aria-hidden="true">
-          <img className={styles.makdongCharacter} src={makdongCharacter} alt="" />
+          <img className={styles.makdongCharacter} src={makdongCharacter} alt=""  loading="lazy" decoding="async" />
         </div>
         <div className={styles.makdongCopy}>
           <h2 id="makdong-title">

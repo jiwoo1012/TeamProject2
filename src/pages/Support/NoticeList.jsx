@@ -103,7 +103,7 @@ const NoticeList = () => {
           </div>
 
           <label className={styles.searchBox}>
-            <img src={searchIconImage} alt="" aria-hidden="true" />
+            <img src={searchIconImage} alt="" aria-hidden="true"  loading="lazy" decoding="async" />
             <span className={styles.srOnly}>공지 검색</span>
             <input
               type="search"

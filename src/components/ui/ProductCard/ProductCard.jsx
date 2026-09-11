@@ -53,7 +53,7 @@ const ProductCard = ({
         src={product.imageSrc}
         alt={product.productName}
         loading="lazy"
-      />
+       decoding="async" />
 
       {hoverImageSrc
         && hoverImageSrc !== product.imageSrc
@@ -81,7 +81,7 @@ const ProductCard = ({
             onError={() =>
               setLoadedHoverImage(null)
             }
-          />
+           decoding="async" />
         )}
 
       {isSoldOut && (

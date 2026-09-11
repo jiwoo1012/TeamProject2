@@ -79,7 +79,7 @@ const ProductActionBar = ({
         <img
           src={config.character}
           alt=""
-        />
+         loading="lazy" decoding="async" />
       </div>
 
 
@@ -98,7 +98,7 @@ const ProductActionBar = ({
             <img
               src={item.imageSrc}
               alt={item.productName}
-            />
+             loading="lazy" decoding="async" />
 
             <button
               className={

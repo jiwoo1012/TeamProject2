@@ -205,9 +205,9 @@ const OxQuizEvent = () => {
         </div>
 
         <section className={`${styles.questionPanel} ${isAnswered ? styles.isAnswered : ''}`} aria-live="polite" key={currentQuiz.id}>
-          <img className={styles.cardMark} src={knotPattern} alt="" aria-hidden="true" />
+          <img className={styles.cardMark} src={knotPattern} alt="" aria-hidden="true"  loading="lazy" decoding="async" />
           <div className={styles.visualArea}>
-            <img src={currentQuiz.image} alt={`${currentIndex + 1}번 문제 관련 이미지`} />
+            <img src={currentQuiz.image} alt={`${currentIndex + 1}번 문제 관련 이미지`}  loading="lazy" decoding="async" />
           </div>
           <div className={styles.copyArea}>
             {isAnswered ? (

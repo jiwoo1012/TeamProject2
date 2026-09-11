@@ -103,7 +103,7 @@ const TavernShortcut = ({ attentionTargetRef }) => {
       <span className={styles.bubble} aria-hidden="true">막동이주막 가기</span>
       <span className={styles.iconFloat} ref={floatRef}>
         <span className={styles.iconScale}>
-          <img src={makdongIcon} alt="" aria-hidden="true" />
+          <img src={makdongIcon} alt="" aria-hidden="true"  loading="lazy" decoding="async" />
         </span>
       </span>
     </Link>
