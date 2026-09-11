@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 
-import popupImage from '../../assets/images/main/popup/main-event-popup.png'
-import popupImage2 from '../../assets/images/main/popup/main-event-popup2.png'
+import popupImage from '../../assets/images/main/popup/main-event-popup.webp'
+import popupImage2 from '../../assets/images/main/popup/main-event-popup2.webp'
 
 import styles from './MainPopup.module.scss'
 
