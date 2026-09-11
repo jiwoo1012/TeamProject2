@@ -220,7 +220,7 @@
     $admin-radius-sm;
 
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 
   white-space: nowrap;
@@ -345,7 +345,7 @@
     color:
       $admin-text-primary;
 
-    font-size: 11px;
+    font-size: 12px;
 
     text-align: left;
     vertical-align: middle;
@@ -360,7 +360,7 @@
     color:
       $admin-text-secondary;
 
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 700;
   }
 
@@ -467,7 +467,7 @@
     color:
       $admin-text-muted;
 
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
 
     text-overflow: ellipsis;
@@ -495,7 +495,7 @@
   color:
     $admin-text-primary;
 
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 
   text-overflow: ellipsis;
@@ -534,7 +534,7 @@
     $admin-text-secondary;
 
   font: inherit;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
 
   cursor: pointer;
@@ -684,7 +684,7 @@
   color:
     $admin-text-muted;
 
-  font-size: 9px;
+  font-size: 12px;
 
   span {
     color:
@@ -746,7 +746,7 @@
     color:
       $admin-text-primary;
 
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
   }
 
@@ -776,7 +776,7 @@
       $admin-text-primary;
 
     font: inherit;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
 
     &:focus {
@@ -827,7 +827,7 @@
   color:
     #b27a29;
 
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
 
   white-space: nowrap;
@@ -906,7 +906,7 @@
     color:
       $admin-text-muted;
 
-    font-size: 9px;
+    font-size: 12px;
   }
 
   dd {
@@ -916,7 +916,7 @@
     color:
       $admin-text-primary;
 
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
 
     overflow-wrap: anywhere;
@@ -945,7 +945,7 @@
         $admin-text-primary;
 
       font: inherit;
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 600;
 
       &:focus {
@@ -1004,7 +1004,7 @@
       $admin-text-secondary;
 
     font: inherit;
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.65;
 
     resize: vertical;
@@ -1066,7 +1066,7 @@
     $admin-radius-sm;
 
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 
   cursor: pointer;
@@ -1207,13 +1207,13 @@
     color:
       $admin-text-secondary;
 
-    font-size: 11px;
+    font-size: 12px;
 
     strong {
       color:
         $admin-text-primary;
 
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
     }
   }
@@ -1280,7 +1280,7 @@
       color:
         $admin-text-muted;
 
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 600;
     }
 
@@ -1302,7 +1302,7 @@
         color:
           $admin-text-secondary;
 
-        font-size: 10px;
+        font-size: 12px;
         font-weight: 600;
       }
     }
@@ -1365,7 +1365,7 @@
 
     gap: 9px;
 
-    font-size: 10px;
+    font-size: 12px;
   }
 
   span {
@@ -1399,7 +1399,7 @@
     color:
       $admin-text-primary;
 
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 700;
 
     text-align: right;
@@ -1422,7 +1422,7 @@
   color:
     $admin-text-muted;
 
-  font-size: 9px;
+  font-size: 12px;
   line-height: 1.4;
 
   text-align: right;
@@ -1484,7 +1484,7 @@
     color:
       $admin-text-primary;
 
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
   }
 
@@ -1626,7 +1626,7 @@
 
   .titleWrap {
     h2 {
-      font-size: 22px;
+      font-size: 20px;
       line-height: 1.3;
     }
   }
@@ -1655,7 +1655,7 @@
       0
       7px;
 
-    font-size: 9px;
+    font-size: 12px;
   }
 
   .tableWrap {
@@ -1694,7 +1694,7 @@
         font-size: 22px;
 
         small {
-          font-size: 9px;
+          font-size: 12px;
         }
       }
     }
@@ -1706,10 +1706,10 @@
     li {
       min-height: 24px;
 
-      font-size: 10px;
+      font-size: 12px;
 
       strong {
-        font-size: 10px;
+        font-size: 12px;
       }
     }
   }
@@ -1725,11 +1725,11 @@
 
       gap: 6px;
 
-      font-size: 9px;
+      font-size: 12px;
     }
 
     strong {
-      font-size: 9px;
+      font-size: 12px;
     }
   }
 

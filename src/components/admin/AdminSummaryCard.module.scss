@@ -156,8 +156,11 @@ button.card {
 
 
 .metric {
+  min-width: 0;
+
   display: flex;
   align-items: baseline;
+  flex-wrap: wrap;
 
   gap: 4px;
 
@@ -172,6 +175,9 @@ button.card {
     font-weight: 700;
 
     letter-spacing: -0.03em;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 }
 
@@ -193,7 +199,7 @@ button.card {
   color:
     $admin-text-muted;
 
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
 
   line-height: 1.4;
@@ -297,20 +303,20 @@ button.card {
     }
   }
     .label {
-        font-size: 12px;
+        font-size: 11px;
     }
 
     .metric {
         strong {
-        font-size: 21px;
+        font-size: 17px;
         }
     }
 
     .unit {
-        font-size: 11px;
+        font-size: 12px;
     }
 
     .caption {
-        font-size: 10px;
+        font-size: 12px;
     }
 }
