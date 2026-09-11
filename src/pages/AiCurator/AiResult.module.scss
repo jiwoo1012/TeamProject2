@@ -395,6 +395,43 @@
 }
 
 /* ========================================
+   저장 버튼 가로 배치용 (버튼 정렬 유지)
+======================================== */
+.footerActionsRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ========================================
+   스크롤 유도 문구 (저장 버튼 아래)
+======================================== */
+.scrollHint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 5px;
+  color: #4a382b;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  pointer-events: none;
+}
+
+.scrollLine {
+  width: 1.5px;
+  height: 38px;
+  background: linear-gradient(#4a382b, transparent);
+  animation: aiResultScrollPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes aiResultScrollPulse {
+  0%, 100% { opacity: 0.35; transform: scaleY(0.65); transform-origin: top; }
+  50% { opacity: 1; transform: scaleY(1); transform-origin: top; }
+}
+
+/* ========================================
    스크롤 상세 쇼케이스
 ======================================== */
 .detailShowcase {
@@ -1146,6 +1183,16 @@
       8px;
 
     gap: 10px;
+  }
+
+
+  .footerActionsRow {
+    flex-wrap: wrap;
+  }
+
+  .scrollHint {
+    margin-top: 6px;
+    font-size: 0.8rem;
   }
 
 

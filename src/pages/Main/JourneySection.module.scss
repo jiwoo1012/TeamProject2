@@ -592,26 +592,27 @@
     bottom: max(v.$space-4, env(safe-area-inset-bottom));
   }
   .mobileScrollHand {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    translate: -50% -50%;
-    display: block;
-    width: 148px;
-    height: 148px;
-    margin: 0;
-    fill: none;
-    stroke: rgba(v.$color-white, 0.45);
-    stroke-width: 1.7;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    animation: mobileScrollHand 1.6s ease-in-out infinite;
-  }
-  .scrollGuide .scrollLine { display: none; }
-  .scrollGuide > span:first-child,
-  .scrollGuide > small {
-    display: none;
-  }
+  position: fixed;
+  top: 48%;
+  left: 50%;
+  translate: -50% -50%;
+  display: block;
+  width: 74px;
+  height: 74px;
+  margin: 0;
+  fill: none;
+  stroke: rgba(v.$color-white, 0.45);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: mobileScrollHand 1.6s ease-in-out infinite;
+}
+
+  // .scrollGuide .scrollLine { display: none; }
+  // .scrollGuide > span:first-child,
+  // .scrollGuide > small {
+  //   display: none;
+  // }
   .openingScene .shade {
     opacity: 0;
   }
