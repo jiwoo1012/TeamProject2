@@ -10,6 +10,7 @@ import {
 
 import tavernWorld from '../../assets/webpImages/images/ai/tavern/background/tavern-world.webp'
 import tavernIntroBg from '../../assets/images/ai/tavern/background/makdong-tavern-intro.webp'
+import tavernIntroMobileBg from '../../assets/webpImages/images/ai/tavern/background/makdong-jumak-mobile.webp'
 
 import makdongWelcome from '../../assets/webpImages/images/ai/tavern/makdong/makdong-welcome.webp'
 import makdongRun from '../../assets/webpImages/images/ai/tavern/makdong/makdong-run.webp'
@@ -2310,9 +2311,11 @@ const MakdongTavern = () => {
         aria-labelledby="makdong-tutorial-title"
       >
         <div
-          className={
-            styles.tutorialPanel
-          }
+          className={`${styles.tutorialPanel} ${
+            isMobile
+              ? styles.tutorialPanelMobile
+              : ''
+          }`}
         >
           <button
             type="button"
@@ -2328,162 +2331,308 @@ const MakdongTavern = () => {
           </button>
 
 
-          <div
-            className={
-              styles.tutorialHero
-            }
-          >
-            <div
-              className={
-                styles.tutorialMakdong
-              }
-            >
-              <img
-                src={
-                  makdongWelcome
-                }
-                alt=""
-                aria-hidden="true"
-              />
-            </div>
-
-
-            <div
-              className={
-                styles.tutorialHeading
-              }
-            >
-              <span>
-                처음 오셨나요?
-              </span>
-
-              <h2
-                id="makdong-tutorial-title"
-              >
-                막동이 주막 이용 안내
-              </h2>
-
-              <p>
-                손님의 이야기를 듣고
-                취향에 맞는 술, 안주,
-                술잔을 골라 한상을
-                완성해주세요.
-              </p>
-            </div>
-          </div>
-
-
-          <div
-            className={
-              styles.tutorialSteps
-            }
-          >
-            <div
-              className={
-                styles.tutorialStep
-              }
-            >
-              <span
+          {isMobile ? (
+            <>
+              <div
                 className={
-                  styles.tutorialStepNumber
+                  styles.mobileTutorialHero
                 }
               >
-                1
-              </span>
+                <div
+                  className={
+                    styles.mobileTutorialMakdong
+                  }
+                >
+                  <img
+                    src={
+                      makdongWelcome
+                    }
+                    alt=""
+                    aria-hidden="true"
+                  />
+                </div>
 
-              <div>
-                <strong>
-                  {isMobile
-                    ? '막동이를 이동해요'
-                    : '막동이를 움직여요'}
-                </strong>
+                <div
+                  className={
+                    styles.mobileTutorialHeading
+                  }
+                >
+                  <span>
+                    처음 오셨나요?
+                  </span>
 
-                <p>
-                  {isMobile
-                    ? '가고 싶은 방향의 바닥을 눌러 막동이를 이동해보세요.'
-                    : 'A · D 또는 ← · → 키로 막동이를 좌우로 움직여보세요.'}
-                </p>
+                  <h2
+                    id="makdong-tutorial-title"
+                  >
+                    막동이 주막 이용 안내
+                  </h2>
+
+                  <p>
+                    손님의 이야기를 듣고
+                    취향에 맞는 한상을
+                    완성해주세요.
+                  </p>
+                </div>
               </div>
-            </div>
 
 
-            <div
-              className={
-                styles.tutorialStep
-              }
-            >
-              <span
+              <div
                 className={
-                  styles.tutorialStepNumber
+                  styles.mobileTutorialSteps
                 }
               >
-                2
-              </span>
+                <div
+                  className={
+                    styles.mobileTutorialStep
+                  }
+                >
+                  <span
+                    className={
+                      styles.tutorialStepNumber
+                    }
+                  >
+                    1
+                  </span>
 
-              <div>
-                <strong>
-                  손님과 장소를 확인해요
-                </strong>
+                  <div>
+                    <strong>
+                      바닥을 터치해 이동해요
+                    </strong>
 
-                <p>
-                  {isMobile
-                    ? '위아래로 움직이는 표시를 누르면 필요한 손님이나 장소로 이동해요.'
-                    : '손님이나 필요한 장소 가까이 이동한 뒤 E 키로 상호작용하세요.'}
-                </p>
+                    <p>
+                      이동하고 싶은 방향의 바닥을
+                      터치하면 막동이가 그쪽으로
+                      이동해요.
+                    </p>
+                  </div>
+                </div>
+
+
+                <div
+                  className={
+                    styles.mobileTutorialStep
+                  }
+                >
+                  <span
+                    className={
+                      styles.tutorialStepNumber
+                    }
+                  >
+                    2
+                  </span>
+
+                  <div>
+                    <strong>
+                      표시를 터치해 상호작용해요
+                    </strong>
+
+                    <p>
+                      손님이나 ‘눌러보세요’ 표시를
+                      터치하면 가까이 이동한 뒤
+                      바로 상호작용해요.
+                    </p>
+                  </div>
+                </div>
+
+
+                <div
+                  className={
+                    styles.mobileTutorialStep
+                  }
+                >
+                  <span
+                    className={
+                      styles.tutorialStepNumber
+                    }
+                  >
+                    3
+                  </span>
+
+                  <div>
+                    <strong>
+                      버튼을 눌러 한상을 완성해요
+                    </strong>
+
+                    <p>
+                      대화와 선택지는 화면 버튼으로
+                      진행하고 술 → 안주 → 술잔
+                      순서로 골라주세요.
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
 
 
-            <div
-              className={
-                styles.tutorialStep
-              }
-            >
-              <span
+              <div
                 className={
-                  styles.tutorialStepNumber
+                  styles.mobileTutorialControl
                 }
               >
-                3
-              </span>
-
-              <div>
-                <strong>
-                  주안상을 완성해요
-                </strong>
-
-                <p>
-                  손님의 주문을 듣고
-                  술 → 안주 → 술잔 순서로
-                  골라 한상을 내어드리면
-                  만족도를 확인할 수 있어요.
-                </p>
-              </div>
-            </div>
-          </div>
-
-
-          <div
-            className={
-              styles.tutorialControlGuide
-            }
-          >
-            {isMobile ? (
-              <>
                 <span
                   className={
-                    styles.tutorialControlLabel
+                    styles.mobileTutorialControlTitle
                   }
                 >
                   모바일 조작
                 </span>
 
-                <strong>
-                  바닥 터치 = 이동 · 움직이는 표시 터치 = 바로 이동
-                </strong>
-              </>
-            ) : (
-              <>
+                <div>
+                  <span>
+                    바닥 터치
+                    <strong>이동</strong>
+                  </span>
+
+                  <span>
+                    표시 터치
+                    <strong>상호작용</strong>
+                  </span>
+
+                  <span>
+                    버튼 터치
+                    <strong>대화 · 선택</strong>
+                  </span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div
+                className={
+                  styles.tutorialHero
+                }
+              >
+                <div
+                  className={
+                    styles.tutorialMakdong
+                  }
+                >
+                  <img
+                    src={
+                      makdongWelcome
+                    }
+                    alt=""
+                    aria-hidden="true"
+                  />
+                </div>
+
+
+                <div
+                  className={
+                    styles.tutorialHeading
+                  }
+                >
+                  <span>
+                    처음 오셨나요?
+                  </span>
+
+                  <h2
+                    id="makdong-tutorial-title"
+                  >
+                    막동이 주막 이용 안내
+                  </h2>
+
+                  <p>
+                    손님의 이야기를 듣고
+                    취향에 맞는 술, 안주,
+                    술잔을 골라 한상을
+                    완성해주세요.
+                  </p>
+                </div>
+              </div>
+
+
+              <div
+                className={
+                  styles.tutorialSteps
+                }
+              >
+                <div
+                  className={
+                    styles.tutorialStep
+                  }
+                >
+                  <span
+                    className={
+                      styles.tutorialStepNumber
+                    }
+                  >
+                    1
+                  </span>
+
+                  <div>
+                    <strong>
+                      막동이를 움직여요
+                    </strong>
+
+                    <p>
+                      A · D 또는 ← · → 키로
+                      막동이를 좌우로 움직여보세요.
+                    </p>
+                  </div>
+                </div>
+
+
+                <div
+                  className={
+                    styles.tutorialStep
+                  }
+                >
+                  <span
+                    className={
+                      styles.tutorialStepNumber
+                    }
+                  >
+                    2
+                  </span>
+
+                  <div>
+                    <strong>
+                      손님과 장소를 확인해요
+                    </strong>
+
+                    <p>
+                      손님이나 필요한 장소 가까이
+                      이동한 뒤 E 키로
+                      상호작용하세요.
+                    </p>
+                  </div>
+                </div>
+
+
+                <div
+                  className={
+                    styles.tutorialStep
+                  }
+                >
+                  <span
+                    className={
+                      styles.tutorialStepNumber
+                    }
+                  >
+                    3
+                  </span>
+
+                  <div>
+                    <strong>
+                      주안상을 완성해요
+                    </strong>
+
+                    <p>
+                      손님의 주문을 듣고
+                      술 → 안주 → 술잔 순서로
+                      골라 한상을 내어드리면
+                      만족도를 확인할 수 있어요.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+
+              <div
+                className={
+                  styles.tutorialControlGuide
+                }
+              >
                 <span
                   className={
                     styles.tutorialControlLabel
@@ -2507,9 +2656,9 @@ const MakdongTavern = () => {
                   <span className={styles.tutorialKey}>E</span>
                   <strong>상호작용</strong>
                 </div>
-              </>
-            )}
-          </div>
+              </div>
+            </>
+          )}
 
 
           {tutorialStartsGame && (
@@ -2576,7 +2725,9 @@ const MakdongTavern = () => {
             }
             style={{
               backgroundImage:
-                `url(${tavernIntroBg})`,
+                `url(${isMobile
+                  ? tavernIntroMobileBg
+                  : tavernIntroBg})`,
             }}
             aria-hidden="true"
           />
