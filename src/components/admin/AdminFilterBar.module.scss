@@ -137,6 +137,27 @@
 
   select {
     cursor: pointer;
+    appearance: none;
+
+    background-color: $admin-surface;
+    background-image:
+      linear-gradient(
+        45deg,
+        transparent 50%,
+        $admin-text-secondary 50%
+      ),
+      linear-gradient(
+        135deg,
+        $admin-text-secondary 50%,
+        transparent 50%
+      );
+    background-position:
+      calc(100% - 17px) 50%,
+      calc(100% - 12px) 50%;
+    background-size:
+      5px 5px,
+      5px 5px;
+    background-repeat: no-repeat;
   }
 
 
@@ -157,8 +178,10 @@
 
   gap: 6px;
 
+  background:
+    $admin-primary-light;
   color:
-    $admin-text-secondary;
+    $admin-primary-dark;
 
 
   svg {
@@ -243,26 +266,59 @@
   .filters {
     min-width: 0;
 
-    display: grid;
+    display: flex;
 
-    grid-template-columns:
-      repeat(
-        3,
-        minmax(0, 1fr)
-      );
+    flex-wrap: nowrap;
 
     gap: 8px;
 
     align-items: stretch;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
 
     > * {
-      width: 100%;
-      min-width: 0;
+      width: max-content !important;
+      min-width: max-content;
+      flex:
+        0
+        0
+        max-content !important;
     }
 
     select {
-      width: 100%;
-      min-width: 0;
+      width: max-content !important;
+      min-width: max-content;
+      max-width: none;
+      height: 40px;
+      padding:
+        0
+        32px
+        0
+        12px;
+      border:
+        1px solid
+        $admin-border-dark;
+      border-radius:
+        $admin-radius-sm;
+      background-color:
+        $admin-surface;
+      // box-shadow:
+      //   0
+      //   2px
+      //   8px
+      //   rgba(42, 65, 61, 0.04);
+      color:
+        $admin-text-primary;
+      font-size: 12px;
+      // font-weight: 600;
     }
   }
 
@@ -271,6 +327,7 @@
   .resetButton {
     width: auto;
     min-width: 88px;
+    grid-column: 2;
 
     align-self: stretch;
 
@@ -283,7 +340,6 @@
   max-width: 480px
 ) {
   .filters {
-    grid-template-columns:
-      1fr;
+    flex-wrap: nowrap;
   }
 }
