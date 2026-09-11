@@ -258,9 +258,9 @@ const CardGame = () => {
               >
                 <span className={styles.cardInner}>
                   <span className={styles.cardFront}>
-                    <img src={card.image} alt="" />
+                    <img src={card.image} alt=""  loading="lazy" decoding="async" />
                   </span>
-                  <span className={styles.cardBack}><img src={cardBack} alt="" /></span>
+                  <span className={styles.cardBack}><img src={cardBack} alt=""  loading="lazy" decoding="async" /></span>
                 </span>
               </button>
             )

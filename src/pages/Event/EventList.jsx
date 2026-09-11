@@ -6,6 +6,7 @@ import { db } from '../../firebase/firebase'
 import { PATHS } from '../../routes/paths'
 import MobileTopButton from '../../components/ui/MobileTopButton/MobileTopButton'
 import TavernShortcut from '../../components/ui/TavernShortcut/TavernShortcut'
+import EventCelebration from '../../components/ui/EventCelebration/EventCelebration'
 import eventBanner from '../../assets/images/banner/eventBanner-6.png'
 import rouletteCharacter from '../../assets/webpImages/characters/M007_Poses09.webp'
 import cardGameCharacter from '../../assets/webpImages/characters/M007_Poses10.webp'
@@ -159,10 +160,10 @@ const EventList = () => {
                     {presentation ? (
                       <div className={styles.gameBanner}>
                         <span className={styles.gameMotif} aria-hidden="true" />
-                        <img className={styles.cardCharacter} src={presentation.character} alt="" aria-hidden="true" />
+                        <img className={styles.cardCharacter} src={presentation.character} alt="" aria-hidden="true"  loading="lazy" decoding="async" />
                       </div>
                     ) : event.bannerSrc ? (
-                      <img src={event.bannerSrc} alt={event.title + ' 배너'} loading="lazy" />
+                      <img src={event.bannerSrc} alt={event.title + ' 배너'} loading="lazy"  decoding="async" />
                     ) : <span className={styles.imageFallback}>JAJAK EVENT</span>}
                   </div>
                   <div className={styles.cardContent}>
@@ -195,6 +196,7 @@ const EventList = () => {
       </div>
       <MobileTopButton contentRef={eventGridRef} />
       <TavernShortcut attentionTargetRef={eventGridRef} />
+      <EventCelebration />
     </main>
   )
 }

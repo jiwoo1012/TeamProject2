@@ -17,9 +17,9 @@ const ADULT_VERIFIED_KEY = 'jajak_adult_verified'
 const PurchaseSteps = () => (
   <nav className={styles.purchaseSteps} aria-label="주문 진행 단계">
     <span>장바구니</span>
-    <img className={styles.stepFlower} src={cartStepOrnament} alt="" />
+    <img className={styles.stepFlower} src={cartStepOrnament} alt=""  loading="lazy" decoding="async" />
     <strong>주문서 작성 / 결제</strong>
-    <img className={styles.stepFlower} src={cartStepOrnament} alt="" />
+    <img className={styles.stepFlower} src={cartStepOrnament} alt=""  loading="lazy" decoding="async" />
     <span>완료</span>
   </nav>
 )
@@ -559,7 +559,7 @@ const Checkout = () => {
               <article className={styles.productRow} key={item.id}>
                 <div className={styles.productInfo}>
                   <div className={styles.productImage}>
-                    {item.imageUrl ? <img src={item.imageUrl} alt={item.name} /> : <span>IMG</span>}
+                    {item.imageUrl ? <img src={item.imageUrl} alt={item.name}  loading="lazy" decoding="async" /> : <span>IMG</span>}
                   </div>
                   <div>
                     <strong>{item.name}</strong>

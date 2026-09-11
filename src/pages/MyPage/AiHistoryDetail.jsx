@@ -528,7 +528,7 @@ const ProductInfoCard = ({
             alt={
               product.name
             }
-          />
+           loading="lazy" decoding="async" />
         ) : (
           <span
             className={

@@ -190,11 +190,11 @@ const EventReady = () => {
         {builtInConfig && (
           <div className={`${styles.sideVisual} ${styles.leftVisual}`} aria-hidden="true">
             {isCardGame ? (
-              <img className={styles.cards} src={cardsImage} alt="" />
+              <img className={styles.cards} src={cardsImage} alt=""  loading="lazy" decoding="async" />
             ) : (
               <div className={styles.oxImages}>
-                <img src={oImage} alt="" />
-                <img src={xImage} alt="" />
+                <img src={oImage} alt=""  loading="lazy" decoding="async" />
+                <img src={xImage} alt=""  loading="lazy" decoding="async" />
               </div>
             )}
           </div>
@@ -246,7 +246,7 @@ const EventReady = () => {
 
         {builtInConfig && (
           <div className={`${styles.sideVisual} ${styles.rightVisual}`}>
-            <img src={config.character} alt={config.characterAlt} />
+            <img src={config.character} alt={config.characterAlt}  loading="lazy" decoding="async" />
           </div>
         )}
       </section>

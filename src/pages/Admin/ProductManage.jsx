@@ -1303,7 +1303,7 @@ const ProductManage = () => {
 
               />
 
-              <span>{item.imageSrc && <img src={item.imageSrc} alt="" />}</span>
+              <span>{item.imageSrc && <img src={item.imageSrc} alt=""  loading="lazy" decoding="async" />}</span>
 
               <strong title={item.name}>{item.name}</strong>
 
@@ -1351,7 +1351,7 @@ const ProductManage = () => {
                 <img
                   src={card.icon}
                   alt=""
-                />
+                 loading="lazy" decoding="async" />
               }
               label={card.label}
               value={String(card.value)}
@@ -1596,7 +1596,7 @@ const ProductManage = () => {
 
                             <span className={styles.thumbPlaceholder} aria-hidden="true">
 
-                              {p.imageSrc && <img src={p.imageSrc} alt="" />}
+                              {p.imageSrc && <img src={p.imageSrc} alt=""  loading="lazy" decoding="async" />}
 
                             </span>
 
@@ -1832,11 +1832,11 @@ const ProductManage = () => {
 
                   <div className={styles.albumRow}>
 
-                    <button type="button" className={styles.imageEditTile} onClick={() => imageInputRef.current?.click()}>{draftImageUrl ? <img src={resolveProductImage(draftImageUrl)} alt="새 상품 대표" /> : <span className={styles.emptyImage}>대표 이미지</span>}<strong>대표 이미지 {draftImageUrl ? '변경' : '등록'}</strong></button>
+                    <button type="button" className={styles.imageEditTile} onClick={() => imageInputRef.current?.click()}>{draftImageUrl ? <img src={resolveProductImage(draftImageUrl)} alt="새 상품 대표"  loading="lazy" decoding="async" /> : <span className={styles.emptyImage}>대표 이미지</span>}<strong>대표 이미지 {draftImageUrl ? '변경' : '등록'}</strong></button>
 
                     <input ref={imageInputRef} className={styles.srOnly} type="file" accept="image/*" onChange={handleImageChange} />
 
-                    {draftDetailImageUrls.map((url, index) => <button type="button" className={styles.imageEditTile} key={index} onClick={() => detailImageInputRefs.current[index]?.click()}>{url ? <img src={url} alt={`서브 이미지 ${index + 1}`} /> : <span className={styles.emptyImage}>서브 {index + 1}</span>}<strong>서브 {index + 1} {url ? '변경' : '등록'}</strong><input ref={(node) => { detailImageInputRefs.current[index] = node }} className={styles.srOnly} type="file" accept="image/*" onChange={(event) => handleImageChange(event, index)} /></button>)}
+                    {draftDetailImageUrls.map((url, index) => <button type="button" className={styles.imageEditTile} key={index} onClick={() => detailImageInputRefs.current[index]?.click()}>{url ? <img src={url} alt={`서브 이미지 ${index + 1}`}  loading="lazy" decoding="async" /> : <span className={styles.emptyImage}>서브 {index + 1}</span>}<strong>서브 {index + 1} {url ? '변경' : '등록'}</strong><input ref={(node) => { detailImageInputRefs.current[index] = node }} className={styles.srOnly} type="file" accept="image/*" onChange={(event) => handleImageChange(event, index)} /></button>)}
 
                   </div>
 
@@ -1882,7 +1882,7 @@ const ProductManage = () => {
 
               <div className={styles.cardThumb}>
 
-                {selectedProduct.imageSrc && <img src={selectedProduct.imageSrc} alt="" />}
+                {selectedProduct.imageSrc && <img src={selectedProduct.imageSrc} alt=""  loading="lazy" decoding="async" />}
 
               </div>
 
@@ -2174,7 +2174,7 @@ const ProductManage = () => {
 
                       <button type="button" className={styles.imageEditTile} onClick={() => imageInputRef.current?.click()}>
 
-                        {draftImageUrl ? <img src={resolveProductImage(draftImageUrl)} alt="현재 대표 상품" /> : <span className={styles.emptyImage}>대표 이미지</span>}
+                        {draftImageUrl ? <img src={resolveProductImage(draftImageUrl)} alt="현재 대표 상품"  loading="lazy" decoding="async" /> : <span className={styles.emptyImage}>대표 이미지</span>}
 
                         <strong>대표 이미지 변경</strong>
 
@@ -2192,7 +2192,7 @@ const ProductManage = () => {
 
                           <button type="button" className={styles.imageEditTile} key={index} onClick={() => detailImageInputRefs.current[index]?.click()}>
 
-                            {preview ? <img src={preview} alt={`현재 서브 이미지 ${index + 1}`} /> : <span className={styles.emptyImage}>서브 {index + 1}</span>}
+                            {preview ? <img src={preview} alt={`현재 서브 이미지 ${index + 1}`}  loading="lazy" decoding="async" /> : <span className={styles.emptyImage}>서브 {index + 1}</span>}
 
                             <strong>서브 {index + 1} 변경</strong>
 

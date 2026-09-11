@@ -309,16 +309,16 @@ const RouletteEvent = () => {
       <MobileTopButton contentRef={pageRef} />
       <div className={styles.runningTrail} aria-hidden="true" />
       <div className={styles.runningTrack} aria-hidden="true">
-        <img className={styles.runningFrame} src={running2} alt="" />
-        <img className={styles.runningFrame} src={running3} alt="" />
+        <img className={styles.runningFrame} src={running2} alt=""  loading="lazy" decoding="async" />
+        <img className={styles.runningFrame} src={running3} alt=""  loading="lazy" decoding="async" />
       </div>
 
       <section className={styles.hero} aria-label="막동이 룰렛 이벤트">
         <div className={styles.gameArea}>
-          <img className={styles.makdong} src={makdong} alt="룰렛을 소개하는 막동이" />
+          <img className={styles.makdong} src={makdong} alt="룰렛을 소개하는 막동이"  loading="lazy" decoding="async" />
 
           <div ref={stageRef} className={styles.rouletteStage}>
-            <img className={styles.rouletteBack} src={rouletteBack} alt="" />
+            <img className={styles.rouletteBack} src={rouletteBack} alt=""  loading="lazy" decoding="async" />
             <svg ref={wheelRef} className={styles.rouletteWheel} viewBox="0 0 948 908" role="img" aria-label="1등부터 6등까지의 경품 룰렛">
               <title>경품 룰렛: {PRIZES.map((prize) => `${prize.rank}등 ${prize.name}`).join(', ')}</title>
               {wheelSegments.map((prize) => (
@@ -331,7 +331,7 @@ const RouletteEvent = () => {
               ))}
               <circle className={styles.wheelRim} cx={WHEEL_CENTER.x} cy={WHEEL_CENTER.y} r={WHEEL_RADIUS} />
             </svg>
-            <img className={styles.rouletteFront} src={rouletteFront} alt="" />
+            <img className={styles.rouletteFront} src={rouletteFront} alt=""  loading="lazy" decoding="async" />
             <button
               className={styles.spinButton}
               type="button"
@@ -392,7 +392,7 @@ const RouletteEvent = () => {
               <span className={`${styles.rank} ${prize.rank === 1 ? styles.firstRank : prize.rank === 2 ? styles.secondRank : styles.thirdRank}`}>{prize.rank}등</span>
               <h3>{prize.name}</h3>
                 <div className={styles.prizeImage}>
-                  <img src={prize.imageSrc} alt={prize.name} />
+                  <img src={prize.imageSrc} alt={prize.name}  loading="lazy" decoding="async" />
                 </div>
               <p>{prize.description}</p>
             </article>
@@ -428,11 +428,11 @@ const RouletteEvent = () => {
         <div className={styles.modalBackdrop} role="presentation" onMouseDown={() => setResult(null)}>
           <section className={styles.resultModal} role="dialog" aria-modal="true" aria-labelledby="result-title" onMouseDown={(eventObject) => eventObject.stopPropagation()}>
             <button className={styles.closeButton} type="button" onClick={() => setResult(null)} aria-label="당첨 결과 닫기">×</button>
-            <img className={styles.giftIcon} src={giftIcon} alt="" />
+            <img className={styles.giftIcon} src={giftIcon} alt=""  loading="lazy" decoding="async" />
             <h2 id="result-title">당첨을 축하드립니다!</h2>
             <div className={styles.resultPrize}>
               {result.type === 'product' ? (
-                <img src={result.imageSrc} alt={result.name} />
+                <img src={result.imageSrc} alt={result.name}  loading="lazy" decoding="async" />
               ) : (
                 <span className={styles.resultPoint}>P</span>
               )}

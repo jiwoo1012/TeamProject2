@@ -1292,7 +1292,7 @@ const AiResult = () => {
               src={backgroundImage}
               alt="전통 문양 배경"
               className={styles.bgPatternImage}
-            />
+             loading="lazy" decoding="async" />
 
             {/* 쟁반(트레이) 이미지 */}
             <img
@@ -1300,7 +1300,7 @@ const AiResult = () => {
               src={trayImage}
               alt="주안상 트레이"
               className={styles.trayImage}
-            />
+             loading="lazy" decoding="async" />
 
             {/* 안주 */}
             <article
@@ -1315,7 +1315,7 @@ const AiResult = () => {
                 <img
                   src={aiImages.food || images.food}
                   alt={food.productName}
-                />
+                 loading="lazy" decoding="async" />
               </div>
 
               <div
@@ -1347,7 +1347,7 @@ const AiResult = () => {
                 <img
                   src={aiImages.liquor || images.liquor}
                   alt={liquor.productName}
-                />
+                 loading="lazy" decoding="async" />
               </div>
 
               <div
@@ -1411,7 +1411,7 @@ const AiResult = () => {
                 <img
                   src={aiImages.glass || images.glass}
                   alt={glass.productName}
-                />
+                 loading="lazy" decoding="async" />
               </div>
 
               <div
@@ -1836,7 +1836,7 @@ const AiResult = () => {
                   alt={
                     food.productName
                   }
-                />
+                 loading="lazy" decoding="async" />
               </div>
 
 
@@ -1855,7 +1855,7 @@ const AiResult = () => {
                   alt={
                     glass.productName
                   }
-                />
+                 loading="lazy" decoding="async" />
               </div>
             </div>
           </div>
@@ -2054,7 +2054,7 @@ const AiResult = () => {
                 alt={
                   liquor.productName
                 }
-              />
+               loading="lazy" decoding="async" />
             )}
           </div>
         </div>
@@ -2179,7 +2179,7 @@ const AiResult = () => {
                 alt={
                   food.productName
                 }
-              />
+               loading="lazy" decoding="async" />
             )}
           </div>
         </div>
@@ -2306,7 +2306,7 @@ const AiResult = () => {
                 alt={
                   glass.productName
                 }
-              />
+               loading="lazy" decoding="async" />
             )}
           </div>
         </div>
@@ -2336,7 +2336,7 @@ const AiResult = () => {
               src={makdongImage}
               alt="다른 주안상을 소개하는 막동이"
               className={styles.otherMakdong}
-            />
+             loading="lazy" decoding="async" />
 
             <div className={styles.otherList}>
               {otherResults
@@ -2384,14 +2384,14 @@ const AiResult = () => {
                               alt=""
                               aria-hidden="true"
                               className={styles.otherMiniPattern}
-                            />
+                             loading="lazy" decoding="async" />
 
                             <img
                               src={trayImage}
                               alt=""
                               aria-hidden="true"
                               className={styles.otherMiniTray}
-                            />
+                             loading="lazy" decoding="async" />
 
                             {(item.aiImages.food ||
                               item.images.food) && (
@@ -2402,7 +2402,7 @@ const AiResult = () => {
                                 }
                                 alt={item.food.productName}
                                 className={styles.otherMiniFood}
-                              />
+                               loading="lazy" decoding="async" />
                             )}
 
                             {(item.aiImages.liquor ||
@@ -2414,7 +2414,7 @@ const AiResult = () => {
                                 }
                                 alt={item.liquor.productName}
                                 className={styles.otherMiniLiquor}
-                              />
+                               loading="lazy" decoding="async" />
                             )}
 
                             {(item.aiImages.glass ||
@@ -2426,7 +2426,7 @@ const AiResult = () => {
                                 }
                                 alt={item.glass.productName}
                                 className={styles.otherMiniGlass}
-                              />
+                               loading="lazy" decoding="async" />
                             )}
                           </div>
                         </div>

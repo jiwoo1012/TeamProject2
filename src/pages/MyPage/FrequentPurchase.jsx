@@ -1578,7 +1578,7 @@ const FrequentPurchase = () => {
                             alt={
                               product.productName
                             }
-                          />
+                           loading="lazy" decoding="async" />
                         ) : (
                           <div
                             className={

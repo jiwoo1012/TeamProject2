@@ -294,7 +294,7 @@ const BestSellerSection = ({
                     <img
                       src={product.productId === 'gft_001' ? jadeBottleSetImage : product.imageSrc ?? resolveProductImage(product.imageUrl)}
                       alt={product.productName}
-                    />
+                     loading="lazy" decoding="async" />
                     <strong>{product.productName}</strong>
                   </Link>
                 </div>

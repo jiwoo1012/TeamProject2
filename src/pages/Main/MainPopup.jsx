@@ -240,7 +240,7 @@ const MainPopup = ({ enabled = true }) => {
                 <img
                   src={popup.image}
                   alt={popup.alt}
-                />
+                 loading="lazy" decoding="async" />
               </div>
             </Link>
 

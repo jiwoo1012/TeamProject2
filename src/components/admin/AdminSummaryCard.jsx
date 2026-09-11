@@ -49,7 +49,7 @@ const AdminSummaryCard = ({
               <img
                 src={icon}
                 alt=""
-              />
+               loading="lazy" decoding="async" />
             )
             : icon}
         </span>

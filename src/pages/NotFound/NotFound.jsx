@@ -36,7 +36,7 @@ const NotFound = () => {
         <p>아래에서 가실 곳을 골라주시지요.</p>
         <nav aria-label="주요 메뉴 바로가기"><ul>
           {menus.map(({ label, to, image }) => <li key={label}><Link to={to}>
-            <span className={styles.icon}><img src={image} alt="" /></span>
+            <span className={styles.icon}><img src={image} alt=""  loading="lazy" decoding="async" /></span>
             <strong>{label}</strong><span className={styles.caption}>바로가기 <span aria-hidden="true">›</span></span>
           </Link></li>)}
         </ul></nav>

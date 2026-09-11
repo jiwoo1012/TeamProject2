@@ -829,7 +829,7 @@ const EventHistory = () => {
                               event.bannerSrc
                             }
                             alt=""
-                          />
+                           loading="lazy" decoding="async" />
                         ) : (
                           <span
                             aria-hidden="true"
@@ -999,7 +999,7 @@ const EventHistory = () => {
                               item.bannerSrc
                             }
                             alt=""
-                          />
+                           loading="lazy" decoding="async" />
                         ) : (
                           <span
                             aria-hidden="true"

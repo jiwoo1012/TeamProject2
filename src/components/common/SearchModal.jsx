@@ -268,7 +268,7 @@ const SearchModal = ({
               <img
                 src={searchIcon}
                 alt=""
-              />
+               loading="lazy" decoding="async" />
             </button>
           </form>
 
@@ -389,7 +389,7 @@ const SearchModal = ({
                           <img
                             src={product.image}
                             alt={product.name}
-                          />
+                           loading="lazy" decoding="async" />
                         )}
                       </div>
 

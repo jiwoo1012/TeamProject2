@@ -2111,7 +2111,7 @@ const AiHistory = () => {
                               alt={
                                 liquor.name
                               }
-                            />
+                             loading="lazy" decoding="async" />
                           ) : (
                             <span
                               className={
@@ -2587,7 +2587,7 @@ const AiHistory = () => {
 
                             }
 
-                          />
+                           loading="lazy" decoding="async" />
 
                         ) : (
 
@@ -2713,7 +2713,7 @@ const AiHistory = () => {
 
                                       }
 
-                                    />
+                                     loading="lazy" decoding="async" />
 
                                   ) : (
 

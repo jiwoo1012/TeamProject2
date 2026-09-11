@@ -1,91 +1,857 @@
 @use '../../../styles/variables' as *;
 
-.card { min-width: 0; font-family: $font-family-base; }
-.imageWrap { position: relative; overflow: hidden; border-radius: $radius-xl; }
-.imageLink { position: relative; display: block; overflow: hidden; aspect-ratio: 0.78; background: rgba($color-surface, .72); border-radius: $radius-xl; }
-.image { width: 100%; height: 100%; object-fit: cover; transition: transform $transition-base ease; }
-.hoverImage { position: absolute; inset: 0; opacity: 0; transition: opacity $transition-base ease, transform $transition-base ease; }
+
+/* ========================================
+   CARD
+======================================== */
+
+.card {
+  min-width: 0;
+
+  font-family:
+    $font-family-base;
+}
+
+
+/* ========================================
+   IMAGE
+======================================== */
+
+.imageWrap {
+  position: relative;
+
+  overflow: hidden;
+
+  border-radius:
+    $radius-xl;
+}
+
+
+.imageLink {
+  position: relative;
+
+  display: block;
+
+  overflow: hidden;
+
+  aspect-ratio: 0.78;
+
+  background:
+    rgba(
+      $color-surface,
+      0.72
+    );
+
+  border-radius:
+    $radius-xl;
+}
+
+
+.image {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  transition:
+    transform
+    $transition-base
+    ease;
+}
+
+
+.hoverImage {
+  position: absolute;
+
+  inset: 0;
+
+  opacity: 0;
+
+  transition:
+    opacity
+      $transition-base
+      ease,
+    transform
+      $transition-base
+      ease;
+}
+
+
 @media (hover: hover) and (pointer: fine) {
-  .imageWrap:hover .hoverImageReady, .imageWrap:focus-within .hoverImageReady { opacity: 1; }
+
+  .imageWrap:hover .hoverImageReady,
+  .imageWrap:focus-within .hoverImageReady {
+    opacity: 1;
+  }
+
 }
+
+
 @media (prefers-reduced-motion: reduce) {
-  .image { transition: none; }
+
+  .image {
+    transition: none;
+  }
+
 }
-.actions { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; padding: $space-4; background: linear-gradient(180deg, rgba($color-text-primary, .1), transparent 45%, rgba($color-text-primary, .38)); border-radius: inherit; opacity: 0; pointer-events: none; transition: opacity $transition-base ease; }
-.actions button { pointer-events: auto; }
-.imageWrap:hover .actions, .imageWrap:focus-within .actions { opacity: 1; }
-.imageWrap:hover .image { transform: scale(1.035); }
-.soldOutOverlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: $color-white; font-size: $font-size-2xl; font-weight: $font-weight-semibold; background: rgba($color-text-primary, .62); }
-.soldOutCard .image { transform: none; filter: grayscale(.75) saturate(.4); }
-.soldOutCard .soldOutOverlay { background: rgba($color-text-primary, .45); }
-.iconButton { width: 44px; height: 44px; color: $color-white; font-size: $font-size-3xl;text-align: center; border-radius: 50%;  }
-.isWished { color: $color-error; }
-.cartButton { width: 100%; padding: $space-1 $space-3; color: $color-white; font-size: $font-size-lg; text-align: center; border-bottom: 1px solid $color-white; transition: color $transition-fast ease, border-color $transition-fast ease; }
-.cartButton:hover { color: $color-primary-light; border-bottom-color: $color-primary-light; }
-.info { padding-top: $space-5; display: flex; flex-direction: column; align-items: flex-start; gap: $space-1; }
-.name { color: $color-text-primary; font-size: $font-size-md; font-weight: $font-weight-medium; }
-.priceRow { display: flex; flex-wrap: wrap; max-width: 100%; justify-content: flex-start; gap: $space-1 $space-2; align-items: baseline; }
-.priceRow > * { max-width: 100%; overflow-wrap: anywhere; }
-.name { max-width: 100%; word-break: keep-all; overflow-wrap: anywhere; }
-.priceRow strong { font-size: $font-size-xl; font-weight: $font-weight-bold; }
-.discount { color: $color-bg; font-weight: $font-weight-bold; font-size: $font-size-xs; background: $color-primary; padding: 2px $space-2; border-radius: $radius-sm; line-height: 1.4; }
-.originalPrice { color: rgba($color-text-muted, .6); font-size: $font-size-sm; text-decoration: line-through; text-decoration-thickness: 1px; }
+
+
+/* ========================================
+   ACTIONS
+======================================== */
+
+.actions {
+  position: absolute;
+
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  padding:
+    $space-4;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(
+        $color-text-primary,
+        0.1
+      ),
+      transparent 45%,
+      rgba(
+        $color-text-primary,
+        0.38
+      )
+    );
+
+  border-radius: inherit;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition:
+    opacity
+    $transition-base
+    ease;
+}
+
+
+.actions button {
+  pointer-events: auto;
+}
+
+
+.imageWrap:hover .actions,
+.imageWrap:focus-within .actions {
+  opacity: 1;
+}
+
+
+.imageWrap:hover .image {
+  transform:
+    scale(1.035);
+}
+
+
+/* ========================================
+   WISH
+======================================== */
+
+.iconButton {
+  width: 44px;
+  height: 44px;
+
+  color:
+    $color-white;
+
+  font-size:
+    $font-size-3xl;
+
+  text-align: center;
+
+  border-radius: 50%;
+}
+
+
+.isWished {
+  color:
+    $color-error;
+}
+
+
+/* ========================================
+   CART
+======================================== */
+
+.cartButton {
+  width: 100%;
+
+  padding:
+    $space-1
+    $space-3;
+
+  color:
+    $color-white;
+
+  font-size:
+    $font-size-lg;
+
+  text-align: center;
+
+  border-bottom:
+    1px solid
+    $color-white;
+
+  transition:
+    color
+      $transition-fast
+      ease,
+    border-color
+      $transition-fast
+      ease;
+}
+
+
+.cartButton:hover {
+  color:
+    $color-primary-light;
+
+  border-bottom-color:
+    $color-primary-light;
+}
+
+
+/* 모바일 아이콘은 PC에서 숨김 */
+
+.cartIcon {
+  display: none;
+}
+
+
+/* ========================================
+   SOLD OUT
+======================================== */
+
+.soldOutOverlay {
+  position: absolute;
+
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color:
+    $color-white;
+
+  font-size:
+    $font-size-2xl;
+
+  font-weight:
+    $font-weight-semibold;
+
+  background:
+    rgba(
+      $color-text-primary,
+      0.62
+    );
+}
+
+
+.soldOutCard .image {
+  transform: none;
+
+  filter:
+    grayscale(0.75)
+    saturate(0.4);
+}
+
+
+.soldOutCard .soldOutOverlay {
+  background:
+    rgba(
+      $color-text-primary,
+      0.45
+    );
+}
+
+
+/* ========================================
+   INFO
+======================================== */
+
+.info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  gap:
+    $space-1;
+
+  padding-top:
+    $space-5;
+}
+
+
+.name {
+  max-width: 100%;
+
+  color:
+    $color-text-primary;
+
+  font-size:
+    $font-size-md;
+
+  font-weight:
+    $font-weight-medium;
+
+  word-break: keep-all;
+
+  overflow-wrap: anywhere;
+}
+
+
+.priceRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-start;
+
+  max-width: 100%;
+
+  gap:
+    $space-1
+    $space-2;
+}
+
+
+.priceRow > * {
+  max-width: 100%;
+
+  overflow-wrap: anywhere;
+}
+
+
+.priceRow strong {
+  font-size:
+    $font-size-xl;
+
+  font-weight:
+    $font-weight-bold;
+}
+
+
+.discount {
+  padding:
+    2px
+    $space-2;
+
+  color:
+    $color-bg;
+
+  background:
+    $color-primary;
+
+  border-radius:
+    $radius-sm;
+
+  font-size:
+    $font-size-xs;
+
+  font-weight:
+    $font-weight-bold;
+
+  line-height: 1.4;
+}
+
+
+.originalPrice {
+  color:
+    rgba(
+      $color-text-muted,
+      0.6
+    );
+
+  font-size:
+    $font-size-sm;
+
+  text-decoration:
+    line-through;
+
+  text-decoration-thickness:
+    1px;
+}
+
+
+/* ========================================
+   TOUCH DEVICES
+======================================== */
 
 @media (hover: none) {
-  .actions { opacity: 1; background: none; pointer-events: none; }
-  .actions button { pointer-events: auto; }
-  .cartButton { width: auto; align-self: flex-start; padding: $space-2 $space-3; }
+
+  .actions {
+    opacity: 1;
+
+    background: none;
+
+    pointer-events: none;
+  }
+
+
+  .actions button {
+    pointer-events: auto;
+  }
+
 }
+
+
+/* ========================================
+   MOBILE
+   3열 전용 미니 상품 카드
+======================================== */
 
 @media (max-width: 767px) {
-  .actions { padding: $space-2; opacity: 1; background: none; }
-  .cartButton {
-    display: flex; align-items: center; justify-content: center;
-    width: 100%; min-width: 0; min-height: 34px; box-sizing: border-box;
-    margin: $space-2 0 0;
-    padding: $space-1 $space-3;
-    color: $color-white; background: $color-primary;
-    border: 1px solid $color-primary; border-radius: 6px;
-    font-size: $font-size-xs; line-height: $line-height-base;
-    white-space: normal; word-break: keep-all; overflow-wrap: anywhere;
+
+  /* ----------------------------------------
+     IMAGE
+  ---------------------------------------- */
+
+  .imageWrap {
+    overflow: visible;
+
+    border-radius:
+      12px;
   }
-  .cartButton:hover { color: $color-white; border-color: $color-primary; }
-  .soldOutOverlay { font-size: $font-size-lg; line-height: $line-height-base; }
-  .iconButton { flex-shrink: 0; background: rgba($color-text-primary, .55); }
-  .info { padding: $space-3 $space-1 0; }
-  .cartButton + .info { padding-top: $space-2; }
-  .priceRow { width: 100%; gap: $space-1; }
-  .priceRow strong { flex-basis: 100%; }
+
+
+  .imageLink {
+    overflow: hidden;
+
+    aspect-ratio:
+      0.82;
+
+    border-radius:
+      12px;
+  }
+
+
+  .image {
+    border-radius:
+      12px;
+  }
+
+
+  /*
+    모바일에서는 hover 교체 이미지가
+    필요 없으므로 숨김
+  */
+
+  .hoverImage {
+    display: none;
+  }
+
+
+  /* ----------------------------------------
+     ACTIONS
+  ---------------------------------------- */
+
+  .actions {
+    position: absolute;
+
+    inset: 0;
+
+    display: block;
+
+    padding: 0;
+
+    background: none;
+
+    border-radius: 0;
+
+    opacity: 1;
+
+    pointer-events: none;
+  }
+
+
+  .actions button {
+    pointer-events: auto;
+  }
+
+
+  /* ----------------------------------------
+     WISH BUTTON
+  ---------------------------------------- */
+
+  .iconButton {
+    position: absolute;
+
+    z-index: 3;
+
+    top: 7px;
+    right: 7px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 29px;
+    height: 29px;
+
+    padding: 0;
+
+    color:
+      $color-white;
+
+    background:
+      rgba(
+        $color-text-primary,
+        0.48
+      );
+
+    border:
+      1px solid
+      rgba(
+        $color-white,
+        0.55
+      );
+
+    border-radius: 50%;
+
+    font-size: 18px;
+    line-height: 1;
+
+    backdrop-filter:
+      blur(4px);
+
+    box-shadow:
+      0 2px 6px
+      rgba(
+        $color-text-primary,
+        0.1
+      );
+  }
+
+
+  .isWished {
+    color:
+      $color-white;
+
+    background:
+      rgba(
+        $color-primary,
+        0.92
+      );
+  }
+
+
+  /* ----------------------------------------
+     CART BUTTON
+     긴 버튼 → 이미지 위 작은 원형 버튼
+  ---------------------------------------- */
+
+  .cartButton {
+    position: absolute;
+
+    z-index: 3;
+
+    right: 7px;
+    bottom: 7px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    min-height: 30px;
+
+    margin: 0;
+    padding: 0;
+
+    color:
+      $color-white;
+
+    background:
+      rgba(
+        $color-primary,
+        0.94
+      );
+
+    border:
+      1px solid
+      rgba(
+        $color-white,
+        0.55
+      );
+
+    border-radius:
+      50%;
+
+    box-shadow:
+      0 3px 8px
+      rgba(
+        $color-text-primary,
+        0.12
+      );
+
+    backdrop-filter:
+      blur(4px);
+  }
+
+
+  .cartButton:hover {
+    color:
+      $color-white;
+
+    border-color:
+      rgba(
+        $color-white,
+        0.55
+      );
+  }
+
+
+  /*
+    이미 장바구니에 있는 상품은
+    색을 살짝 다르게
+  */
+
+  .cartButtonActive {
+    background:
+      rgba(
+        $color-text-primary,
+        0.9
+      );
+  }
+
+
+  /* PC용 문구 숨김 */
+
+  .cartText {
+    display: none;
+  }
+
+
+  /* 모바일 아이콘 표시 */
+
+  .cartIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 16px;
+    height: 16px;
+  }
+
+
+  .cartIcon svg {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+  }
+
+
+  /* ----------------------------------------
+     INFO
+  ---------------------------------------- */
+
+  .info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 4px;
+
+    min-width: 0;
+
+    padding:
+      8px
+      2px
+      0;
+  }
+
+
+  /* 상품명 */
+
+  .name {
+    display:
+      -webkit-box;
+
+    width: 100%;
+    min-height: 30px;
+
+    margin: 0;
+
+    overflow: hidden;
+
+    color:
+      $color-text-primary;
+
+    font-size: 11px;
+
+    font-weight:
+      $font-weight-medium;
+
+    line-height: 1.4;
+
+    letter-spacing:
+      -0.025em;
+
+    word-break: keep-all;
+
+    overflow-wrap: normal;
+
+    -webkit-box-orient:
+      vertical;
+
+    -webkit-line-clamp: 2;
+
+    line-clamp: 2;
+  }
+
+
+  /* ----------------------------------------
+     PRICE
+  ---------------------------------------- */
+
+  .priceRow {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+
+    width: 100%;
+
+    gap: 4px;
+  }
+
+
+  .discount {
+    padding:
+      2px
+      4px;
+
+    border-radius:
+      3px;
+
+    font-size: 8px;
+
+    line-height: 1.3;
+  }
+
+
+  /* 3열에서는 원가 제거 */
+
+  .originalPrice {
+    display: none;
+  }
+
+
+  .priceRow strong {
+    flex-basis: 100%;
+
+    margin-top: 1px;
+
+    color:
+      $color-text-primary;
+
+    font-size: 13px;
+
+    font-weight:
+      $font-weight-bold;
+
+    line-height: 1.25;
+
+    white-space: nowrap;
+  }
+
+
+  /* ----------------------------------------
+     SOLD OUT
+  ---------------------------------------- */
+
+  .soldOutOverlay {
+    border-radius:
+      12px;
+
+    font-size: 11px;
+
+    line-height:
+      $line-height-base;
+  }
+
+
+  /* 모바일에서는 hover 확대 제거 */
+
+  .imageWrap:hover .image {
+    transform: none;
+  }
+
 }
 
-// ========================================
-// PRODUCT GUIDE
-// 가이드가 실행되는 동안 실제 액션 버튼을 강제로 표시
-// ========================================
+
+/* ========================================
+   PRODUCT GUIDE
+   가이드가 실행되는 동안 실제 액션 버튼 표시
+======================================== */
 
 .card[data-product-guide-active='true'] {
+
   .actions {
     display: flex !important;
 
     opacity: 1 !important;
     visibility: visible !important;
 
-    transform: translateY(0) !important;
+    transform:
+      translateY(0) !important;
 
-    pointer-events: none !important;
+    pointer-events:
+      none !important;
   }
+
 
   .iconButton,
   .cartButton {
     opacity: 1 !important;
     visibility: visible !important;
 
-    transform: none !important;
+    transform:
+      none !important;
   }
 
-  // 실제 hover할 때 두 번째 이미지가 나타나는 구조라면
-  // 가이드에서도 같은 이미지가 보이게 함
+
   .hoverImage {
     opacity: 1 !important;
   }
+
+}
+
+
+/* 모바일 가이드에서도 레이아웃 유지 */
+
+@media (max-width: 767px) {
+
+  .card[data-product-guide-active='true'] {
+
+    .actions {
+      display:
+        block !important;
+    }
+
+
+    .hoverImage {
+      display:
+        none !important;
+    }
+
+  }
+
 }

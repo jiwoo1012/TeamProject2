@@ -117,14 +117,14 @@ const OrderComplete = () => {
   <section className={styles.page} aria-labelledby="complete-title">
 
     <nav className={styles.purchaseSteps} aria-label="주문 진행 단계">
-      <span>장바구니</span><img className={styles.stepFlower} src={cartStepOrnament} alt="" />
-      <span>주문서 작성 / 결제</span><img className={styles.stepFlower} src={cartStepOrnament} alt="" />
+      <span>장바구니</span><img className={styles.stepFlower} src={cartStepOrnament} alt=""  loading="lazy" decoding="async" />
+      <span>주문서 작성 / 결제</span><img className={styles.stepFlower} src={cartStepOrnament} alt=""  loading="lazy" decoding="async" />
       <strong>완료</strong>
     </nav>
 
     <article className={styles.completeCard}>
       <CelebrationCanvas />
-      <img className={styles.checkIcon} src={orderCompleteSeal} alt="" aria-hidden="true" />
+      <img className={styles.checkIcon} src={orderCompleteSeal} alt="" aria-hidden="true"  loading="lazy" decoding="async" />
 
       <div className={styles.heroArea}>
         <div className={styles.completeCopy}>

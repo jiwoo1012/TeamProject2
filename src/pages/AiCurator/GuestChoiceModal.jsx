@@ -63,7 +63,7 @@ const GuestChoiceModal = ({
             src={makdongFace}
             alt="막동이"
             className={styles.makdongFace}
-          />
+           loading="lazy" decoding="async" />
         </div>
 
 

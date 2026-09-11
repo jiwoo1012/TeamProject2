@@ -1703,7 +1703,7 @@ const ProfileEdit = () => {
                     currentAvatar.src
                   }
                   alt=""
-                />
+                 loading="lazy" decoding="async" />
               </div>
 
 
@@ -1811,7 +1811,7 @@ const ProfileEdit = () => {
                           avatar.src
                         }
                         alt=""
-                      />
+                       loading="lazy" decoding="async" />
                     </button>
                   )
                 )}

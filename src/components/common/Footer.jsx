@@ -54,7 +54,7 @@ const Footer = () => {
                 <img
                   src={jajakLogo}
                   alt="JAJAK"
-                />
+                 loading="lazy" decoding="async" />
               </Link>
 
               <div className={styles.companyInfo}>

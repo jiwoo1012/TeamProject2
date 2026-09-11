@@ -1039,7 +1039,7 @@ const AiSurvey = () => {
         >
 
           <div className={styles.questionHero}>
-          <img className={styles.guideCharacter} src={makdongImage} alt="취향 선택을 안내하는 막동이" />
+          <img className={styles.guideCharacter} src={makdongImage} alt="취향 선택을 안내하는 막동이"  loading="lazy" decoding="async" />
 
           <div className={styles.questionHeader}>
         
@@ -1129,7 +1129,7 @@ const AiSurvey = () => {
                           src={OPTION_ICONS[currentQuestion.id]?.[option.value] || pawIcon}
                           alt=""
                           aria-hidden="true"
-                        />
+                         loading="lazy" decoding="async" />
 
                         <div
                           className={

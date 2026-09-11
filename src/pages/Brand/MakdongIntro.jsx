@@ -333,7 +333,7 @@ const MakdongIntro = () => {
           </span>
         </p>
         <span className={styles.transitionPawTrail} aria-hidden="true">
-          <img src={makdongPawTrail} alt="" />
+          <img src={makdongPawTrail} alt=""  loading="lazy" decoding="async" />
         </span>
 
         <div className={styles.flowRibbons} aria-hidden="true">
@@ -352,7 +352,7 @@ const MakdongIntro = () => {
             className={styles.transitionMakdong}
             src={makdongTransition}
             alt="나으리를 반기는 막동이"
-          />
+           loading="lazy" decoding="async" />
         </picture>
         <div className={styles.riceGrains} aria-hidden="true">
           <i /><i /><i /><i /><i /><i />
@@ -399,7 +399,7 @@ const MakdongIntro = () => {
                 <figure key={label} data-guide-view>
                   <div className={styles.turnaroundVisual}>
                     {image ? (
-                      <img src={image} alt={alt} />
+                      <img src={image} alt={alt}  loading="lazy" decoding="async" />
                     ) : (
                       <span className={styles.imagePlaceholder} aria-label={`${alt} 이미지 준비 중`}>
                         IMAGE<br />TO COME
@@ -432,7 +432,7 @@ const MakdongIntro = () => {
             <div className={styles.propCards}>
               {propItems.map(({ title, position, text, image, alt, line }) => (
                 <figure className={styles.propCard} key={title}>
-                  <img src={image} alt={alt} />
+                  <img src={image} alt={alt}  loading="lazy" decoding="async" />
                   <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d={line} /></svg>
                   <figcaption><span>{position}</span><strong>{title}</strong><p>{text}</p></figcaption>
                 </figure>
@@ -458,7 +458,7 @@ const MakdongIntro = () => {
             </header>
         <div className={styles.characterStoryInner}>
           <figure className={styles.characterStoryVisual}>
-            <img src={makdongSittingWave} alt="앉아서 손을 흔들며 인사하는 막동이" />
+            <img src={makdongSittingWave} alt="앉아서 손을 흔들며 인사하는 막동이"  loading="lazy" decoding="async" />
           </figure>
 
           <div className={styles.characterStoryCopy}>
@@ -479,7 +479,7 @@ const MakdongIntro = () => {
             </div>
 
             <div className={styles.curationIntro}>
-              {isMobile && <img className={styles.storyCompanion} src={sitting} alt="술병을 안고 이야기를 듣는 막동이" />}
+              {isMobile && <img className={styles.storyCompanion} src={sitting} alt="술병을 안고 이야기를 듣는 막동이"  loading="lazy" decoding="async" />}
               <h3>이런 재주, 저런 허당끼</h3>
             </div>
 
@@ -511,7 +511,7 @@ const MakdongIntro = () => {
       <section ref={outroRef} className={styles.outro} aria-labelledby="outro-title">
         <div className={styles.outroVisual}>
           <i aria-hidden="true" />
-          <img src={makdongJump} alt="신나게 점프하는 막동이" />
+          <img src={makdongJump} alt="신나게 점프하는 막동이"  loading="lazy" decoding="async" />
         </div>
         <div className={styles.outroCopy}>
           <h2 id="outro-title">자, 나으리!<br />소인과 한 상 차려보시겠습니까?</h2>

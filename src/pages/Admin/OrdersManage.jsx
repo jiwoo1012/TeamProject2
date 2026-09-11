@@ -2111,7 +2111,7 @@ const OrdersManage = () => {
                               <img
                                 src={item.imageUrl}
                                 alt=""
-                              />
+                               loading="lazy" decoding="async" />
                             ) : (
                               index === 0 ? '🍶' : '🎁'
                             )}

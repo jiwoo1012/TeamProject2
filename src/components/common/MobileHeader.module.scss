@@ -21,16 +21,16 @@
 ======================================== */
 
 @include mobile {
-  $menu-top-z: 1002;
-  $menu-panel-z: 1001;
-  $menu-overlay-z: 1000;
+  $menu-overlay-z: 2147483000;
+  $menu-panel-z: 2147483001;
+  $menu-top-z: 2147483002;
 
 
   .mobileHeader {
     position: relative;
-    z-index: $z-header;
     display: block;
     width: 100%;
+    height: 76px;
     font-family: $font-family-base;
     background: transparent;
   }
@@ -41,7 +41,10 @@
   ======================================== */
 
   .mobileTop {
-    position: relative;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
     z-index: $menu-top-z;
 
     @include flex-between;
@@ -104,15 +107,17 @@
   .actions {
     display: flex;
     align-items: center;
-    gap: $space-3;
+    gap: 9px;
   }
 
   .iconButton {
+    position: relative;
+
     @include flex-center;
 
     flex-shrink: 0;
-    width: 22px;
-    height: 22px;
+    width: 31px;
+    height: 31px;
     padding: 0;
 
     background: transparent;
@@ -123,11 +128,48 @@
 
     img {
       display: block;
-      width: 28px;
-      height: 28px;
+      width: 31px;
+      height: 31px;
       flex-shrink: 0;
       object-fit: contain;
     }
+  }
+
+
+  /* 찜 / 장바구니 숫자 배지 */
+
+  .countIconButton {
+    overflow: visible;
+  }
+
+  .countBadge {
+    position: absolute;
+    top: -4px;
+    right: -5px;
+    z-index: 3;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    box-sizing: border-box;
+
+    color: $color-white;
+    background: $color-primary;
+
+    border:
+      1.5px solid
+      rgba($color-bg, 0.96);
+    border-radius: 999px;
+
+    font-size: 9px;
+    font-weight: $font-weight-semibold;
+    line-height: 1;
+
+    pointer-events: none;
   }
 
 
@@ -139,8 +181,8 @@
     position: relative;
     flex-shrink: 0;
 
-    width: 21px;
-    height: 21px;
+    width: 26px;
+    height: 26px;
     padding: 0;
 
     background: transparent;
@@ -151,8 +193,8 @@
       position: absolute;
       left: 50%;
 
-      width: 17px;
-      height: 1px;
+      width: 19px;
+      height: 1.5px;
 
       background: $color-text-primary;
       transform: translateX(-50%);
@@ -163,17 +205,17 @@
     }
 
     span:first-child {
-      top: 6.5px;
+      top: 8px;
     }
 
     span:last-child {
-      top: 13.5px;
+      top: 17px;
     }
   }
 
   .menuButtonOpen {
     span:first-child {
-      top: 10px;
+      top: 12px;
 
       transform:
         translateX(-50%)
@@ -181,7 +223,7 @@
     }
 
     span:last-child {
-      top: 10px;
+      top: 12px;
 
       transform:
         translateX(-50%)
@@ -201,7 +243,10 @@
 
   .menuOverlay {
     position: fixed;
-    inset: 0;
+    top: 76px;
+    right: 0;
+    bottom: 0;
+    left: 0;
     z-index: $menu-overlay-z;
 
     background: rgba(0, 0, 0, 0.45);
@@ -229,42 +274,42 @@
   ======================================== */
 
   .menuPanel {
-    position: fixed;
-    top: 76px;
-    right: 0;
-    left: auto;
-    z-index: $menu-panel-z;
+  position: fixed;
+  top: 76px;
+  right: 0;
+  left: auto;
+  z-index: $menu-panel-z;
 
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-    width: 50vw;
-    height: calc(100dvh - 76px);
+  width: 70vw; // 50vw → 70vw
+  height: calc(100dvh - 76px);
 
-    padding:
-      $space-6
-      $side-margin-mobile
-      96px;
+  padding:
+    $space-6
+    $side-margin-mobile
+    96px;
 
-    box-sizing: border-box;
-    overflow-y: auto;
-    overscroll-behavior: contain;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 
-    background: $color-bg;
-    border-left: 1px solid rgba($color-text-primary, 0.08);
-    box-shadow: -12px 0 28px rgba(44, 37, 34, 0.08);
+  background: $color-bg;
+  border-left: 1px solid rgba($color-text-primary, 0.08);
+  box-shadow: -12px 0 28px rgba(44, 37, 34, 0.08);
 
-    opacity: 0;
-    visibility: hidden;
+  opacity: 0;
+  visibility: hidden;
 
-    transform: translateX(100%);
-    pointer-events: none;
+  transform: translateX(100%);
+  pointer-events: none;
 
-    transition:
-      opacity $transition-base ease,
-      visibility $transition-base ease,
-      transform $transition-base ease;
-  }
+  transition:
+    opacity $transition-base ease,
+    visibility $transition-base ease,
+    transform $transition-base ease;
+}
 
   .menuPanelOpen {
     opacity: 1;
@@ -481,6 +526,9 @@
     margin-top: auto;
     padding: 24px $space-1 0;
     box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
   }
 
   .adminLink {
@@ -524,8 +572,87 @@
 
 
   /* ========================================
+     MEMBER AREA
+     일반 회원 로그인 시 인사 + 로그아웃
+  ======================================== */
+
+  .memberArea {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 10px;
+
+    width: 100%;
+    margin-top: auto;
+    padding:
+      $space-4
+      $space-3;
+
+    box-sizing: border-box;
+    border-top: 1px solid rgba($color-text-primary, 0.08);
+  }
+
+  .memberGreeting {
+    min-width: 0;
+    margin: 0;
+
+    color: $color-text-primary;
+    line-height: 1.35;
+
+    strong,
+    span {
+      display: block;
+    }
+
+    strong {
+      overflow: hidden;
+      font-family: $font-family-display;
+      font-size: 13px;
+      font-weight: $font-weight-semibold;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    span {
+      margin-top: 3px;
+      color: $color-text-muted;
+      font-size: 10px;
+      font-weight: $font-weight-regular;
+    }
+  }
+
+  .logoutButton {
+    flex-shrink: 0;
+    padding: 0;
+
+    color: $color-text-muted;
+    background: transparent;
+    border: 0;
+
+    font-family: $font-family-base;
+    font-size: 10px;
+    font-weight: $font-weight-regular;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+
+    cursor: pointer;
+    transition: color $transition-fast ease;
+
+    &:active {
+      color: $color-primary;
+    }
+  }
+
+  .adminArea .logoutButton {
+    align-self: flex-end;
+    margin-top: 10px;
+    margin-right: $space-2;
+  }
+
+
+  /* ========================================
      USER AREA
-     관리자일 때는 JSX에서 렌더링하지 않음
+     비로그인 상태에서 로그인 / 회원가입 노출
   ======================================== */
 
   .userArea {

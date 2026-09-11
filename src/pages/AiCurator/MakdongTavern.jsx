@@ -2349,7 +2349,7 @@ const MakdongTavern = () => {
                     }
                     alt=""
                     aria-hidden="true"
-                  />
+                   loading="lazy" decoding="async" />
                 </div>
 
                 <div
@@ -2512,7 +2512,7 @@ const MakdongTavern = () => {
                     }
                     alt=""
                     aria-hidden="true"
-                  />
+                   loading="lazy" decoding="async" />
                 </div>
 
 
@@ -3106,7 +3106,7 @@ const MakdongTavern = () => {
                 }
                 alt="술곶간"
                 draggable="false"
-              />
+               loading="lazy" decoding="async" />
             </div>
 
 
@@ -3128,7 +3128,7 @@ const MakdongTavern = () => {
                 }
                 alt="주방"
                 draggable="false"
-              />
+               loading="lazy" decoding="async" />
             </div>
 
 
@@ -3150,7 +3150,7 @@ const MakdongTavern = () => {
                 }
                 alt="잔 진열대"
                 draggable="false"
-              />
+               loading="lazy" decoding="async" />
             </div>
 
 
@@ -3188,7 +3188,7 @@ const MakdongTavern = () => {
                       alt=""
                       aria-hidden="true"
                       draggable="false"
-                    />
+                     loading="lazy" decoding="async" />
 
                     <span>
                       눌러보세요
@@ -3261,7 +3261,7 @@ const MakdongTavern = () => {
                   currentCustomer.name
                 }
                 draggable="false"
-              />
+               loading="lazy" decoding="async" />
 
               {!customerAtTable && (
                 <span>
@@ -3324,7 +3324,7 @@ const MakdongTavern = () => {
                   }
                   alt="막동이"
                   draggable="false"
-                />
+                 loading="lazy" decoding="async" />
               </div>
 
 
@@ -3394,7 +3394,7 @@ const MakdongTavern = () => {
                         currentCustomerImages.portrait
                       }
                       alt={`${currentCustomer.name} 프로필`}
-                    />
+                     loading="lazy" decoding="async" />
                   </div>
 
 
@@ -3714,7 +3714,7 @@ const MakdongTavern = () => {
                     alt={
                       currentCustomer.name
                     }
-                  />
+                   loading="lazy" decoding="async" />
                 </div>
 
 
@@ -3864,7 +3864,7 @@ const MakdongTavern = () => {
                       makdongWelcome
                     }
                     alt="막동이"
-                  />
+                   loading="lazy" decoding="async" />
                 </div>
 
 
