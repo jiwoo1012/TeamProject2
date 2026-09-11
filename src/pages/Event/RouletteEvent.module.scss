@@ -96,6 +96,16 @@
 .isSpinning .runningFrame:nth-child(2) { animation: runningFrameTwo .42s steps(1, end) infinite; }
 .isSpinning .rouletteStage { z-index: $z-dropdown; filter: drop-shadow(0 $space-5 $space-8 rgb(0 0 0 / 18%)); transform: translate(var(--roulette-shift-x, 0), var(--roulette-shift-y, 0)); }
 
+// $z-dropdown(200/199/198)은 모바일 헤더($z-header:100)보다 높아, 스핀 도중 사용자가
+// 햄버거 메뉴를 열면 이 fixed 요소들이 메뉴 위에 그려지는 문제가 있었다. 헤더보다 낮은
+// 값으로 낮추되 기존 순서(트레일 < 트랙 < 무대)는 그대로 유지한다. PC에서는 모바일 메뉴
+// 자체가 없어 문제가 없으므로 위쪽의 기본 규칙은 그대로 둔다.
+@include mixins.mobile {
+  .runningTrail { z-index: 48; }
+  .runningTrack { z-index: 49; }
+  .isSpinning .rouletteStage { z-index: 50; }
+}
+
 @keyframes makdongRunAcross {
   from { transform: translate(100vw, -50%); }
   100% { transform: translate(-100%, -50%); }

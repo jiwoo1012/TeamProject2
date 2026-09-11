@@ -508,7 +508,28 @@
   font-size: v.$font-size-xs;
 }
 
+// 모바일 Customer Service 공통 톤(FAQ.module.scss와 동일한 breakpoint/토큰 사용)
 @media (max-width: v.$breakpoint-mobile-max) {
+  .page {
+    // 하단 고정 MobileBottomNav(≈80px)에 콘텐츠가 가리지 않도록 여유 확보
+    padding: v.$space-10 v.$side-margin-mobile v.$space-24;
+  }
+
+  .content h1 {
+    font-size: v.$font-size-2xl;
+  }
+
+  .titleRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: v.$space-2;
+    margin-bottom: v.$space-6;
+  }
+
+  .choiceBox {
+    padding: v.$space-16 0;
+  }
+
   .choiceButtons {
     flex-direction: column;
     width: 100%;
@@ -519,24 +540,116 @@
     width: 100%;
   }
 
-  .titleRow {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: v.$space-2;
+  .inquiryForm {
+    gap: v.$space-5;
+    margin-top: v.$space-6;
   }
 
+  // 라벨-필드 가로 배치는 좁은 화면에서 데스크톱을 압축한 느낌을 줌 → 세로 스택으로 전환
   .formRow {
-    display: flex;
-    align-items: flex-start;
-    gap: v.$space-6;
+    flex-direction: column;
+    align-items: stretch;
+    gap: v.$space-2;
 
-  > span {
-    flex-shrink: 0;
-    width: 100px;
-    padding-top: v.$space-3;
-    font-size: v.$font-size-md;
-    font-weight: v.$font-weight-medium;
-    color: v.$color-text-primary;
+    > span {
+      width: auto;
+      padding-top: 0;
+      font-size: v.$font-size-sm;
+    }
   }
-}
+
+  // 입력 필드 터치 영역/폰트 크기 통일
+  .fieldControl {
+    select,
+    input,
+    textarea {
+      min-height: 44px;
+      font-size: v.$font-size-md;
+    }
+
+    textarea {
+      min-height: 120px;
+    }
+  }
+
+  .fileInputRow {
+    flex-wrap: wrap;
+    row-gap: v.$space-2;
+  }
+
+  .fileButton {
+    min-height: 44px;
+  }
+
+  // 고정폭(250px) CTA는 좁은 화면에서 어중간해 보여 전체 너비로 통일
+  .submitButton {
+    width: 100%;
+    height: 52px;
+    font-size: v.$font-size-md;
+  }
+
+  // 문의 접수 완료 팝업 - 거의 전체화면이던 카드를 작고 정돈된 모바일 카드로 축소
+  .modalOverlay {
+    padding: 0;
+  }
+
+  .modalBox {
+    width: calc(100% - 40px);
+    max-width: 330px;
+    min-height: 0;
+    max-height: 80dvh;
+    overflow-y: auto;
+    padding: v.$space-6 v.$space-5;
+    gap: v.$space-3;
+  }
+
+  .modalClose {
+    top: v.$space-3;
+    right: v.$space-3;
+    padding: v.$space-2;
+
+    img {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .modalIcon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .modalTitle {
+    font-size: v.$font-size-2xl;
+  }
+
+  .modalDesc {
+    line-height: v.$line-height-base;
+  }
+
+  // 아이콘 절대배치 + 좁은 텍스트 컬럼 → 아이콘 상단/텍스트 중앙정렬의 세로 구성으로 전환
+  // (기존 <br />가 만드는 3줄 구조를 넓어진 폭에서 그대로, 자연스럽게 보여줌)
+  .modalContact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: v.$space-2;
+    padding: v.$space-4;
+    text-align: center;
+  }
+
+  .modalContactIcon {
+    position: static;
+    width: 40px;
+    height: 40px;
+  }
+
+  .modalContactText {
+    font-size: v.$font-size-sm;
+  }
+
+  .modalConfirm {
+    height: 46px;
+    font-size: v.$font-size-md;
+  }
 }

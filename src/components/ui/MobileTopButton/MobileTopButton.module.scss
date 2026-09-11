@@ -56,7 +56,11 @@
     position: fixed;
     right: $side-margin-mobile;
     bottom: calc(92px + env(safe-area-inset-bottom, 0px));
-    z-index: $z-dropdown;
+    // $z-dropdown(200)은 모바일 헤더($z-header:100)보다 높아, 헤더 안의 햄버거 메뉴가
+    // 열려도 이 버튼이 그 위에 그려지는 문제가 있었다. 헤더보다 낮은 값으로 낮춰 메뉴가
+    // 항상 최상단이 되도록 한다. 768px 이상(PC/태블릿)에는 이 모바일 메뉴 자체가 없으므로
+    // 위쪽의 데스크톱용 규칙은 그대로 둔다.
+    z-index: 50;
     display: flex;
     flex-direction: row;
     align-items: center;

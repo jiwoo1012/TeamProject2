@@ -1,0 +1,53 @@
+@use '../../../styles/variables' as *;
+
+// 페이지 위에 뜨는 비차단 축하 레이어. 헤더/플로팅 버튼/하단 내비 위에 보이도록
+// $z-modal을 쓰지만, 어두운 배경이나 클릭 차단은 전혀 없다(pointer-events:none).
+.celebration {
+  position: fixed;
+  inset: 0;
+  z-index: $z-modal;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+// 파티클 공통 베이스. origin(left/top)과 중심 정렬(negative margin)은 정적으로 한 번만
+// 지정하고, 이후 GSAP가 transform(x/y/rotation/scale)과 opacity만 애니메이션한다 —
+// top/left/width/height를 계속 바꾸지 않기 위한 구조.
+// 히어로 배너처럼 화면 배경이 다채로운 사진일 때도 파티클이 묻히지 않도록, 모든 파티클에
+// 옅은 그림자를 깔아 가장자리를 분리해준다(깊이감은 depth별 크기/속도/투명도로 표현 — 이 필터
+// 자체는 blur를 쓰지 않아 .glow 등 shape별 filter와 충돌하지 않는다).
+.particle {
+  position: absolute;
+  will-change: transform, opacity;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(44, 35, 26, 0.4));
+}
+
+.dot, .circle, .glow { border-radius: 50%; }
+.square, .rect, .diamond { border-radius: 1px; }
+.strip, .streak { border-radius: 999px; }
+
+.glow {
+  filter: blur(1.2px) drop-shadow(0 0 4px currentColor);
+  box-shadow: 0 0 8px 2px currentColor;
+}
+
+.star {
+  clip-path: polygon(
+    50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%,
+    50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%
+  );
+}
+
+// 한지 느낌의 살짝 찢어진 듯한 불규칙한 종이 조각 실루엣.
+.paper {
+  clip-path: polygon(
+    0% 8%, 22% 0%, 48% 10%, 72% 2%, 100% 12%,
+    94% 46%, 100% 78%, 74% 100%, 42% 90%, 12% 100%, 0% 62%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .particle { will-change: auto; }
+}
