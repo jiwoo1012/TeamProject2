@@ -497,27 +497,9 @@ const Cart = () => {
       .then(async ([catalog, remoteCart]) => {
         if (isCancelled) return
 
-        const localCart = getCart()
-        const mergedCart = [...remoteCart]
-
-        localCart.forEach((localItem) => {
-          const remoteIndex = mergedCart.findIndex((item) => item.productId === localItem.productId)
-
-          if (remoteIndex < 0) {
-            mergedCart.push(localItem)
-            return
-          }
-
-          mergedCart[remoteIndex] = {
-            ...mergedCart[remoteIndex],
-            quantity: Math.max(
-              Number(mergedCart[remoteIndex].quantity) || 0,
-              Number(localItem.quantity) || 0,
-            ),
-          }
-        })
-
-        const nextItems = getCartItems(mergedCart, catalog)
+        // 저장된 빈 목록도 삭제 결과이므로 이전 서버 상품을 다시 합치지 않는다.
+        const savedCart = getCart(remoteCart)
+        const nextItems = getCartItems(savedCart, catalog)
         setProductCatalog(catalog)
         setItems(nextItems)
         setSelectedIds(nextItems.map((item) => item.id))

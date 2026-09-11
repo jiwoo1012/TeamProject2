@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import styles from './ProductCard.module.scss'
@@ -12,25 +12,20 @@ const ProductCard = ({
   isWished = false,
   isInCart = false,
 }) => {
-  const [loadedHoverImage, setLoadedHoverImage] = useState(null)
-  const [isMobile, setIsMobile] = useState(() => window.matchMedia('(max-width: 767px)').matches)
+  const [loadedHoverImage, setLoadedHoverImage] =
+    useState(null)
 
-  useEffect(() => {
-    const viewport = window.matchMedia('(max-width: 767px)')
-    const handleViewportChange = () => setIsMobile(viewport.matches)
-    handleViewportChange()
-    viewport.addEventListener('change', handleViewportChange)
-    return () => viewport.removeEventListener('change', handleViewportChange)
-  }, [])
 
   const discountRate =
     Number.parseInt(product.discountRate, 10) || 0
+
 
   const salePrice =
     Math.round(
       product.price
       * (1 - discountRate / 100)
     )
+
 
   const isSoldOut =
     product.status === 'soldout'
@@ -43,7 +38,7 @@ const ProductCard = ({
       ?.querySelector(
         'img:not([aria-hidden="true"])'
       )
-      ?? null
+    ?? null
 
 
   const productImage = (
@@ -53,7 +48,9 @@ const ProductCard = ({
         src={product.imageSrc}
         alt={product.productName}
         loading="lazy"
-       decoding="async" />
+        decoding="async"
+      />
+
 
       {hoverImageSrc
         && hoverImageSrc !== product.imageSrc
@@ -73,6 +70,7 @@ const ProductCard = ({
             alt=""
             aria-hidden="true"
             loading="lazy"
+            decoding="async"
             onLoad={() =>
               setLoadedHoverImage(
                 hoverImageSrc
@@ -81,8 +79,9 @@ const ProductCard = ({
             onError={() =>
               setLoadedHoverImage(null)
             }
-           decoding="async" />
+          />
         )}
+
 
       {isSoldOut && (
         <span
@@ -108,7 +107,13 @@ const ProductCard = ({
       `}
       data-product-guide-card="candidate"
     >
+
+      {/* ========================================
+          상품 이미지
+      ======================================== */}
+
       <div className={styles.imageWrap}>
+
         <Link
           className={styles.imageLink}
           to={`/shop/${product.productId}`}
@@ -117,8 +122,11 @@ const ProductCard = ({
           {productImage}
         </Link>
 
+
         {!isSoldOut && (
           <div className={styles.actions}>
+
+            {/* 찜 */}
             <button
               className={`
                 ${styles.iconButton}
@@ -148,8 +156,17 @@ const ProductCard = ({
               {isWished ? '♥' : '♡'}
             </button>
 
-            {!isMobile && <button
-              className={styles.cartButton}
+
+            {/* 장바구니 */}
+            <button
+              className={`
+                ${styles.cartButton}
+                ${
+                  isInCart
+                    ? styles.cartButtonActive
+                    : ''
+                }
+              `}
               type="button"
               aria-label={
                 isInCart
@@ -167,43 +184,92 @@ const ProductCard = ({
                 )
               }}
             >
-              {
-                isInCart
-                  ? '✓ 장바구니 담김'
-                  : '장바구니 담기'
-              }
-            </button>}
+
+              {/* PC / 태블릿 */}
+              <span className={styles.cartText}>
+                {
+                  isInCart
+                    ? '✓ 장바구니 담김'
+                    : '장바구니 담기'
+                }
+              </span>
+
+
+              {/* 모바일 */}
+              <span
+                className={styles.cartIcon}
+                aria-hidden="true"
+              >
+                {isInCart ? (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M5 12.5L9.3 16.8L19 7.2"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M3.5 5H5.5L7.2 14.2C7.35 15.05 8.1 15.65 8.95 15.65H17.4C18.2 15.65 18.9 15.15 19.15 14.4L21 8H6.1"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+
+                    <circle
+                      cx="9.5"
+                      cy="19"
+                      r="1.2"
+                      fill="currentColor"
+                    />
+
+                    <circle
+                      cx="17.5"
+                      cy="19"
+                      r="1.2"
+                      fill="currentColor"
+                    />
+                  </svg>
+                )}
+              </span>
+
+            </button>
+
           </div>
         )}
+
       </div>
 
-      {!isSoldOut && isMobile && (
-        <button
-          className={styles.cartButton}
-          type="button"
-          aria-label={isInCart ? '장바구니에서 삭제' : '장바구니 담기'}
-          aria-pressed={isInCart}
-          data-product-guide-target="cart"
-          onClick={(event) => {
-            event.preventDefault()
-            onAddToCart?.(product, getFlySourceImage(event))
-          }}
-        >
-          {isInCart ? '✓ 장바구니 담김' : '장바구니 담기'}
-        </button>
-      )}
+
+      {/* ========================================
+          상품 정보
+      ======================================== */}
 
       <div className={styles.info}>
+
         <h3 className={styles.name}>
           {product.productName}
         </h3>
 
+
         <div className={styles.priceRow}>
+
           {discountRate > 0 && (
             <span className={styles.discount}>
               {discountRate}%
             </span>
           )}
+
 
           {discountRate > 0 && (
             <del className={styles.originalPrice}>
@@ -211,11 +277,15 @@ const ProductCard = ({
             </del>
           )}
 
+
           <strong>
             {salePrice.toLocaleString('ko-KR')}원
           </strong>
+
         </div>
+
       </div>
+
     </article>
   )
 }

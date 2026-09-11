@@ -186,7 +186,7 @@
   .tasteCopy h3 { font-size: $font-size-lg; }
   .tasteCopy p { margin-top: $space-2; font-size: $font-size-md; }
   .tasteContent a { margin-top: $space-5; padding: $space-3 $space-6; }
-  .productGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-10 $space-5; }
+  .productGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: $space-6 $space-2;; }
   .productTopButton.productTopButton {
     right: $space-2;
     bottom: calc(92px + env(safe-area-inset-bottom, 0px));
