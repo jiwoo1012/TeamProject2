@@ -97,4 +97,9 @@
   .refreshButton {
     padding: 0 12px;
   }
+
+  // 모바일에서는 전통 문양 숨김
+  .ornament {
+    display: none;
+  }
 }

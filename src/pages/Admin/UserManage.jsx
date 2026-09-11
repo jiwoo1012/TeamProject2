@@ -1284,7 +1284,7 @@ useEffect(() => {
             />
           ) : (
             <div className={styles.tableWrap}>
-              <table className={styles.memberTable}>
+              <table className={`${styles.memberTable} ${styles.desktopMemberTable}`}>
                 <thead>
                   <tr>
                     <th scope="col">
@@ -1436,6 +1436,94 @@ useEffect(() => {
                   )}
                 </tbody>
               </table>
+
+
+              {/* 모바일 회원 카드 목록 */}
+              <div className={styles.mobileMemberList}>
+                {visibleMembers.map((member) => (
+                  <article
+                    key={`mobile-${member.id}`}
+                    className={`${styles.mobileMemberCard} ${
+                      selectedId === member.id
+                        ? styles.mobileMemberCardSelected
+                        : ''
+                    }`}
+                  >
+                    <div className={styles.mobileMemberTop}>
+                      <div className={styles.mobileMemberIdentity}>
+                        <UserAvatar nickname={member.nickname} />
+
+                        <div>
+                          <strong>
+                            {member.nickname}
+                          </strong>
+
+                          <span title={member.email}>
+                            {member.email}
+                          </span>
+                        </div>
+                      </div>
+
+
+                      <div className={styles.mobileMemberBadges}>
+                        <AdminStatusBadge
+                          tone={
+                            member.status === 'active'
+                              ? 'success'
+                              : 'danger'
+                          }
+                          size="small"
+                        >
+                          {statusLabels[member.status]}
+                        </AdminStatusBadge>
+
+                        <AdminStatusBadge
+                          tone={
+                            member.role === 'admin'
+                              ? 'info'
+                              : 'neutral'
+                          }
+                          size="small"
+                        >
+                          {roleLabels[member.role]}
+                        </AdminStatusBadge>
+                      </div>
+                    </div>
+
+
+                    <dl className={styles.mobileMemberMeta}>
+                      <div>
+                        <dt>회원 ID</dt>
+                        <dd title={member.id}>
+                          {formatMemberId(member.id)}
+                        </dd>
+                      </div>
+
+                      <div>
+                        <dt>가입일</dt>
+                        <dd>{member.joinedAt}</dd>
+                      </div>
+
+                      <div>
+                        <dt>최근 로그인</dt>
+                        <dd>{member.lastLoginAt}</dd>
+                      </div>
+                    </dl>
+
+
+                    <button
+                      type="button"
+                      className={styles.mobileViewButton}
+                      onClick={() =>
+                        openDetailPanel(member)
+                      }
+                    >
+                      회원 상세 보기
+                      <span aria-hidden="true">›</span>
+                    </button>
+                  </article>
+                ))}
+              </div>
 
 
               {totalPages > 1 && (
