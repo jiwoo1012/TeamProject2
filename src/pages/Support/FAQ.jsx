@@ -74,7 +74,7 @@ const FAQ = () => {
         <h1>자주 묻는 질문</h1>
 
         <label className={styles.searchBox}>
-          <img src={searchIconImage} alt="" className={styles.searchIcon} />
+          <img src={searchIconImage} alt="" className={styles.searchIcon}  loading="lazy" decoding="async" />
           <span className={styles.srOnly}>FAQ 검색</span>
           <input
             type="search"
@@ -128,7 +128,7 @@ const FAQ = () => {
         </ul>
 
         <Link to={PATHS.inquiry} className={styles.floatingButton} aria-label="1:1 문의하기">
-          <img src={inquiryIconImage} alt="" className={styles.inquiryIcon} />
+          <img src={inquiryIconImage} alt="" className={styles.inquiryIcon}  loading="lazy" decoding="async" />
           <em>1:1 문의하기</em>
         </Link>
       </div>

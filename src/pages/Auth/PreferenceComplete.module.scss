@@ -4,7 +4,7 @@
 
 .content { display: flex; flex-direction: column; align-items: center; padding-top: $space-8; text-align: center; }
 .saveStatus { display: flex; align-items: center; gap: $space-2; margin-bottom: $space-5; padding: $space-2 $space-4; border-radius: $radius-pill; background: #F2EDE4; color: $color-text-secondary; font-size: $font-size-xs; }
-.saveCheck { display: grid; place-items: center; width: $space-5; height: $space-5; flex-shrink: 0; border-radius: $radius-pill; background: $color-text-secondary; color: $color-white; }
+.saveCheck { display: grid; place-items: center; width: $space-5; height: $space-5; flex-shrink: 0; border-radius: $radius-pill; background: $color-text-secondary; color: $color-white;  }
 .textArea { width: 100%; }
 .title { max-width: 760px; margin-inline: auto; }
 .description { margin-top: $space-4; }
@@ -19,3 +19,372 @@
 .myPageButton { min-height: 36px; color: $color-text-secondary; font-size: $font-size-xs; cursor: pointer; }
 .myPageButton:focus-visible { outline: 2px solid $color-text-secondary; outline-offset: $space-1; }
 .arrow,.textArrow { margin-left: $space-2; font-size: $font-size-lg; }
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: $breakpoint-mobile-max) {
+
+  /* ========================================
+     PAGE
+     헤더 ~ 하단 네비 사이 영역
+  ======================================== */
+
+  .preferenceComplete {
+    width: 100%;
+
+    min-height:
+      calc(
+        100dvh
+        - 76px
+        - 82px
+      );
+
+    box-sizing: border-box;
+
+    overflow-x: hidden;
+  }
+
+
+  /* ========================================
+     CONTENT
+     전체 덩어리를 화면 중앙에 배치
+  ======================================== */
+
+  .content {
+    width: 100%;
+
+    min-height:
+      calc(
+        100dvh
+        - 76px
+        - 82px
+      );
+
+    padding:
+      20px
+      20px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+  }
+
+
+  /* ========================================
+     저장 완료 표시
+  ======================================== */
+
+  .saveStatus {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    width: auto;
+
+    margin:
+      0
+      auto
+      18px;
+
+    padding:
+      7px
+      13px;
+
+    border-radius: 999px;
+
+    background: #f2ede4;
+
+    color: $color-text-secondary;
+
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+
+  .saveCheck {
+    display: grid;
+    place-items: center;
+
+    width: 18px;
+    height: 18px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background:
+      $color-text-secondary;
+
+    color:
+      $color-white;
+
+    font-size: 10px;
+    line-height: 1;
+  }
+
+
+  /* ========================================
+     TEXT
+  ======================================== */
+
+  .textArea {
+    width: 100%;
+    max-width: 310px;
+
+    margin: 0 auto;
+
+    text-align: center;
+  }
+
+
+  .title {
+    width: 100%;
+    max-width: none;
+
+    margin: 0;
+
+    text-align: center;
+
+    font-size: 21px;
+    line-height: 1.4;
+    letter-spacing: -0.03em;
+
+    word-break: keep-all;
+  }
+
+
+  .description {
+    width: 100%;
+    max-width: 280px;
+
+    margin:
+      11px
+      auto
+      0;
+
+    text-align: center;
+
+    font-size: 12px;
+    line-height: 1.65;
+
+    word-break: keep-all;
+  }
+
+
+  /* ========================================
+     CHARACTER
+  ======================================== */
+
+  .characterArea {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 190px;
+    height: 160px;
+
+    margin:
+      16px
+      auto
+      18px;
+
+    overflow: visible;
+  }
+
+
+  /*
+    AiSurvey.module.scss의 guideCharacter 스타일을
+    이 페이지에서 확실하게 초기화
+  */
+
+  .character {
+    position: relative !important;
+
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+
+    display: block !important;
+
+    width: 145px !important;
+    height: auto !important;
+
+    max-width: 145px !important;
+    max-height: none !important;
+
+    margin: 0 !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    transform: none !important;
+
+    object-fit: contain;
+
+    z-index: 2;
+  }
+
+
+  /* ========================================
+     SPARKLE
+  ======================================== */
+
+  .sparkle {
+    position: absolute;
+
+    z-index: 1;
+
+    color: $color-taupe;
+
+    font-size: 13px;
+
+    pointer-events: none;
+  }
+
+
+  .sparkleOne {
+    top: 28%;
+    left: 10%;
+  }
+
+
+  .sparkleTwo {
+    top: 8%;
+    right: 22%;
+  }
+
+
+  .sparkleThree {
+    top: 42%;
+    right: 8%;
+  }
+
+
+  .sparkleFour {
+    bottom: 12%;
+    left: 20%;
+  }
+
+
+  /* ========================================
+     BUTTON AREA
+  ======================================== */
+
+  .buttonArea {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    max-width: 280px;
+
+    margin: 0 auto;
+
+    gap: 9px;
+  }
+
+
+  /* AI 추천 */
+
+  .aiButton {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 44px;
+
+    padding:
+      0
+      18px !important;
+
+    border-radius: 11px !important;
+
+    font-size: 12px;
+
+    box-shadow:
+      0
+      7px
+      17px
+      rgba(52, 39, 31, 0.12);
+  }
+
+
+  /* 상품 둘러보기 */
+
+  .shopButton {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 42px;
+
+    padding:
+      0
+      18px !important;
+
+    border-radius: 11px !important;
+
+    font-size: 11px;
+  }
+
+
+  /* ========================================
+     마이페이지 링크
+  ======================================== */
+
+  .myPageButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    min-height: 34px;
+
+    margin-top: 2px;
+    padding: 0 6px;
+
+    border: 0;
+
+    background:
+      transparent;
+
+    color:
+      $color-text-secondary;
+
+    font-size: 10px;
+
+    cursor: pointer;
+  }
+
+
+  .myPageButton:focus-visible {
+    outline:
+      2px solid
+      $color-text-secondary;
+
+    outline-offset: 3px;
+  }
+
+
+  .arrow {
+    margin-left: 7px;
+
+    font-size: 16px;
+    line-height: 1;
+  }
+
+
+  .textArrow {
+    margin-left: 5px;
+
+    font-size: 14px;
+    line-height: 1;
+  }
+}

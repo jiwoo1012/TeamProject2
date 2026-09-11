@@ -111,7 +111,7 @@ const AdminPageHeader = ({
             adminTopOrnament
           }
           alt=""
-        />
+         loading="lazy" decoding="async" />
       </div>
     </>
   )

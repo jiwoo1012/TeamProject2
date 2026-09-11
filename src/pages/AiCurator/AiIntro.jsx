@@ -318,7 +318,7 @@ const AiIntro = () => {
                       className={
                         styles.cardImage
                       }
-                    />
+                     loading="lazy" decoding="async" />
                   )}
                 </div>
               )

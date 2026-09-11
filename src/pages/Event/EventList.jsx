@@ -159,10 +159,10 @@ const EventList = () => {
                     {presentation ? (
                       <div className={styles.gameBanner}>
                         <span className={styles.gameMotif} aria-hidden="true" />
-                        <img className={styles.cardCharacter} src={presentation.character} alt="" aria-hidden="true" />
+                        <img className={styles.cardCharacter} src={presentation.character} alt="" aria-hidden="true"  loading="lazy" decoding="async" />
                       </div>
                     ) : event.bannerSrc ? (
-                      <img src={event.bannerSrc} alt={event.title + ' 배너'} loading="lazy" />
+                      <img src={event.bannerSrc} alt={event.title + ' 배너'} loading="lazy"  decoding="async" />
                     ) : <span className={styles.imageFallback}>JAJAK EVENT</span>}
                   </div>
                   <div className={styles.cardContent}>

@@ -24,7 +24,7 @@ const MobileBottomNav = () => {
           <img
             src={homeIcon}
             alt=""
-          />
+           loading="lazy" decoding="async" />
 
           <span>홈</span>
         </NavLink>
@@ -41,7 +41,7 @@ const MobileBottomNav = () => {
           <img
             src={categoryIcon}
             alt=""
-          />
+           loading="lazy" decoding="async" />
 
           <span>카테고리</span>
         </NavLink>
@@ -58,7 +58,7 @@ const MobileBottomNav = () => {
           <img
             src={wishlistIcon}
             alt=""
-          />
+           loading="lazy" decoding="async" />
 
           <span>찜</span>
         </NavLink>
@@ -75,7 +75,7 @@ const MobileBottomNav = () => {
           <img
             src={loginIcon}
             alt=""
-          />
+           loading="lazy" decoding="async" />
 
           <span>마이</span>
         </NavLink>

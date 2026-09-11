@@ -1993,7 +1993,7 @@ const ReviewManage = () => {
                                   <img
                                     src={product.image}
                                     alt=""
-                                  />
+                                   loading="lazy" decoding="async" />
                                 )}
                               </span>
 
@@ -2196,7 +2196,7 @@ const ReviewManage = () => {
                       selectedProduct.image
                     }
                     alt=""
-                  />
+                   loading="lazy" decoding="async" />
                 )}
               </span>
 
@@ -2350,7 +2350,7 @@ const ReviewManage = () => {
                           alt={`리뷰 첨부 이미지 ${
                             index + 1
                           }`}
-                        />
+                         loading="lazy" decoding="async" />
                       </button>
                     )
                   )}

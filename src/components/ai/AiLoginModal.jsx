@@ -68,7 +68,7 @@ const AiLoginModal = ({
             src={makdongImage}
             alt="막동이"
             className={styles.character}
-          />
+           loading="lazy" decoding="async" />
         </div>
 
 

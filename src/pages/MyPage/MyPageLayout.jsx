@@ -1079,7 +1079,7 @@ const MyPageLayout = () => {
                     profileAvatar.src
                   }
                   alt={`${userName} 프로필`}
-                />
+                 loading="lazy" decoding="async" />
               </div>
 
 
@@ -1535,7 +1535,7 @@ const MyPageLayout = () => {
                       makdongTavernImage
                     }
                     alt="막동이"
-                  />
+                   loading="lazy" decoding="async" />
                 </div>
 
 
@@ -1597,7 +1597,7 @@ const MyPageLayout = () => {
                             event.bannerSrc
                           }
                           alt=""
-                        />
+                         loading="lazy" decoding="async" />
                       ) : (
                         <span
                           aria-hidden="true"

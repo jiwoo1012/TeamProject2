@@ -232,7 +232,7 @@ const Login = () => {
                   }
                   alt=""
                   className={styles.eyeIcon}
-                />
+                 loading="lazy" decoding="async" />
               </button>
 
             </div>

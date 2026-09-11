@@ -678,7 +678,7 @@ const MyHome = () => {
             <img
               src={profileAvatar.src}
               alt={`${memberName} 프로필`}
-            />
+             loading="lazy" decoding="async" />
           </div>
 
 
@@ -1099,7 +1099,7 @@ const MyHome = () => {
                             )
                           }
                           alt=""
-                        />
+                         loading="lazy" decoding="async" />
                       ) : (
                         <span>
                           IMG

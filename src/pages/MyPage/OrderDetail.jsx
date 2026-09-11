@@ -1075,7 +1075,7 @@ const OrderDetail = () => {
                           alt={
                             product.name
                           }
-                        />
+                         loading="lazy" decoding="async" />
                       ) : (
                         <ProductPlaceholder
                           type={

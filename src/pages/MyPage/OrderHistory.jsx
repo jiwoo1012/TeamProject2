@@ -961,7 +961,7 @@ const OrderHistory = () => {
                                   alt={
                                     item.name
                                   }
-                                />
+                                 loading="lazy" decoding="async" />
                               ) : (
                                 <span>
                                   IMG

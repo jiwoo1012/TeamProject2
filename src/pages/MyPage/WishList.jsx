@@ -808,7 +808,7 @@ const WishList = () => {
                               product.productName ||
                               product.name
                             }
-                          />
+                           loading="lazy" decoding="async" />
                         ) : (
                           <div
                             className={

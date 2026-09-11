@@ -50,7 +50,7 @@ const AdultModal = ({
               src={makdongImg}
               alt="성인 인증 안내 막동이"
               className={styles.makdong}
-            />
+             loading="lazy" decoding="async" />
 
             <span className={styles.slash} />
           </div>

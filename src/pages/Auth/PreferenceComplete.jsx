@@ -108,7 +108,7 @@ const PreferenceComplete = () => {
             src={makdongImg}
             alt="취향을 기억한 막동이"
             className={styles.character}
-          />
+           loading="lazy" decoding="async" />
 
         </div>
 

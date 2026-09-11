@@ -470,7 +470,7 @@ const BrandIntro = () => {
                       draggable={false}
                       alt={index === senseTrackIndex ? item.alt : ''}
                       aria-hidden={index !== senseTrackIndex}
-                    />
+                     loading="lazy" decoding="async" />
                   ))}
                 </div>
               </div>
@@ -513,7 +513,7 @@ const BrandIntro = () => {
       </section>
 
       <section className={styles.message} aria-labelledby="brand-message-title">
-        <img className={styles.messageBottle} src={brandBottle} alt="" aria-hidden="true" loading="lazy" />
+        <img className={styles.messageBottle} src={brandBottle} alt="" aria-hidden="true" loading="lazy"  decoding="async" />
         <div className={styles.messageInner}>
           <h2 id="brand-message-title" data-message-title aria-label={BRAND_MESSAGE}>
             <span className={styles.messageBrand} aria-hidden="true">
@@ -541,7 +541,7 @@ const BrandIntro = () => {
               <li key={item.number} data-reveal-item>
                 <span className={styles.closingNumber} aria-hidden="true">{item.number}</span>
                 <div className={styles.closingIllustration}>
-                  <img src={item.image} alt={item.alt} />
+                  <img src={item.image} alt={item.alt}  loading="lazy" decoding="async" />
                 </div>
                 <h3>{item.title}</h3>
                 <p>{item.description}</p>
@@ -554,7 +554,7 @@ const BrandIntro = () => {
       <section className={styles.closing} aria-labelledby="closing-title">
         <div className={styles.closingInner} data-reveal>
           <div className={styles.makdongVisual}>
-            <img className={styles.makdongCharacter} src={makdong} alt="자작의 다정한 길잡이 막동이" loading="lazy" />
+            <img className={styles.makdongCharacter} src={makdong} alt="자작의 다정한 길잡이 막동이" loading="lazy"  decoding="async" />
           </div>
           <div className={styles.closingIntro}>
             <h2 id="closing-title">한 잔 곁에, 막동이</h2>

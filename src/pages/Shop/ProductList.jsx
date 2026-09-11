@@ -2291,11 +2291,11 @@ const ProductList = () => {
 
                     {category.id === 'all' ? (
 
-                      <img src={allCategoryImage} alt="" />
+                      <img src={allCategoryImage} alt=""  loading="lazy" decoding="async" />
 
                     ) : (
 
-                      <img src={resolveImage(category.data[0]?.imageUrl)} alt="" />
+                      <img src={resolveImage(category.data[0]?.imageUrl)} alt=""  loading="lazy" decoding="async" />
 
                     )}
 
@@ -2739,7 +2739,7 @@ const ProductList = () => {
                     <h2 id="taste-finder-title">막동이의 AI 취향 큐레이션</h2>
                   </div>
                   <div className={styles.tasteVisual}>
-                    <img src={curatorMakdong} alt="손을 흔들며 맞이하는 자작의 AI 큐레이터 막동이" loading="lazy" />
+                    <img src={curatorMakdong} alt="손을 흔들며 맞이하는 자작의 AI 큐레이터 막동이" loading="lazy"  decoding="async" />
                   </div>
                   <div className={styles.tasteCopy}>
                     <h3>오늘 어떤 술이 좋을까요?</h3>
@@ -2806,7 +2806,7 @@ const ProductList = () => {
 
                   key={`${image}-${index}`}
 
-                />
+                 decoding="async" />
 
               )
 
@@ -2922,7 +2922,7 @@ const ProductList = () => {
 
                 alt={`${selectedAlcohol.name} 이미지`}
 
-              />
+               loading="lazy" decoding="async" />
 
             </div>
 

@@ -379,7 +379,7 @@ const PreferenceQuestions = () => {
           </div>
         </section>
         <section className={styles.questionHeader} aria-labelledby="preference-question-title">
-          <img src={makdongImg} alt="취향을 알아보는 막동이" className={styles.makdong} />
+          <img src={makdongImg} alt="취향을 알아보는 막동이" className={styles.makdong}  loading="lazy" decoding="async" />
           <div className={styles.questionCopy}>
             <span className={styles.questionNumber}>QUESTION {String(currentStep + 1).padStart(2, '0')}</span>
             <h1 id="preference-question-title" className={styles.questionTitle}>{currentQuestion.title}</h1>
@@ -395,7 +395,7 @@ const PreferenceQuestions = () => {
                   className={`${styles.optionCard} ${isSelected ? styles.selected : ''} ${!option.image ? styles.unknownOption : ''}`}
                   onClick={() => handleSelect(option.value)}>
                   <span className={styles.optionContent}>
-                    {option.image ? <img src={option.image} alt="" className={styles.optionImage} /> : <span className={styles.optionIcon} aria-hidden="true">{option.icon}</span>}
+                    {option.image ? <img src={option.image} alt="" className={styles.optionImage}  loading="lazy" decoding="async" /> : <span className={styles.optionIcon} aria-hidden="true">{option.icon}</span>}
                     <span className={styles.optionText}>
                       <strong className={styles.optionLabel}>{option.label}</strong>
                       <span className={styles.optionDescription}>{option.description}</span>

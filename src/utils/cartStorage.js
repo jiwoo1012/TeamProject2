@@ -6,20 +6,20 @@ import {
 
 const CART_KEY = 'jajak_cart'
 
-export const getCart = () => {
+export const getCart = (fallback = []) => {
   try {
     const savedCart = localStorage.getItem(CART_KEY)
 
     if (!savedCart) {
-      return []
+      return fallback
     }
 
     const parsedCart = JSON.parse(savedCart)
 
-    return Array.isArray(parsedCart) ? parsedCart : []
+    return Array.isArray(parsedCart) ? parsedCart : fallback
   } catch (error) {
     console.error('장바구니 불러오기 실패:', error)
-    return []
+    return fallback
   }
 }
 

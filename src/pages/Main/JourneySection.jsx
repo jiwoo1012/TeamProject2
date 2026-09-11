@@ -640,7 +640,7 @@ const JourneySection = ({ onSkip }) => {
               aria-hidden="true"
             >
               <source media="(max-width: 767px)" srcSet={mobileOpeningScenes[index]} />
-              <img className={styles.sceneLayer} src={scene} alt="" />
+              <img className={styles.sceneLayer} src={scene} alt=""  loading="lazy" decoding="async" />
             </picture>
           ) : scene === livingroomNightView ? (
             <div
@@ -651,13 +651,13 @@ const JourneySection = ({ onSkip }) => {
             >
               <picture>
                 <source media="(max-width: 767px)" srcSet={livingroomNightViewMobile} />
-                <img className={styles.sceneLayer} src={livingroomNightView} alt="" />
+                <img className={styles.sceneLayer} src={livingroomNightView} alt=""  loading="lazy" decoding="async" />
               </picture>
-              <img ref={makdongPeekRef} className={styles.makdongWindowPeek} src={makdongWindowPeek} alt="" />
-              <img ref={makdongBundleRef} className={styles.makdongBundleHold} src={makdongBundleHold} alt="" />
+              <img ref={makdongPeekRef} className={styles.makdongWindowPeek} src={makdongWindowPeek} alt=""  loading="lazy" decoding="async" />
+              <img ref={makdongBundleRef} className={styles.makdongBundleHold} src={makdongBundleHold} alt=""  loading="lazy" decoding="async" />
               <picture>
                 <source media="(max-width: 767px)" srcSet={livingroomWindowFrameMobile} />
-                <img className={styles.sceneLayer} src={livingroomWindowFrame} alt="" />
+                <img className={styles.sceneLayer} src={livingroomWindowFrame} alt=""  loading="lazy" decoding="async" />
               </picture>
             </div>
           ) : scene === livingroomTable && index > scenes.indexOf(livingroomNightView) ? (
@@ -669,9 +669,9 @@ const JourneySection = ({ onSkip }) => {
             >
               <picture>
                 <source media="(max-width: 767px)" srcSet={livingroomTableMobile} />
-                <img className={styles.sceneLayer} src={livingroomTable} alt="" />
+                <img className={styles.sceneLayer} src={livingroomTable} alt=""  loading="lazy" decoding="async" />
               </picture>
-              <img ref={makdongChangingRef} className={styles.makdongChangingClothes} src={makdongChangingClothes} alt="" />
+              <img ref={makdongChangingRef} className={styles.makdongChangingClothes} src={makdongChangingClothes} alt=""  loading="lazy" decoding="async" />
             </div>
           ) : scene === makdongTableFront ? (
             <div
@@ -682,9 +682,9 @@ const JourneySection = ({ onSkip }) => {
             >
               <picture>
                 <source media="(max-width: 767px)" srcSet={livingroomTableMobile} />
-                <img className={styles.sceneLayer} src={livingroomTable} alt="" />
+                <img className={styles.sceneLayer} src={livingroomTable} alt=""  loading="lazy" decoding="async" />
               </picture>
-              <img ref={makdongTableFrontRef} className={styles.makdongTableFront} src={makdongTableFront} alt="" />
+              <img ref={makdongTableFrontRef} className={styles.makdongTableFront} src={makdongTableFront} alt=""  loading="lazy" decoding="async" />
             </div>
           ) : scene === makdongTableSpread ? (
             <div
@@ -695,11 +695,11 @@ const JourneySection = ({ onSkip }) => {
             >
               <picture>
                 <source media="(max-width: 767px)" srcSet={livingroomTableMobile} />
-                <img className={styles.sceneLayer} src={livingroomTable} alt="" />
+                <img className={styles.sceneLayer} src={livingroomTable} alt=""  loading="lazy" decoding="async" />
               </picture>
               <picture>
                 <source media="(max-width: 767px)" srcSet={makdongTableSpreadMobile} />
-                <img ref={makdongTableSpreadRef} className={styles.makdongTableSpread} src={makdongTableSpread} alt="" />
+                <img ref={makdongTableSpreadRef} className={styles.makdongTableSpread} src={makdongTableSpread} alt=""  loading="lazy" decoding="async" />
               </picture>
               <div ref={darkOverlayRef} className={styles.darkOverlay} />
             </div>
@@ -712,10 +712,10 @@ const JourneySection = ({ onSkip }) => {
             >
               <picture>
                 <source media="(max-width: 767px)" srcSet={hanokEntranceMobile} />
-                <img className={styles.sceneLayer} src={hanokEntrance} alt="" />
+                <img className={styles.sceneLayer} src={hanokEntrance} alt=""  loading="lazy" decoding="async" />
               </picture>
-              <img ref={entrancePeekRef} className={styles.entrancePeekMakdong} src={makdongWindowPeek} alt="" />
-              <img ref={entranceMakdongRef} className={styles.entranceMakdong} src={hanokMakdong} alt="" />
+              <img ref={entrancePeekRef} className={styles.entrancePeekMakdong} src={makdongWindowPeek} alt=""  loading="lazy" decoding="async" />
+              <img ref={entranceMakdongRef} className={styles.entranceMakdong} src={hanokMakdong} alt=""  loading="lazy" decoding="async" />
               <div ref={backgroundBlinkRef} className={styles.darkOverlay} />
             </div>
           ) : scene === hanokInterior ? (
@@ -727,10 +727,10 @@ const JourneySection = ({ onSkip }) => {
             >
               <picture>
                 <source media="(max-width: 767px)" srcSet={hanokInteriorMobile} />
-                <img className={styles.sceneLayer} src={hanokInterior} alt="" />
+                <img className={styles.sceneLayer} src={hanokInterior} alt=""  loading="lazy" decoding="async" />
               </picture>
-              <img ref={servingMakdongRef} className={styles.servingMakdong} src={servingMakdong} alt="" />
-              <img ref={hanokFoodTrayRef} className={styles.hanokFoodTray} src={hanokFoodTray} alt="" />
+              <img ref={servingMakdongRef} className={styles.servingMakdong} src={servingMakdong} alt=""  loading="lazy" decoding="async" />
+              <img ref={hanokFoodTrayRef} className={styles.hanokFoodTray} src={hanokFoodTray} alt=""  loading="lazy" decoding="async" />
               <div ref={finaleCopyRef} className={styles.finaleCopy}>
                 <p>
                   <span>오늘 하루도 수고했어요.</span>
@@ -743,11 +743,11 @@ const JourneySection = ({ onSkip }) => {
               </div>
             </div>
           ) : (
-            <img key={`${scene}-${index}`} ref={(element) => { sceneRefs.current[index] = element }} className={styles.scene} src={scene} alt="" aria-hidden="true" />
+            <img key={`${scene}-${index}`} ref={(element) => { sceneRefs.current[index] = element }} className={styles.scene} src={scene} alt="" aria-hidden="true"  loading="lazy" decoding="async" />
           )
         ))}
-        <img ref={handRef} className={styles.keypadHand} src={keypadHand} alt="" aria-hidden="true" />
-        <img ref={handleHandRef} className={`${styles.keypadHand} ${styles.doorHandleHand}`} src={doorHandleHand} alt="" aria-hidden="true" />
+        <img ref={handRef} className={styles.keypadHand} src={keypadHand} alt="" aria-hidden="true"  loading="lazy" decoding="async" />
+        <img ref={handleHandRef} className={`${styles.keypadHand} ${styles.doorHandleHand}`} src={doorHandleHand} alt="" aria-hidden="true"  loading="lazy" decoding="async" />
         <span ref={bellRef} className={styles.doorBell} aria-hidden="true" />
         <div className={styles.shade} aria-hidden="true" />
         <div ref={finaleTransitionRef} className={styles.finaleTransition} aria-hidden="true" />

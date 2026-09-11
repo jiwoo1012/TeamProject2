@@ -985,6 +985,41 @@ const ProductGuide = ({
     viewportWidth <= 640
 
 
+  // ========================================
+  // MOBILE OVERLAY TAP
+  // 모바일에서만 검은 배경을 터치하면
+  // NEXT / DONE과 동일하게 동작
+  // ========================================
+
+  const handleOverlayTap = (event) => {
+    if (
+      !isMobile
+      || phase !== 'open'
+    ) {
+      return
+    }
+
+    const clickedRoot =
+      event.target === event.currentTarget
+
+    const clickedBackdrop =
+      event.target?.classList?.contains(
+        styles.backdrop
+      )
+
+    // 버튼, 말풍선, 하단 바 등
+    // 실제 UI를 누른 경우에는 진행하지 않음
+    if (
+      !clickedRoot
+      && !clickedBackdrop
+    ) {
+      return
+    }
+
+    handleNext()
+  }
+
+
   const calloutWidth =
     isMobile
       ? 178
@@ -1121,6 +1156,7 @@ const ProductGuide = ({
       role="dialog"
       aria-modal="true"
       aria-label="스토어 이용 안내"
+      onClick={handleOverlayTap}
     >
       {(
         phase !== 'open'
@@ -1365,7 +1401,7 @@ const ProductGuide = ({
                   currentStep.character
                 }
                 alt=""
-              />
+               loading="lazy" decoding="async" />
             </div>
 
 
@@ -1447,6 +1483,22 @@ const ProductGuide = ({
                 GUIDE_STEPS.length
               }
             </span>
+
+
+            {isMobile && (
+              <span
+                className={
+                  styles.mobileTapHint
+                }
+              >
+                {
+                  step
+                  === GUIDE_STEPS.length - 1
+                    ? '화면을 터치해 완료'
+                    : '화면을 터치해 다음'
+                }
+              </span>
+            )}
 
 
             <div

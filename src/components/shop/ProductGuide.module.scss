@@ -747,6 +747,11 @@
 }
 
 
+.mobileTapHint {
+  display: none;
+}
+
+
 // ========================================
 // SHORT LAPTOP
 // ========================================
@@ -850,6 +855,11 @@
 // ========================================
 
 @media (max-width: 640px) {
+  .guideRoot {
+    touch-action: manipulation;
+  }
+
+
   .topActions {
     top: 12px;
     right: 12px;
@@ -975,6 +985,26 @@
     flex-basis: 21px;
 
     font-size: 9px;
+  }
+
+
+  .mobileTapHint {
+    display: block;
+
+    margin-top: -1px;
+
+    color:
+      rgba(255, 255, 255, 0.7);
+
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.2;
+
+    letter-spacing: -0.02em;
+
+    text-align: center;
+
+    pointer-events: none;
   }
 
 

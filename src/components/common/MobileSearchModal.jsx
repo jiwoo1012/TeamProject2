@@ -460,7 +460,7 @@ const MobileSearchModal = ({
             <img
               src={searchIcon}
               alt=""
-            />
+             loading="lazy" decoding="async" />
           </button>
         </form>
 

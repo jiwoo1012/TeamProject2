@@ -368,10 +368,10 @@ const InquiryQnA = () => {
               onClick={() => setSubmittedInfo(null)}
               aria-label="닫기"
             >
-              <img src={closeIcon} alt="" />
+              <img src={closeIcon} alt=""  loading="lazy" decoding="async" />
             </button>
             <div className={styles.modalIcon} aria-hidden="true">
-              <img src={checkIcon} alt="" />
+              <img src={checkIcon} alt=""  loading="lazy" decoding="async" />
             </div>
             <p className={styles.modalTitle}>문의가 접수되었습니다!</p>
             <p className={styles.modalDesc}>
@@ -381,7 +381,7 @@ const InquiryQnA = () => {
             </p>
             <hr className={styles.modalDivider} />
             <div className={styles.modalContact}>
-              <img src={clipboardIcon} alt="" className={styles.modalContactIcon} />
+              <img src={clipboardIcon} alt="" className={styles.modalContactIcon}  loading="lazy" decoding="async" />
                 <p className={styles.modalContactText}>
                 문의 내용 확인 후
                 <br />

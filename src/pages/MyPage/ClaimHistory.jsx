@@ -982,7 +982,7 @@ const ClaimHistory = () => {
                               claim.productImage
                             }
                             alt=""
-                          />
+                           loading="lazy" decoding="async" />
                         ) : (
                           <span>
                             IMG
