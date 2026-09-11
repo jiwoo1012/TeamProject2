@@ -735,6 +735,13 @@ const AiHistory = () => {
 
 
   const [
+    currentUser,
+    setCurrentUser,
+  ] = useState(undefined)
+
+
+
+  const [
 
     recommendations,
 
@@ -1065,6 +1072,8 @@ const AiHistory = () => {
 
           ) {
 
+            setCurrentUser(null)
+
             setRecommendations(
 
               []
@@ -1082,6 +1091,8 @@ const AiHistory = () => {
           }
 
 
+
+          setCurrentUser(currentUser)
 
           setLoading(
 
@@ -1801,6 +1812,72 @@ const AiHistory = () => {
               추천 기록을 불러오는 중입니다.
 
             </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    )
+
+  }
+
+
+
+  /* ========================================
+
+     LOGIN REQUIRED (비회원)
+
+  ======================================== */
+
+  if (!currentUser) {
+
+    return (
+
+      <div
+
+        className={
+
+          styles.page
+
+        }
+
+      >
+
+        <div
+
+          className={
+
+            styles.contentCard
+
+          }
+
+        >
+
+          <MyPageHeader
+
+            title="AI 추천 기록"
+
+          />
+
+
+
+          <div
+
+            className={
+
+              styles.loginRequired
+
+            }
+
+          >
+
+            <p>
+
+              로그인 후 AI 추천 기록을 확인할 수 있어요.
+
+            </p>
 
           </div>
 

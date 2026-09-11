@@ -416,6 +416,82 @@ const PointHistory = () => {
       )
 
 
+  /* =========================
+     AUTH LOADING (인증 상태 확인 중)
+  ========================= */
+
+  if (currentUser === undefined) {
+    return (
+      <section
+        className={styles.page}
+      >
+        <div
+          className={
+            styles.pointCard
+          }
+        >
+          <MyPageHeader
+            title="포인트"
+          />
+
+
+          <div
+            className={
+              styles.stateBox
+            }
+            role="status"
+          >
+            <span
+              className={
+                styles.loadingSpinner
+              }
+              aria-hidden="true"
+            />
+
+            <strong>
+              포인트 내역을 불러오는 중입니다.
+            </strong>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+
+  /* =========================
+     LOGIN REQUIRED (비회원)
+  ========================= */
+
+  if (!currentUser) {
+    return (
+      <section
+        className={styles.page}
+      >
+        <div
+          className={
+            styles.pointCard
+          }
+        >
+          <MyPageHeader
+            title="포인트"
+          />
+
+
+          <div
+            className={
+              styles.loginRequired
+            }
+          >
+            <p>
+              로그인 후 포인트 내역을 확인할 수 있어요.
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+
   return (
     <section
       className={styles.page}

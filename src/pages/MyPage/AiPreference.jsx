@@ -1258,6 +1258,11 @@ const AiPreference = () => {
 
 
   const [
+    currentUser,
+    setCurrentUser,
+  ] = useState(undefined)
+
+  const [
     preference,
     setPreference,
   ] = useState(null)
@@ -1300,6 +1305,10 @@ const AiPreference = () => {
             currentUser
               .isAnonymous
           ) {
+            setCurrentUser(
+              null
+            )
+
             setPreference(
               null
             )
@@ -1318,6 +1327,11 @@ const AiPreference = () => {
 
             return
           }
+
+
+          setCurrentUser(
+            currentUser
+          )
 
 
           try {
@@ -1761,6 +1775,39 @@ const AiPreference = () => {
             <strong>
               취향 정보를 불러오는 중입니다.
             </strong>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+
+  // ========================================
+  // 로그인 필요 (비회원)
+  // ========================================
+
+  if (!currentUser) {
+    return (
+      <div
+        className={
+          styles.page
+        }
+      >
+        <div
+          className={
+            styles.contentCard
+          }
+        >
+          {renderHeader()}
+
+          <div
+            className={
+              styles.loginRequired
+            }
+          >
+            <p>
+              로그인 후 내 취향 분석을 확인할 수 있어요.
+            </p>
           </div>
         </div>
       </div>

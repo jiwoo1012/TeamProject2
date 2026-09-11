@@ -1590,6 +1590,42 @@ const AddressBook = () => {
   }
 
 
+  /* =========================
+     LOGIN REQUIRED (비회원)
+  ========================= */
+
+  if (!currentUser) {
+    return (
+      <section
+        className={
+          styles.page
+        }
+      >
+        <div
+          className={
+            styles.addressCard
+          }
+        >
+          <MyPageHeader
+            title="배송지 관리"
+          />
+
+
+          <div
+            className={
+              styles.loginRequired
+            }
+          >
+            <p>
+              로그인 후 배송지를 확인하고 관리할 수 있어요.
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+
   return (
     <section
       className={
