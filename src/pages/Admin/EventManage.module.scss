@@ -176,7 +176,7 @@
       $admin-text-secondary;
 
     font: inherit;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
 
     white-space: nowrap;
@@ -211,7 +211,7 @@
       color:
         inherit;
 
-      font-size: 9px;
+      font-size: 12px;
       font-weight: 700;
     }
 
@@ -343,7 +343,7 @@
     $admin-radius-sm;
 
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 
   white-space: nowrap;
@@ -531,7 +531,7 @@
   color:
     $admin-danger;
 
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
 
   white-space: nowrap;
@@ -546,7 +546,7 @@
   color:
     $admin-text-muted;
 
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
 
   text-overflow: ellipsis;
@@ -624,14 +624,14 @@
     color:
       $admin-text-secondary;
 
-    font-size: 11px;
+    font-size: 12px;
   }
 
   small {
     color:
       $admin-text-muted;
 
-    font-size: 10px;
+    font-size: 12px;
   }
 }
 
@@ -662,14 +662,14 @@
     color:
       $admin-text-muted;
 
-    font-size: 10px;
+    font-size: 12px;
   }
 
   strong {
     color:
       $admin-text-primary;
 
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
   }
 }
@@ -707,7 +707,7 @@
     $admin-text-secondary;
 
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 
   cursor: pointer;
@@ -1027,7 +1027,7 @@
       color:
         $admin-text-muted;
 
-      font-size: 10px;
+      font-size: 12px;
     }
 
     dd {
@@ -1040,7 +1040,7 @@
       color:
         $admin-text-secondary;
 
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 500;
     }
   }
@@ -1087,7 +1087,7 @@
       $admin-text-muted;
 
     font: inherit;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
 
     cursor: pointer;
@@ -1145,7 +1145,7 @@
     color:
       $admin-text-secondary;
 
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
   }
 
@@ -1176,7 +1176,7 @@
       $admin-text-primary;
 
     font: inherit;
-    font-size: 11px;
+    font-size: 12px;
 
     &:focus {
       border-color:
@@ -1223,7 +1223,7 @@
   color:
     $admin-text-secondary;
 
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
 }
 
@@ -1268,7 +1268,7 @@
   color:
     $admin-text-muted;
 
-  font-size: 11px;
+  font-size: 12px;
 
   cursor: pointer;
 
@@ -1296,6 +1296,12 @@
 
   margin-top: 4px;
 
+  width: 100%;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   border:
     1px solid
     $admin-primary;
@@ -1310,8 +1316,9 @@
     $admin-surface;
 
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
+  line-height: 1;
 
   cursor: pointer;
 
@@ -1341,7 +1348,7 @@
     color:
       $admin-text-muted;
 
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.5;
   }
 }
@@ -1385,7 +1392,7 @@
     color:
       $admin-text-primary;
 
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
 
     text-overflow: ellipsis;
@@ -1396,7 +1403,7 @@
     color:
       $admin-text-muted;
 
-    font-size: 10px;
+    font-size: 12px;
   }
 
   button {
@@ -1422,7 +1429,7 @@
       $admin-primary;
 
     font: inherit;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
 
     cursor: pointer;
@@ -1459,7 +1466,7 @@
   color:
     $admin-text-muted;
 
-  font-size: 11px;
+  font-size: 12px;
 
   text-align: center;
 
@@ -1511,7 +1518,7 @@
     $admin-radius-sm;
 
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 
   cursor: pointer;
@@ -1594,7 +1601,7 @@
   color:
     $admin-text-secondary;
 
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.65;
 
   p {
@@ -1678,7 +1685,7 @@
     color:
       $admin-text-primary;
 
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
   }
 
@@ -1796,27 +1803,36 @@
   .tabGroup {
     width: 100%;
 
-    display: grid;
-
-    grid-template-columns:
-      repeat(
-        4,
-        minmax(0, 1fr)
-      );
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
 
     gap: 5px;
 
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
     button {
-      min-width: 0;
+      flex:
+        0
+        0
+        auto;
+      min-width: max-content;
       min-height: 30px;
 
       padding:
         0
-        5px;
+        9px;
 
       gap: 3px;
 
-      font-size: 9px;
+      font-size: 12px;
 
       span {
         min-width: 16px;
@@ -1825,7 +1841,7 @@
           1px
           4px;
 
-        font-size: 8px;
+        font-size: 12px;
       }
     }
   }
@@ -1848,7 +1864,7 @@
 
   .titleWrap {
     h2 {
-      font-size: 22px;
+      font-size: 20px;
       line-height: 1.3;
     }
   }
@@ -1877,7 +1893,7 @@
       0
       7px;
 
-    font-size: 9px;
+    font-size: 12px;
   }
 
   .eventCard {
@@ -1897,11 +1913,11 @@
     }
 
     p {
-      font-size: 10px;
+      font-size: 12px;
     }
 
     small {
-      font-size: 9px;
+      font-size: 12px;
     }
   }
 
@@ -2004,11 +2020,7 @@
   }
 
   .tabGroup {
-    grid-template-columns:
-      repeat(
-        2,
-        minmax(0, 1fr)
-      );
+    flex-wrap: nowrap;
   }
 
   .cardHeaderRow {

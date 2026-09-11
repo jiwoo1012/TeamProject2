@@ -98,6 +98,15 @@ const formatNoticeDate = (date) => {
 // 주문 데이터
 // ========================================
 
+const formatShortOrderId = (orderId = '') => {
+  const text = String(orderId)
+
+  return text.length > 3
+    ? `${text.slice(0, 3)}...`
+    : text
+}
+
+
 const normalizeOrder = (document) => {
   const createdDate =
     getTimestampDate(document.createdAt)
@@ -3112,9 +3121,16 @@ const Dashboard = () => {
                               )
                             }
                           >
-                            <td>
-                              {
+                            <td
+                              title={
                                 order.id
+                              }
+                              aria-label={`전체 주문번호 ${order.id}`}
+                            >
+                              {
+                                formatShortOrderId(
+                                  order.id
+                                )
                               }
                             </td>
 

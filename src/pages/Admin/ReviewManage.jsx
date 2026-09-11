@@ -1068,9 +1068,9 @@ const ReviewManage = () => {
 
               const y = bar.y
 
-              const badgeSize = 18
+              const badgeSize = 22
               const badgeX =
-                chartArea.left - 116
+                chartArea.left - 132
               const badgeY =
                 y - badgeSize / 2
 
@@ -1091,7 +1091,7 @@ const ReviewManage = () => {
                 '#ffffff'
 
               ctx.font =
-                '700 9px sans-serif'
+                '700 12px sans-serif'
 
               ctx.textAlign =
                 'center'
@@ -1110,7 +1110,7 @@ const ReviewManage = () => {
                 '#303533'
 
               ctx.font =
-                '600 9px sans-serif'
+                '600 12px sans-serif'
 
               ctx.textAlign =
                 'left'
@@ -1132,7 +1132,7 @@ const ReviewManage = () => {
                 '#505754'
 
               ctx.font =
-                '700 9px sans-serif'
+                '700 12px sans-serif'
 
               ctx.textAlign =
                 'left'
@@ -1162,8 +1162,8 @@ const ReviewManage = () => {
 
         layout: {
           padding: {
-            left: 116,
-            right: 30,
+            left: 132,
+            right: 40,
             top: 4,
             bottom: 4,
           },

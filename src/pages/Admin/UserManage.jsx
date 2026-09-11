@@ -2,6 +2,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 
@@ -277,6 +278,8 @@ const SummaryIcon = ({ type }) => {
 // ========================================
 
 const UserManage = () => {
+  const detailPanelRef = useRef(null)
+
   const [members, setMembers] = useState([])
 
   const [isLoading, setIsLoading] =
@@ -317,6 +320,9 @@ const UserManage = () => {
 
   const [currentPage, setCurrentPage] =
     useState(1)
+
+  const [isMobileView, setIsMobileView] =
+    useState(false)
 
   const [toastMessage, setToastMessage] =
     useState('')
@@ -616,7 +622,33 @@ useEffect(() => {
     ) || null
 
 
-  const pageSize = 10
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(
+      '(max-width: 767px)'
+    )
+
+    const handleViewportChange = () => {
+      setIsMobileView(mediaQuery.matches)
+      setCurrentPage(1)
+    }
+
+    handleViewportChange()
+
+    mediaQuery.addEventListener(
+      'change',
+      handleViewportChange
+    )
+
+    return () => {
+      mediaQuery.removeEventListener(
+        'change',
+        handleViewportChange
+      )
+    }
+  }, [])
+
+
+  const pageSize = isMobileView ? 3 : 10
 
 
   const totalPages =
@@ -953,6 +985,13 @@ useEffect(() => {
     )
 
     setConfirmSuspension(false)
+
+    requestAnimationFrame(() => {
+      detailPanelRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    })
   }
 
 
@@ -1614,6 +1653,7 @@ useEffect(() => {
           // 회원 상세
 
           <aside
+            ref={detailPanelRef}
             className={styles.detailPanel}
             aria-labelledby="member-detail-title"
           >

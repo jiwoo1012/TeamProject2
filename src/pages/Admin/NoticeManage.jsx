@@ -496,7 +496,7 @@ const NoticeManage = () => {
             color: '#747b78',
 
             font: {
-              size: 9,
+              size: 12,
               weight: '600',
             },
           },
