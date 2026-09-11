@@ -1631,6 +1631,41 @@ const ProfileEdit = () => {
   }
 
 
+  /* =========================
+     LOGIN REQUIRED (비회원)
+  ========================= */
+
+  if (!currentUser) {
+    return (
+      <section
+        className={
+          styles.page
+        }
+      >
+        <div
+          className={
+            styles.profileCard
+          }
+        >
+          <MyPageHeader
+            title="회원 정보 관리"
+          />
+
+          <div
+            className={
+              styles.loginRequired
+            }
+          >
+            <p>
+              로그인 후 회원 정보를 확인하고 관리할 수 있어요.
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+
   return (
     <section
       className={

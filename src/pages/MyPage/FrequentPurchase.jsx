@@ -1277,6 +1277,83 @@ const FrequentPurchase = () => {
 
 
   /* =========================
+     AUTH LOADING (인증 상태 확인 중)
+  ========================= */
+
+  if (currentUser === undefined) {
+    return (
+      <section
+        className={styles.page}
+      >
+        <div
+          className={
+            styles.frequentCard
+          }
+        >
+          <MyPageHeader
+            title="자주 구매"
+          />
+
+
+          <div
+            className={
+              styles.stateBox
+            }
+            role="status"
+          >
+            <span
+              className={
+                styles.loadingSpinner
+              }
+              aria-hidden="true"
+            />
+
+            <strong>
+              자주 구매한 상품을
+              불러오는 중입니다.
+            </strong>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+
+  /* =========================
+     LOGIN REQUIRED (비회원)
+  ========================= */
+
+  if (!currentUser) {
+    return (
+      <section
+        className={styles.page}
+      >
+        <div
+          className={
+            styles.frequentCard
+          }
+        >
+          <MyPageHeader
+            title="자주 구매"
+          />
+
+
+          <div
+            className={
+              styles.loginRequired
+            }
+          >
+            <p>
+              로그인 후 자주 구매한 상품을 확인할 수 있어요.
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+
+  /* =========================
      RENDER
   ========================= */
 
