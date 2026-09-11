@@ -598,6 +598,40 @@ const WishList = () => {
   }
 
 
+  /* =========================
+     LOGIN REQUIRED (비회원)
+  ========================= */
+
+  if (!uid) {
+    return (
+      <section
+        className={styles.page}
+      >
+        <div
+          className={
+            styles.wishlistCard
+          }
+        >
+          <MyPageHeader
+            title="찜"
+          />
+
+
+          <div
+            className={
+              styles.loginRequired
+            }
+          >
+            <p>
+              로그인 후 찜한 상품을 확인할 수 있어요.
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+
   return (
     <section
       className={styles.page}

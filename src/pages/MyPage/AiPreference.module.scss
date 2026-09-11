@@ -1236,3 +1236,22 @@
     white-space: nowrap;
   }
 }
+
+.loginRequired {
+  min-height: 380px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  p {
+    margin: 0;
+
+    color: #8f8981;
+
+    font-size: 17px;
+    font-weight: 600;
+  }
+}

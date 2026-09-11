@@ -131,6 +131,10 @@
 .productRow + .productRow {
   border-top: 1px solid v.$color-border;
 }
+.discountPrice {
+  color: v.$color-error;
+  font-weight: v.$font-weight-semibold;
+}
 .productInfo {
   display: flex;
   min-width: 0;
@@ -911,13 +915,13 @@
     font-weight: v.$font-weight-medium;
   }
   .productRow > span:nth-child(2)::before {
-    content: '??';
+    content: '할인 금액';
   }
   .productRow > span:nth-child(3)::before {
-    content: '??';
+    content: '할인 적용가';
   }
   .productRow > strong::before {
-    content: '??';
+    content: '수량';
   }
   .inputRows > label,
   .addressRow {

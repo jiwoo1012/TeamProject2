@@ -214,6 +214,87 @@
 // Tablet
 // ==========================================
 
+@media (max-width: $breakpoint-mobile-max) {
+  .backdrop {
+    align-items: center;
+    padding-block: max(
+      #{$space-4},
+      env(safe-area-inset-top),
+      env(safe-area-inset-bottom)
+    );
+  }
+
+  .popupGroup {
+    justify-content: center;
+  }
+
+  .popup {
+    --image-height-ratio: calc(1385 / 1037);
+
+    width: min(82vw, 330px);
+    // Reserve the 44px controls plus their vertical padding in the card height.
+    height: min(
+      calc(min(82vw, 330px) * var(--image-height-ratio) + 44px + #{$space-3 * 2}),
+      78dvh
+    );
+    max-height: min(
+      78dvh,
+      calc(100dvh - 2 * max(#{$space-4}, env(safe-area-inset-top), env(safe-area-inset-bottom)))
+    );
+
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .popup[data-popup-id='event2'] {
+    --image-height-ratio: calc(1476 / 1066);
+  }
+
+  .popup:not(:first-child) {
+    display: none;
+  }
+
+  .imageLink,
+  .imageArea {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .imageArea {
+    overflow: hidden;
+
+    img {
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .actions {
+    padding: $space-3 $space-4;
+    background: $color-white;
+
+    button {
+      min-width: 0;
+      min-height: 44px;
+      padding: 0;
+      font-size: $font-size-sm;
+      line-height: $line-height-base;
+      text-align: left;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+
+    button[data-close] {
+      flex-shrink: 0;
+      text-align: right;
+
+      &::after {
+        content: ' ×';
+      }
+    }
+  }
+}
+
 @media (min-width: $breakpoint-tablet-min) {
 
   .backdrop {
