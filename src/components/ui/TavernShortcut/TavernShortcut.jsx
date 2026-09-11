@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { PATHS } from '../../../routes/paths'
-import makdongIcon from '../../../assets/webpImages/characters/Mhead.webp'
+import makdongIcon from '../../../assets/images/eventPage/makdong-tavern.png'
 import styles from './TavernShortcut.module.scss'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -100,8 +100,9 @@ const TavernShortcut = ({ attentionTargetRef }) => {
       aria-label="막동이주막 가기"
       tabIndex={isNearFooter ? -1 : 0}
     >
-      <span className={styles.bubble} aria-hidden="true">막동이주막 가기</span>
+      <span className={styles.bubble} aria-hidden="true">막동이 주막 궁금하지 않아?</span>
       <span className={styles.iconFloat} ref={floatRef}>
+        <span className={styles.mobileLabel} aria-hidden="true">막동이 주막 가기</span>
         <span className={styles.iconScale}>
           <img src={makdongIcon} alt="" aria-hidden="true"  loading="lazy" decoding="async" />
         </span>

@@ -54,36 +54,29 @@
   transform: translate(0, -50%);
 }
 
+// PC에는 hover 말풍선(.bubble)이 있지만 모바일은 hover가 없어 목적지를 알 수 없으므로,
+// 모바일 전용 상시 라벨을 별도로 둔다. PC에서는 항상 숨김.
+.mobileLabel { display: none; }
+
 .iconFloat { display: block; }
+// 원형 배경/테두리 없이 makdong-tavern.png 자체가 페이지 위에 떠 있는 것처럼 보이도록
+// box 스타일을 걷어내고, 그림자는 box-shadow 대신 이미지 실루엣을 따르는 drop-shadow로 대체
 .iconScale {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 60px;
-  height: 60px;
-  overflow: hidden;
-  border: 2px solid rgba($color-primary, .45);
-  border-radius: 50%;
-  background: $color-bg;
-  box-shadow: $shadow-sm;
-  transition:
-    transform $transition-base cubic-bezier(.22, 1, .36, 1),
-    box-shadow $transition-base ease,
-    border-color $transition-base ease;
+  display: block;
+  width: 90px;
+  filter: drop-shadow(0 $space-1 $space-3 rgba($color-text-primary, .25));
+  transition: transform $transition-base cubic-bezier(.22, 1, .36, 1), filter $transition-base ease;
 
   img {
+    display: block;
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 50% 38%;
-    transform: scale(1.55);
+    height: auto;
   }
 }
 .shortcut:hover .iconScale,
 .shortcut:focus-visible .iconScale,
 .shortcut.attention .iconScale {
-  border-color: $color-primary;
-  box-shadow: 0 $space-3 $space-5 rgba($color-text-primary, .22);
+  filter: drop-shadow(0 $space-3 $space-5 rgba($color-text-primary, .32));
   transform: scale(1.08);
 }
 
@@ -96,26 +89,58 @@
 }
 .shortcut.attention .iconScale { animation: tavernAttentionWiggle .8s ease-in-out; }
 
-// Mobile has no hover, and an always-visible label widens the button enough
-// to sit over card text while scrolling — so the icon stands alone here,
-// with the label only flashing (above the icon, not sideways into content)
-// during the one-time attention pulse. aria-label still names it for a11y.
+// 모바일은 hover가 없어 PC용 말풍선(.bubble)이 절대 나타나지 않으므로, 링크 목적지를
+// 알리기 위해 이미지 위에 항상 보이는 작은 라벨(.mobileLabel)을 세로로 쌓아 보여준다.
 @include mobile {
   .shortcut {
     right: $side-margin-mobile;
     bottom: calc(92px + 44px + #{$space-3} + env(safe-area-inset-bottom, 0px));
+    // $z-dropdown(200)은 모바일 헤더($z-header:100)보다 높아, 헤더 안의 햄버거 메뉴
+    // 패널(내부적으로 1000~1002를 쓰지만 헤더 전체는 바깥에서 100으로만 취급됨)이 열려도
+    // 이 버튼이 그 위에 그려지는 문제가 있었다. 헤더보다 낮은 값으로 낮춰 메뉴가 항상
+    // 최상단이 되도록 한다. PC에서는 이 문제가 없으므로(모바일 메뉴 자체가 없음) 그대로 둠.
+    z-index: 50;
   }
-  .iconScale { width: 44px; height: 44px; border-width: 1.5px; }
-  // The bubble stays fully suppressed on mobile (rather than repositioned)
-  // — there's no scroll position we can guarantee is free of card text
-  // beneath a fixed corner button, so the attention pulse relies on the
-  // icon wiggle alone here instead of risking covering content.
+  // 라벨을 iconFloat(= GSAP 위아래 float 애니메이션의 대상, floatRef) 안으로 옮겨 함께
+  // 감싸서, 라벨과 이미지가 같은 transform을 공유하는 하나의 그룹으로 움직이게 한다.
+  // (따로 애니메이션을 걸면 타이밍이 어긋날 수 있어, 부모 하나에만 float를 적용)
+  .iconFloat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $space-1;
+  }
+  // 원형 배경이 사라지면서 44px 정사각형 기준이 아니라 이미지 실제 비율(1.2:1, 가로가
+  // 더 긴 주막 일러스트)에 맞춰 폭 기준으로 축소. 54px 폭 → 높이 약 45px로, 터치 최소
+  // 권장 크기(44px)는 지키면서 이전 원형 아이콘과 비슷한 면적으로 콘텐츠 가림을 최소화.
+  // 하단 내비/세이프에어리어 여백은 위 bottom 값이 담당 — 라벨이 위로 붙는 만큼 전체
+  // 그룹은 자연스럽게 위로 늘어나고, 맨 위로 버튼과의 간격은 그대로 유지된다.
+  .iconScale { width: 54px; }
+  // PC 말풍선은 모바일에서 계속 완전히 숨김 — 스크롤 중 카드 텍스트 위에 겹칠 안전한
+  // 위치를 보장할 수 없으므로, 목적지 안내는 아래 상시 라벨이 전담한다.
   .bubble,
   .shortcut:hover .bubble,
   .shortcut:focus-visible .bubble,
   .shortcut.attention .bubble {
     opacity: 0;
     visibility: hidden;
+  }
+  // 상시 노출 라벨: 작고 읽기 쉬운 알약 형태, 따뜻한 아이보리 배경 + 진한 텍스트,
+  // 은은한 테두리/그림자로 "큰 CTA 버튼"이 아니라 이미지에 곁들여진 캡션처럼 보이게 한다.
+  .mobileLabel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: $space-1 $space-3;
+    border-radius: $radius-pill;
+    background: $color-bg;
+    border: 1px solid rgba($color-primary, .3);
+    color: $color-text-primary;
+    font-family: $font-family-base;
+    font-size: 11px;
+    font-weight: $font-weight-semibold;
+    white-space: nowrap;
+    box-shadow: $shadow-sm;
   }
 }
 

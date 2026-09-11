@@ -149,9 +149,13 @@
     border-color $transition-base ease,
     box-shadow $transition-base cubic-bezier(.22, 1, .36, 1);
 }
-.roulette { --event-tint: #{color.mix($color-primary, $color-bg, 18%)}; }
-.card { --event-tint: #{color.mix($color-primary, $color-bg, 12%)}; }
-.quiz { --event-tint: #{color.mix($color-primary, $color-bg, 8%)}; }
+// 세 카드 모두 $color-primary(틸)를 비율만 달리해 섞다 보니 전부 초록/틸 계열로 보였다.
+// 룰렛은 원래 톤(세이지/틸)을 유지하고, 카드/퀴즈만 기존 팔레트 안에서 다른 색 계열로
+// 바꿔 카드가 한눈에 구별되면서도 전체적으로 JAJAK 톤 안에 머물게 한다.
+$quiz-tint-base: #93A9B5; // 채도를 낮춘 회청색 — 하늘색이 아니라 한지 톤과 어울리는 무채색에 가까운 블루그레이
+.roulette { --event-tint: #{color.mix($color-primary, $color-bg, 18%)}; } // 무디 세이지 / 소프트 틸 (기존 유지)
+.card { --event-tint: #{color.mix($color-surface, $color-bg, 55%)}; } // 따뜻한 오트밀 베이지 ($color-surface 기반)
+.quiz { --event-tint: #{color.mix($quiz-tint-base, $color-bg, 32%)}; } // 은은한 블루그레이
 .imageArea {
   position: relative;
   min-width: 0;

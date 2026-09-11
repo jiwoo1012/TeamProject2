@@ -191,3 +191,95 @@
     transform: translateY(-2px);
   }
 }
+
+// 모바일 Customer Service 공통 톤(InquiryQnA.module.scss와 동일한 breakpoint/토큰 사용)
+@media (max-width: v.$breakpoint-mobile-max) {
+  .page {
+    // 하단 고정 MobileBottomNav(≈80px)에 콘텐츠/플로팅 버튼이 가리지 않도록 여유 확보
+    padding: v.$space-10 v.$side-margin-mobile v.$space-24;
+  }
+
+  .content h1 {
+    margin: 0 0 v.$space-6;
+    font-size: v.$font-size-2xl;
+  }
+
+  // 밑줄만 있던 검색창을 카드형 입력 필드로 통일 (Inquiry 폼 인풋과 사이즈/톤 정렬)
+  .searchBox {
+    gap: v.$space-3;
+    margin-bottom: v.$space-6;
+    padding: v.$space-3 v.$space-4;
+    border: 1px solid v.$color-border;
+    border-radius: v.$radius-pill;
+    background: v.$color-white;
+
+    input {
+      font-size: v.$font-size-md;
+    }
+  }
+
+  // 카테고리 칩 5개를 줄바꿈 없이 한 줄로 유지, 넘치면 가로 스크롤
+  .categoryTabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    button {
+      flex-shrink: 0;
+      min-height: 40px;
+      font-size: v.$font-size-sm;
+      white-space: nowrap;
+    }
+  }
+
+  .faqQuestion {
+    gap: v.$space-3;
+  }
+
+  // Q 아이콘 크기를 텍스트/토글 아이콘과 균형 맞춤
+  .faqQMark {
+    width: 26px;
+    height: 26px;
+    font-size: v.$font-size-xs;
+  }
+
+  .faqQuestionText {
+    font-size: v.$font-size-md;
+  }
+
+  .faqToggleIcon {
+    min-width: 20px;
+    font-size: v.$font-size-xl;
+    text-align: center;
+  }
+
+  // 답변 영역을 카드형으로 분리해 가독성/스캔성 개선
+  .faqAnswer {
+    margin-top: v.$space-2;
+    padding: v.$space-4;
+    border-radius: v.$radius-md;
+    background: color-mix(in srgb, v.$color-surface 35%, v.$color-white);
+  }
+
+  // 컨테이너 밖으로 밀려나 가로 스크롤을 유발하던 음수 마진 제거
+  .floatingButton {
+    margin-right: 0;
+    margin-top: v.$space-6;
+
+    .inquiryIcon {
+      width: 88px;
+      height: 88px;
+    }
+
+    em {
+      font-size: v.$font-size-xs;
+    }
+  }
+}
