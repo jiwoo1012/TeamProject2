@@ -1,7 +1,7 @@
 # JAJAK AGENTS.md
 
-> Version: 1.9
-> Last updated: 2026-09-10
+> Version: 1.10
+> Last updated: 2026-09-11
 > Purpose: JAJAK 팀 프로젝트의 프론트엔드 아키텍처, 데이터 계약, 개발 컨벤션과 협업 규칙을 Codex 및 모든 팀원이 동일하게 따르기 위한 공통 지침이다.  
 > 이 문서는 코드 작성 전 우선 확인한다. 확정된 팀 규칙과 충돌하는 임의 구현은 하지 않는다.
 
@@ -17,7 +17,7 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 - 성인인증
 - 전통주 / 안주 / 주류용품 상품 조회
 - AI 주안상 큐레이션
-- 막둥이 주막 체험형 콘텐츠
+- 막동이 주막 체험형 콘텐츠
 - 찜
 - 장바구니
 - Mock 결제 / 주문
@@ -101,7 +101,7 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 - 관리자 공통 UI: `src/components/admin/*`, `src/styles/admin/*`
 - 마이페이지 공통 UI 통합: `src/components/mypage/*`
 - Preference: `src/pages/Auth/Preference*`, `src/constants/{preferenceSurvey,tasteAxis}.js`
-- AI: `src/pages/AiCurator/*`, `src/components/ai/*`, `src/hooks/{useAiSurvey,useAdultCheck}.js`, `src/constants/aiSurvey.js`
+- AI: `src/pages/AiCurator/*`, `src/components/ai/*`, `src/components/ui/TavernShortcut/*`, `src/hooks/{useAiSurvey,useAdultCheck}.js`, `src/constants/aiSurvey.js`
 - AI 기록·관리: `src/pages/MyPage/{AiHistory,AiHistoryDetail,AiPreference}*`, `src/pages/Admin/AiLogManage*`
 - Functions: `functions/src/*`
 - Routing: `src/App.jsx`, `src/routes/*`
@@ -110,7 +110,7 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 
 - Header·Footer·검색·GNB와 전체 Route / nested routing
 - Preference 단계와 `users/{uid}.userPreference` 계약
-- 회원·비회원 AI 설문, 추천, 기록, 막둥이 주막, OpenAI / Functions 연동
+- 회원·비회원 AI 설문, 추천, 기록, 막동이 주막, OpenAI / Functions 연동
 - 관리자 공통 UI·반응형 통합과 Dashboard Firestore 집계 연동
 - 최종 페이지·사용자 흐름·공통 용어·`dev` 통합본 점검
 
@@ -120,6 +120,7 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 - AdminLayout 기본 구조와 개별 관리 기능은 기존 담당자가 유지하며 김지우는 공통 UI·Routing·디자인 통합을 담당한다.
 - `src/components/mypage/*`는 여러 담당자의 MyPage 화면이 공유하는 통합 UI이며 기능·데이터 책임은 각 화면 담당자가 유지한다.
 - Dashboard 초기 UI는 백현정, Firestore 집계와 상세 경로 연결은 김지우가 담당한다.
+- `TavernShortcut`은 김지우의 막동이 주막 연결 UI이며 김태은의 EventList에서 재사용한다.
 - `useAdultCheck.js`와 익명 인증 연결은 목표 구조이며 현재 placeholder / 미연결 상태다.
 
 ## 김태은 — 상품 / 상품 데이터 / 이벤트
@@ -312,6 +313,7 @@ JAJAK은 전통주를 중심으로 안주와 주류용품을 함께 추천하는
 - `src/services/recommendationApi.js`
 - `src/components/shop/*`
 - `src/components/ui/MainSectionNav/*`
+- `src/components/ui/TavernShortcut/*`
 - `src/constants/*`
 - `src/utils/cartStorage.js`
 - `vite.config.js`
@@ -418,7 +420,11 @@ jajak/
     │   │   ├── products/
     │   │   └── splash/
     │   ├── logos/
-    │   └── videos/
+    │   ├── videos/
+    │   └── webpImages/
+    │       ├── characters/
+    │       ├── icons/
+    │       └── images/
     │
     ├── components/
     │   ├── admin/
@@ -493,6 +499,7 @@ jajak/
     │       ├── Pagination/
     │       ├── ProductCard/
     │       ├── QuestionCard/
+    │       ├── TavernShortcut/
     │       └── Tabs/
     │
     ├── constants/
@@ -606,7 +613,8 @@ jajak/
     │   │   ├── OxQuizEvent.jsx
     │   │   ├── OxQuizEvent.module.scss
     │   │   ├── RouletteEvent.jsx
-    │   │   └── RouletteEvent.module.scss
+    │   │   ├── RouletteEvent.module.scss
+    │   │   └── useEventListReveal.js
     │   │
     │   ├── Main/
     │   │   ├── BestSellerSection.jsx
@@ -614,6 +622,8 @@ jajak/
     │   │   ├── JourneySection.module.scss
     │   │   ├── MainPage.jsx
     │   │   ├── MainPage.module.scss
+    │   │   ├── MainPopup.jsx
+    │   │   ├── MainPopup.module.scss
     │   │   ├── SplashIntro.jsx
     │   │   ├── SplashIntro.module.scss
     │   │   ├── useHeroReveal.js
@@ -712,6 +722,7 @@ jajak/
 
 - 실제 저장소에 존재하는 경로를 우선한다.
 - `assets/`는 주요 폴더만 문서화하며 이미지 파일 단위 변경은 AGENTS 버전 변경 사유로 삼지 않는다.
+- 변환된 WebP 에셋은 `src/assets/webpImages/` 아래의 `characters`, `icons`, `images` 구조를 사용한다.
 - Main처럼 특정 페이지에만 사용하는 Section / Hook은 해당 페이지 폴더에 함께 둘 수 있다.
 - 여러 페이지에서 재사용되는 Component / Hook만 공통 영역으로 이동한다.
 - 폴더 또는 파일 위치 변경이 필요하면 팀장과 먼저 협의한다.
@@ -848,6 +859,7 @@ Radius       : 4 / 8 / 12 / 20 / pill
 - ProductCard
 - QuestionCard
 - MainSectionNav
+- TavernShortcut
 - MyPageHeader
 - StatusBadge
 - AdminPageHeader
@@ -1490,12 +1502,13 @@ functions/src/utils/buildCandidateTables.js
 functions/src/utils/filterProducts.js
 ```
 
-- `index.js`: Callable Function 진입점, 요청 검증, 회원 취향 조회, 추천 기록 저장
+- `index.js`: `recommendJajak`, `saveJajakRecommendation` Callable 진입점, 요청 검증, 회원 취향 조회, 추천 기록 생성·저장 상태 변경
 - `recommendation.js`: 후보 구성, Mock/OpenAI 추천, 응답 검증
 - `utils/buildCandidateTables.js`: 추천 후보 테이블 구성
 - `utils/filterProducts.js`: 설문과 안전 조건을 반영한 후보 필터
-- `src/services/recommendationApi.js`는 현재 placeholder이며, `AiResult.jsx`가 `httpsCallable`로 `recommendJajak`을 직접 호출한다.
-- 서비스 계층으로 호출 책임을 이동하기 전까지 `recommendationApi.js`가 실제 연결 파일이라고 문서화하지 않는다.
+- `AiResult.jsx`는 `httpsCallable`로 `recommendJajak`을 직접 호출한다.
+- `src/services/recommendationApi.js`는 `cancelSavedRecommendation(recommendationId)`를 제공하며 `saveJajakRecommendation` Callable에 `isSaved: false`를 전달한다.
+- 추천 생성 호출과 저장 상태 변경 호출이 서로 다른 위치에 있으므로 서비스 계층을 통합할 때 두 계약을 함께 점검한다.
 - 현재 구조에 없는 Functions 하위 폴더를 팀원이 임의 생성하지 않는다.
 
 ## Logical Responsibilities
@@ -1761,6 +1774,15 @@ AI 추천 실행 1회 = Firestore 문서 1개
 - AI Response 정상 검증 직후 1회 저장
 - AiResult 렌더링 / 새로고침 시 재저장하지 않는다.
 - 외부 OpenAI 호출은 Firestore Transaction 밖에서 처리
+
+## Saved State Update
+
+- 추천 기록의 `isSaved` 변경은 `saveJajakRecommendation` Callable을 사용한다.
+- 요청은 `{ recommendationId, isSaved }`, 응답은 `{ recommendationId, isSaved }` 구조다.
+- 로그인한 비익명 회원이며 `users/{uid}.status === "active"`인 경우에만 처리한다.
+- Function은 요청한 회원 자신의 `users/{uid}/recommendations/{recommendationId}`만 Transaction으로 갱신한다.
+- 현재 `recommendationApi.js`의 `cancelSavedRecommendation`은 `isSaved: false` 변경에 사용한다.
+- 클라이언트가 추천 문서를 직접 update하지 않는다.
 
 ## Save Failure
 
@@ -2210,7 +2232,7 @@ constants/eventStatus.js
 - 로그인 회원 결과는 Firestore 저장
 - 비회원 결과는 React 임시 상태
 - 추천 결과 없이 `/ai/result` 직접 접근 시 `/ai` 또는 `/ai/survey` 이동
-- 막둥이 주막은 `src/data/tavernGame.js`와 전용 에셋을 사용하는 체험형 콘텐츠다.
+- 막동이 주막은 `src/data/tavernGame.js`와 전용 에셋을 사용하는 체험형 콘텐츠다.
 
 ## Cart / Order
 
@@ -2428,6 +2450,7 @@ AI 오류는 공통 Error Code를 기준으로 사용자용 메시지로 변환�
 | 이벤트 상태 | `constants/eventStatus.js` |
 | 관리자 실제 권한 | `users/{uid}.role` + Firestore Rules / server validation |
 | AI 추천 기록 | Firestore `users/{uid}/recommendations/{recommendationId}` |
+| AI 추천 저장 상태 변경 | `saveJajakRecommendation` Callable + `recommendationApi.js` |
 | 관리자 AI 이용 로그 | Firestore `aiRecommendationLogs/{logId}` / 현재 관리 UI는 `mockLogs` |
 | 리뷰 | Firestore `reviews/{reviewId}` |
 | 디자인 Token | `src/styles/_variables.scss` |
@@ -2630,12 +2653,17 @@ Codex는 다음 순서와 규칙을 따른다.
 - 이벤트 준비 화면 → `/events/ready/:eventType`
 - 이벤트 참여 저장 → `eventParticipations/{eventId}_{uid}` 공통 사용
 - AI 추천 저장 → `users/{uid}/recommendations/{recommendationId}`
-- 막둥이 주막 → `/ai/tavern` + `src/data/tavernGame.js`
+- 막동이 주막 → `/ai/tavern` + `src/data/tavernGame.js`
+- 막동이 주막 바로가기 → `src/components/ui/TavernShortcut/*`, EventList에서 재사용
 - AI 추천 기록 상세 → `/mypage/ai-history/:recommendationId`
+- AI 추천 저장 취소 → `recommendationApi.js`의 `cancelSavedRecommendation` + `saveJajakRecommendation` Callable
 - 관리자 AI 이용 로그 → Functions가 `aiRecommendationLogs/{logId}` 저장 / `AiLogManage` 화면은 현재 `mockLogs`
 - 관리자·마이페이지 공통 UI → `src/components/admin/*`, `src/components/mypage/*`
 - `MyPageCard*`, `MyPageEmpty*` → 현재 빈 placeholder 파일
 - 상품 안내·액션 공통 UI → `src/components/shop/*`
+- Main 이벤트 팝업 → `src/pages/Main/MainPopup*`
+- EventList 전용 Reveal Hook → `src/pages/Event/useEventListReveal.js`
+- WebP 변환 에셋 → `src/assets/webpImages/*`
 - `ProtectedRoute` / `AdminRoute` → placeholder 상태이며 Route guard 연결 필요
 
 기존 핵심 데이터 계약:
@@ -2655,10 +2683,20 @@ Codex는 다음 순서와 규칙을 따른다.
 
 # 36. Version History
 
+## v1.10 — 2026-09-11
+
+- 최신 `origin/dev` 통합본 `4bd7cc4`와 `origin/main` 배포본 `5a222f7` 기준으로 실제 구조 재점검
+- `MainPopup`, `TavernShortcut`, `useEventListReveal`과 관련 폴더 구조 반영
+- `src/assets/webpImages/`의 WebP 변환 에셋 구조 반영
+- `recommendationApi.js`의 placeholder 설명을 제거하고 `cancelSavedRecommendation` 실제 구현 반영
+- `saveJajakRecommendation` Callable의 요청·응답·회원 상태 검증·Transaction 계약 추가
+- 추천 생성 호출과 저장 상태 변경 호출의 현재 서비스 경계 명시
+- README에 막동이 주막, 추천 저장 상태, AI 로그, WebP 전환과 최신 공동 작업 경계 반영
+
 ## v1.9 — 2026-09-10
 
 - 최신 `origin/dev` 통합본 `25d7631` 기준으로 실제 구조 재점검
-- 막둥이 주막 `MakdongTavern`, `tavernGame.js`, `/ai/tavern` Route 반영
+- 막동이 주막 `MakdongTavern`, `tavernGame.js`, `/ai/tavern` Route 반영
 - `AiHistoryDetail`과 `/mypage/ai-history/:recommendationId` Route 반영
 - 관리자·마이페이지·상품·메인 공통 컴포넌트와 관리자 전용 스타일 폴더 반영
 - `MyPageCard*`, `MyPageEmpty*`의 빈 placeholder 상태 명시
