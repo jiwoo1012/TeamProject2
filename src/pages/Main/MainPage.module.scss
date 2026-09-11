@@ -4,6 +4,11 @@
   :global(main:has(> [data-main-page])) {
     padding-bottom: 0;
   }
+
+  // Portaled floating controls use $z-dropdown outside the header stacking context.
+  :global(body:has([data-main-page]) header:has([data-mobile-menu-open='true'])) {
+    z-index: $z-dropdown + 1;
+  }
 }
 
 :global(body:has([data-main-page]) header) {
@@ -1431,7 +1436,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: $space-2 $space-3;
-  margin: $space-4 0 0;
+  // Keep the centered copy height unchanged so only this row moves down.
+  margin: $space-6 0 (-$space-2);
   padding: 0;
   list-style: none;
   color: $color-text-secondary;
@@ -1631,6 +1637,7 @@
 }
 
 .bestSeller {
+  --best-seller-background: #f6f1e9;
   --best-seller-steps: 1;
   --best-seller-card-stack-y: 100px;
 
@@ -1638,7 +1645,7 @@
   z-index: 0;
   min-height: calc(var(--best-seller-steps) * 100svh);
   color: $color-text-primary;
-  background: #f8f6f2;
+  background-color: var(--best-seller-background);
   isolation: isolate;
 
   &::before {
@@ -1682,6 +1689,7 @@
 }
 
 .bestSellerStage {
+  background-color: var(--best-seller-background);
   position: sticky;
   top: 0;
   z-index: 1;

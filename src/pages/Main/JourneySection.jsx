@@ -786,7 +786,7 @@ const JourneySection = ({ onSkip }) => {
       <span ref={sceneCursorRef} className={styles.sceneScrollCursor} aria-hidden="true">
         <i />
         <span className={styles.autoScrollLabel}>
-          자동재생중<span className={styles.autoScrollDots}><span>.</span><span>.</span><span>.</span></span>
+          자동 재생 중<span className={styles.autoScrollDots}><span>.</span><span>.</span><span>.</span></span>
         </span>
       </span>,
       document.body

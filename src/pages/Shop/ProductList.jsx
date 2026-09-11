@@ -34,6 +34,7 @@ import bannerOne from '../../assets/webpImages/images/banner/shopBenner-1.webp'
 import bannerTwo from '../../assets/webpImages/images/banner/shopBenner-2.webp'
 
 import bannerThree from '../../assets/webpImages/images/banner/shopBenner-3.webp'
+import curatorMakdong from '../../assets/webpImages/images/brand/makdong-sitting-wave.webp'
 
 import styles from './ProductList.module.scss'
 
@@ -724,6 +725,8 @@ const ProductList = () => {
       ({ id }) => id === categoryId
 
     ) ?? mainCategories[0]
+
+  const categoryTitle = detailFilter === '전체' ? activeCategory.label : detailFilter
 
   const detailOptions = useMemo(() => {
 
@@ -2201,11 +2204,19 @@ const ProductList = () => {
                     </div>
                   )}
                   {banner.image === bannerThree && (
+                    <>
+                    <Link
+                      className={styles.eventBannerMobileLink}
+                      to={banner.to}
+                      aria-label={banner.label}
+                      tabIndex={index === bannerIndex ? 0 : -1}
+                    />
                     <div className={`${styles.bannerCopy} ${styles.eventBannerCopy}`}>
                       <h2>오늘의 행운,<br />놓치지 마세요!</h2>
                       <p>룰렛부터 퀴즈까지,<br />참여하고 포인트도 받아가세요.</p>
                       <Link className={styles.bannerCta} to={banner.to} tabIndex={index === bannerIndex ? 0 : -1}>이벤트 참여하기 <span aria-hidden="true">→</span></Link>
                     </div>
+                    </>
                   )}
 
                 </div>
@@ -2330,7 +2341,7 @@ const ProductList = () => {
 
                   ? `'${searchKeyword}' 검색 결과`
 
-                  : activeCategory.label}
+                  : categoryTitle}
 
               </h2>
 
@@ -2724,19 +2735,17 @@ const ProductList = () => {
 
                 <div className={styles.tasteContent}>
 
-                  <h1 id="taste-finder-title">막동이와 취향 찾기</h1>
-
-                  <p>
-
-                    막동이가 당신이 좋아하는 맛, 원하는 시간대 등을 분석하여 어울리는 조합을 찾아드립니다.
-
-                    <br />
-
-                    나에게 딱 맞는 술상을 차려보세요.
-
-                  </p>
-
-                  <Link to="/ai">취향 찾으러 가기</Link>
+                  <div className={styles.tasteHeading}>
+                    <h2 id="taste-finder-title">막동이의 AI 취향 큐레이션</h2>
+                  </div>
+                  <div className={styles.tasteVisual}>
+                    <img src={curatorMakdong} alt="손을 흔들며 맞이하는 자작의 AI 큐레이터 막동이" loading="lazy" />
+                  </div>
+                  <div className={styles.tasteCopy}>
+                    <h3>오늘 어떤 술이 좋을까요?</h3>
+                    <p>취향과 기분을 알려주면<br />막동이가 어울리는 술과 안주를 골라드려요.</p>
+                    <Link to={PATHS.ai}>막동이에게 추천받기</Link>
+                  </div>
 
                 </div>
 

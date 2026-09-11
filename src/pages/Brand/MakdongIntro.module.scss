@@ -739,6 +739,7 @@
 .characterStoryHeader h2 {
   margin: 0;
   font-size: clamp(2.1rem, 3.2vw, 3.6rem);
+  font-weight: 700;
   line-height: 1.35;
 }
 
@@ -767,6 +768,7 @@
 
 .characterPurpose h3 {
   margin: 0;
+  font-weight: 700;
   font-size: clamp(1.65rem, 2.6vw, 2.5rem);
   line-height: 1.5;
 }
@@ -1088,11 +1090,17 @@
   }
 
   .blankCharacterSection {
-    min-height: calc(100svh - var(--makdong-header-height) - var(--makdong-tabbar-space));
+    min-height: calc(100svh - var(--makdong-header-height));
+    min-height: calc(100dvh - var(--makdong-header-height));
     box-sizing: border-box;
     padding: $space-16 $space-5 $space-6;
     scroll-margin-top: var(--makdong-header-height);
     background: $color-primary;
+  }
+
+  .blankCharacterSection > picture {
+    display: block;
+    margin-top: $space-6;
   }
 
   .blankCharacterSection h2 {
@@ -1132,10 +1140,12 @@
   }
 
   .transitionMakdong {
-    right: 5%;
-    bottom: $space-6;
-    width: 90%;
-    height: 58%;
+    position: relative;
+    display: block;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    height: auto;
     max-height: none;
     object-fit: contain;
   }
@@ -1326,7 +1336,7 @@
     background: $color-primary;
     padding-top: $space-12;
   }
-  .blankCharacterSection h2 { color: rgba($color-bg, 0.35); font-size: clamp(9rem, 19vw, 20rem); }
+  .blankCharacterSection h2 { color: rgba($color-bg, 0.35); font-size: clamp(5rem, 13vw, 12rem); }
   .transitionTagline { position: absolute; top: 48%; left: 10%; width: 32%; margin: 0; color: $color-bg; font-size: clamp($font-size-3xl, 2.4vw, $font-size-4xl); line-height: 1.6; word-break: keep-all; text-wrap: balance; text-align: left; }
   .transitionMakdong { right: 5%; bottom: 3%; width: 52%; height: 78%; max-height: none; object-fit: contain; filter: drop-shadow(0 24px 28px rgba($color-text-primary, 0.16)); transform-origin: 50% 85%; }
   .ceramicStillLife, .flowRibbons, .transitionFloor { display: none; }

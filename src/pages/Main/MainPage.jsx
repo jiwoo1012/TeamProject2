@@ -60,10 +60,10 @@ const mainEvents = eventsData.map(({ event }, index) => ({
 }))
 
 const makdongTraits = [
-  { icon: '✣', title: '다정한 안내자', description: '전통주의 매력을\n쉽고 재미있게 소개해요.' },
-  { icon: '♟', title: '호기심 많은 탐험가', description: '새로운 술과 이야기를\n찾아 전국을 여행해요.' },
-  { icon: '▱', title: '찐 애주가', description: '막동이의 취향으로\n솔직하게 추천해요.' },
-  { icon: '♥', title: '따뜻한 친구', description: '막동이의 이야기가\n당신의 일상에 스며들어요.' },
+  { icon: 'M12 3 C13.5 9 15 10.5 21 12 C15 13.5 13.5 15 12 21 C10.5 15 9 13.5 3 12 C9 10.5 10.5 9 12 3 Z', title: '다정한 안내자', description: '전통주의 매력을\n쉽고 재미있게 소개해요.' },
+  { icon: 'M9 3 H15 M10 3 V7 C10 9 5.5 10 5.5 14 V18 C5.5 20 7 21 9 21 H15 C17 21 18.5 20 18.5 18 V14 C18.5 10 14 9 14 7 V3 M10 6 H14 M9 14 H15', title: '호기심 많은 탐험가', description: '새로운 술과 이야기를\n찾아 전국을 여행해요.' },
+  { icon: 'M3 8 C3 4 21 4 21 8 C21 12 3 12 3 8 Z M3 8 C4 14 6 18 12 18 C18 18 20 14 21 8 M9 18 V20 H15 V18', title: '찐 애주가', description: '막동이의 취향으로\n솔직하게 추천해요.' },
+  { icon: 'M12 20 C10 18 3 13.5 3 8.5 C3 3.5 9 2.5 12 7 C15 2.5 21 3.5 21 8.5 C21 13.5 14 18 12 20 Z', title: '따뜻한 친구', description: '막동이의 이야기가\n당신의 일상에 스며들어요.' },
 ]
 
 const moodRecommendations = [
@@ -97,18 +97,23 @@ const MainPage = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const shouldSkipJourney = location.state?.skipJourney === true
+  const resetMainAfterLogout = location.state?.resetMainAfterLogout === true
 
   const [isIntroSkipped, setIsIntroSkipped] = useState(
     !IS_JOURNEY_ENABLED || shouldSkipJourney
   )
   const [bestSellerProducts, setBestSellerProducts] = useState([])
+  const [isMobileViewport, setIsMobileViewport] = useState(
+    () => window.matchMedia('(max-width: 767px)').matches
+  )
   const [isHeroDismissed, setIsHeroDismissed] = useState(
-    () => !window.matchMedia('(max-width: 767px)').matches
+    () => !resetMainAfterLogout && !window.matchMedia('(max-width: 767px)').matches
       && sessionStorage.getItem(HERO_DISMISSED_KEY) === 'true'
   )
   useEffect(() => {
     const mobileViewport = window.matchMedia('(max-width: 767px)')
     const handleMobileViewport = () => {
+      setIsMobileViewport(mobileViewport.matches)
       if (mobileViewport.matches) setIsHeroDismissed(false)
     }
     handleMobileViewport()
@@ -205,12 +210,18 @@ const MainPage = () => {
     if (!shouldSkipJourney) return
 
     setIsIntroSkipped(true)
+    if (resetMainAfterLogout) {
+      sessionStorage.removeItem(HERO_DISMISSED_KEY)
+      setIsHeroDismissed(false)
+      heroRevealRef.current?.pause(0)
+      canMovePastHeroRef.current = false
+    }
 
     const root = document.documentElement
     const previousScrollBehavior = root.style.scrollBehavior
 
     root.style.scrollBehavior = 'auto'
-    window.scrollTo({ top: isHeroDismissed ? aiIntroRef.current?.offsetTop ?? 0 : 0, behavior: 'instant' })
+    window.scrollTo({ top: !resetMainAfterLogout && isHeroDismissed ? aiIntroRef.current?.offsetTop ?? 0 : 0, behavior: 'instant' })
     ScrollTrigger.refresh()
     root.style.scrollBehavior = previousScrollBehavior
 
@@ -220,7 +231,7 @@ const MainPage = () => {
       replace: true,
       state: null,
     })
-  }, [shouldSkipJourney, navigate, location.pathname, isHeroDismissed])
+  }, [shouldSkipJourney, resetMainAfterLogout, navigate, location.pathname, isHeroDismissed])
 
 
   useEffect(() => {
@@ -303,7 +314,11 @@ const MainPage = () => {
 
   return (
     <div className={styles.page} data-main-page>
-      <MobileTopButton contentRef={aiIntroRef} targetRef={aiIntroRef} ariaLabel="조합 추천받기 섹션으로 이동" />
+      <MobileTopButton
+        contentRef={aiIntroRef}
+        targetRef={isMobileViewport ? mainContentRef : aiIntroRef}
+        ariaLabel={isMobileViewport ? '메인 첫 섹션으로 이동' : '조합 추천받기 섹션으로 이동'}
+      />
       <MainSectionNav contentRef={aiIntroRef} />
       {/* 여정 인트로 섹션 */}
       {!isIntroSkipped && <JourneySection onSkip={handleSkipIntro} />}
@@ -547,7 +562,21 @@ const MainPage = () => {
           <div className={styles.makdongTraits} aria-label="막동이의 특징">
             {makdongTraits.map(({ icon, title, description }) => (
               <article className={styles.makdongTrait} key={title}>
-                <span className={styles.makdongTraitIcon} aria-hidden="true">{icon}</span>
+                <span className={styles.makdongTraitIcon} aria-hidden="true">
+                  <svg
+                    width="1em"
+                    height="1em"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.25"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    focusable="false"
+                  >
+                    <path d={icon} />
+                  </svg>
+                </span>
                 <strong>{title}</strong>
                 <p>{description}</p>
               </article>

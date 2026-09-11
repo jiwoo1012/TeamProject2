@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -475,6 +475,14 @@ const BrandIntro = () => {
                 </div>
               </div>
               <div className={styles.senseText}>
+                {/* Mobile grid reserves enough space for every slide's copy. */}
+                {senseItems.map((item) => (
+                  <Fragment key={item.number}>
+                    <span className={styles.senseTextSizer} aria-hidden="true">{item.number}</span>
+                    <h3 className={styles.senseTextSizer} aria-hidden="true">{item.title}</h3>
+                    <p className={styles.senseTextSizer} aria-hidden="true">{item.description}</p>
+                  </Fragment>
+                ))}
                 <span>{activeSense.number}</span>
                 <h3>{activeSense.title}</h3>
                 <p>{activeSense.description}</p>

@@ -282,10 +282,6 @@ const Login = () => {
               </label>
 
 
-              <span className={styles.forgotPassword}>
-                비밀번호 찾기
-              </span>
-
             </div>
 
           </form>

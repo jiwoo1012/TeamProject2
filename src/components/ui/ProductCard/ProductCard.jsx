@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import styles from './ProductCard.module.scss'
@@ -13,6 +13,15 @@ const ProductCard = ({
   isInCart = false,
 }) => {
   const [loadedHoverImage, setLoadedHoverImage] = useState(null)
+  const [isMobile, setIsMobile] = useState(() => window.matchMedia('(max-width: 767px)').matches)
+
+  useEffect(() => {
+    const viewport = window.matchMedia('(max-width: 767px)')
+    const handleViewportChange = () => setIsMobile(viewport.matches)
+    handleViewportChange()
+    viewport.addEventListener('change', handleViewportChange)
+    return () => viewport.removeEventListener('change', handleViewportChange)
+  }, [])
 
   const discountRate =
     Number.parseInt(product.discountRate, 10) || 0
@@ -139,7 +148,7 @@ const ProductCard = ({
               {isWished ? '♥' : '♡'}
             </button>
 
-            <button
+            {!isMobile && <button
               className={styles.cartButton}
               type="button"
               aria-label={
@@ -163,10 +172,26 @@ const ProductCard = ({
                   ? '✓ 장바구니 담김'
                   : '장바구니 담기'
               }
-            </button>
+            </button>}
           </div>
         )}
       </div>
+
+      {!isSoldOut && isMobile && (
+        <button
+          className={styles.cartButton}
+          type="button"
+          aria-label={isInCart ? '장바구니에서 삭제' : '장바구니 담기'}
+          aria-pressed={isInCart}
+          data-product-guide-target="cart"
+          onClick={(event) => {
+            event.preventDefault()
+            onAddToCart?.(product, getFlySourceImage(event))
+          }}
+        >
+          {isInCart ? '✓ 장바구니 담김' : '장바구니 담기'}
+        </button>
+      )}
 
       <div className={styles.info}>
         <h3 className={styles.name}>

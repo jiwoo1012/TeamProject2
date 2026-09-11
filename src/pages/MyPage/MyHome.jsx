@@ -28,6 +28,107 @@ import { cancelSavedRecommendation } from '../../services/recommendationApi'
 import styles from './MyHome.module.scss'
 
 
+/* =========================
+   상품 이미지
+   - 기존 주문 데이터에 .png가 남아 있어도
+     현재 .webp 파일을 확장자와 무관하게 찾아줍니다.
+========================= */
+
+const productImages = import.meta.glob(
+  '../../assets/images/products/**/*.{webp,png,jpg,jpeg,avif}',
+  {
+    eager: true,
+    import: 'default',
+  }
+)
+
+const normalizeImageFileName = (value = '') => {
+  const normalizedPath = String(value)
+    .split('?')[0]
+    .split('#')[0]
+    .replace(/\\/g, '/')
+
+  const fileName =
+    normalizedPath
+      .split('/')
+      .pop() || ''
+
+  try {
+    return decodeURIComponent(fileName).toLowerCase()
+  } catch {
+    return fileName.toLowerCase()
+  }
+}
+
+const removeImageExtension = (fileName = '') =>
+  fileName.replace(/\.[^.]+$/, '')
+
+const productImageEntries =
+  Object.entries(productImages).map(
+    ([path, src]) => {
+      const fileName =
+        normalizeImageFileName(path)
+
+      return {
+        src,
+        fileName,
+        stem:
+          removeImageExtension(
+            fileName
+          ),
+      }
+    }
+  )
+
+const resolveProductImage = (imageUrl) => {
+  if (!imageUrl) return ''
+
+  const rawUrl =
+    String(imageUrl).trim()
+
+  if (
+    /^(https?:\/\/|data:|blob:)/i.test(
+      rawUrl
+    )
+  ) {
+    return rawUrl
+  }
+
+  const targetFileName =
+    normalizeImageFileName(
+      rawUrl
+    )
+
+  if (!targetFileName) {
+    return ''
+  }
+
+  const exactMatch =
+    productImageEntries.find(
+      (image) =>
+        image.fileName ===
+        targetFileName
+    )
+
+  if (exactMatch) {
+    return exactMatch.src
+  }
+
+  const targetStem =
+    removeImageExtension(
+      targetFileName
+    )
+
+  const stemMatch =
+    productImageEntries.find(
+      (image) =>
+        image.stem === targetStem
+    )
+
+  return stemMatch?.src || ''
+}
+
+
 const formatNumber = (value) =>
   new Intl.NumberFormat('ko-KR').format(value)
 
@@ -705,43 +806,198 @@ const MyHome = () => {
         </section>
 
 
-        <section className={styles.section} aria-labelledby="home-taste-title">
+        {/* =========================
+            나의 취향 분석 - PC
+        ========================= */}
+
+        <section
+          className={`${styles.section} ${styles.desktopTasteSection}`}
+          aria-labelledby="home-taste-title"
+        >
           <div className={styles.sectionHeading}>
             <div>
               <h3 id="home-taste-title">나의 취향 분석</h3>
             </div>
           </div>
+
           {hasPreference ? (
             <div className={styles.tasteTable}>
               <table>
-                <caption className={styles.srOnly}>저장된 설문 답변에 따른 취향 분석</caption>
-                <thead><tr><th scope="col">취향</th><th scope="col">선호 정도</th><th scope="col">나의 답변</th></tr></thead>
+                <caption className={styles.srOnly}>
+                  저장된 설문 답변에 따른 취향 분석
+                </caption>
+
+                <thead>
+                  <tr>
+                    <th scope="col">취향</th>
+                    <th scope="col">선호 정도</th>
+                    <th scope="col">나의 답변</th>
+                  </tr>
+                </thead>
+
                 <tbody>
                   {tasteRows.map((row) => (
                     <tr key={row.key}>
-                      <th scope="row">{row.title}</th>
+                      <th scope="row">
+                        {row.title}
+                      </th>
+
                       <td>
-                        <div className={styles.tasteScale} aria-hidden="true">
-                          {row.options.map((option, index) => (
-                            <span key={option} className={index <= row.index ? styles.tasteSelected : undefined} />
-                          ))}
+                        <div
+                          className={styles.tasteScale}
+                          aria-hidden="true"
+                        >
+                          {row.options.map(
+                            (option, index) => (
+                              <span
+                                key={option}
+                                className={
+                                  index <= row.index
+                                    ? styles.tasteSelected
+                                    : undefined
+                                }
+                              />
+                            )
+                          )}
                         </div>
                       </td>
-                      <td>{row.label}</td>
+
+                      <td>
+                        {row.label}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           ) : (
-            <p className={styles.emptyState}>아직 등록된 취향이 없어요. 나으리의 입맛을 알려주세요.</p>
+            <p className={styles.emptyState}>
+              아직 등록된 취향이 없어요. 나으리의 입맛을 알려주세요.
+            </p>
           )}
+
           <div className={styles.tasteActions}>
-            <Link to={PATHS.preference} className={styles.moreLink}>
-              {hasPreference ? '취향 다시 설정하기' : '내 취향 알아보기'}
+            <Link
+              to={PATHS.preference}
+              className={styles.moreLink}
+            >
+              {hasPreference
+                ? '취향 다시 설정하기'
+                : '내 취향 알아보기'}
             </Link>
-            <Link to={PATHS.ai} className={styles.recommendButton}>오늘의 주안상 추천받기</Link>
+
+            <Link
+              to={PATHS.ai}
+              className={styles.recommendButton}
+            >
+              오늘의 주안상 추천받기
+            </Link>
           </div>
+        </section>
+
+
+        {/* =========================
+            나의 취향 분석 - MOBILE
+        ========================= */}
+
+        <section
+          className={styles.mobileTasteSection}
+          aria-labelledby="mobile-home-taste-title"
+        >
+          <div className={styles.mobileTasteHeading}>
+            <div>
+              <h3 id="mobile-home-taste-title">
+                나의 취향
+              </h3>
+
+              <p>
+                막동이가 기억하고 있는 나리의 취향이에요.
+              </p>
+            </div>
+          </div>
+
+          {hasPreference ? (
+            <div className={styles.mobileTasteCard}>
+              <div className={styles.mobileTasteIntro}>
+                <span>
+                  막동이가 기억한 취향
+                </span>
+
+                <strong>
+                  {tasteDescription
+                    ? `${tasteDescription}을 좋아하시네요!`
+                    : '나리의 취향을 차곡차곡 기억하고 있어요.'}
+                </strong>
+              </div>
+
+              <div className={styles.mobileTasteList}>
+                {tasteRows.map((row) => (
+                  <div
+                    key={row.key}
+                    className={styles.mobileTasteRow}
+                  >
+                    <span className={styles.mobileTasteLabel}>
+                      {row.title}
+                    </span>
+
+                    <div
+                      className={styles.mobileTasteScale}
+                      aria-hidden="true"
+                    >
+                      {row.options.map(
+                        (option, index) => (
+                          <span
+                            key={option}
+                            className={
+                              index <= row.index
+                                ? styles.mobileTasteSelected
+                                : undefined
+                            }
+                          />
+                        )
+                      )}
+                    </div>
+
+                    <span className={styles.mobileTasteAnswer}>
+                      {row.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <Link
+                to={PATHS.preference}
+                className={styles.mobileTasteLink}
+              >
+                내 취향 자세히 보기
+
+                <span aria-hidden="true">
+                  ›
+                </span>
+              </Link>
+            </div>
+          ) : (
+            <div className={styles.mobileTasteEmpty}>
+              <strong>
+                아직 등록된 취향이 없어요.
+              </strong>
+
+              <p>
+                몇 가지 질문에 답하고 나리의 취향을 알려주세요.
+              </p>
+
+              <Link
+                to={PATHS.preference}
+                className={styles.mobileTasteLink}
+              >
+                내 취향 알아보기
+
+                <span aria-hidden="true">
+                  ›
+                </span>
+              </Link>
+            </div>
+          )}
         </section>
 
         {/* =========================
@@ -835,10 +1091,12 @@ const MyHome = () => {
                         styles.productThumb
                       }
                     >
-                      {order.imageUrl ? (
+                      {resolveProductImage(order.imageUrl) ? (
                         <img
                           src={
-                            order.imageUrl
+                            resolveProductImage(
+                              order.imageUrl
+                            )
                           }
                           alt=""
                         />

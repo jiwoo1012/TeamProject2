@@ -760,6 +760,83 @@
 }
 
 
+
+/* =========================
+   MOBILE TASTE SUMMARY
+   - 기본(PC/태블릿)에서는 숨김
+========================= */
+
+.mobileTasteSection {
+  display: none;
+}
+
+
+.mobileTasteHeading {
+  h3,
+  p {
+    margin: 0;
+  }
+}
+
+
+.mobileTasteCard,
+.mobileTasteEmpty {
+  border: 1px solid #e3ddd4;
+  border-radius: 16px;
+
+  background: #fbfaf7;
+}
+
+
+.mobileTasteIntro {
+  span,
+  strong {
+    display: block;
+  }
+}
+
+
+.mobileTasteList {
+  display: grid;
+}
+
+
+.mobileTasteRow {
+  display: grid;
+  align-items: center;
+}
+
+
+.mobileTasteScale {
+  display: flex;
+
+  span {
+    flex: 1;
+
+    border-radius: v.$radius-pill;
+
+    background: #e3ded5;
+  }
+
+  .mobileTasteSelected {
+    background: v.$color-primary;
+  }
+}
+
+
+.mobileTasteLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  color: v.$color-text-primary;
+
+  font-weight: 700;
+
+  text-decoration: none;
+}
+
+
 /* =========================
    TABLET
 ========================= */
@@ -793,6 +870,185 @@
 ========================= */
 
 @media (max-width: 767px) {
+  /* PC용 취향 표는 모바일에서 숨김 */
+  .desktopTasteSection {
+    display: none;
+  }
+
+
+  /* 모바일 전용 취향 요약 */
+  .mobileTasteSection {
+    display: block;
+
+    margin-top: 30px;
+  }
+
+
+  .mobileTasteHeading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-bottom: 12px;
+
+    h3 {
+      margin: 0 0 5px;
+
+      color: #292620;
+
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0;
+
+      color: #aaa59d;
+
+      font-size: 11px;
+      line-height: 1.45;
+
+      word-break: keep-all;
+    }
+  }
+
+
+  .mobileTasteCard,
+  .mobileTasteEmpty {
+    padding: 16px;
+  }
+
+
+  .mobileTasteIntro {
+    padding-bottom: 14px;
+
+    border-bottom: 1px solid #ece6dc;
+
+    span {
+      margin-bottom: 5px;
+
+      color: v.$color-primary;
+
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    strong {
+      color: #302b26;
+
+      font-size: 14px;
+      font-weight: 700;
+
+      line-height: 1.45;
+
+      word-break: keep-all;
+    }
+  }
+
+
+  .mobileTasteList {
+    gap: 0;
+
+    padding: 8px 0 6px;
+  }
+
+
+  .mobileTasteRow {
+    grid-template-columns:
+      42px
+      minmax(82px, 1fr)
+      minmax(84px, 1.05fr);
+
+    gap: 10px;
+
+    min-height: 39px;
+
+    & + & {
+      border-top: 1px solid #f0ece5;
+    }
+  }
+
+
+  .mobileTasteLabel {
+    color: #5d554c;
+
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+
+  .mobileTasteScale {
+    gap: 4px;
+
+    span {
+      height: 6px;
+    }
+  }
+
+
+  .mobileTasteAnswer {
+    overflow: hidden;
+
+    color: #7b6c5e;
+
+    font-size: 10px;
+    font-weight: 500;
+
+    line-height: 1.35;
+
+    text-align: right;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+
+  .mobileTasteLink {
+    min-height: 40px;
+
+    margin-top: 8px;
+    padding: 0 2px;
+
+    border-top: 1px solid #ece6dc;
+
+    color: #4d7e7b;
+
+    font-size: 11px;
+
+    span {
+      font-size: 18px;
+      font-weight: 400;
+    }
+  }
+
+
+  .mobileTasteEmpty {
+    display: grid;
+
+    gap: 6px;
+
+    strong {
+      color: #302b26;
+
+      font-size: 13px;
+    }
+
+    p {
+      margin: 0;
+
+      color: #91887e;
+
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .mobileTasteLink {
+      margin-top: 5px;
+    }
+  }
+
   .profileHeader {
     padding: v.$space-4;
     gap: v.$space-3;

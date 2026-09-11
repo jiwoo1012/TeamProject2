@@ -1575,7 +1575,7 @@ const AiResult = () => {
                   }
                   onClick={() =>
                     navigate(
-                      `/product/${liquor.productId}`
+                       `/shop/${liquor.productId}`
                     )
                   }
                 >
@@ -1670,7 +1670,7 @@ const AiResult = () => {
                   }
                   onClick={() =>
                     navigate(
-                      `/product/${food.productId}`
+                      `/shop/${food.productId}`
                     )
                   }
                 >
@@ -1765,7 +1765,7 @@ const AiResult = () => {
                   }
                   onClick={() =>
                     navigate(
-                      `/product/${glass.productId}`
+                      `/shop/${glass.productId}`
                     )
                   }
                 >
