@@ -337,6 +337,9 @@ const AiResult = () => {
   const compositionFooterRef =
     useRef(null)
 
+  const scrollHintRef =
+    useRef(null)
+
   const liquorDetailTextRef =
     useRef(null)
 
@@ -696,6 +699,14 @@ const AiResult = () => {
           {
             autoAlpha: 0,
             y: 30,
+          }
+        )
+
+        // 스크롤 문구는 저장 버튼 옆에서 계속 보임
+        gsap.set(
+          scrollHintRef.current,
+          {
+            autoAlpha: 1,
           }
         )
 
@@ -1111,6 +1122,7 @@ const AiResult = () => {
             food,
             glass,
             ...infoCards,
+            scrollHintRef.current,
           ],
           {
             clearProps: 'all',
@@ -1430,33 +1442,49 @@ const AiResult = () => {
               styles.compositionFooter
             }
           >
-            {!isSaved && <button
-              type="button"
+            <div
               className={
-                styles.saveButton
+                styles.footerActionsRow
               }
-              onClick={
-                handleSaveTable
-              }
-              disabled={isSaving || isSaved}
-              aria-busy={isSaving}
             >
-              {isSaving ? '저장 중…' : isSaved ? '저장 완료' : '추천 결과 저장하기'}
-            </button>}
-            {!isSaved && saveMessage && <p className={styles.saveFeedback} role="status">{saveMessage}</p>}
-            {isSaved && (
-              <div className={styles.savedPanel}>
-                <span className={styles.savedIcon} aria-hidden="true">✓</span>
-                <div className={styles.savedCopy} role="status">
-                  <strong>오늘의 주안상을 담았어요</strong>
-                  <p>추천받은 주안상 3개는 마이페이지에서 다시 볼 수 있어요.</p>
+              {!isSaved && <button
+                type="button"
+                className={
+                  styles.saveButton
+                }
+                onClick={
+                  handleSaveTable
+                }
+                disabled={isSaving || isSaved}
+                aria-busy={isSaving}
+              >
+                {isSaving ? '저장 중…' : isSaved ? '저장 완료' : '추천 결과 저장하기'}
+              </button>}
+              {isSaved && (
+                <div className={styles.savedPanel}>
+                  <span className={styles.savedIcon} aria-hidden="true">✓</span>
+                  <div className={styles.savedCopy} role="status">
+                    <strong>오늘의 주안상을 담았어요</strong>
+                    <p>추천받은 주안상 3개는 마이페이지에서 다시 볼 수 있어요.</p>
+                  </div>
+                  <button type="button" className={styles.savedLink}
+                    onClick={() => navigate(`${PATHS.mypage}/ai-history`)}>
+                    마이페이지에서 보기 <span aria-hidden="true">→</span>
+                  </button>
                 </div>
-                <button type="button" className={styles.savedLink}
-                  onClick={() => navigate(`${PATHS.mypage}/ai-history`)}>
-                  마이페이지에서 보기 <span aria-hidden="true">→</span>
-                </button>
-              </div>
-            )}
+              )}
+            </div>
+
+            <div
+              ref={scrollHintRef}
+              className={styles.scrollHint}
+              aria-hidden="true"
+            >
+              <span className={styles.scrollLine} />
+              <small>SCROLL</small>
+            </div>
+
+            {!isSaved && saveMessage && <p className={styles.saveFeedback} role="status">{saveMessage}</p>}
           </div>
 
 
